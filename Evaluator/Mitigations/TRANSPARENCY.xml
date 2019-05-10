@@ -1,0 +1,27 @@
+<Entry>
+	<Name>Missing Certificate Transparency</Name>
+	<ExtendedName>Missing Certificate Transparency</ExtendedName>
+	<Description> With the current configuration, if a CA misissues a valid certificate for this domain, it may take months before being detected. Certificate transparency helps by reducing the interval between detection and mitigation.</Description> 
+	<Mitigation>
+		<Textual>Use one of the following SCT delivery methods:
+1. use a CA that embeds the SCT within the certificate;
+2. embed it within a stapled OCSP response;
+3. delivery it using a TLS Extension.
+</Textual>
+		<Snippet>
+			<Apache>1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);
+
+2. add the following lines: 
+   ```bash
+   SSLUseStapling on
+   SSLStaplingResponderTimeout 5
+   SSLStaplingReturnResponderErrors off
+   SSLStaplingCache shmcb:/var/run/ocsp(128000)
+   ```
+
+N.B. restart the server by typing: `sudo service apache2 restart` and make sure that your certificate has been logged (check at [crt.sh](https://crt.sh)).</Apache>
+		</Snippet>
+	</Mitigation>
+</Entry>
+<!-- https://www.digicert.com/certificate-transparency/enabling-ct.htm -->
+<!-- http://www.certificate-transparency.org/resources-for-site-owners/apache -->

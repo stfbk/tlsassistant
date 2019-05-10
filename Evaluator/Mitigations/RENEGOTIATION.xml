@@ -1,0 +1,17 @@
+<Entry>
+	<Name>Secure Client-Initiated Renegotiation</Name>
+	<ExtendedName>Secure Client-Initiated Renegotiation</ExtendedName>
+	<CVE>2011-1473</CVE>
+	<CWE>264</CWE>
+	<CVSS2>AV:N/AC:L/Au:N/C:N/I:N/A:P</CVSS2>
+	<Description>Due to an incorrect handling of the Secure Client-Initiated Renegotiation mechanism, an attacker is able to compromise the availability of the service. In particular, by repeatedly requesting a session renegotiation, the attacker is able to saturate the server's resources resulting in a Denial-of-Service.</Description> 
+	<Mitigation>
+		<Textual>Update the TLS library to a version that allows renegotiation disabling (e.g. OpenSSL v1.1.1+)</Textual>
+		<Snippet>
+			<Apache>No snippet available</Apache>
+		</Snippet>
+	</Mitigation>
+</Entry>
+
+<!-- https://securingtomorrow.mcafee.com/business/tips-securing-ssl-renegotiation/ -->
+<!-- https://www.openssl.org/docs/man1.1.1/man3/SSL_get_options.html -->

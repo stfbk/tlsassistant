@@ -1,0 +1,27 @@
+<Entry>
+	<Name>BREACH</Name> 
+	<ExtendedName>**B**rowser **R**econnaissance and **E**xfiltration via **A**daptive **C**ompression of **H**ypertext</ExtendedName>
+	<CVE>2013-3587</CVE>
+	<CWE>310</CWE>
+	<CVSS3>AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N</CVSS3>
+	<Description>By exploiting the information leakage provided by DEFLATE (compression algorithm), an attacker is able to retrieve the session cookie. In particular, the attacker guesses parts of the cookie, injects them in a valid client packet and analyzes the server's response. Thanks to the properties of a DEFLATE output, if the server's response is bigger than an untouched packet, then the guess is wrong.</Description> 
+	<Mitigation>
+		<Textual>Disable the HTTP compression mechanism</Textual>
+		<Snippet>
+			<Apache>- If Apache has been installed via package manager: 
+				disable the DEFLATE module at OS level (e.g. on Ubuntu, run `sudo a2dismod deflate`);
+
+
+- if Apache has been manually installed: 
+		1. open your Apache configuration file (default: */usr/local/apache2/conf/httpd.conf*);
+	2. search for the line containing : **mod_deflate.so**;
+	3. comment or delete it.
+
+N.B. restart the server by typing: `sudo service apache2 restart`.</Apache>
+		</Snippet>
+	</Mitigation>
+</Entry>
+
+<!-- http://breachattack.com -->
+<!-- https://www.acunetix.com/vulnerabilities/web/breach-attack/ -->
+<!-- http://manpages.ubuntu.com/manpages/xenial/man8/a2enmod.8.html -->

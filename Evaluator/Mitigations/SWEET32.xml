@@ -1,0 +1,22 @@
+<Entry>
+	<Name>Sweet32</Name> 
+	<ExtendedName>Sweet32</ExtendedName>
+	<CVE>2016-2183</CVE>
+	<CWE>200</CWE>
+	<CVSS3>AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</CVSS3>
+	<Description>By exploiting the block size of the 3DES CBC ciphers, an attacker is able to mount a birthday attack. Once the victim has (forcefully) generated the needed amount of data (approximately 2^32 blocks of data) its confidentiality can be affected due to the information leakage caused by the collisions in the cipher.
+</Description> 
+	<Mitigation>
+		<Textual>Disable support for 3DES cipher suites</Textual>
+		<Snippet>
+			<Apache>1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);
+2. find the line starting with: **SSLCipherSuite**;
+3. add the string `:!3DES` at the end.
+
+N.B. restart the server by typing: `sudo service apache2 restart`.</Apache>
+		</Snippet>
+	</Mitigation>
+</Entry>
+<!-- https://sweet32.info -->
+<!-- https://nvd.nist.gov/vuln/detail/CVE-2016-2183 -->
+<!-- https://bobcares.com/blog/how-to-fix-sweet32-birthday-attacks-vulnerability-cve-2016-2183 -->

@@ -1,0 +1,20 @@
+<Entry>
+	<Name>ROBOT</Name>
+	<ExtendedName>**R**eturn **O**f **B**leichenbacher's **O**racle **T**hreat</ExtendedName>
+	<CVE>Software dependent</CVE>
+	<CWE>Software dependent</CWE>
+	<CVSS3>Software dependent</CVSS3>
+	<Description>Due to the availability of the PKCS#1v1.5 padding algorithm within RSA, an attacker is able to extract the private key of the session and breaking the message confidentiality. By using a adaptive chosen-ciphertext attack, the victim is forced to leak information that help the attacker to guess the key. The key can then be used to decrypt HTTPS traffic sent between the TLS server and the user’s browser.</Description> 
+	<Mitigation>
+		<Textual>Disable support to RSA key exchange</Textual>
+		<Snippet>
+			<Apache>1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);
+2. find the line starting with: **SSLCipherSuite**;
+3. add the string `:!RSA` at the end.
+
+N.B. restart the server by typing: `sudo service apache2 restart`.</Apache>
+		</Snippet>
+	</Mitigation>
+</Entry>
+<!-- https://robotattack.org -->
+<!-- https://threatpost.com/19-year-old-tls-vulnerability-weakens-modern-website-crypto/129158/ -->

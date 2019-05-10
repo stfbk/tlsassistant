@@ -1,0 +1,14 @@
+<Entry>
+	<Name>Acronym</Name> 
+	<ExtendedName>Full name</ExtendedName>
+	<CVE>ID</CVE>
+	<CWE>ID</CWE>
+	<CVSS3>content</CVSS3>
+	<Description>Issue description</Description> 
+	<Mitigation>
+		<Textual>Mitigation description</Textual>
+		<Snippet>
+			<Apache>Instructions</Apache>
+		</Snippet>
+	</Mitigation>
+</Entry>

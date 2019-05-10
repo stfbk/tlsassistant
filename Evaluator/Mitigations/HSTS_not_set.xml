@@ -1,0 +1,14 @@
+<Entry>
+	<Name>HSTS not set</Name>
+	<ExtendedName>HSTS not set</ExtendedName>
+	<Description>Without the HSTS header, an attacker can use the SSL stripping attack to redirect all the HTTPS connection to their unsecure counterparts. By doing this, all the messages are sent in plaintext and can thus be manipulated.</Description> 
+	<Mitigation>
+		<Textual>Enable the HSTS header transmission within the webservers' settings</Textual>
+		<Snippet>
+			<Apache>1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);
+2. add the line `Header always set Strict-Transport-Security "max-age=31536000"`.
+
+N.B. restart the server by typing: `sudo service apache2 restart` and be sure that `mod_headers` is enabled.</Apache>
+		</Snippet>
+	</Mitigation>
+</Entry>

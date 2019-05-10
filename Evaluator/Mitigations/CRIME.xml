@@ -1,0 +1,21 @@
+<Entry>
+	<Name>CRIME</Name> 
+	<ExtendedName>**C**ompression **R**atio **I**nfo-leak **M**ass **E**xploitation</ExtendedName>
+	<CVE>2012-4929</CVE>
+	<CWE>310</CWE>
+	<CVSS3>AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N</CVSS3>
+	<Description>By exploiting the information leakage provided by DEFLATE (compression algorithm), an attacker is able to retrieve the session cookie. In particular, the attacker guesses parts of the cookie, injects them in a valid client packet and analyzes the server's response. Thanks to the properties of a DEFLATE output, if the server's response is bigger than an untouched packet, then the guess is wrong.</Description> 
+	<Mitigation>
+		<Textual>Disable the TLS compression mechanism</Textual>
+		<Snippet>
+			<Apache>1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);
+2. search for the line starting with: **SSLCompression**
+   - if found, change the value to **off**;
+   - if not, add the line `SSLCompression off` within the file.
+
+N.B. restart the server by typing: `sudo service apache2 restart`.</Apache>
+		</Snippet>
+	</Mitigation>
+</Entry>
+<!-- https://www.acunetix.com/vulnerabilities/web/crime-ssl-tls-attack/ -->
+<!-- https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2012/september/details-on-the-crime-attack/ -->

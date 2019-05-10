@@ -1,0 +1,17 @@
+<Entry>
+	<Name>Lucky 13</Name> 
+	<ExtendedName>Lucky 13</ExtendedName>
+	<CVE>2013-0169</CVE>
+	<CWE>310</CWE>
+	<CVSS2>AV:N/AC:H/Au:N/C:P/I:N/A:N</CVSS2>
+	<Description>By exploiting the structure of the Cipher Block Chaining (CBC) mode, an attacker can infer the content of a transmission. The attack is performed by capturing, tampering (actually damaging) and re-transmitting the messages sent by the client to see how the server responds.
+The attack, by breaching in the authentication mechanism, has a serious impact on the transmission.</Description> 
+	<Mitigation>
+		<Textual>Update the TLS library to a version that contains the custom mitigations (e.g. OpenSSL v1.0.2h+).</Textual>
+		<Snippet>
+			<Apache>No snippet available</Apache>
+		</Snippet>
+	</Mitigation>
+</Entry>
+<!-- http://www.isg.rhul.ac.uk/tls/Lucky13.html -->
+<!-- https://nvd.nist.gov/vuln/detail/CVE-2013-0169 -->
