@@ -4,25 +4,24 @@
 
 ## Features
 
-Thanks to the integrated analyzers, TLSAssistant is currently able to detect and provide mitigations for:
-
-- 3SHAKE
-- Bar Mitzvah
-- BREACH
-- Client-Initiated Renegotiation DoS
-- CRIME
-- DROWN
-- HSTS not set
-- HTTPS not enforced
-- HTTPS not preloaded
-- Lucky13
-- Missing Certificate Transparency
-- POODLE
-- RC4NOMORE
-- ROBOT
-- SLOTH
-- Sweet32
-- Unsecure Android TrustManagers
+Thanks to the integrated analyzers, TLSAssistant is currently able to detect and provide mitigations for: 
+  - [3SHAKE](https://mitls.org/pages/attacks/3SHAKE)
+  - [Bar Mitzvah](https://www.imperva.com/docs/HII_Attacking_SSL_when_using_RC4.pdf)
+  - [BREACH](http://breachattack.com)
+  - [Client-Initiated Renegotiation DoS](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-1473)
+  - [CRIME](https://docs.google.com/presentation/d/11eBmGiHbYcHR9gL5nDyZChu_-lCa2GizeuOfaLU2HOU/edit#slide=id.g1d134dff_1_222)
+  - [DROWN](https://drownattack.com)
+  - [HSTS not preloaded](https://hstspreload.org)
+  - [HSTS not set](https://tools.ietf.org/html/rfc6797)
+  - [HTTPS not enforced](https://tools.ietf.org/html/rfc6797#section-7.2)
+  - [Lucky13](http://www.isg.rhul.ac.uk/tls/Lucky13.html)
+  - [Missing Certificate Transparency](http://www.certificate-transparency.org)
+  - [POODLE](https://www.openssl.org/~bodo/ssl-poodle.pdf)
+  - [RC4NOMORE](https://www.rc4nomore.com)
+  - [ROBOT](https://robotattack.org)
+  - [SLOTH](https://www.mitls.org/pages/attacks/SLOTH)
+  - [Sweet32](https://sweet32.info)
+  - [Unsecure Android TrustManagers](https://dl.acm.org/citation.cfm?id=2382205)
 
 ## Dependencies
 
