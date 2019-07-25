@@ -6,26 +6,28 @@ toolReports=$root_folder/reports_to_evaluate
 webserver=""
 
 ##functions definition
-
-function detect_webserver {
-
-    webserver=$(grep -i "server banner" $toolReports/testssl_report.txt | grep -oiP '(?<=server banner                ).*') #the spaces are part of the hardcoded output
-    echo "webserver: $webserver">> $root_folder/vulnerabilityList.txt #sending "webserver: <webserverName>[/<version>]"
-    echo "- webserver: $webserver"
-}
-
 function assistant_enumerator {
 
+    #webserver detection
+    if grep -i -q "Server: " $toolReports/assistant.txt; then 
+        webserver=$(grep -i "Server: " $toolReports/assistant.txt | grep -oiP '(?<=Server: ).*')
+        echo "webserver: $webserver">> $root_folder/vulnerabilityList.txt #sending "webserver: <webserverName>[/<version>]"
+        echo "- webserver: $webserver"
+    fi
+
+    #HTTPS enforcing
     if cat $toolReports/assistant.txt |grep -q -i "HTTPS not enforced"; then
         echo "HTTPS_not_enforced">> $root_folder/vulnerabilityList.txt
         echo "- detected: HTTPS not enforced"
     fi
 
+    #HSTS
     if cat $toolReports/assistant.txt |grep -q -i "HSTS not set"; then
         echo "HSTS_not_set">> $root_folder/vulnerabilityList.txt
         echo "- detected: HSTS not set"
     fi
 
+    #HSTS PRELOADING
     if cat $toolReports/assistant.txt |grep -q -i "HSTS not preloaded"; then
         echo "HSTS_not_preloaded">> $root_folder/vulnerabilityList.txt
         echo "- detected: HSTS not preloaded"
@@ -50,11 +52,6 @@ function mallodroid_enumerator {
 }
 
 function testssl_enumerator {
-
-    #webserver detection
-    if grep -i -q "server banner" $toolReports/testssl_report.txt; then #handling a possible edge case (testssl called with different parameters)
-        detect_webserver
-    fi
 
     #Bar Mitzvah
     if grep "RC4" $toolReports/testssl_report.txt |grep -q "VULNERABLE"; then

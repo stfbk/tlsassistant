@@ -63,6 +63,9 @@ function assistant {
     host=$1
     re_url='^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$'
 
+    #--------webserver detection 
+    curl -s --head http://$host | grep "Server" >> $report/assistant.txt 
+
     if [[ $host =~ $re_url ]]; then #if the target is provided via hostname, do the HTTPS-related checks
 
         touch $report/assistant.txt
