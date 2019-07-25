@@ -8,12 +8,12 @@
 	<Mitigation>
 		<Textual>Disable the HTTP compression mechanism</Textual>
 		<Snippet>
-			<Apache>- If Apache has been installed via package manager: 
-				disable the DEFLATE module at OS level (e.g. on Ubuntu, run `sudo a2dismod deflate`);
+			<Apache>- If Apache has been installed via package manager:
+	disable the DEFLATE module at OS level (e.g. on Ubuntu, run `sudo a2dismod deflate`);
 
 
-- if Apache has been manually installed: 
-		1. open your Apache configuration file (default: */usr/local/apache2/conf/httpd.conf*);
+- if Apache has been manually installed:
+	1. open your Apache configuration file (default: */usr/local/apache2/conf/httpd.conf*);
 	2. search for the line containing : **mod_deflate.so**;
 	3. comment or delete it.
 
