@@ -34,7 +34,7 @@ function printHelp {
     echo "    -h|--help:                     show the help"                       #help
     echo "    -s|--server [URL|IP] {port}:   analyze a server, default port: 433" #server
     echo "    -a|--apk <file>:               check an apk"                        #apk
-    echo "    -v [0|1|2]:                  verbosity level"                       #report type
+    echo "    -v [0|1|2]:                    verbosity level"                     #report type
     echo
     echo " VERBOSITY LEVEL"
     echo "    0: mitigations'description"
