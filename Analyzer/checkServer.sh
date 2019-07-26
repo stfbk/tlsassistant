@@ -73,8 +73,8 @@ function assistant {
         mozilla_hsts=$(curl -s https://hg.mozilla.org/mozilla-central/raw-file/tip/security/manager/ssl/nsSTSPreloadList.inc)
 
         #--------HTTPS enforcing
-        if curl -s --head --no-styled-output http://$host | grep -i -q "moved permanently"; then #condition 1
-            if curl -s --head --no-styled-output http://$host | grep -i -q "location: https"; then #condition 2
+        if curl -s --head http://$host | grep -i -q "moved permanently"; then #condition 1
+            if curl -s --head http://$host | grep -i -q "location: https"; then #condition 2
                 echo "HTTPS enforced">> $report/assistant.txt
             else
                 echo "HTTPS not enforced">> $report/assistant.txt # domain either not configured or not following RFC specifications
@@ -85,11 +85,11 @@ function assistant {
 
         #--------HSTS
         dots=$(grep -o "\." <<<"$host" | wc -l) #counts the umber of dots (1= top-level, more= subdomains)
-        if [ "$dots" -gt "1" ]; then  #if the host is a sub-domain
+        if [ "$dots" -gt "1" ]; then #if the host is a sub-domain
             host=$(expr match "$host" '.*\.\(.*\..*\)') #to retrieve the top-level domain
         fi
 
-        if curl -s --head --no-styled-output https://$host | grep -i -q "strict-transport-security"; then
+        if curl -s --head https://$host | grep -i -q "strict-transport-security"; then
             echo "HSTS set">> $report/assistant.txt
         else
             echo "HSTS not set">> $report/assistant.txt # domain either not configured or not following RFC specifications
