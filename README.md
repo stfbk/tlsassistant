@@ -29,7 +29,7 @@ To be able to run TLSAssistant you will need a set of dependencies that can be a
 
 It will download (and place in the correct folders) the following:
 
-- packages: `aha`, `html2text`, `libxml2-utils`, `git`, `curl`, `python2`, `androguard`.
+- packages: `aha`, `html2text`, `markdown.sh`, `libxml2-utils`, `git`, `curl`, `python2`, `androguard`.
 - tools: `mallodroid`, `testssl.sh`, `tlsfuzzer`, `TLS Extended_Master_Checker`.
 
 ## Download
