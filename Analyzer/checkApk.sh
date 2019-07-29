@@ -5,6 +5,7 @@ root_folder="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 tools=$root_folder/tools/others #other tools path (starting from the project root)
 report=$tools/reports #other scans' report path (starting from the project root)
 evaluatorReports=$root_folder/../Evaluator/reports_to_evaluate
+python=$root_folder/../python_dep/bin/python
 
 ##functions definition
 function s_echo {
@@ -20,7 +21,7 @@ function mallodroid {
     cd $mallodroid_folder
     s_echo "version: $version"
     s_echo "Analyzing..."
-    python $mallodroid_folder/mallodroid.py $args $1 | aha -t ${FUNCNAME[0]} > $report/mallodroid_report.html
+    $python $mallodroid_folder/mallodroid.py $args $1 | aha -t ${FUNCNAME[0]} > $report/mallodroid_report.html
     s_echo "Report generated successfully!"
     echo
     cd $root_folder

@@ -21,17 +21,24 @@ sudo apt-get update
 sudo apt-get install -y aha html2text libxml2-utils git curl wget
 echo ""
 r_echo "Utilities installed"
-sudo apt-get install -y python python-pip
-echo ""
-r_echo "Python installed"
-pip install -U androguard
+    echo ""
+if ! [[ $(command -v pip) ]]; then
+    sudo apt-get install -y python-pip
+    r_echo "pip installed"
+else
+    r_echo "pip already installed"
+fi
+pip install virtualenv
+
+~/.local/bin/virtualenv python_dep
+python_dep/bin/pip install androguard
 r_echo "Androguard installed"
-pip install -U --pre tlslite-ng
+python_dep/bin/pip install --pre tlslite-ng
 r_echo "TLS Lite installed"
 echo ""
 mkdir utility
 curl -s https://raw.githubusercontent.com/chadbraunduin/markdown.bash/master/markdown.sh > utility/markdown.sh
-r_echo "TLS Lite installed"
+r_echo "markdown.sh installed"
 echo ""
 
 r_echo "# Installing tools..."

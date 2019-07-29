@@ -5,6 +5,7 @@ root_folder="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 tools=$root_folder/tools/server #server tool path (starting from the project root)
 report=$tools/reports #server report path (starting from the project root)
 evaluatorReports=$root_folder/../Evaluator/reports_to_evaluate
+python=$root_folder/../python_dep/bin/python
 
 ##functions definition
 function s_echo {
@@ -19,7 +20,7 @@ function extended_master_checker {
     cd "$extended_master_folder"
     s_echo "version: $version"
     s_echo "Analyzing..."
-    python2 TLS_Extended_Master_Checker.py $1 $2 | aha -t ${FUNCNAME[0]} > $report/extended_master_report.html
+    $python TLS_Extended_Master_Checker.py $1 $2 | aha -t ${FUNCNAME[0]} > $report/extended_master_report.html
     s_echo "Report generated successfully!"
     echo
     cd $root_folder
@@ -53,7 +54,7 @@ function tlsfuzzer { #SLOTH checker
     cd $sloth_checker
     s_echo "version: $version"
     s_echo "Analyzing..."
-    PYTHONPATH=. python $sloth_checker/scripts/test-certificate-verify.py -h $1 -p $2 -k $cert_location/localuser.key -c $cert_location/localuser.crt | aha -t ${FUNCNAME[0]} > $report/tlsfuzzer_report.html
+    PYTHONPATH=. $python $sloth_checker/scripts/test-certificate-verify.py -h $1 -p $2 -k $cert_location/localuser.key -c $cert_location/localuser.crt | aha -t ${FUNCNAME[0]} > $report/tlsfuzzer_report.html
     s_echo "Report generated successfully!"
     echo
     cd $root_folder
