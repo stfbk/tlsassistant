@@ -85,11 +85,6 @@ function assistant {
         fi
 
         #--------HSTS
-        dots=$(grep -o "\." <<<"$host" | wc -l) #counts the umber of dots (1= top-level, more= subdomains)
-        if [ "$dots" -gt "1" ]; then #if the host is a sub-domain
-            host=$(expr match "$host" '.*\.\(.*\..*\)') #to retrieve the top-level domain
-        fi
-
         if curl -s --head https://$host | grep -i -q "strict-transport-security"; then
             echo "HSTS set">> $report/assistant.txt
         else
@@ -97,6 +92,11 @@ function assistant {
         fi
 
         #--------HSTS PRELOADING
+        dots=$(grep -o "\." <<<"$host" | wc -l) #counts the number of dots (1= top-level, more= subdomains)
+        if [ "$dots" -gt "1" ]; then #if the host is a sub-domain
+            host=$(expr match "$host" '.*\.\(.*\..*\)') #to retrieve the top-level domain
+        fi
+        
         if echo $google_hsts | grep -i -q $host; then #present in Google's list
             echo "HSTS preloaded">> $report/assistant.txt
         else
