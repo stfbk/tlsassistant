@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e #stop the script if any error occours
 
+err_report() {
+    echo "Error on line $1"
+}
+
 ## echo functions definition (https://stackoverflow.com/a/42449998/3370955)
 function r_echo {
     echo -e '\033[7m'$1'\033[0m'
@@ -30,7 +34,8 @@ else
 fi
 pip install virtualenv
 
-~/.local/bin/virtualenv python_dep
+venv=$(find ~ -name virtualenv)
+$venv python_dep
 python_dep/bin/pip install androguard
 r_echo "Androguard installed"
 python_dep/bin/pip install --pre tlslite-ng
