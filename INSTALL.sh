@@ -34,7 +34,7 @@ else
 fi
 pip install virtualenv
 
-venv=$(find ~ -name virtualenv)
+venv=$(find ~ -name virtualenv 2>&1 | grep -v "Permission denied")
 $venv python_dep
 python_dep/bin/pip install androguard
 r_echo "Androguard installed"
