@@ -113,9 +113,9 @@ function assistant {
 }
 
 #cleanup
-rm -r $report/* 2>/dev/null #removing old reports (suppressing the warnings)
 server=${1##*://} #remove any protocol mention (e.g. "https://")
 server=${server%:*} #remove any specified port(e.g. ":80")
+server=$(echo $server | cut -d '/' -f 1 ) #remove anything after "/" (subfolders)
 
 if [ -z "$2" ] #verify if the user specified a port
 then
