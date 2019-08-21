@@ -1,0 +1,228 @@
+graph {
+#attributes
+splines=polyline;
+compound=true;
+node [shape=box];
+
+#legend
+# "node_name" [label appearing after the rendering] /*hooks for the highlighting process*/
+
+#################Authentication Nodes#################
+##----------Parents---------
+"auth_break" [label = "Break\nauthentication"][penwidth=6]
+"auth_break_client" [label = "Break\nclient authentication"][penwidth=4]
+"auth_break_server" [label = "Break\nserver authentication"][penwidth=4]
+
+"auth_tls_hshake" [label = "Exploit\nHandshake protocol"][penwidth=2]
+"auth_tls_alert" [label = "Exploit\nAlert protocol"][penwidth=2]
+"auth_tls_record" [label = "Exploit\nRecord protocol"][penwidth=2]
+"auth_msg_C" [label = "Break\nmessage confidentiality"][style=dotted][penwidth=2]
+"auth_C_tls_hshake" [label = "Exploit\nHandshake protocol"][style=dotted]
+"auth_C_legacy" [label = "Exploit legacy\nprotocols"][style=dotted]
+"auth_msg_I" [label = "Break\nmessage integrity"][style=dotted][penwidth=2]
+"auth_pki_s" [label = "Exploit\nPKI reliance"][penwidth=2]
+"auth_pki_c" [label = "Exploit\nPKI reliance"][penwidth=2]
+
+"auth_collision" [label = "Exploit\nhash collisions"]
+"auth_collision_mitm" [label = "MITM"]
+"auth_downgrade" [label = "Downgrade the\nsession"]
+"auth_downgrade_mitm" [label = "MITM"]
+"auth_tls_termin" [label = "Exploit the TLS\ntermination mode"]
+"auth_hijack" [label = "Hijack the\nsession"]
+"auth_cert_gen_s" [label = "Exploit\ncertificate generation"]
+"auth_cert_check_s" [label = "Exploit\ncertificate check"]
+"auth_cert_gen_c" [label = "Exploit\ncertificate generation"]
+"auth_cert_check_c" [label = "Exploit\ncertificate check"]
+
+"auth_genAndCheck" [label = "Generate\nand check"]
+
+"auth_check_size" [label = "Analyze\nresponse size"]
+"auth_check_time" [label = "Analyze\nresponse time"]
+"auth_check_collisions" [label = "Exploit\ncipher collisions"]
+"auth_check_bias" [label = "Exploit\nRC4 permutation bias"]
+"auth_check_padding" [label = "Exploit\nPKCS#1 v1.5 padding"]
+
+##----------Leaves----------
+"auth_sloth_1" [label = "- RSA-MD5 certificate\lsignature supported\l- Client uses the same certificate\lwith multiple servers (one malicious)\l"][color=chocolate]
+"auth_sloth_2" [label = "1. Receive the victim's ClientHello\l2. Perform the handshake until the key exchange\l3. Compute a chosen-prefix collision of two strings\l4. Send a crafted hello to the server\l(containing one of the strings)\l5. Perform the handshake until the key exchange\l6. Send a crafted certificate request to the client\l(containing the other strings) [the hashes will now coincide]\l7. Forward the server's HelloDone to the client\l8. Forward the client's messages to the server\l9. Impersonate the client\l"][color=deepskyblue2]
+
+"auth_poodle_1" [label = "- SSLv3 available\l- CBC mode ciphers available"][color=chocolate]
+"auth_poodle_2" [label = "1. Force SSLv3 with a\lCBC cipher (via MITM)\l2. Repeatedly replace the\lciphertext's padding\l3. Send the crafted requests\l4. Check if the server accepted\lthe request (padding correctly guessed)\l5. Rebuild the cookie two bytes at time"][color=deepskyblue2]
+
+"auth_trunc_1" [label = "- Ongoing parallel connections\l- Incorrect handling of the termination\lprotocol (server side)\l- Victim using a shachocolate terminal\l"][color=chocolate]
+"auth_trunc_2" [label = "1. Identify and drop the client's\llogout request\l2. Exploit the connection kept open\lusing the shachocolate terminal\l"][color=deepskyblue2]
+
+"auth_crime_1" [label = "- TLS compression enabled\l"][color=chocolate]
+"auth_crime_2" [label = "1. Gain JavaScript control\lon the victim's browser\l2. Inject different characters\linto the client's messages\l"][color=deepskyblue2]
+"auth_crime_3" [label = "- Retrieve parts of the cookie\lby analyzing the response size\l"][color=darkolivegreen]
+
+"auth_breach_1" [label = "- HTTP compression enabled\l"][color=chocolate]
+"auth_breach_2" [label = "1. Gain JavaScript control\lon the victim's browser\l2. Inject different characters\linto the client's messages\l"][color=deepskyblue2]
+"auth_breach_3" [label = "- Retrieve parts of the cookie\lby analyzing the response size\l"][color=darkolivegreen]
+
+"auth_lucky_1" [label = "- CBC mode cipher negotiated\l- HMAC-SHA1 negotiated\l"][color=chocolate]
+"auth_lucky_2" [label = "1. Gain JavaScript control\lon the victim's browser\l2. Tweak and truncate the encrypted packets\l3. Analyse the time the server\l needs to detect the error\l"][color=deepskyblue2]
+"auth_lucky_3" [label = "- Retrieve parts of the cookie by\lmeasuring the response delay\lover every iteration\l"][color=darkolivegreen]
+
+"auth_sweet_1" [label = "- 3DES cipher negotiated\l(64-bit blocks)\l"][color=chocolate]
+"auth_sweet_2" [label = "1. Gain JavaScript control on\lthe victim's browser\l2. Repeatedly query the server\l(2^32 requests)\l"][color=deepskyblue2]
+"auth_sweet_3" [label = "- Check for collisions with a known block\l"][color=darkolivegreen]
+
+"auth_mitzvah_1" [label = "- RC4 cipher negotiated\l"][color=chocolate]
+"auth_mitzvah_2" [label = "1. Sniff the victim's transmissions\l2. Detect the use of a weak key\l(invariance weakness)\l3. Pchocolateict the LSBs of the keystream\l4. Try to decrypt the related plaintext\l5. Use the cookie to impersonate\lthe client\l"][color=deepskyblue2]
+
+"auth_nomore_1" [label = "- RC4 cipher negotiated\l"][color=chocolate]
+"auth_nomore_2" [label = "1. Gain JavaScript control\lon the victim's browser\l2. Force the client to contact the server\l3. Capture the encrypted requests\l4. Calculate the candidate tokens\l(using the Fluhrer-McGrew biases)\l"][color=deepskyblue2]
+"auth_nomore_3" [label = "- Check which token is the correct one"][color=darkolivegreen]
+
+"auth_impairment_s_1" [label = "1. Acquire the CA's signing key\l2. Sign a fake certificate\l3. Impersonate the server\l"][color=deepskyblue2]
+
+"auth_cert_self_s_1" [label = "1. Generate a fake\lself-signed certificate\l2. Impersonate the server\l"][color=deepskyblue2]
+
+"auth_impairment_c_1" [label = "1. Acquire the CA's signing key\l2. Sign a fake certificate\l3. Impersonate the client\l"][color=deepskyblue2]
+
+"auth_cert_self_c_1" [label = "1. Generate a fake\lself-signed certificate\l2. Impersonate the client\l"][color=deepskyblue2]
+
+"auth_robot_1" [label = "- RSA key exchange negotiated\l"][color=chocolate]
+"auth_robot_2" [label = "1. Sniff the victim's transmissions\l(ClientKeyExchange included)\l2. Repeatedly generate and send\lClientKeyExchange messages with\ldifferent padding\l3. Check if the server accepted\lthe request (padding correctly guessed)\l"][color=deepskyblue2]
+"auth_robot_3" [label = "- Use the guessed pre-master secret\lto generate the shachocolate key\l"][color=darkolivegreen]
+
+#-----------Edges-----------
+## root
+	"auth_break" -- "auth_break_client"  /* ROBOT POODLE SWEET32 NOMORE SLOTH MITZVAH CRIME BREACH LUCKY13 TRANSPARENCY TRUST_MANAGER */
+	"auth_break" -- "auth_break_server"   /* TRANSPARENCY */
+
+###client authentication
+	"auth_break_client" -- "auth_tls_record"  /* ROBOT SWEET32 NOMORE MITZVAH CRIME BREACH LUCKY13 */
+	"auth_break_client" -- "auth_tls_hshake"  /* POODLE SLOTH */
+	"auth_break_client" -- "auth_tls_alert"
+	"auth_break_client" -- "auth_pki_c"  /* TRUST_MANAGER */
+	"auth_break_client" -- "auth_msg_C" -- "auth_C_tls_hshake" -- "auth_C_legacy" [style=dotted]  /* 3SHAKE HSTS_not_preloaded DROWN */
+	"auth_break_client" -- "auth_msg_I" [style=dotted] /* RENEGOTIATION */
+	
+###server authentication
+	"auth_break_server" -- "auth_pki_s"   /* TRANSPARENCY */
+
+#### handshake subtree
+	"auth_tls_hshake" -- "auth_collision" /* SLOTH */
+	"auth_tls_hshake" -- "auth_downgrade" /* POODLE */
+	"auth_downgrade" -- "auth_downgrade_mitm" /* POODLE */
+	"auth_collision" -- "auth_collision_mitm" /* SLOTH */
+	"auth_collision_mitm" -- "auth_sloth_1" [lhead=cluster_sloth] /* SLOTH */
+	"auth_downgrade_mitm" -- "auth_poodle_1" [lhead=cluster_poodle] /* POODLE */
+
+#### record subtree
+	"auth_tls_record" -- "auth_hijack"  /* ROBOT SWEET32 NOMORE MITZVAH CRIME BREACH LUCKY13 */
+	"auth_hijack" -- "auth_genAndCheck" /* ROBOT SWEET32 NOMORE MITZVAH CRIME BREACH LUCKY13 */
+
+#### generate subtree
+	"auth_genAndCheck" -- "auth_check_size" /* CRIME BREACH */
+	"auth_genAndCheck" -- "auth_check_time" /* LUCKY13 */
+	"auth_genAndCheck" -- "auth_check_collisions" /* SWEET32 */
+	"auth_genAndCheck" -- "auth_check_bias" /* NOMORE MITZVAH */
+	"auth_genAndCheck" -- "auth_check_padding"  /* ROBOT */
+
+#### size subtree
+	"auth_check_size" -- "auth_crime_1" [lhead=cluster_crime] /* CRIME */
+	"auth_check_size" -- "auth_breach_1" [lhead=cluster_breach] /* BREACH */
+
+#### time subtree
+	"auth_check_time" -- "auth_lucky_1" [lhead=cluster_lucky] /* LUCKY13 */
+
+#### collision subtree
+	"auth_check_collisions" -- "auth_sweet_1" [lhead=cluster_sweet] /* SWEET32 */
+
+#### bias subtree
+	"auth_check_bias" -- "auth_mitzvah_1" [lhead=cluster_mitzvah] /* MITZVAH */
+	"auth_check_bias" -- "auth_nomore_1" [lhead=cluster_nomore] /* NOMORE */
+
+#### padding subtree
+	"auth_check_padding" -- "auth_robot_1" [lhead=cluster_robot] /* ROBOT */
+
+### alert subtree
+	"auth_tls_alert" -- "auth_tls_termin"
+
+#### termination subtree
+	"auth_tls_termin" -- "auth_trunc_1" [lhead=cluster_truncation]
+
+#### client PKI subtree
+	"auth_pki_c" -- "auth_cert_gen_c"
+	"auth_pki_c" -- "auth_cert_check_c"  /* TRUST_MANAGER */
+
+##### client generation subtree
+	"auth_cert_gen_c" -- "auth_impairment_c_1" [lhead=cluster_impairment_c]
+
+##### client generation subtree
+	"auth_cert_check_c" -- "auth_cert_self_c_1" [lhead=cluster_self_c] /* TRUST_MANAGER */
+	
+###Server Subtree	
+
+#### server PKI subtree
+	"auth_pki_s" -- "auth_cert_gen_s"  /* TRANSPARENCY */
+	"auth_pki_s" -- "auth_cert_check_s"
+
+##### server generation subtree
+	"auth_cert_gen_s" -- "auth_impairment_s_1" [lhead=cluster_impairment_s]  /* TRANSPARENCY */
+
+##### server generation subtree
+	"auth_cert_check_s" -- "auth_cert_self_s_1" [lhead=cluster_self_s]
+
+#-----------Subgraphs-----------
+
+	subgraph cluster_sloth {
+		label="SLOTH";
+		"auth_sloth_1" -- "auth_sloth_2" [style=invis];
+	}
+	subgraph cluster_poodle {
+		label="POODLE";
+		"auth_poodle_1" -- "auth_poodle_2" [style=invis];
+	}
+	subgraph cluster_truncation {
+		label="Truncation attack";
+		"auth_trunc_1" -- "auth_trunc_2" [style=invis];
+	}
+	subgraph cluster_crime {
+		label="CRIME";
+		"auth_crime_1" -- "auth_crime_2" -- "auth_crime_3" [style=invis];
+	}
+	subgraph cluster_breach {
+		label="BREACH";
+		"auth_breach_1" -- "auth_breach_2" -- "auth_breach_3" [style=invis];
+	}
+	subgraph cluster_lucky {
+		label="Lucky 13";
+		"auth_lucky_1" -- "auth_lucky_2" --"auth_lucky_3" [style=invis];
+	}
+	subgraph cluster_sweet {
+		label="Sweet32";
+		"auth_sweet_1" -- "auth_sweet_2" -- "auth_sweet_3" [style=invis];
+	}
+	subgraph cluster_mitzvah {
+		label="Bar Mitzvah";
+		"auth_mitzvah_1" -- "auth_mitzvah_2" [style=invis];
+	}
+	subgraph cluster_nomore {
+		label="RC4 NOMORE";
+		"auth_nomore_1" -- "auth_nomore_2" -- "auth_nomore_3" [style=invis];
+	}
+	subgraph cluster_impairment_s {
+		label="CA impairment";
+		"auth_impairment_s_1";
+	}
+	subgraph cluster_self_s {
+		label="Certificate spoofing";
+		"auth_cert_self_s_1";
+	}
+	subgraph cluster_impairment_c {
+		label="CA impairment";
+		"auth_impairment_c_1";
+	}
+	subgraph cluster_self_c {
+		label="Certificate spoofing";
+		"auth_cert_self_c_1";
+	}
+	subgraph cluster_robot {
+		label="ROBOT";
+		"auth_robot_1" -- "auth_robot_2" -- "auth_robot_3" [style=invis];
+	}
+}

@@ -46,7 +46,7 @@ function mallodroid_enumerator {
 
     #Unsecure TrustManagers
     if grep -q "broken=\"True\"" $toolReports/mallodroid_report.txt; then
-        echo "Unsecure TrustManager [APK]">> $root_folder/vulnerabilityList.txt
+        echo "TRUST_MANAGER">> $root_folder/vulnerabilityList.txt
         echo "- detected: unsecure Android TrustManager"
     fi
 }

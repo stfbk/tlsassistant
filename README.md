@@ -29,7 +29,7 @@ To be able to run TLSAssistant you will need a set of dependencies that can be a
 
 It will download (and place in the correct folders) the following:
 
-- packages: `aha`, `html2text`, `markdown.sh`, `libxml2-utils`, `git`, `curl`, `python2`, `androguard`.
+- packages: `aha`, `html2text`, `markdown.sh`, `libxml2-utils`, `git`, `curl`, `python2`, `androguard`, `graphviz`.
 - tools: `mallodroid`, `testssl.sh`, `tlsfuzzer`, `TLS Extended_Master_Checker`.
 
 ## Download
@@ -57,13 +57,14 @@ where
 - `-h|--help` show the help
 - `-s|--server [URL|IP] {port}` analyze a server, default port: *433*
 - `-a|--apk <file>` check an apk installer
-- `-v [0|1|2]` verbosity level
+- `-v [0|1|2|3]` verbosity level
 
 ### Verbosity level
 
 - 0: mitigations' description
 - 1: previous + code snippets [default]
 - 2: previous + tools' individual reports
+- 3: previous + highlighted attack trees
 
 example: `bash TLSAssistant.sh -s github.com`
 

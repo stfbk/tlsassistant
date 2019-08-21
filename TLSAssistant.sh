@@ -10,6 +10,7 @@ other_reports=$analyzer/tools/others/reports
 
 evaluator=$root_folder/Evaluator #Evaluator components path
 evaluator_reports=$evaluator/reports_to_evaluate
+evaluator_trees=$evaluator/trees_to_generate
 
 reportHandler=$root_folder/Evaluator/ReportHandler
 
@@ -22,8 +23,9 @@ re_ip='^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'
 function cleanup { #removing old reports (suppressing the warnings)
     rm -r $server_reports/* 2>/dev/null
     rm -r $other_reports/* 2>/dev/null
+    rm -r $evaluator/vulnerabilityList.txt 2>/dev/null
     rm -r $evaluator_reports/* 2>/dev/null
-    rm -r $evaluator_reports/../vulnerabilityList.txt 2>/dev/null
+    rm -r $evaluator_trees/* 2>/dev/null
 }
 
 function printHelp {
@@ -34,12 +36,13 @@ function printHelp {
     echo "    -h|--help:                     show the help"                       #help
     echo "    -s|--server [URL|IP] {port}:   analyze a server, default port: 433" #server
     echo "    -a|--apk <file>:               check an apk"                        #apk
-    echo "    -v [0|1|2]:                    verbosity level"                     #report type
+    echo "    -v [0|1|2|3]:                  verbosity level"                     #report type
     echo
     echo " VERBOSITY LEVEL"
     echo "    0: mitigations'description"
     echo "    1: previous + code snippets [default]"
     echo "    2: previous + tools'individual reports"
+    echo "    3: previous + highlighted attack trees"
 }
 
 function quit {
@@ -61,9 +64,9 @@ if [[ $# -lt 1 ]] ; then #if help requested (or not enough parameters)
     quit
 fi
 
-echo  -e "\033[1m################\033[0m"
-echo  -e "\033[1m# TLSAssistant #\033[0m"
-echo  -e "\033[1m################\033[0m"
+echo -e "\033[1m################\033[0m"
+echo -e "\033[1m# TLSAssistant #\033[0m"
+echo -e "\033[1m################\033[0m"
 
 #folder creation
 mkdir $user_desktop/TLSAssistant_report
@@ -92,7 +95,7 @@ do
             fi
 
             if [ "$analyzer_started" -eq 0 ]; then #to avoid premature echoes
-                echo  -e "\033[7mStarting Analyzer\033[0m"
+                echo -e "\033[7mStarting Analyzer\033[0m"
                 analyzer_started=1
             fi
 
@@ -119,7 +122,7 @@ do
             fi
 
             if [ "$analyzer_started" -eq 0 ]; then #to avoid premature echoes
-                echo  -e "\033[7mStarting Analyzer\033[0m"
+                echo -e "\033[7mStarting Analyzer\033[0m"
                 analyzer_started=1
             fi
 
@@ -147,7 +150,7 @@ do
     esac
 done
 
-echo  -e "\033[7mStarting Evaluator\033[0m"
+echo -e "\033[7mStarting Evaluator\033[0m"
 
 cd $evaluator
 bash enumerator.sh #enumerator

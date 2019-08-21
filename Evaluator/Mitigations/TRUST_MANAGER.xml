@@ -1,0 +1,13 @@
+<Entry>
+	<Name>Unsecure Android TrustManager</Name>
+	<ExtendedName>Unsecure Android TrustManager</ExtendedName>
+	<CVE>Software dependent</CVE>
+	<CWE>Software dependent</CWE>
+	<CVSS3>Software dependent</CVSS3>
+	<Description>By exploiting an incorrectly designed/configured TrustManager, an attacker is able to break the confidentiality of a transmission by impersonating a server with a fake certificate.</Description> 
+	<Mitigation>
+		<Textual>The only acceptable mitigation is to check the related methods to fix the vulnerability or switch the app to an external TLS library (e.g. OkHttp)</Textual>
+		<Snippet>
+		</Snippet>
+	</Mitigation>
+</Entry>
