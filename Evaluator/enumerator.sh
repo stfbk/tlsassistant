@@ -116,7 +116,7 @@ function testssl_enumerator {
     #Missing Certificate Transparency
     if ! grep "Certificate Transparency" $toolReports/testssl_report.txt |grep -q "yes"; then
         echo "TRANSPARENCY">> $root_folder/vulnerabilityList.txt
-        echo "- detected: missing Certificate Transparency"
+        echo "- detected: Missing Certificate Transparency"
     fi
 }
 

@@ -2,7 +2,7 @@
 
 #env
 root_folder="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-user_desktop=$(xdg-user-dir DESKTOP)
+report_folder=$root_folder/../Report
 
 analyzer=$root_folder/../Analyzer #Analyzer components path
 server_reports=$analyzer/tools/server/reports
@@ -20,7 +20,31 @@ highlight="[color=red,penwidth=4]"
 #functions
 function collectDescription { #[verbosity 0] - receives the vulnerability name
 
+    #vulnerability description
     xmllint --xpath "/Entry/Description/text()" $mitigations/$1.xml >> $report
+    echo "" >> $report
+    echo "" >> $report
+
+    #CVE
+    cve=$(xmllint --xpath "/Entry/CVE/text()" $mitigations/$1.xml 2>&1)
+    if [ "$cve" != "XPath set is empty" ]; then #if no CVE ID is available
+        echo "**CVE: **" >> $report
+        echo "$cve" >> $report
+        echo "" >> $report #additional newline because CVSS will always come after CVE
+    fi
+
+    #CVSS
+    cvss=$(xmllint --xpath "/Entry/CVSS3/text()" $mitigations/$1.xml 2>&1)
+    if [ "$cvss" = "XPath set is empty" ]; then #if CVSSv3 score is not available
+        cvss=$(xmllint --xpath "/Entry/CVSS2/text()" $mitigations/$1.xml 2>&1)
+        if [ "$cvss" != "XPath set is empty" ]; then #if CVSSv2 score is available
+            echo "**CVSSv2 score: **" >> $report
+            echo "$cvss" >> $report
+         fi
+    else
+        echo "**CVSSv3 score: **" >> $report
+        echo "$cvss" >> $report
+    fi
     echo "" >> $report
 }
 
@@ -32,6 +56,7 @@ function collectMitigation { #[verbosity 0] - receives the vulnerability name
 
 function collectSnippet { #[verbosity 1] - receives the vulnerability name, webserver name and version
 
+    echo "$2" | tr '[:upper:]' '[:lower:]' >/dev/null #forcing webserver name in lowercase
     snippet=$(xmllint --xpath "/Entry/Mitigation/Snippet/$2/text()" $mitigations/$1.xml 2>&1)
     if [ "$snippet" = "XPath set is empty" ]; then #if no snippet is available
         echo "No snippet available for $2 yet" >> $report
@@ -44,9 +69,9 @@ function collectSnippet { #[verbosity 1] - receives the vulnerability name, webs
 function exportReports { #[verbosity 2] - does not receive any input
 
     echo "*Copying internal reports*"
-    mkdir $user_desktop/TLSAssistant_report/raw_reports
-    cp $server_reports/* $user_desktop/TLSAssistant_report/raw_reports/ 2>/dev/null #suppressing the warnings caused by analysis not executed
-    cp $other_reports/* $user_desktop/TLSAssistant_report/raw_reports/ 2>/dev/null #same as above
+    mkdir $report_folder/raw_reports
+    cp $server_reports/* $report_folder/raw_reports/ 2>/dev/null #suppressing the warnings caused by analysis not executed
+    cp $other_reports/* $report_folder/raw_reports/ 2>/dev/null #same as above
 }
 
 function highlightTree { #[verbosity 3] - receives the vulnerability name
@@ -59,7 +84,7 @@ function generateTrees { #[verbosity 3] - does not receive any input
     for tree in $trees/*.dot
     do
         name="${tree%.*}" #remove the .dot extension
-	    dot -Tpng $tree -o "$user_desktop/TLSAssistant_report/${name##*/}.png"
+	    dot -Tpng $tree -o "$report_folder/${name##*/}.png"
     done
     echo "Attack trees rendered successfully!"
 }
@@ -133,8 +158,8 @@ if [[ "$1" -gt 2 ]]; then #generate the highlighted trees
     generateTrees
 fi
 
-bash $root_folder/../utility/markdown.sh $report > $user_desktop/TLSAssistant_report/Report.html #convert to HTML
+bash $root_folder/../utility/markdown.sh $report > $report_folder/Report.html #convert to HTML
 rm $report
 
 echo
-echo -e "\033[1mReport successfully generated!\033[0m"
+echo "*Report successfully generated!*"

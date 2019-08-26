@@ -2,7 +2,7 @@
 
 #env
 root_folder="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-user_desktop=$(xdg-user-dir DESKTOP)
+report_folder=$root_folder/Report
 
 analyzer=$root_folder/Analyzer #Analyzer components path
 server_reports=$analyzer/tools/server/reports
@@ -52,7 +52,7 @@ function quit {
 
 #START
 cleanup #removes previous report generations
-rm -r $user_desktop/TLSAssistant_report 2>/dev/null #removing residues files
+rm -r $report_folder 2>/dev/null #removing residues files
 clear #clear the terminal
 
 #variables
@@ -68,10 +68,10 @@ echo -e "\033[1m################\033[0m"
 echo -e "\033[1m# TLSAssistant #\033[0m"
 echo -e "\033[1m################\033[0m"
 
-#folder creation
-mkdir $user_desktop/TLSAssistant_report
-echo "# TLSAssistant report">> $user_desktop/TLSAssistant_report/Report.md
-report=$user_desktop/TLSAssistant_report/Report.md
+#report folder creation
+mkdir $root_folder/Report
+echo "# TLSAssistant report">> $report_folder/Report.md
+report=$report_folder/Report.md
 dt=$(date '+%H:%M:%S, %d/%m/%Y');
 echo "Scan started at $dt">> $report
 echo "">> $report
@@ -157,5 +157,7 @@ bash enumerator.sh #enumerator
 bash reportHandler.sh $verbosity $report #report generator
 cd $root_folder
 
+
+echo -e "\033[1mReport saved in $report_folder\033[0m"
 #END
 quit

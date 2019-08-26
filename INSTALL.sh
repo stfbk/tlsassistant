@@ -22,7 +22,7 @@ b_echo "################"
 echo ""
 r_echo "# Installing dependencies..."
 sudo apt-get update
-sudo apt-get install -y aha html2text libxml2-utils git curl wget graphviz
+sudo apt-get install -y aha html2text libxml2-utils git unzip curl wget graphviz
 echo ""
 r_echo "Utilities installed"
     echo ""
