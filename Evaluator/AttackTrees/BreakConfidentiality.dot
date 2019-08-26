@@ -9,13 +9,13 @@ node [shape=box];
 
 #################Confidentiality Nodes#################
 ##----------Parents---------
-"conf_msg_C" [label = "Break\nmessage confidentiality"][penwidth=4]
-"conf_tls_hshake" [label = "Exploit\nHandshake protocol"][penwidth=2]
+"conf_msg_C" [label = "Break\nmessage confidentiality"][penwidth=4] /* 3SHAKE HSTS_not_preloaded DROWN */
+"conf_tls_hshake" [label = "Exploit\nHandshake protocol"][penwidth=2] /* 3SHAKE HSTS_not_preloaded DROWN */
 
-"conf_legacy" [label = "Exploit backward\ncompatibility"]
-"conf_sniffing" [label = "Passive Sniffing"]
+"conf_legacy" [label = "Exploit backward\ncompatibility"] /* DROWN */
+"conf_sniffing" [label = "Passive Sniffing"]/* DROWN */
 
-"conf_mitm" [label = "MITM"]
+"conf_mitm" [label = "MITM"] /* 3SHAKE HSTS_not_preloaded */
 
 ##----------Leaves----------
 "conf_drown_1" [label = "- RSA-generated session key\l\n- SSLv2 available on the target server\lOR\n- Same private key used by a parallel\lserver that supports SSLv2\l"][color=chocolate]
@@ -62,9 +62,9 @@ node [shape=box];
 
 #################Integrity Nodes#################
 ##----------Parents---------
-"int_msg_I" [label = "Break\nmessage integrity"][penwidth=4]
-"int_tls_hshake" [label = "Exploit\nHandshake protocol"][penwidth=2]
-"int_mitm" [label = "MITM"]
+"int_msg_I" [label = "Break\nmessage integrity"][penwidth=4] /* RENEGOTIATION */
+"int_tls_hshake" [label = "Exploit\nHandshake protocol"][penwidth=2] /* RENEGOTIATION */
+"int_mitm" [label = "MITM"] /* RENEGOTIATION */
 
 ##----------Leaves----------
 "int_reneg_1" [label = "- Renegotiation enabled"][color=chocolate]

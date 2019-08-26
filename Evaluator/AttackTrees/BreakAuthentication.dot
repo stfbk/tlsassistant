@@ -9,38 +9,38 @@ node [shape=box];
 
 #################Authentication Nodes#################
 ##----------Parents---------
-"auth_break" [label = "Break\nauthentication"][penwidth=6]
-"auth_break_client" [label = "Break\nclient authentication"][penwidth=4]
-"auth_break_server" [label = "Break\nserver authentication"][penwidth=4]
+"auth_break" [label = "Break\nauthentication"][penwidth=6] /* ROBOT POODLE SWEET32 NOMORE SLOTH MITZVAH CRIME BREACH LUCKY13 TRANSPARENCY TRUST_MANAGER TRANSPARENCY 3SHAKE HSTS_not_preloaded DROWN RENEGOTIATION */
+"auth_break_client" [label = "Break\nclient authentication"][penwidth=4] /* ROBOT POODLE SWEET32 NOMORE SLOTH MITZVAH CRIME BREACH LUCKY13 TRANSPARENCY TRUST_MANAGER 3SHAKE HSTS_not_preloaded DROWN RENEGOTIATION */
+"auth_break_server" [label = "Break\nserver authentication"][penwidth=4] /* TRANSPARENCY */
 
-"auth_tls_hshake" [label = "Exploit\nHandshake protocol"][penwidth=2]
-"auth_tls_alert" [label = "Exploit\nAlert protocol"][penwidth=2]
-"auth_tls_record" [label = "Exploit\nRecord protocol"][penwidth=2]
-"auth_msg_C" [label = "Break\nmessage confidentiality"][style=dotted][penwidth=2]
-"auth_C_tls_hshake" [label = "Exploit\nHandshake protocol"][style=dotted]
-"auth_C_legacy" [label = "Exploit legacy\nprotocols"][style=dotted]
-"auth_msg_I" [label = "Break\nmessage integrity"][style=dotted][penwidth=2]
-"auth_pki_s" [label = "Exploit\nPKI reliance"][penwidth=2]
-"auth_pki_c" [label = "Exploit\nPKI reliance"][penwidth=2]
+"auth_tls_hshake" [label = "Exploit\nHandshake protocol"][penwidth=2] /* POODLE SLOTH */
+"auth_tls_alert" [label = "Exploit\nAlert protocol"][penwidth=2] 
+"auth_tls_record" [label = "Exploit\nRecord protocol"][penwidth=2] /* ROBOT SWEET32 NOMORE MITZVAH CRIME BREACH LUCKY13 */ 
+"auth_msg_C" [label = "Break\nmessage confidentiality"][style=dotted][penwidth=2] /* 3SHAKE HSTS_not_preloaded DROWN */
+"auth_C_tls_hshake" [label = "Exploit\nHandshake protocol"][style=dotted] /* 3SHAKE HSTS_not_preloaded DROWN */
+"auth_C_legacy" [label = "Exploit legacy\nprotocols"][style=dotted] /* 3SHAKE HSTS_not_preloaded DROWN */
+"auth_msg_I" [label = "Break\nmessage integrity"][style=dotted][penwidth=2] /* RENEGOTIATION */
+"auth_pki_s" [label = "Exploit\nPKI reliance"][penwidth=2] /* TRANSPARENCY */ 
+"auth_pki_c" [label = "Exploit\nPKI reliance"][penwidth=2] /* TRANSPARENCY */ 
 
-"auth_collision" [label = "Exploit\nhash collisions"]
-"auth_collision_mitm" [label = "MITM"]
-"auth_downgrade" [label = "Downgrade the\nsession"]
-"auth_downgrade_mitm" [label = "MITM"]
+"auth_collision" [label = "Exploit\nhash collisions"] /* SLOTH */
+"auth_collision_mitm" [label = "MITM"] /* SLOTH */
+"auth_downgrade" [label = "Downgrade the\nsession"] /* POODLE */ 
+"auth_downgrade_mitm" [label = "MITM"] /* POODLE */
 "auth_tls_termin" [label = "Exploit the TLS\ntermination mode"]
-"auth_hijack" [label = "Hijack the\nsession"]
-"auth_cert_gen_s" [label = "Exploit\ncertificate generation"]
-"auth_cert_check_s" [label = "Exploit\ncertificate check"]
-"auth_cert_gen_c" [label = "Exploit\ncertificate generation"]
-"auth_cert_check_c" [label = "Exploit\ncertificate check"]
+"auth_hijack" [label = "Hijack the\nsession"] /* ROBOT SWEET32 NOMORE MITZVAH CRIME BREACH LUCKY13 */ 
+"auth_cert_gen_s" [label = "Exploit\ncertificate generation"] /* TRANSPARENCY */ 
+"auth_cert_check_s" [label = "Exploit\ncertificate check"] 
+"auth_cert_gen_c" [label = "Exploit\ncertificate generation"] /* TRANSPARENCY */ 
+"auth_cert_check_c" [label = "Exploit\ncertificate check"] /* TRUST_MANAGER */ 
 
-"auth_genAndCheck" [label = "Generate\nand check"]
+"auth_genAndCheck" [label = "Generate\nand check"] /* ROBOT SWEET32 NOMORE MITZVAH CRIME BREACH LUCKY13 */
 
-"auth_check_size" [label = "Analyze\nresponse size"]
-"auth_check_time" [label = "Analyze\nresponse time"]
-"auth_check_collisions" [label = "Exploit\ncipher collisions"]
-"auth_check_bias" [label = "Exploit\nRC4 permutation bias"]
-"auth_check_padding" [label = "Exploit\nPKCS#1 v1.5 padding"]
+"auth_check_size" [label = "Analyze\nresponse size"] /* CRIME BREACH */
+"auth_check_time" [label = "Analyze\nresponse time"] /* LUCKY13 */
+"auth_check_collisions" [label = "Exploit\ncipher collisions"] /* SWEET32 */
+"auth_check_bias" [label = "Exploit\nRC4 permutation bias"] /* NOMORE MITZVAH */ 
+"auth_check_padding" [label = "Exploit\nPKCS#1 v1.5 padding"] /* ROBOT */
 
 ##----------Leaves----------
 "auth_sloth_1" [label = "- RSA-MD5 certificate\lsignature supported\l- Client uses the same certificate\lwith multiple servers (one malicious)\l"][color=chocolate]
@@ -96,7 +96,7 @@ node [shape=box];
 	"auth_break_client" -- "auth_tls_record"  /* ROBOT SWEET32 NOMORE MITZVAH CRIME BREACH LUCKY13 */
 	"auth_break_client" -- "auth_tls_hshake"  /* POODLE SLOTH */
 	"auth_break_client" -- "auth_tls_alert"
-	"auth_break_client" -- "auth_pki_c"  /* TRUST_MANAGER */
+	"auth_break_client" -- "auth_pki_c"  /* TRUST_MANAGER */ 
 	"auth_break_client" -- "auth_msg_C" -- "auth_C_tls_hshake" -- "auth_C_legacy" [style=dotted]  /* 3SHAKE HSTS_not_preloaded DROWN */
 	"auth_break_client" -- "auth_msg_I" [style=dotted] /* RENEGOTIATION */
 	
