@@ -7,16 +7,16 @@
 1. use a CA that embeds the SCT within the certificate;
 2. embed it within a stapled OCSP response;
 3. delivery it using a TLS Extension.
-</Textual>
+.</Textual>
 		<Snippet>
-			<Apache>1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);
+			<apache>1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);
 2. add the following lines: 
     - SSLUseStapling on
     - SSLStaplingResponderTimeout 5
     - SSLStaplingReturnResponderErrors off
     - SSLStaplingCache shmcb:/var/run/ocsp(128000)
 
-N.B. restart the server by typing: `sudo service apache2 restart` and make sure that your certificate has been logged (check at [crt.sh](https://crt.sh) ).</Apache>
+N.B. restart the server by typing: `sudo service apache2 restart` and make sure that your certificate has been logged (check at [crt.sh](https://crt.sh) ).</apache>
 		</Snippet>
 	</Mitigation>
 </Entry>

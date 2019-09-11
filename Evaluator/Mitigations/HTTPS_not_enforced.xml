@@ -7,11 +7,11 @@
 1. a permanent redirect (i.e. `301 Moved Permanently`);
 2. a `Location` field indicating the proper URI to connect to (hostname preceded by *https://*).</Textual>
 		<Snippet>
-			<Apache>1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);
+			<apache>1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);
 2. find the VirtualHost that handles the connections to port 80 (it starts with `&lt;VirtualHost *:80&gt;`);
 3. add the string `Redirect / https://website` where "website" is the URL you want to point the users to (e.g. www.fbk.eu).
 
-N.B. restart the server by typing: `sudo service apache2 restart`.</Apache>
+N.B. restart the server by typing: `sudo service apache2 restart`.</apache>
 		</Snippet>
 	</Mitigation>
 </Entry>

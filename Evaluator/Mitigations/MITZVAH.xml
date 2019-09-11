@@ -2,17 +2,16 @@
 	<Name>Bar Mitzvah</Name> 
 	<ExtendedName>Bar Mitzvah</ExtendedName>
 	<CVE>2015-2808</CVE>
-	<CWE>310</CWE>
-	<CVSS2>AV:N/AC:M/Au:N/C:P/I:N/A:N</CVSS2>
+	<CVSS2>4.3</CVSS2> <!-- AV:N/AC:M/Au:N/C:P/I:N/A:N -->
 	<Description>By exploiting the invariance weakness of the RC4 stream cipher, an attacker is able to retrieve the session cookie by guessing the LSBs (least significant bits) of the keystream. After a phase in which the attacker sniffs the connection between two parties, it detects a weak key usage and tries to exploit the weakness.</Description> 
 	<Mitigation>
-		<Textual>Disable the RC4 stream cipher</Textual>
+		<Textual>Disable the RC4 stream cipher.</Textual>
 		<Snippet>
-			<Apache>1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);
+			<apache>1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);
 2. find the line starting with: **SSLCipherSuite**;
 3. add the string `:!RC4` at the end.
 
-N.B. restart the server by typing: `sudo service apache2 restart`.</Apache>
+N.B. restart the server by typing: `sudo service apache2 restart`.</apache>
 		</Snippet>
 	</Mitigation>
 </Entry>

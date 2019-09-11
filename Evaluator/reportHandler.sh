@@ -56,8 +56,8 @@ function collectMitigation { #[verbosity 0] - receives the vulnerability name
 
 function collectSnippet { #[verbosity 1] - receives the vulnerability name, webserver name and version
 
-    echo "$2" | tr '[:upper:]' '[:lower:]' >/dev/null #forcing webserver name in lowercase
-    snippet=$(xmllint --xpath "/Entry/Mitigation/Snippet/$2/text()" $mitigations/$1.xml 2>&1)
+    webserver=$(echo $2 | tr '[:upper:]' '[:lower:]') #forcing webserver name in lowercase
+    snippet=$(xmllint --xpath "/Entry/Mitigation/Snippet/$webserver/text()" $mitigations/$1.xml 2>&1)
     if [ "$snippet" = "XPath set is empty" ]; then #if no snippet is available
         echo "No snippet available for $2 yet" >> $report
     else
@@ -161,5 +161,5 @@ fi
 bash $root_folder/../utility/markdown.sh $report > $report_folder/Report.html #convert to HTML
 rm $report
 
-echo
 echo "*Report successfully generated!*"
+echo

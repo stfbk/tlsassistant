@@ -34,7 +34,7 @@ function printHelp {
     echo "where"
     echo " PARAMETERS"
     echo "    -h|--help:                     show the help"                       #help
-    echo "    -s|--server [URL|IP] {port}:   analyze a server, default port: 433" #server
+    echo "    -s|--server [URL|IP] {port}:   analyze a server, default port: 443" #server
     echo "    -a|--apk <file>:               check an apk"                        #apk
     echo "    -v [0|1|2|3]:                  verbosity level"                     #report type
     echo

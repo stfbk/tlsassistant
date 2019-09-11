@@ -19,7 +19,7 @@ node [shape=box];
 "auth_tls_record" [label = "Exploit\nRecord protocol"][penwidth=2] /* ROBOT SWEET32 NOMORE MITZVAH CRIME BREACH LUCKY13 */
 "auth_msg_C" [label = "Break\nmessage confidentiality"][style=dotted][penwidth=2] /* 3SHAKE HSTS_not_preloaded DROWN */
 "auth_C_tls_hshake" [label = "Exploit\nHandshake protocol"][style=dotted] /* 3SHAKE HSTS_not_preloaded DROWN */
-"auth_C_legacy" [label = "Exploit legacy\nprotocols"][style=dotted] /* 3SHAKE HSTS_not_preloaded DROWN */
+"auth_C_legacy" [label = "Exploit backward\ncompatibility"][style=dotted] /* DROWN */
 "auth_msg_I" [label = "Break\nmessage integrity"][style=dotted][penwidth=2] /* RENEGOTIATION */
 "auth_pki_s" [label = "Exploit\nPKI reliance"][penwidth=2] /* TRANSPARENCY */
 "auth_pki_c" [label = "Exploit\nPKI reliance"][penwidth=2] /* TRANSPARENCY */

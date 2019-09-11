@@ -5,7 +5,7 @@
 	<Mitigation>
 		<Textual>Submit the request to [HSTSPreload.org](https://hstspreload.org).</Textual>
 		<Snippet>
-			<Apache>No snippet available</Apache>
+			<apache>No snippet available</apache>
 		</Snippet>
 	</Mitigation>
 </Entry>
