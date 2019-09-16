@@ -98,7 +98,7 @@ node [shape=box];
 	"auth_break_client" -- "auth_tls_hshake"  /* POODLE SLOTH */
 	"auth_break_client" -- "auth_tls_alert"
 	"auth_break_client" -- "auth_pki_c"  /* TRUST_MANAGER */
-	"auth_break_client" -- "auth_msg_C" -- "auth_C_tls_hshake" -- "auth_C_legacy" [style=dotted]  /* 3SHAKE HSTS_not_preloaded DROWN */
+	"auth_break_client" -- "auth_msg_C" -- "auth_C_tls_hshake" -- "auth_C_legacy" [style=dotted]  /* DROWN */
 	"auth_break_client" -- "auth_msg_I" [style=dotted] /* RENEGOTIATION */
 	
 ###server authentication

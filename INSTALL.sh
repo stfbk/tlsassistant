@@ -41,9 +41,14 @@ r_echo "Androguard installed"
 python_dep/bin/pip install --pre tlslite-ng
 r_echo "TLS Lite installed"
 echo ""
+
 mkdir utility
 curl -s https://raw.githubusercontent.com/chadbraunduin/markdown.bash/master/markdown.sh > utility/markdown.sh
 r_echo "markdown.sh installed"
+echo ""
+git clone https://github.com/UnaPibaGeek/ctfr.git ./utility/ctfr > /dev/null 2>&1
+python_dep/bin/pip install -r ./utility/ctfr/requirements.txt
+r_echo "ctfr installed"
 echo ""
 
 r_echo "# Installing tools..."

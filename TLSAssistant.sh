@@ -3,6 +3,7 @@
 #env
 root_folder="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 report_folder=$root_folder/Report
+report="" #currently empty, will be initialized in the "initialize_report" function
 
 analyzer=$root_folder/Analyzer #Analyzer components path
 server_reports=$analyzer/tools/server/reports
@@ -13,6 +14,7 @@ evaluator_reports=$evaluator/reports_to_evaluate
 evaluator_trees=$evaluator/trees_to_generate
 
 reportHandler=$root_folder/Evaluator/ReportHandler
+python=$root_folder/python_dep/bin/python
 
 #regular expressions
 re_integer='^[0-9]+$'
@@ -33,10 +35,12 @@ function printHelp {
     echo
     echo "where"
     echo " PARAMETERS"
-    echo "    -h|--help:                     show the help"                       #help
-    echo "    -s|--server [URL|IP] {port}:   analyze a server, default port: 443" #server
-    echo "    -a|--apk <file>:               check an apk"                        #apk
-    echo "    -v [0|1|2|3]:                  verbosity level"                     #report type
+    echo "    -h|--help:                     show the help"                                   #help
+    echo "    -s|--server [URL|IP] {port}:   analyze a server, default port: 443"             #server
+    echo "    -d|--domain <URL>:             analyze the subdomains of a given website"       #subdomains
+    echo "    -l|--list <file>               analyze the provided hosts list (one per line) " #list
+    echo "    -a|--apk <file>:               check an apk"                                    #apk
+    echo "    -v [0|1|2|3]:                  verbosity level"                                 #report type
     echo
     echo " VERBOSITY LEVEL"
     echo "    0: mitigations'description"
@@ -50,9 +54,58 @@ function quit {
     exit
 }
 
+function initialize_report {
+    if ! [ -z "$1" ] #if the caller specified a name
+    then
+        report=$report_folder/Report_$1.md
+    else
+        report=$report_folder/Report.md
+    fi
+
+    echo "# TLSAssistant report">> /$report
+    dt=$(date '+%H:%M:%S, %d/%m/%Y');
+    echo "Scan started at $dt">> $report
+    echo "">> $report
+}
+
+function subdomains_collector {    
+    
+    host=$1
+    #extract the main domain (in case of incorrect input)
+    dots=$(grep -o "\." <<<"$1" | wc -l) #counts the number of dots (1= main, more= subdomains)
+    if [ "$dots" -gt "1" ]; then #if the host is a sub-domain
+        host=$(expr match "$1" '.*\.\(.*\..*\)') #to retrieve the main domain
+    fi
+
+    $python utility/ctfr/ctfr.py -d $host -o $root_folder/subdomains.txt &> /dev/null #generating the subdomain list (based on their certificates)
+    sed -i '/\*/d' $root_folder/subdomains.txt #deleting the wildcard certificate entries (lines containing an asterisk)
+    echo $host >> $root_folder/subdomains.txt #adding the main domain to the list
+    echo "Subdomains collected!"
+}
+
+function list_analyzer {
+    echo "The analysis may take a while"
+    while read entry; do #for each hostname
+
+        echo ""
+        echo -e '\033[1mAnalyzing \033[0m'$entry
+        initialize_report $entry
+        echo "Server: $entry:443">> $report
+        echo "">> $report
+        cd $analyzer
+        bash checkServer.sh $entry               #analyzer
+        cd $root_folder
+        cd $evaluator
+        bash enumerator.sh                       #enumerator
+        bash reportHandler.sh $verbosity $report #report generator
+        cd $root_folder
+        cleanup
+    done < $1
+}
+
 #START
 cleanup #removes previous report generations
-rm -r $report_folder 2>/dev/null #removing residues files
+rm -r $report_folder 2>/dev/null #removing residues files (this this the only needed usage thus the exclusion from the "cleanup" function) 
 clear #clear the terminal
 
 #variables
@@ -64,23 +117,20 @@ if [[ $# -lt 1 ]] ; then #if help requested (or not enough parameters)
     quit
 fi
 
-echo -e "\033[1m################\033[0m"
-echo -e "\033[1m# TLSAssistant #\033[0m"
-echo -e "\033[1m################\033[0m"
+echo -e "\033[7m################\033[0m"
+echo -e "\033[7m# TLSAssistant #\033[0m"
+echo -e "\033[7m################\033[0m"
 
 #report folder creation
 mkdir $root_folder/Report
-echo "# TLSAssistant report">> $report_folder/Report.md
-report=$report_folder/Report.md
-dt=$(date '+%H:%M:%S, %d/%m/%Y');
-echo "Scan started at $dt">> $report
-echo "">> $report
+initialize_report
 
 while [[ $# -gt 0 ]] #for each argument (number greater than zero)
 do
     mode=$1
     case $mode in #check the value
         -h|--help)
+            rm -r $report_folder 2>/dev/null
             printHelp
             quit
             ;;
@@ -95,7 +145,7 @@ do
             fi
 
             if [ "$analyzer_started" -eq 0 ]; then #to avoid premature echoes
-                echo -e "\033[7mStarting Analyzer\033[0m"
+                echo -e "\033[1mStarting Analyzer\033[0m"
                 analyzer_started=1
             fi
 
@@ -115,8 +165,33 @@ do
                 shift 3 #skip argument, server and port
             fi
             ;;
+        -d|--domain)
+            echo -e '\033[1mNote: this feature will not check subdomains covered by a wildcard certificate\033[0m'
+            echo ""
+            if ! [[ $2 =~ $re_url ]] ; then #check if it is a correct hostname
+                echo "Invalid URL"
+                quit
+            fi
+            rm -r $report_folder/* 2>/dev/null #remove the intermediate report
+            subdomains_collector $2
+            list_analyzer subdomains.txt
+            mv subdomains.txt $report_folder
+            echo -e '\033[1mSubdomain analysis completed!\033[0m'
+            quit
+            ;;
+        -l|--list)
+            if ! { [ -f "$2" ] && [ ${2: -4} 1== ".txt" ]; }; then #if the argument not a text file
+                echo "$2 is not valid file"
+                quit
+            fi
+            rm -r $report_folder/* 2>/dev/null #remove the intermediate report
+            list_analyzer $2
+            echo ""
+            echo -e '\033[1mList analysis completed!\033[0m'
+            quit
+            ;;
         -a|--apk)
-            if ! { [ -f "$2" ] && [ ${2: -4} 1== ".apk" ]; }; then #if the argument not a valid file
+            if ! { [ -f "$2" ] && [ ${2: -4} 1== ".apk" ]; }; then #if the argument not an apk
                 echo "$2 is not valid file"
                 quit
             fi

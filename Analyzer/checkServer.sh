@@ -92,9 +92,9 @@ function assistant {
         fi
 
         #--------HSTS PRELOADING
-        dots=$(grep -o "\." <<<"$host" | wc -l) #counts the number of dots (1= top-level, more= subdomains)
+        dots=$(grep -o "\." <<<"$host" | wc -l) #counts the number of dots (1= main, more= subdomains)
         if [ "$dots" -gt "1" ]; then #if the host is a sub-domain
-            host=$(expr match "$host" '.*\.\(.*\..*\)') #to retrieve the top-level domain
+            host=$(expr match "$host" '.*\.\(.*\..*\)') #to retrieve the main domain
         fi
         
         if echo $google_hsts | grep -i -q $host; then #present in Google's list

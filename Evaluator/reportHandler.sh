@@ -158,8 +158,8 @@ if [[ "$1" -gt 2 ]]; then #generate the highlighted trees
     generateTrees
 fi
 
-bash $root_folder/../utility/markdown.sh $report > $report_folder/Report.html #convert to HTML
-rm $report
 
-echo "*Report successfully generated!*"
-echo
+report_name=${report##*/} #remove the path
+report_name=${report_name%.*} #remove the extension
+bash $root_folder/../utility/markdown.sh $report > $report_folder/$report_name.html #convert to HTML
+rm $report

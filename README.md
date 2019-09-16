@@ -29,8 +29,8 @@ To be able to run TLSAssistant you will need a set of dependencies that can be a
 
 It will download (and place in the correct folders) the following:
 
-- packages: `aha`, `html2text`, `markdown.sh`, `libxml2-utils`, `git`, `curl`, `python2`, `androguard`, `graphviz`.
-- tools: `mallodroid`, `testssl.sh`, `tlsfuzzer`, `TLS Extended_Master_Checker`.
+- packages: `aha`, `androguard`, `curl`, `git`, `graphviz`, `html2text`, `libxml2-utils`, `python2`, `wget`;
+- analyzers: `mallodroid`, `testssl.sh`, `tlsfuzzer`, `TLS Extended_Master_Checker`.
 
 ## Download
 
@@ -55,7 +55,9 @@ where
 ### Parameters
 
 - `-h|--help` show the help
-- `-s|--server [URL|IP] {port}` analyze a server, default port: *433*
+- `-s|--server [URL|IP] {port}` analyze a server, default port: *443*
+- `-d|--domain <URL>` analyze the subdomains of a given website
+- `-l|--list <file>` analyze the provided hosts list (one per line) 
 - `-a|--apk <file>` check an apk installer
 - `-v [0|1|2|3]` verbosity level
 
@@ -73,6 +75,7 @@ example: `bash TLSAssistant.sh -s github.com`
 TLSAssistant exists thanks to the following open-source projects (from a to z):
 
 - [Androguard](https://github.com/androguard/androguard)
+- [ctfr](https://github.com/UnaPibaGeek/ctfr)
 - [mallodroid](https://github.com/sfahl/mallodroid)
 - [markdown.bash](https://github.com/chadbraunduin/markdown.bash)
 - [testssl.sh](https://github.com/drwetter/testssl.sh)
