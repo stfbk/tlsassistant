@@ -32,6 +32,8 @@ It will download (and place in the correct folders) the following:
 - packages: `aha`, `androguard`, `curl`, `git`, `graphviz`, `html2text`, `libxml2-utils`, `python2`, `wget`;
 - analyzers: `mallodroid`, `testssl.sh`, `tlsfuzzer`, `TLS Extended_Master_Checker`.
 
+**Note**: TLSAssistant is not compatible with **W**indows **S**ubsystem for **L**inux.
+
 ## Download
 
 You can install TLSAssistant by cloning this git repository:
