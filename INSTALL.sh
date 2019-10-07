@@ -21,13 +21,13 @@ b_echo "# TLSAssistant #"
 b_echo "################"
 echo ""
 r_echo "# Installing dependencies..."
-sudo apt-get update
-sudo apt-get install -y aha html2text libxml2-utils git unzip curl wget graphviz
+sudo apt update
+sudo apt install -y aha html2text libxml2-utils git unzip curl wget graphviz python-dev
 echo ""
 r_echo "Utilities installed"
     echo ""
 if ! [[ $(command -v pip) ]]; then
-    sudo apt-get install -y python-pip
+    sudo apt install -y python-pip
     r_echo "pip installed"
 else
     r_echo "pip already installed"
