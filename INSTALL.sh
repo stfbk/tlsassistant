@@ -21,20 +21,20 @@ b_echo "# TLSAssistant #"
 b_echo "################"
 echo ""
 r_echo "# Installing dependencies..."
-sudo apt update
-sudo apt install -y aha html2text libxml2-utils git unzip curl wget graphviz python-dev
+sudo apt-get update
+sudo apt-get install -y aha html2text libxml2-utils git unzip curl wget graphviz python-dev
 echo ""
 r_echo "Utilities installed"
     echo ""
 if ! [[ $(command -v pip) ]]; then
-    sudo apt install -y python-pip
+    sudo apt-get install -y python-pip
     r_echo "pip installed"
 else
     r_echo "pip already installed"
 fi
 pip install virtualenv
 
-venv=$(find ~ -name virtualenv 2>&1 | grep -v "Permission denied")
+venv=$(find / -name virtualenv 2>&1 | grep -v "Permission denied")
 $venv python_dep
 python_dep/bin/pip install androguard
 r_echo "Androguard installed"
