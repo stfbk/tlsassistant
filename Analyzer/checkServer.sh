@@ -73,6 +73,13 @@ function assistant {
         google_hsts=$(curl -s https://cs.chromium.org/codesearch/f/chromium/src/net/http/transport_security_state_static.json)
         mozilla_hsts=$(curl -s https://hg.mozilla.org/mozilla-central/raw-file/tip/security/manager/ssl/nsSTSPreloadList.inc)
 
+        #--------HTTP available
+        http_status=$(curl --write-out %{http_code} --silent --output /dev/null $1)
+        if [[ "$http_status" == 2* ]]; then #if the server answers with a HTTP success code (e.g. 200)
+            echo "HTTP available">> $report/assistant.txt
+        fi
+
+
         #--------HTTPS enforcing
         if curl -s --head http://$host | grep -i -q "moved permanently"; then #condition 1
             if curl -s --head http://$host | grep -i -q "location: https"; then #condition 2

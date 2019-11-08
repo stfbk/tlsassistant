@@ -25,7 +25,7 @@ node [shape=box];
 "conf_3shake_1" [label = "- Renegotiation available\l- Resumption available\l- RSA key exchange negotiated\l"][color=chocolate]
 "conf_3shake_2" [label = "1. Wait for a client-initiated handshake\l2. Connect to the server (sharing the\l     parameters, different tls-unique)\l3. Wait for a session resumption by the\l     client\l4. Resume the connection to the server\l     (same tls-unique)\l5. Optionally inject a malicious request\l6. Trigger the server to request a client\l     certificate\l7. Forward client's handshake messages\l     to the server\l8. Snoop the connection exploiting\l     the same origin policy\l"][color=deepskyblue2]
 
-"conf_stripping_1" [label = "- HSTS not preloaded\l"][color=chocolate]
+"conf_stripping_1" [label = "- HTTP available\l- HSTS not preloaded\l"][color=chocolate]
 "conf_stripping_2" [label = "1. Start an ARP spoofing against\l     the victim\l2. Edit victim's destination address\l     (of the packets) by forcing the\l     unsecure version of the website\l3. Snoop the unencrypted messages\l"][color=deepskyblue2]
 
 #-----------Edges-----------

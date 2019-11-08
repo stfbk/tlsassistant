@@ -15,6 +15,11 @@ function assistant_enumerator {
         echo "- webserver: $webserver"
     fi
 
+    #HTTP available
+    if cat $toolReports/assistant.txt |grep -q -i "HTTP available"; then
+        echo "- detected: HTTP available"
+    fi
+
     #HTTPS enforcing
     if cat $toolReports/assistant.txt |grep -q -i "HTTPS not enforced"; then
         echo "HTTPS_not_enforced">> $root_folder/vulnerabilityList.txt
@@ -31,6 +36,11 @@ function assistant_enumerator {
     if cat $toolReports/assistant.txt |grep -q -i "HSTS not preloaded"; then
         echo "HSTS_not_preloaded">> $root_folder/vulnerabilityList.txt
         echo "- detected: HSTS not preloaded"
+        
+        #SSL STRIPPIING (has another prerequisite)
+        if cat $toolReports/assistant.txt |grep -q -i "HTTP_available"; then
+            echo "- detected: SSL stripping"
+        fi
     fi
 }
 
