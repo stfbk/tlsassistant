@@ -13,6 +13,16 @@
 3. add the string `:!3DES` at the end.
 
 N.B. restart the server by typing: `sudo service apache2 restart`.</apache>
+<nginx>1. In a default situation, you can edit your website configuration */etc/nginx/sites-enabled/default*
+	(if you changed your site conf name */etc/nginx/sites-enabled/YOURSITECONFIGURATION*);
+2. Inside `server {...}` brackets configuration, find `ssl_ciphers`;
+3. Remove **3DES** (if any) and add **:!3DES** at the end. 
+4. Re run this tool. If it appears again,  Remove **IDEA** (if any) and add **:!IDEA** at the end. 
+5. Re run this tool. If it appears again,  Remove **RSA** (if any) and add **:!RSA** at the end.<!--Because it contains IDEA and DES-->
+
+
+N.B. restart the server by typing: `sudo service nginx restart`.
+</nginx>
 		</Snippet>
 	</Mitigation>
 </Entry>
