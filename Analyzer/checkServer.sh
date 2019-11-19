@@ -40,7 +40,7 @@ function testssl.sh {
     cd $testssl_folder
     s_echo "version: $version"
     s_echo "Analyzing..."
-    bash testssl.sh $args $1:$2 | aha -t ${FUNCNAME[0]} > $report/testssl_report.html
+    yes NO | bash testssl.sh $args $1:$2 | aha -t ${FUNCNAME[0]} > $report/testssl_report.html
     s_echo "Report generated successfully!"
     echo
     cd $root_folder
