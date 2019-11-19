@@ -8,6 +8,7 @@
 		<Textual>Update the TLS library to a version that allows renegotiation disabling (e.g. OpenSSL v1.1.1+).</Textual>
 		<Snippet>
 			<apache>No snippet available</apache>
+			<nginx>No snippet available</nginx>
 		</Snippet>
 	</Mitigation>
 </Entry>

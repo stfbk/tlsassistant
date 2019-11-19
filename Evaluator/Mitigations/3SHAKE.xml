@@ -9,6 +9,7 @@ The attack leads to a client impersonation that, by breaking both confidentialit
 		<Textual>The only acceptable mitigation is to use the `extended_master_secret` TLS extension. For this reason it is recommended to update the TLS library to a version that supports the aforementioned extension (e.g. OpenSSL v1.1.0+).</Textual>
 		<Snippet>
 			<apache>No snippet available</apache>
+			<nginx>No snippet available</nginx>
 		</Snippet>
 	</Mitigation>
 </Entry>

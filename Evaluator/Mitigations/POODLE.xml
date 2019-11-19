@@ -13,6 +13,14 @@
    - otherwise, add `-SSLv3` at the end of the line.
 
 N.B. restart the server by typing: `sudo service apache2 restart`.</apache>
+<nginx>1. In a default situation, you can edit your website configuration */etc/nginx/sites-enabled/default*
+	(if you changed your site conf name */etc/nginx/sites-enabled/YOURSITECONFIGURATION*);
+2. Inside `server {...}` brackets configuration, find `ssl_protocols`;
+3. Remove `SSLv3` (if any). Make sure you have atleast another TLS protocol. If you can't find `ssl_protocols` you should be fine if your NGINX is updated.
+
+
+N.B. restart the server by typing: `sudo service nginx restart`.
+</nginx>
 		</Snippet>
 	</Mitigation>
 </Entry>

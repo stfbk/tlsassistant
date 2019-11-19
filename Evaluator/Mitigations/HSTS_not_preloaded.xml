@@ -6,6 +6,7 @@
 		<Textual>Submit the request to [HSTSPreload.org](https://hstspreload.org).</Textual>
 		<Snippet>
 			<apache>No snippet available</apache>
+			<nginx>No snippet available</nginx>
 		</Snippet>
 	</Mitigation>
 </Entry>
