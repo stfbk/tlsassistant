@@ -30,7 +30,7 @@ N.B. restart the server by typing: `sudo service apache2 restart` and make sure 
 	ssl_stapling_verify on;
 	
 2. Restart your server with `sudo service nginx restart` and make sure that your certificate has been logged (check at [crt.sh](https://crt.sh) ).
-
+</nginx>
 
 		</Snippet>
 	</Mitigation>
