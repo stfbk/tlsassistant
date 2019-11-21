@@ -17,6 +17,40 @@
 	3. comment or delete it.
 
 N.B. restart the server by typing: `sudo service apache2 restart`.</apache>
+
+			<nginx>In a default situation, you can edit your website configuration */etc/nginx/sites-enabled/default*
+	(if you changed your site conf name */etc/nginx/sites-enabled/YOURSITECONFIGURATION*);
+
+- Do the following:
+	1. Edit this file with an editor;
+	2. add in your server configuration the string `gzip off;`. 
+	If not missing, set it off by changing `gzip on;` to `gzip off;`
+
+- Example: 
+	*For example, assuming this is your configuration:*
+
+
+		server{
+			gzip on;
+		}
+
+
+	Change it in:
+
+
+		server{
+			gzip off;
+		}
+
+
+	If missing, just add `gzip off;` inside brackets.
+
+N.B. restart the server by typing: `sudo service nginx restart`.
+
+**However this should be a fast temporary measure**, use [this](https://github.com/nulab/nginx-length-hiding-filter-module) instead.
+
+*Disabling gzip will disable compression in your website.*
+			</nginx>
 		</Snippet>
 	</Mitigation>
 </Entry>

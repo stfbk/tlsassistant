@@ -8,6 +8,7 @@
 		<Textual>Update the TLS library to a version that contains the custom mitigations (e.g. OpenSSL v1.0.1f+).</Textual>
 		<Snippet>
 			<apache>No snippet available</apache>
+			<nginx>No snippet available</nginx><!--check if !MD5 can fix that-->
 		</Snippet>
 	</Mitigation>
 </Entry>

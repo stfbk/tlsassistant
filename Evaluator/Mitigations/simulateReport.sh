@@ -19,5 +19,10 @@ xmllint --xpath "/Entry/Mitigation/Textual/text()" $1 >> $report
 printf "\n\n" >> $report
 #~ Snippet
 #~ Apache
-xmllint --xpath "/Entry/Mitigation/Snippet/Apache/text()" $1 >> $report
+printf "APACHE\n" >> $report
+xmllint --xpath "/Entry/Mitigation/Snippet/apache/text()" $1 >> $report
+printf "\n\n" >> $report
+#~ Nginx
+printf "NGINX\n" >> $report
+xmllint --xpath "/Entry/Mitigation/Snippet/nginx/text()" $1 >> $report
 printf "\n\n" >> $report

@@ -12,6 +12,20 @@
 3. add the string `Redirect / https://website` where "website" is the URL you want to point the users to (e.g. www.fbk.eu).
 
 N.B. restart the server by typing: `sudo service apache2 restart`.</apache>
+<nginx>1. In a default situation, you can edit your website configuration */etc/nginx/sites-enabled/default*
+	(if you changed your site conf name */etc/nginx/sites-enabled/YOURSITECONFIGURATION*);
+2. add 
+	
+		server {
+    	listen 80 default_server;
+    	server_name _;
+    	return 301 https://$host$request_uri;
+		}
+3. remove ALL other `listen 80` inside `server{...}` brackets (except for the previous one)
+
+
+N.B. restart the server by typing: `sudo service nginx restart`.
+</nginx>
 		</Snippet>
 	</Mitigation>
 </Entry>

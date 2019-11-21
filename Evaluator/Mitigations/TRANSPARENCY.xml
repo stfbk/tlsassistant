@@ -17,6 +17,21 @@
     - SSLStaplingCache shmcb:/var/run/ocsp(128000)
 
 N.B. restart the server by typing: `sudo service apache2 restart` and make sure that your certificate has been logged (check at [crt.sh](https://crt.sh) ).</apache>
+			<nginx>In a default situation, you can edit your website configuration */etc/nginx/sites-enabled/default*
+	(if you changed your site conf name */etc/nginx/sites-enabled/YOURSITECONFIGURATION*);
+	
+1. Add the following to your server configuration:
+	ssl_session_cache shared:SSL:5m;
+
+  	ssl_session_timeout 5m;
+	
+	ssl_stapling on;
+  	
+	ssl_stapling_verify on;
+	
+2. Restart your server with `sudo service nginx restart` and make sure that your certificate has been logged (check at [crt.sh](https://crt.sh) ).
+</nginx>
+
 		</Snippet>
 	</Mitigation>
 </Entry>
