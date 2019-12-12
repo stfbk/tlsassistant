@@ -70,7 +70,7 @@ node [shape=box];
 "auth_sweet_3" [label = "- Check for collisions with a known block\l"][color=darkolivegreen]
 
 "auth_mitzvah_1" [label = "- RC4 cipher negotiated\l"][color=chocolate]
-"auth_mitzvah_2" [label = "1. Sniff the victim's transmissions\l2. Detect the use of a weak key\l(invariance weakness)\l3. Pchocolateict the LSBs of the keystream\l4. Try to decrypt the related plaintext\l5. Use the cookie to impersonate\lthe client\l"][color=deepskyblue2]
+"auth_mitzvah_2" [label = "1. Sniff the victim's transmissions\l2. Detect the use of a weak key\l(invariance weakness)\l3. Predict the LSBs of the keystream\l4. Try to decrypt the related plaintext\l5. Use the cookie to impersonate\lthe client\l"][color=deepskyblue2]
 
 "auth_nomore_1" [label = "- RC4 cipher negotiated\l"][color=chocolate]
 "auth_nomore_2" [label = "1. Gain JavaScript control\lon the victim's browser\l2. Force the client to contact the server\l3. Capture the encrypted requests\l4. Calculate the candidate tokens\l(using the Fluhrer-McGrew biases)\l"][color=deepskyblue2]
