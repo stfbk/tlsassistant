@@ -69,9 +69,9 @@ b_echo "Done"
 
 echo ""
 r_echo "## Downloading testssl.sh..."
-wget --no-check-certificate -N -nd https://github.com/drwetter/testssl.sh/archive/3.0rc5.zip > /dev/null 2>&1
-unzip -o 3.0rc5.zip -d ./Analyzer/tools/server > /dev/null 2>&1
-rm 3.0rc5.zip
+wget --no-check-certificate -N -nd https://github.com/drwetter/testssl.sh/archive/3.0rc6.zip > /dev/null 2>&1
+unzip -o 3.0rc6.zip -d ./Analyzer/tools/server > /dev/null 2>&1
+rm 3.0rc6.zip
 b_echo "Done"
 
 echo ""
