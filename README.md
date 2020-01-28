@@ -1,6 +1,6 @@
 # TLSAssistant
 
-**TLSAssistant** is a fully-featured tool that combines state-of-the-art TLS analyzers with a report system that suggests appropriate mitigations and shows the full set of viable attacks. The companion page can be found [here](https://bit.ly/tlsassistant).
+**TLSAssistant** is a fully-featured tool that combines state-of-the-art TLS analyzers with a report system that suggests appropriate mitigations and shows the full set of viable attacks. The companion page can be found [here](http://bit.ly/fbk_tlsassistant).
 
 ## Features
 
