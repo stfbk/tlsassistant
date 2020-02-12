@@ -17,8 +17,7 @@ N.B. restart the server by typing: `sudo service apache2 restart`.</apache>
 
 - If you are using al earlier version of nginx or OpenSSL and your distro has not backported this option then you need to 
 	1. **update to the last version** or
-	2. recompile OpenSSL without ZLIB support.
-			</nginx>
+	2. recompile OpenSSL without ZLIB support.</nginx>
 		</Snippet>
 	</Mitigation>
 </Entry>

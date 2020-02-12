@@ -14,8 +14,7 @@ N.B. restart the server by typing: `sudo service apache2 restart` and be sure th
 2. Add inside `server{...}` brackets: `add_header Strict-Transport-Security "max-age=31536000; includeSubdomains; preload";`
 
 
-N.B. restart the server by typing: `sudo service nginx restart`.
-			</nginx>
+N.B. restart the server by typing: `sudo service nginx restart`.</nginx>
 		</Snippet>
 	</Mitigation>
 </Entry>

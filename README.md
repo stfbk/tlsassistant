@@ -84,7 +84,7 @@ TLSAssistant exists thanks to the following open-source projects (from a to z):
 - [tlsfuzzer](https://github.com/tomato42/tlsfuzzer)
 - [TLS Extended_Master_Checker](https://github.com/Tripwire-VERT/TLS_Extended_Master_Checker)
 
-## Licence
+## License
 Copyright 2019, Fondazione Bruno Kessler
 
 Licensed under the Apache License, Version 2.0 (the "License");

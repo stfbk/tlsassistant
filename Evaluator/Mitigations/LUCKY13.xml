@@ -10,7 +10,7 @@ The attack, by breaching in the authentication mechanism, has a serious impact o
 		<Snippet>
 			<apache>No snippet available</apache>
 			<nginx>The best mitigation is to update the OpenSSL libraries. The fastest mitigation is to disable all CBC ciphers.
-			
+
 1. In a default situation, you can edit your website configuration */etc/nginx/sites-enabled/default*
 	(if you changed your site conf name */etc/nginx/sites-enabled/YOURSITECONFIGURATION*);
 2. Inside `server {...}` brackets configuration, find `ssl_ciphers`;
