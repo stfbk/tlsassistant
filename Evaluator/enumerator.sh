@@ -117,10 +117,10 @@ function testssl_enumerator {
         echo "- detected: SWEET32"
     fi
 
-    #Client-Initiated Renegotiation DoS
-    if grep "Secure Client-Initiated Renegotiation" $toolReports/testssl_report.txt |grep -q "VULNERABLE (NOT ok)"; then
+    #Renegotiation attack
+    if ! grep "(RFC 5746)" $toolReports/testssl_report.txt |grep -q "supported (OK)"; then
         echo "RENEGOTIATION">> $root_folder/vulnerabilityList.txt
-        echo "- detected: Client-Initiated Renegotiation DoS"
+        echo "- detected: unsecure renegotiation"
     fi
 
     #Missing Certificate Transparency
