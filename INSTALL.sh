@@ -22,7 +22,7 @@ b_echo "################"
 echo ""
 r_echo "# Installing dependencies..."
 sudo apt-get update
-sudo apt-get install -y aha html2text libxml2-utils git unzip curl wget graphviz python-dev
+sudo apt-get install -y aha html2text libxml2-utils git unzip curl wget graphviz python-dev virtualenv
 echo ""
 r_echo "Utilities installed"
     echo ""
@@ -34,8 +34,7 @@ else
 fi
 pip install virtualenv
 
-venv=$(find / -name virtualenv 2>&1 | grep -v "Permission denied")
-$venv python_dep
+virtualenv python_dep
 python_dep/bin/pip install androguard
 r_echo "Androguard installed"
 python_dep/bin/pip install --pre tlslite-ng
