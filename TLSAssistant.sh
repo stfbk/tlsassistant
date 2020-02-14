@@ -121,6 +121,12 @@ echo -e "\033[7m################\033[0m"
 echo -e "\033[7m# TLSAssistant #\033[0m"
 echo -e "\033[7m################\033[0m"
 
+if [[ ! -d python_dep ]]; then #if the INSTALLER has never been called
+    echo ""
+    echo "Run INSTALL.sh to set the environment first"
+    exit 1
+fi
+
 #report folder creation
 mkdir $root_folder/Report
 initialize_report
