@@ -2,7 +2,7 @@
 	<Name>CRIME</Name> 
 	<ExtendedName>**C**ompression **R**atio **I**nfo-leak **M**ass **E**xploitation</ExtendedName>
 	<CVE>2012-4929</CVE>
-	<CVSS3>9.1 (Critical)</CVSS3> <!-- AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N -->
+	<CVSS3>2.6 (Low)</CVSS3> <!-- AV:N/AC:H/Au:N/C:P/I:N/A:N -->
 	<Description>By exploiting the information leakage provided by DEFLATE (compression algorithm), an attacker is able to retrieve the session cookie. In particular, the attacker guesses parts of the cookie, injects them in a valid client packet and analyzes the server's response. Thanks to the properties of a DEFLATE output, if the server's response is bigger than an untouched packet, then the guess is wrong.</Description> 
 	<Mitigation>
 		<Textual>Disable the TLS compression mechanism.</Textual>

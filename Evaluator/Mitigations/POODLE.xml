@@ -2,7 +2,7 @@
 	<Name>POODLE</Name>
 	<ExtendedName>**P**adding **O**racle **O**n **D**owngraded **L**egacy **E**ncryption</ExtendedName>
 	<CVE>2014-3566</CVE>
-	<CVSS3>6.8 (Medium)</CVSS3><!-- AV:N/AC:H/PR:N/UI:N/S:C/C:H/I:N/A:N -->
+	<CVSS3>3.4 (Low)</CVSS3><!-- AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:N/A:N -->
 	<Description>By exploiting the missing validation of the padding bytes during decryption, an attacker is able to guess the session cookie. The attack is mounted by performing a MITM and requesting a SSLv3 connection between the client and the server. Once accepted, the attack is performed by modifying the padding in order to guess the cookie.</Description> 
 	<Mitigation>
 		<Textual>Disable SSLv3 protocol support.</Textual>

@@ -68,7 +68,7 @@ node [shape=box];
 "int_mitm" [label = "MITM"] /* RENEGOTIATION */
 
 ##----------Leaves----------
-"int_reneg_1" [label = "- Renegotiation enabled"][color=chocolate]
+"int_reneg_1" [label = "- Insecure renegotiation enabled"][color=chocolate]
 "int_reneg_2" [label = "1. Intercept the victim's ClientHello\l2. Perform a full handshake with\l     the server\l3. Perform a privileged request\l4. Trigger a session renegotiation\l5. Send the original ClientHello to\l     the server\l"][color=deepskyblue2]
 
 #-----------Edges-----------

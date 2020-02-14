@@ -2,7 +2,7 @@
 	<Name>BREACH</Name> 
 	<ExtendedName>**B**rowser **R**econnaissance and **E**xfiltration via **A**daptive **C**ompression of **H**ypertext</ExtendedName>
 	<CVE>2013-3587</CVE>
-	<CVSS3>7.5 (High)</CVSS3> <!-- AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N -->
+	<CVSS3>4.3 (Medium)</CVSS3> <!-- AV:N/AC:M/Au:N/C:P/I:N/A:N -->
 	<Description>By exploiting the information leakage provided by DEFLATE (compression algorithm), an attacker is able to retrieve the session cookie. In particular, the attacker guesses parts of the cookie, injects them in a valid client packet and analyzes the server's response. Thanks to the properties of a DEFLATE output, if the server's response is bigger than an untouched packet, then the guess is wrong.</Description> 
 	<Mitigation>
 		<Textual>Disable the HTTP compression mechanism.</Textual>

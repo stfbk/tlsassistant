@@ -2,7 +2,7 @@
 	<Name>Renegotiation attack</Name>
 	<ExtendedName>Renegotiation attack</ExtendedName>
 	<CVE>2009-3555</CVE>
-	<CVSS2>5.8</CVSS2> <!-- AV:N/AC:M/Au:N/C:N/I:P/A:P -->
+	<CVSS2>5.8 (Medium)</CVSS2> <!-- AV:N/AC:M/Au:N/C:N/I:P/A:P -->
 	<Description>Due to a flaw in the SSLv3 and TLS handshake process, an attacker is able to mount a Man-In-The-Middle. In this scenario, the attacker is able to inject plaintext within an existing data stream thus breaking its integrity and partially impersonating the sender.</Description> 
 	<Mitigation>
 		<Textual>Update the TLS library to a version that implements RFC 5746 (e.g. OpenSSL v0.9.8m+).</Textual>
