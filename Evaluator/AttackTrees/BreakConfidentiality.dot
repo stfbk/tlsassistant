@@ -10,11 +10,12 @@ node [shape=box];
 
 #################Confidentiality Nodes#################
 ##----------Parents---------
-"conf_msg_C" [label = "Break\nmessage confidentiality"][penwidth=4] /* 3SHAKE HSTS_not_preloaded DROWN */
-"conf_tls_hshake" [label = "Exploit\nHandshake protocol"][penwidth=2] /* 3SHAKE HSTS_not_preloaded DROWN */
+"conf_msg_C" [label = "Break\nmessage confidentiality"][penwidth=4] /* 3SHAKE HSTS_not_preloaded DROWN ROBOT */
+"conf_tls_hshake" [label = "Exploit\nHandshake protocol"][penwidth=2] /* 3SHAKE HSTS_not_preloaded DROWN ROBOT */
 
-"conf_legacy" [label = "Exploit backward\ncompatibility"] /* DROWN */
-"conf_sniffing" [label = "Passive Sniffing"]/* DROWN */
+"conf_genAndCheck" [label = "Generate\nand check"] /* DROWN ROBOT */
+"conf_export" [label = "Exploit\nexport-grade ciphers"]/* DROWN */
+"conf_check_padding" [label = "Exploit\nPKCS#1 v1.5 padding"] /* ROBOT */
 
 "conf_mitm" [label = "MITM"] /* 3SHAKE HSTS_not_preloaded */
 
@@ -28,19 +29,29 @@ node [shape=box];
 "conf_stripping_1" [label = "- HTTP available\l- HSTS not preloaded\l"][color=chocolate]
 "conf_stripping_2" [label = "1. Start an ARP spoofing against\l     the victim\l2. Edit victim's destination address\l     (of the packets) by forcing the\l     unsecure version of the website\l3. Snoop the unencrypted messages\l"][color=deepskyblue2]
 
+
+"conf_robot_1" [label = "- RSA key exchange negotiated\l"][color=chocolate]
+"conf_robot_2" [label = "1. Sniff the victim's transmissions\l(ClientKeyExchange included)\l2. Repeatedly generate and send\lClientKeyExchange messages with\ldifferent padding\l3. Check if the server accepted\lthe request (padding correctly guessed)\l"][color=deepskyblue2]
+"conf_robot_3" [label = "- Use the guessed pre-master secret\lto generate the shared key\l"][color=darkolivegreen]
+
 #-----------Edges-----------
 ## root
-	"conf_msg_C" -- "conf_tls_hshake" /* 3SHAKE HSTS_not_preloaded DROWN */
+	"conf_msg_C" -- "conf_tls_hshake" /* 3SHAKE HSTS_not_preloaded DROWN ROBOT */
 
 ### handshake subtree
-	"conf_tls_hshake" -- "conf_legacy" /* DROWN */
+	"conf_tls_hshake" -- "conf_genAndCheck" /* DROWN ROBOT */
 	"conf_tls_hshake" -- "conf_mitm" /* 3SHAKE HSTS_not_preloaded */
 
-### legacy subtree
-	"conf_legacy" -- "conf_sniffing" /* DROWN */
+### generate subtree
+	"conf_genAndCheck" -- "conf_export" /* DROWN */
+	"conf_genAndCheck" -- "conf_check_padding" /* ROBOT */
+	
 
-##### sniffing subtree
-	"conf_sniffing" -- "conf_drown_1" [lhead=cluster_drown] /* DROWN */
+##### legacy subtree
+	"conf_export" -- "conf_drown_1" [lhead=cluster_drown] /* DROWN */
+
+#### padding subtree
+	"conf_check_padding" -- "conf_robot_1" [lhead=cluster_robot] /* ROBOT */
 
 #### MITM subtree
 	"conf_mitm" -- "conf_3shake_1" [lhead=cluster_3shake]/* 3SHAKE */
@@ -59,6 +70,10 @@ node [shape=box];
 	subgraph cluster_stripping {
 		label="SSL stripping";
 		"conf_stripping_1" -- "conf_stripping_2" [style=invis];
+	}
+	subgraph cluster_robot {
+		label="ROBOT";
+		"conf_robot_1" -- "conf_robot_2" -- "conf_robot_3" [style=invis];
 	}
 
 #################Integrity Nodes#################
