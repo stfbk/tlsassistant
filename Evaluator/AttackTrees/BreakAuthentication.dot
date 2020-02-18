@@ -17,9 +17,9 @@ node [shape=box];
 "auth_tls_hshake" [label = "Exploit\nHandshake protocol"][penwidth=2] /* POODLE SLOTH */
 "auth_tls_alert" [label = "Exploit\nAlert protocol"][penwidth=2] 
 "auth_tls_record" [label = "Exploit\nRecord protocol"][penwidth=2] /* SWEET32 NOMORE MITZVAH CRIME BREACH LUCKY13 */
-"auth_msg_C" [label = "Break\nmessage confidentiality"][style=dotted][penwidth=2] /* 3SHAKE HSTS_not_preloaded DROWN ROBOT */
-"auth_C_tls_hshake" [label = "Exploit\nHandshake protocol"][style=dotted] /* 3SHAKE HSTS_not_preloaded DROWN ROBOT */
-"auth_C_legacy" [label = "Generate\nand check"][style=dotted] /* DROWN ROBOT */
+"auth_msg_C" [label = "Break\nmessage confidentiality"][style=dotted][penwidth=2] /* DROWN ROBOT */
+"auth_C_tls_hshake" [label = "Exploit\nHandshake protocol"][style=dotted] /* DROWN ROBOT */
+"auth_C_gen" [label = "Generate\nand check"][style=dotted] /* DROWN ROBOT */
 "auth_msg_I" [label = "Break\nmessage integrity"][style=dotted][penwidth=2] /* RENEGOTIATION */
 "auth_pki_s" [label = "Exploit\nPKI reliance"][penwidth=2] /* TRANSPARENCY */
 "auth_pki_c" [label = "Exploit\nPKI reliance"][penwidth=2] /* TRANSPARENCY */
@@ -94,7 +94,7 @@ node [shape=box];
 	"auth_break_client" -- "auth_tls_hshake"  /* POODLE SLOTH */
 	"auth_break_client" -- "auth_tls_alert"
 	"auth_break_client" -- "auth_pki_c"  /* TRUST_MANAGER */
-	"auth_break_client" -- "auth_msg_C" -- "auth_C_tls_hshake" -- "auth_C_legacy" [style=dotted]  /* DROWN ROBOT */
+	"auth_break_client" -- "auth_msg_C" -- "auth_C_tls_hshake" -- "auth_C_gen" [style=dotted]  /* DROWN ROBOT */
 	"auth_break_client" -- "auth_msg_I" [style=dotted] /* RENEGOTIATION */
 	
 ###server authentication
