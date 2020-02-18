@@ -85,7 +85,7 @@ TLSAssistant exists thanks to the following open-source projects (from a to z):
 - [TLS Extended_Master_Checker](https://github.com/Tripwire-VERT/TLS_Extended_Master_Checker)
 
 ## License
-Copyright 2019, Fondazione Bruno Kessler
+Copyright 2019-2020, Fondazione Bruno Kessler
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
