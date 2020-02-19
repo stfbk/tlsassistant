@@ -60,7 +60,7 @@ node [shape=box];
 "auth_breach_2" [label = "1. Gain JavaScript control\lon the victim's browser\l2. Inject different characters\linto the client's messages\l"][color=deepskyblue2]
 "auth_breach_3" [label = "- Retrieve parts of the cookie\lby analyzing the response size\l"][color=darkolivegreen]
 
-"auth_lucky_1" [label = "- CBC mode cipher negotiated\l- HMAC-SHA1 negotiated\l"][color=chocolate]
+"auth_lucky_1" [label = "- CBC mode cipher negotiated\l"][color=chocolate]
 "auth_lucky_2" [label = "1. Gain JavaScript control\lon the victim's browser\l2. Tweak and truncate the encrypted packets\l3. Analyse the time the server\l needs to detect the error\l"][color=deepskyblue2]
 "auth_lucky_3" [label = "- Retrieve parts of the cookie by\lmeasuring the response delay\lover every iteration\l"][color=darkolivegreen]
 
