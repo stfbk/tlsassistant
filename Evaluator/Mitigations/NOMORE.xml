@@ -3,7 +3,7 @@
 	<ExtendedName>RC4 **N**umerous **O**ccurrence **MO**nitoring &#038; **R**ecovery **E**xploit</ExtendedName>
 	<CVE>Not available</CVE>
 	<CVSS3>Not available</CVSS3>
-	<Description>Given the biases existing in the key generation algorithm, an attacker can use statistics to guess information. The capture of the session cookie is is operated by surrounding the token itself with known plaintext and repeatedly connecting to the server. After collecting a fair amount of packets, the attacker can exploit the biases to calculate the cookie.</Description> 
+	<Description>Given the biases existing in the key generation algorithm, an attacker can use statistics to guess information. The capture of the session cookie is operated by surrounding the token itself with known plaintext and repeatedly connecting to the server. After collecting a fair amount of packets, the attacker can exploit the biases to calculate the cookie.</Description> 
 	<Mitigation>
 		<Textual>Disable the RC4 stream cipher.</Textual>
 		<Snippet>

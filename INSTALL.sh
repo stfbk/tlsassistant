@@ -1,4 +1,4 @@
-#!/bin/bash
+    #!/bin/bash
 set -e #stop the script if any error occours
 
 err_report() {
@@ -64,6 +64,8 @@ b_echo "Done"
 echo ""
 r_echo "## Downloading tlsfuzzer..."
 git clone https://github.com/tomato42/tlsfuzzer.git ./Analyzer/tools/server/tlsfuzzer > /dev/null 2>&1
+mkdir Analyzer/tools/server/utils
+openssl req -x509 -newkey rsa -keyout Analyzer/tools/server/utils/localuser.key \-out Analyzer/tools/server/utils/localuser.crt -nodes -batch -subj /CN=Local\ User 2>/dev/null #generating the required certificate
 b_echo "Done"
 
 echo ""
