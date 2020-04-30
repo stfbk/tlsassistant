@@ -28,6 +28,7 @@ function cleanup { #removing old reports (suppressing the warnings)
     rm -r $evaluator/vulnerabilityList.txt 2>/dev/null
     rm -r $evaluator_reports/* 2>/dev/null
     rm -r $evaluator_trees/* 2>/dev/null
+    rm -r $root_folder/subdomains.txt 2>/dev/null
 }
 
 function printHelp {
@@ -77,7 +78,9 @@ function subdomains_collector {
         host=$(expr match "$1" '.*\.\(.*\..*\)') #to retrieve the main domain
     fi
 
-    $python utility/ctfr/ctfr.py -d $host -o $root_folder/subdomains.txt &> /dev/null #generating the subdomain list (based on their certificates)
+    $python utility/ctfr/ctfr.py -d $host -o $root_folder/subdomains_tmp.txt &> /dev/null #generating the subdomain list (based on their certificates)
+    sort -u $root_folder/subdomains_tmp.txt > $root_folder/subdomains.txt #removing duplicate lines (caused by multiple certificates available)
+    rm $root_folder/subdomains_tmp.txt
     sed -i '/\*/d' $root_folder/subdomains.txt #deleting the wildcard certificate entries (lines containing an asterisk)
     echo $host >> $root_folder/subdomains.txt #adding the main domain to the list
     echo "Subdomains collected!"
