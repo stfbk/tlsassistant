@@ -133,7 +133,7 @@ function testssl_enumerator {
 function tlsfuzzer_enumerator {
     
     #SLOTH
-    if ! grep -q "successful: 5" $toolReports/tlsfuzzer_report.txt; then
+    if ! grep -q -w "FAIL: 0" $toolReports/tlsfuzzer_report.txt; then
         echo "SLOTH">> $root_folder/vulnerabilityList.txt
         echo "- detected: SLOTH"
     fi
