@@ -22,19 +22,21 @@ b_echo "################"
 echo ""
 r_echo "# Installing dependencies..."
 sudo apt-get update
-sudo apt-get install -y aha html2text libxml2-utils git unzip curl wget graphviz python-dev virtualenv
+sudo apt-get install -y aha html2text libxml2-utils git unzip curl wget graphviz python2 python2-dev python-setuptools
 echo ""
 r_echo "Utilities installed"
     echo ""
-if ! [[ $(command -v pip) ]]; then
-    sudo apt-get install -y python-pip
+if ! [[ $(command -v pip2) ]]; then
+    curl -s https://bootstrap.pypa.io/get-pip.py --output get-pip.py
+    sudo python2 get-pip.py
+    rm get-pip.py
     r_echo "pip installed"
 else
     r_echo "pip already installed"
 fi
-pip install virtualenv
+pip2 install virtualenv
 
-virtualenv python_dep
+~/.local/bin/virtualenv -p python2 python_dep
 python_dep/bin/pip install androguard
 r_echo "Androguard installed"
 python_dep/bin/pip install --pre tlslite-ng
