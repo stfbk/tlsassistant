@@ -4,6 +4,7 @@
 
 ## Features
 
+### Mitigations
 Thanks to the integrated analyzers, TLSAssistant is currently able to detect and provide mitigations for: 
   - [3SHAKE](https://mitls.org/pages/attacks/3SHAKE)
   - [Bar Mitzvah](https://www.imperva.com/docs/HII_Attacking_SSL_when_using_RC4.pdf)
@@ -23,6 +24,32 @@ Thanks to the integrated analyzers, TLSAssistant is currently able to detect and
   - [Sweet32](https://sweet32.info)
   - [Unsecure Android TrustManagers](https://dl.acm.org/citation.cfm?id=2382205)
 
+### Attack trees
+TLSAssistant is able to graphically represent the analysis result using a set of custom [attack trees](https://www.schneier.com/academic/archives/1999/12/attack_trees.html). Each tree consists of:
+- **A goal (root).** indicating which security property would be broken;
+- **Protocol/infrastructure subgoals.** displaying which protocol or infrastructure can be exploited in order to achieve the root goal;
+- **Technique subgoals.** showing the technique an attacker has to use in order
+to exploit the aforementioned protocol;
+- **Attacks (leaves).** is divided into boxes. The first one lists the
+prerequisites an attacker needs, the second one describes the steps needed to
+exploit the vulnerability and, if needed, a third one shows how the attack is
+concluded.
+
+The following image shows a simplified version of the output
+![stix_output](assets/atree_output.png)
+
+### STIX output
+TLSAssistant is able to export the analysis result in [STIX](https://oasis-open.github.io/cti-documentation/stix/intro), a language used to share cyber threat intelligence (CTI) that can be represented with objects and their descriptive relationships. 
+After every scan and for each discovered vulnerability, TLSAssistant generates a STIX bundle (JSON file) containing the following objects:
+1. vulnerability;
+2. course of action;
+3. relationship;
+4. observed data;
+5. sighting.
+
+The following image shows an example for the Bar Mitzvah attack
+![stix_output](assets/stix_output.jpg)
+
 ## Dependencies
 
 To be able to run TLSAssistant you will need a set of dependencies that can be automatically downloaded by running `INSTALL.sh`.
@@ -30,9 +57,9 @@ To be able to run TLSAssistant you will need a set of dependencies that can be a
 It will download (and place in the correct folders) the following:
 
 - packages: `aha`, `androguard`, `curl`, `git`, `graphviz`, `html2text`, `libxml2-utils`, `python2`, `wget`;
-- analyzers: `mallodroid`, `testssl.sh`, `tlsfuzzer`, `TLS Extended_Master_Checker`.
+- analyzers: `mallodroid`, `testssl.sh`, `tlsfuzzer`.
 
-**Note**: TLSAssistant is not compatible with **W**indows **S**ubsystem for **L**inux.
+**Note**: TLSAssistant is not compatible with **W**indows **S**ubsystem for **L**inux v1.
 
 ## Download
 
@@ -61,6 +88,7 @@ where
 - `-d|--domain <URL>` analyze the subdomains of a given website
 - `-l|--list <file>` analyze the provided hosts list (one per line) 
 - `-a|--apk <file>` check an apk installer
+- `-x|--stix` STIX output format
 - `-v [0|1|2|3]` verbosity level
 
 ### Verbosity level
@@ -80,9 +108,9 @@ TLSAssistant exists thanks to the following open-source projects (from a to z):
 - [ctfr](https://github.com/UnaPibaGeek/ctfr)
 - [mallodroid](https://github.com/sfahl/mallodroid)
 - [markdown.bash](https://github.com/chadbraunduin/markdown.bash)
+- [python-stix2](https://github.com/oasis-open/cti-python-stix2)
 - [testssl.sh](https://github.com/drwetter/testssl.sh)
 - [tlsfuzzer](https://github.com/tomato42/tlsfuzzer)
-- [TLS Extended_Master_Checker](https://github.com/Tripwire-VERT/TLS_Extended_Master_Checker)
 
 ## License
 Copyright 2019-2020, Fondazione Bruno Kessler
@@ -99,4 +127,4 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-Developed within [Security & Trust](https://st.fbk.eu) Research Unit at [Fondazione Bruno Kessler](https://www.fbk.eu/en/) (Italy)
+Developed within [Security & Trust](https://stfbk.github.io/) Research Unit at [Fondazione Bruno Kessler](https://www.fbk.eu/en/) (Italy)

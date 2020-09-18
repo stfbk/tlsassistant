@@ -44,14 +44,6 @@ function assistant_enumerator {
     fi
 }
 
-function extended_master_enumerator {
-
-    #3SHAKE
-    if grep "TLSv1.2" $toolReports/extended_master_report.txt |grep -q "vulnerable"; then
-        echo "3SHAKE">> $root_folder/vulnerabilityList.txt
-        echo "- detected: 3SHAKE"
-    fi
-}
 function mallodroid_enumerator {
 
     #Unsecure TrustManagers
@@ -62,6 +54,12 @@ function mallodroid_enumerator {
 }
 
 function testssl_enumerator {
+
+    #3SHAKE
+    if ! grep -q "extended master secret/#23" $toolReports/testssl_report.txt ; then
+        echo "3SHAKE">> $root_folder/vulnerabilityList.txt
+        echo "- detected: 3SHAKE"
+    fi
 
     #Bar Mitzvah
     if grep "RC4" $toolReports/testssl_report.txt |grep -q "VULNERABLE"; then
@@ -131,13 +129,79 @@ function testssl_enumerator {
 }
 
 function tlsfuzzer_enumerator {
+    #client auth zone
+    #mutual auth check
+    handshake_status=$(grep -o "AssertionError: Unexpected message from peer:" $toolReports/tlsfuzzer_report.txt|wc -l) #ok value 0, but it will generally fail with this value ==5
+    sanity_mutual=$(grep -o "sanity" $toolReports/tlsfuzzer_report.txt|wc -l) #ok value 2
+    md5forced=$(grep -o "MD5 forced" $toolReports/tlsfuzzer_report.txt|wc -l) #ok value 2
+    certificateverify=$(grep -o "TLSv1.1 signature in TLSv1.2 Certificate Verify" $toolReports/tlsfuzzer_report.txt|wc -l) #valore sano 1
+    sumof_mutual=$(($md5forced + $certificateverify))
     
-    #SLOTH
-    if ! grep -q -w "FAIL: 0" $toolReports/tlsfuzzer_report.txt; then
-        echo "SLOTH">> $root_folder/vulnerabilityList.txt
-        echo "- detected: SLOTH"
+    #md5 sigs check
+    md5first=$(grep -o "MD5 first" $toolReports/tlsfuzzer_report_sigs.txt|wc -l) #ok value 2
+    sanity_md5sigs=$(grep -o "sanity" $toolReports/tlsfuzzer_report_sigs.txt|wc -l) #ok value 2
+    
+    #clienthello check
+    clienthellomd5=$(grep -o "only-md5-rsa-signature_algorithm" $toolReports/tlsfuzzer_report_clienthello.txt|wc -l) #ok value 1
+    sanity_clienthellomd5=$(grep -o "sanity" $toolReports/tlsfuzzer_report_clienthello.txt|wc -l) #ok value 2
+    unknownsignatures=$(grep -o "unknown-signature_algorithm-numbers" $toolReports/tlsfuzzer_report_clienthello.txt|wc -l) #ok value 1
+    sumof_clienthello=$(($clienthellomd5 + $unknownsignatures))
+    
+    #SLOTH Mutual
+    if ! grep -q -w "FAIL: 0" $toolReports/tlsfuzzer_report.txt; then # if it's not 0
+
+        if [ $handshake_status -eq 5 ]; then #checking if no client auth
+            echo -e "- \e[30;44m[INFO]\e[0m: SLOTH Handshake failed, the server probably isn't using a mutual authentication."
+
+        elif [ $sanity_mutual -gt 2 ]; then #checking if sanity check is good
+            echo -e "- \e[30;43m[WARNING]\e[0m: sanity check FAILED, could not check for Mutual Authentication SLOTH."
+            
+        elif [ $sumof_mutual -gt 3 ]; then #checking if sloth
+            echo "SLOTH">> $root_folder/vulnerabilityList.txt
+            echo "- detected: SLOTH - Mutual Auth"
+        fi
+    else
+        echo "- No Mutual Auth SLOTH Detected."
     fi
+    echo 
+    #md5 sigs
+    if ! grep -q -w "FAIL: 0" $toolReports/tlsfuzzer_report_sigs.txt; then # if it's not 0
+
+        if [ $sanity_md5sigs -gt 2 ]; then #checking if sanity check is good
+            echo -e "- \e[30;43m[WARNING]\e[0m: sanity check FAILED, could not check for MD5 sigs SLOTH."
+            echo -e "- \e[30;44m[INFO]\e[0m: This check only works with RSA Certificates and with TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA or TLS_DHE_RSA_WITH_AES_128_CBC_SHA enabled server side."
+            
+        elif [ $md5first -gt 2 ]; then #checking if sloth
+            echo "SLOTH_MD5_Signature">> $root_folder/vulnerabilityList.txt
+            echo "- detected: SLOTH - MD5 Signature"
+        else
+            echo "- No MD5 Signature SLOTH Detected."
+        fi
+
+    else
+        echo "- No MD5 Signature SLOTH Detected."
+    fi
+    echo 
+
+    #md5 sigs forced
+    if ! grep -q -w "FAIL: 0" $toolReports/tlsfuzzer_report_clienthello.txt; then # if it's not 0
+
+        if [ $sanity_clienthellomd5 -gt 2 ]; then #checking if sanity check is good
+            echo -e "- \e[30;43m[WARNING]\e[0m: sanity check FAILED, could not check for MD5 Signature ClientHello Forced SLOTH."
+            echo -e "- \e[30;44m[INFO]\e[0m: This check only works with RSA Certificates and with TLS_DHE_RSA_WITH_AES_256_CBC_SHA256 enabled server side."  
+            
+        elif [ $sumof_clienthello -gt 2 ]; then #checking if sloth
+            echo "SLOTH">> $root_folder/vulnerabilityList.txt
+            echo "- detected: SLOTH - MD5 Signature ClientHello Forced"
+        else
+            echo "- No MD5 Signature ClientHello Forced SLOTH Detected."
+        fi
+    else
+        echo "- No MD5 Signature ClientHello Forced SLOTH Detected."
+    fi
+    echo 
 }
+
 
 echo
 echo "---Begin vulnerability enumeration---"
@@ -152,9 +216,6 @@ for file in $toolReports/*; do #for each report available
             ;;
         testssl_report.txt)
             testssl_enumerator #internal function call
-            ;;
-        extended_master_report.txt)
-            extended_master_enumerator #internal function call
             ;;
         tlsfuzzer_report.txt)
             tlsfuzzer_enumerator #internal function call

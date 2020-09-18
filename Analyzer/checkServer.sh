@@ -13,21 +13,8 @@ function s_echo {
     echo "[$callingFunction] $1"
 }
 
-function extended_master_checker {
-    version="0.1" #version
-    extended_master_folder=$tools/TLS_Extended_Master_Checker #location (folder)
-
-    cd "$extended_master_folder"
-    s_echo "version: $version"
-    s_echo "Analyzing..."
-    $python TLS_Extended_Master_Checker.py $1 $2 | aha -t ${FUNCNAME[0]} > $report/extended_master_report.html
-    s_echo "Report generated successfully!"
-    echo
-    cd $root_folder
-}
-
 function testssl.sh {
-    version="3.0" #version
+    version="3.0.2" #version
     testssl_folder=$tools/testssl.sh-$version #location (folder)
 
     re_url='^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$'
@@ -55,30 +42,34 @@ function tlsfuzzer { #SLOTH checker
     s_echo "version: $version"
     s_echo "Analyzing..."
     PYTHONPATH=. $python $sloth_checker/scripts/test-certificate-verify.py -h $1 -p $2 -k $cert_location/localuser.key -c $cert_location/localuser.crt | aha -t ${FUNCNAME[0]} > $report/tlsfuzzer_report.html
+    PYTHONPATH=. $python $sloth_checker/scripts/test-sig-algs.py -h $1 -p $2 | aha -t ${FUNCNAME[0]} > $report/tlsfuzzer_report_sigs.html
+    PYTHONPATH=. $python $sloth_checker/scripts/test-clienthello-md5.py -h $1 -p $2 | aha -t ${FUNCNAME[0]} > $report/tlsfuzzer_report_clienthello.html
+    PYTHONPATH=. $python $sloth_checker/scripts/test-tls13-pkcs-signature.py -h $1 -p $2 | aha -t ${FUNCNAME[0]} > $report/tlsfuzzer_report_tls13sigs.html
     s_echo "Report generated successfully!"
     echo
     cd $root_folder
 }
 
 function assistant {
+    version="1.2" #version
+    s_echo "version: $version"
+    s_echo "Analyzing..."
+
     host=$1
     re_url='^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$'
+    touch $report/assistant.txt
 
     #--------webserver detection 
-    curl -s --head http://$host | grep "Server" >> $report/assistant.txt 
+    curl -s --head https://$host | grep "Server" >> $report/assistant.txt
 
     if [[ $host =~ $re_url ]]; then #if the target is provided via hostname, do the HTTPS-related checks
 
-        touch $report/assistant.txt
-        google_hsts=$(curl -s https://cs.chromium.org/codesearch/f/chromium/src/net/http/transport_security_state_static.json)
         mozilla_hsts=$(curl -s https://hg.mozilla.org/mozilla-central/raw-file/tip/security/manager/ssl/nsSTSPreloadList.inc)
 
         #--------HTTP available
-        http_status=$(curl --write-out %{http_code} --silent --output /dev/null $1)
-        if [[ "$http_status" == 2* ]]; then #if the server answers with a HTTP success code (e.g. 200)
+        if curl -s --head  --request GET http://$1 | grep "HTTP/1.1 2" > /dev/null; then 
             echo "HTTP available">> $report/assistant.txt
         fi
-
 
         #--------HTTPS enforcing
         if curl -s --head http://$host | grep -i -q "moved permanently"; then #condition 1
@@ -104,19 +95,15 @@ function assistant {
             host=$(expr match "$host" '.*\.\(.*\..*\)') #to retrieve the main domain
         fi
         
-        if echo $google_hsts | grep -i -q $host; then #present in Google's list
+        if echo $mozilla_hsts | grep -i -q $host; then #present in Mozilla's list
             echo "HSTS preloaded">> $report/assistant.txt
         else
-            if echo $mozilla_hsts | grep -i -q $host; then #present in Mozilla's list
-                echo "HSTS preloaded">> $report/assistant.txt
-            else
-                echo "HSTS not preloaded">> $report/assistant.txt
-            fi
+            echo "HSTS not preloaded">> $report/assistant.txt
         fi
-
     else
         echo "IP address provided, skipping HTTPS-related checks"
     fi
+    s_echo "Report generated successfully!"
 }
 
 #cleanup
@@ -137,7 +124,6 @@ echo "Target: $server:$port"
 echo
 
 #scripts call
-extended_master_checker $server $port #checks for 3SHAKE
 testssl.sh $server $port #checks for TLS vulnerabilities
 tlsfuzzer $server $port #checks for SLOTH
 assistant $server #checks for HTTPS enforcing and HSTS

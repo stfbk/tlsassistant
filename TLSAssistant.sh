@@ -4,6 +4,7 @@
 root_folder="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 report_folder=$root_folder/Report
 report="" #currently empty, will be initialized in the "initialize_report" function
+target="" #currently empty, will be initialized if the users wants to analyze a webserver
 
 analyzer=$root_folder/Analyzer #Analyzer components path
 server_reports=$analyzer/tools/server/reports
@@ -41,6 +42,7 @@ function printHelp {
     echo "    -d|--domain <URL>:             analyze the subdomains of a given website"       #subdomains
     echo "    -l|--list <file>               analyze the provided hosts list (one per line) " #list
     echo "    -a|--apk <file>:               check an apk"                                    #apk
+    echo "    -x|--stix:                     STIX output format"                              #STIX output format
     echo "    -v [0|1|2|3]:                  verbosity level"                                 #report type
     echo
     echo " VERBOSITY LEVEL"
@@ -124,7 +126,7 @@ echo -e "\033[7m################\033[0m"
 echo -e "\033[7m# TLSAssistant #\033[0m"
 echo -e "\033[7m################\033[0m"
 
-if [[ ! -d python_dep ]]; then #if the INSTALLER has never been called
+if [[ ! -d $root_folder/python_dep ]]; then #if the INSTALLER has never been called
     echo ""
     echo "Run INSTALL.sh to set the environment first"
     exit 1
@@ -144,6 +146,7 @@ do
             quit
             ;;
         -s|--server)
+            target=$2
             if ! [[ $2 =~ $re_url ]] ; then #check if it is a correct hostname
                 if ! [[ $2 =~ $re_ip ]] ; then #or a correct IP
                     if ! [[ $2 = "localhost" ]] ; then #or the "localhost" string
@@ -218,13 +221,21 @@ do
             cd $root_folder
             shift 2 #skip argument and file
             ;;
+        -x|--stix) #STIX output 
+            verbosity="x"
+            shift
+            ;;
         -v) #verbosity level
-            if [ "$2" -ge 0 -a "$2" -le 3 ]; then #if the value is in the accepted range
-                verbosity=$2
-                shift 2 #skip argument and value
+            if [ "$2" -eq "$2" ] 2> /dev/null; then #if the user has NOT requested a special output format [true if they are algebraically equal]
+                if [ "$2" -ge 0 -a "$2" -le 3 ]; then #if the value is in the accepted range
+                    verbosity=$2
+                    shift 2 #skip argument and value
+                else
+                    echo "Unexpected argument(s)"
+                    quit
+                fi
             else
-                echo "Unexpected argument(s)"
-                quit
+                shift 2
             fi
             ;;
         *)
@@ -238,7 +249,7 @@ echo -e "\033[7mStarting Evaluator\033[0m"
 
 cd $evaluator
 bash enumerator.sh #enumerator
-bash reportHandler.sh $verbosity $report #report generator
+bash reportHandler.sh $verbosity $report $target #report generator
 cd $root_folder
 
 

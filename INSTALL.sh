@@ -1,4 +1,4 @@
-    #!/bin/bash
+#!/bin/bash
 set -e #stop the script if any error occours
 
 err_report() {
@@ -22,7 +22,7 @@ b_echo "################"
 echo ""
 r_echo "# Installing dependencies..."
 sudo apt-get update
-sudo apt-get install -y aha html2text libxml2-utils git unzip curl wget graphviz python2 python2-dev python-setuptools
+sudo apt-get install -y build-essential aha html2text libxml2-utils git unzip curl wget graphviz python2 python2-dev python-setuptools
 echo ""
 r_echo "Utilities installed"
     echo ""
@@ -41,6 +41,8 @@ python_dep/bin/pip install androguard
 r_echo "Androguard installed"
 python_dep/bin/pip install --pre tlslite-ng
 r_echo "TLS Lite installed"
+python_dep/bin/pip install stix2
+r_echo "stix2 installed"
 echo ""
 
 mkdir utility
@@ -59,11 +61,6 @@ git clone https://github.com/luckenzo/mallodroid.git ./Analyzer/tools/others/mal
 b_echo "Done"
 
 echo ""
-r_echo "## Downloading TLS Extended_Master_Checker..."
-git clone https://github.com/Tripwire-VERT/TLS_Extended_Master_Checker.git ./Analyzer/tools/server/TLS_Extended_Master_Checker > /dev/null 2>&1 
-b_echo "Done"
-
-echo ""
 r_echo "## Downloading tlsfuzzer..."
 git clone https://github.com/tomato42/tlsfuzzer.git ./Analyzer/tools/server/tlsfuzzer > /dev/null 2>&1
 mkdir Analyzer/tools/server/utils
@@ -72,9 +69,9 @@ b_echo "Done"
 
 echo ""
 r_echo "## Downloading testssl.sh..."
-wget --no-check-certificate -N -nd https://github.com/drwetter/testssl.sh/archive/3.0.zip > /dev/null 2>&1
-unzip -o 3.0.zip -d ./Analyzer/tools/server > /dev/null 2>&1
-rm 3.0.zip
+wget --no-check-certificate -N -nd https://github.com/drwetter/testssl.sh/archive/3.0.2.zip > /dev/null 2>&1
+unzip -o 3.0.2.zip -d ./Analyzer/tools/server > /dev/null 2>&1
+rm 3.0.2.zip
 b_echo "Done"
 
 echo ""
