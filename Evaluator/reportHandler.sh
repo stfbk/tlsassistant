@@ -7,13 +7,17 @@ python=$root_folder/../python_dep/bin/python
 stix_gen=$report_folder/stix_gen.py #STIX output generator
 
 analyzer=$root_folder/../Analyzer #Analyzer components path
+parser=$analyzer/tools/others/super_config/parser.py #STIX Super Generator
 server_reports=$analyzer/tools/server/reports
 other_reports=$analyzer/tools/others/reports
 
 mitigations=$root_folder/Mitigations #xml database path
 source_trees=$root_folder/AttackTrees #original dot sources path
 trees=$root_folder/trees_to_generate #dot sources to edit path
+reports_to_evaluate=./reports_to_evaluate
 vulnerabilityList=$mitigations/../vulnerabilityList.txt
+vulnerabilityListSuper=$mitigations/../vulnerabilityList_SUPER.txt
+raw_super_report=$reports_to_evaluate/super_report.txt
 report=$2
 target=$3
 IFS='"' #internal field separator - used to escape the double quotes
@@ -125,6 +129,12 @@ else #if the tool DID detect the webserver
     fi
 fi
 
+if [ -f $vulnerabilityListSuper ]; then #if the file exists
+
+    numDetections_SUPER=$(grep -o "<h2>" $vulnerabilityListSuper|wc -l)
+    numDetections=$(($numDetections+$numDetections_SUPER))
+fi
+
 echo "$numDetections problems detected">> $report #prints the number of detected issues (without counting the webserver entry)
 echo "*Collecting the mitigations*"
 
@@ -189,6 +199,9 @@ while read entry; do #for each entry in the vulnerability list
             fi
         else
             if [ "$1" = "x" ]; then #if the STIX output is required
+                if [ -f $raw_super_report ]; then #if the file exists
+                    $python ${parser} $raw_super_report -b -m $mitigations -q -x $report_folder
+                fi
                 rm $2 2>/dev/null #remove the unused markdown report
                 collectAllSnippets $entry
 
@@ -261,5 +274,9 @@ if [ "$1" -eq "$1" ] 2> /dev/null;then #if the user has NOT requested a special 
 report_name=${report##*/} #remove the path
 report_name=${report_name%.*} #remove the extension
 bash $root_folder/../utility/markdown.sh $report > $report_folder/$report_name.html #convert to HTML
+if [ -f $vulnerabilityListSuper ]; then #if the file exists
+    cat $vulnerabilityListSuper >>$report_folder/$report_name.html
+    
+fi
 rm $report
 fi

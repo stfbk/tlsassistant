@@ -14,7 +14,7 @@ function s_echo {
 }
 
 function testssl.sh {
-    version="3.0.2" #version
+    version="3.0.4" #version
     testssl_folder=$tools/testssl.sh-$version #location (folder)
 
     re_url='^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$'

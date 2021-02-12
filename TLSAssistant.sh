@@ -27,6 +27,7 @@ function cleanup { #removing old reports (suppressing the warnings)
     rm -r $server_reports/* 2>/dev/null
     rm -r $other_reports/* 2>/dev/null
     rm -r $evaluator/vulnerabilityList.txt 2>/dev/null
+    rm -r $evaluator/vulnerabilityList_SUPER.txt 2>/dev/null
     rm -r $evaluator_reports/* 2>/dev/null
     rm -r $evaluator_trees/* 2>/dev/null
     rm -r $root_folder/subdomains.txt 2>/dev/null
@@ -203,7 +204,7 @@ do
             quit
             ;;
         -a|--apk)
-            if ! { [ -f "$2" ] && [ ${2: -4} 1== ".apk" ]; }; then #if the argument not an apk
+            if ! { [ -f "$2" ] && [ ${2: -4} == ".apk" ]; }; then #if the argument not an apk
                 echo "$2 is not valid file"
                 quit
             fi
@@ -216,8 +217,13 @@ do
             echo "Apk: $2">> $report
             echo "">> $report
             cd $analyzer
-            bash checkApk.sh $2
-            sleep 10
+            echo $2
+            cd $root_folder
+            whereisfile=$(realpath ${2})
+            #echo $whereisfile
+            cd $analyzer
+            bash checkApk.sh ${whereisfile}&
+            wait
             cd $root_folder
             shift 2 #skip argument and file
             ;;

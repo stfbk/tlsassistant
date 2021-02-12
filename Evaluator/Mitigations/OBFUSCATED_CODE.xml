@@ -1,0 +1,14 @@
+<Entry>
+        <Name>Obfuscated Code</Name>
+        <ExtendedName>Obfuscated Code</ExtendedName>
+        <Description>
+            The code seems obfuscated.
+           </Description> 
+        <Mitigation>
+            <Textual>
+                    You should run this tool on a clean APK, so it's easy to detect and find vulnerabilities.
+            </Textual>
+            <Snippet>
+            </Snippet>
+        </Mitigation>
+    </Entry>

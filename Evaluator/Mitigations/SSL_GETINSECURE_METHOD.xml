@@ -1,0 +1,14 @@
+<Entry>
+        <Name>SSL Get insecure Method</Name>
+        <ExtendedName>SSL getInsecure method</ExtendedName>
+        <Description>
+                Insecure application of SSL implementation, this applications in using the getInsecure Method which returns a new instance of a socketFactory with all SSL security checks disabled.
+           </Description> 
+        <Mitigation>
+            <Textual>
+                    You should change it with getDefault method and configure it properly.
+            </Textual>
+            <Snippet>
+            </Snippet>
+        </Mitigation>
+    </Entry>

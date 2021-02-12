@@ -1,0 +1,16 @@
+<Entry>
+	<Name>SLOTH - MD5 Signature TLS 1.3</Name>
+	<ExtendedName>**S**ecurity **L**osses from **O**bsolete and **T**runcated transcript **H**ashes</ExtendedName>
+	<CVE>2015-7575</CVE>
+	<CVSS3>5.9 (Medium)</CVSS3> <!-- AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N -->
+	<Description>Due to the support for RSA-MD5 certificate signature, TLS 1.2 (or TLS 1.3 with legacy algorithms) is prone to a series of transcript collision attacks. If a client uses the same certificate to authenticate with different servers, an attacker can force the victim to create a signature that can be used to impersonate it.</Description> 
+	<Mitigation>
+		<Textual>Do not use Legacy Algorithms with TLS 1.3</Textual>
+		<Snippet>
+			<apache>No snippet available</apache>
+			<nginx>No snippet available</nginx><!--check if !MD5 can fix that-->
+		</Snippet>
+	</Mitigation>
+</Entry>
+<!-- https://www.mitls.org/pages/attacks/SLOTH -->
+<!-- https://nvd.nist.gov/vuln/detail/CVE-2015-7575 -->
