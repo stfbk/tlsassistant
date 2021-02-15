@@ -22,21 +22,39 @@ b_echo "################"
 echo ""
 r_echo "# Installing dependencies..."
 sudo apt-get update
-sudo apt-get install -y build-essential aha html2text libxml2-utils git unzip curl wget graphviz python2 python2-dev python-setuptools
+sudo apt-get install -y aha html2text libxml2-utils git unzip curl wget graphviz python3-dev python3-venv
+#try to install aria2 for faster downloads
+sudo apt-get install -y aria2
+
+if ! [[ $(command -v super-analyzer) ]]; then
+    if [[ $(command -v aria2c) ]]; then
+
+    aria2c -q https://github.com/SUPERAndroidAnalyzer/super/releases/download/0.5.1/super-analyzer_0.5.1_ubuntu_amd64.deb -o super-analyzer.deb
+    else
+    wget  -O super-analyzer.deb https://github.com/SUPERAndroidAnalyzer/super/releases/download/0.5.1/super-analyzer_0.5.1_ubuntu_amd64.deb
+
+    fi
+
+    sudo apt-get install -y ./super-analyzer.deb
+    rm ./super-analyzer.deb
+fi
+
+
 echo ""
 r_echo "Utilities installed"
     echo ""
-if ! [[ $(command -v pip2) ]]; then
-    curl -s https://bootstrap.pypa.io/get-pip.py --output get-pip.py
-    sudo python2 get-pip.py
-    rm get-pip.py
+if ! [[ $(command -v pip) ]]; then
+    sudo apt-get install -y python3-pip
     r_echo "pip installed"
 else
     r_echo "pip already installed"
 fi
-pip2 install virtualenv
+#pip3 install virtualenv
 
-~/.local/bin/virtualenv -p python2 python_dep
+#virtualenv -p python2 python_dep
+r_echo "Creating VENV..."
+python3 -m venv python_dep
+python_dep/bin/pip install wheel
 python_dep/bin/pip install androguard
 r_echo "Androguard installed"
 python_dep/bin/pip install --pre tlslite-ng
@@ -45,7 +63,7 @@ python_dep/bin/pip install stix2
 r_echo "stix2 installed"
 echo ""
 
-mkdir utility
+mkdir -p utility
 curl -s https://raw.githubusercontent.com/chadbraunduin/markdown.bash/master/markdown.sh > utility/markdown.sh
 r_echo "markdown.sh installed"
 echo ""
@@ -57,21 +75,25 @@ echo ""
 r_echo "# Installing tools..."
 echo ""
 r_echo "## Downloading mallodroid..."
-git clone https://github.com/luckenzo/mallodroid.git ./Analyzer/tools/others/mallodroid > /dev/null 2>&1 
+git clone https://github.com/stfbk/mallodroid.git ./Analyzer/tools/others/mallodroid > /dev/null 2>&1 
 b_echo "Done"
 
 echo ""
 r_echo "## Downloading tlsfuzzer..."
 git clone https://github.com/tomato42/tlsfuzzer.git ./Analyzer/tools/server/tlsfuzzer > /dev/null 2>&1
-mkdir Analyzer/tools/server/utils
+mkdir -p Analyzer/tools/server/utils
 openssl req -x509 -newkey rsa -keyout Analyzer/tools/server/utils/localuser.key \-out Analyzer/tools/server/utils/localuser.crt -nodes -batch -subj /CN=Local\ User 2>/dev/null #generating the required certificate
 b_echo "Done"
 
 echo ""
 r_echo "## Downloading testssl.sh..."
-wget --no-check-certificate -N -nd https://github.com/drwetter/testssl.sh/archive/3.0.2.zip > /dev/null 2>&1
-unzip -o 3.0.2.zip -d ./Analyzer/tools/server > /dev/null 2>&1
-rm 3.0.2.zip
+if [[ $(command -v aria2c) ]]; then
+    aria2c -q https://github.com/drwetter/testssl.sh/archive/3.0.4.zip -o 3.0.4.zip
+else
+    wget --no-check-certificate -N -nd https://github.com/drwetter/testssl.sh/archive/3.0.4.zip > /dev/null 2>&1
+fi
+unzip -o 3.0.4.zip -d ./Analyzer/tools/server > /dev/null 2>&1
+rm 3.0.4.zip
 b_echo "Done"
 
 echo ""

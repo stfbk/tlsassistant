@@ -3,6 +3,9 @@
 #env
 root_folder="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 toolReports=$root_folder/reports_to_evaluate
+python=$root_folder/../python_dep/bin/python
+tools=$root_folder/../Analyzer/tools/others #other tools path (starting from the project root)
+parser="${tools}/super_config/parser.py"
 webserver=""
 
 ##functions definition
@@ -147,6 +150,10 @@ function tlsfuzzer_enumerator {
     unknownsignatures=$(grep -o "unknown-signature_algorithm-numbers" $toolReports/tlsfuzzer_report_clienthello.txt|wc -l) #ok value 1
     sumof_clienthello=$(($clienthellomd5 + $unknownsignatures))
     
+    #legacy ciphers TLS 1.3
+    legacytls13=$(grep -o "rsa_pkcs1_md5 signature" $toolReports/tlsfuzzer_report_tls13sigs.txt|wc -l) #ok value 1
+    sanity_legacytls13=$(grep -o "sanity" $toolReports/tlsfuzzer_report_tls13sigs.txt|wc -l) #ok value 2
+    
     #SLOTH Mutual
     if ! grep -q -w "FAIL: 0" $toolReports/tlsfuzzer_report.txt; then # if it's not 0
 
@@ -200,8 +207,30 @@ function tlsfuzzer_enumerator {
         echo "- No MD5 Signature ClientHello Forced SLOTH Detected."
     fi
     echo 
+
+    #tls13 legacy md5
+    if ! grep -q -w "FAIL: 0" $toolReports/tlsfuzzer_report_tls13sigs.txt; then # if it's not 0
+
+        if [ $sanity_legacytls13 -gt 2 ]; then #checking if sanity check is good
+            echo -e "- \e[30;43m[WARNING]\e[0m: sanity check FAILED, could not check for TLS 1.3 Legacy md5 signatures SLOTH."
+            echo -e "- \e[30;44m[INFO]\e[0m: The server probably isn't using TLS 1.3."
+            
+        elif [ $legacytls13 -gt 1 ]; then #checking if sloth
+            echo "SLOTH_MD5_Signature_TLS13">> $root_folder/vulnerabilityList.txt
+            echo "- detected: SLOTH - MD5 Signature TLS 1.3 Detected"
+        else
+            echo "- No MD5 Signature TLS 1.3 SLOTH Detected."
+        fi
+    else
+        echo "- No MD5 Signature TLS 1.3 SLOTH Detected."
+    fi
+    echo 
 }
 
+
+function super_enumerator() {
+    $python ${parser} $toolReports/super_report.txt -b -m $root_folder/Mitigations -v 3 -s \<br\> >$root_folder/vulnerabilityList_SUPER.txt #Parser for super results.
+}
 
 echo
 echo "---Begin vulnerability enumeration---"
@@ -222,6 +251,9 @@ for file in $toolReports/*; do #for each report available
             ;;
         mallodroid_report.txt)
             mallodroid_enumerator #internal function call
+            ;;
+        super_report.txt)
+            super_enumerator #internal function call
             ;;
     esac
 done

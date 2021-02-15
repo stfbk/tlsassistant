@@ -5,11 +5,11 @@ rm -rf python_dep 2>/dev/null
 rm -rf utility 2>/dev/null
 
 rm -rf Analyzer/tools/server/* 2>/dev/null
-mkdir Analyzer/tools/server/reports
+mkdir -p Analyzer/tools/server/reports
 touch Analyzer/tools/server/reports/.keep
 
-rm -rf Analyzer/tools/others/* 2>/dev/null
-mkdir Analyzer/tools/others/reports
+rm -rf Analyzer/tools/others/mallodroid 2>/dev/null 
+mkdir -p Analyzer/tools/others/reports
 touch Analyzer/tools/others/reports/.keep
 
 rm -rf Evaluator/reports_to_evaluate/* 2>/dev/null

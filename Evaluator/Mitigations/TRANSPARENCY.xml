@@ -1,7 +1,7 @@
 <Entry>
 	<Name>Missing Certificate Transparency</Name>
 	<ExtendedName>Missing Certificate Transparency</ExtendedName>
-	<Description> With the current configuration, if a CA misissues a valid certificate for this domain, it may take months before being detected. Certificate transparency helps by reducing the interval between detection and mitigation.</Description> 
+	<Description>With the current configuration, if a CA misissues a valid certificate for this domain, it may take months before being detected. Certificate transparency helps by reducing the interval between detection and mitigation.</Description> 
 	<Mitigation>
 		<Textual>Use one of the following SCT delivery methods:
 1. use a CA that embeds the SCT within the certificate;
