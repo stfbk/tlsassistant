@@ -23,6 +23,10 @@ Thanks to the integrated analyzers, TLSAssistant is currently able to detect the
   - [SLOTH](https://www.mitls.org/pages/attacks/SLOTH)
   - [Sweet32](https://sweet32.info)
   - [Unsecure Android TrustManagers](https://dl.acm.org/citation.cfm?id=2382205)
+  - Certificate or KeyStore Disclosure
+  - WebViews Ignoring SSL Errors
+  - Accepting ALL SSL Certificates
+  - [Weak Algorithms](https://developer.mozilla.org/en-US/docs/Web/Security/Weak_Signature_Algorithm)
 
 For each one of them, TLSAssistant is able to suggest an appropriate mitigation to easily fix the misconfiguration. These mitigations have been collected by fetching information from both scientific literature and each vendor's technical documentation.
 
@@ -58,8 +62,8 @@ To be able to run TLSAssistant you will need a set of dependencies that can be a
 
 It will download (and place in the correct folders) the following:
 
-- packages: `aha`, `androguard`, `curl`, `git`, `graphviz`, `html2text`, `libxml2-utils`, `python2`, `wget`;
-- analyzers: `mallodroid`, `testssl.sh`, `tlsfuzzer`.
+- packages: `aha`, `androguard`, `curl`, `git`, `graphviz`, `html2text`, `libxml2-utils`, `python3`, `wget`, `aria2c`, `openjdk`;
+- analyzers: `mallodroid`, `testssl.sh`, `tlsfuzzer`,`SUPERAnalyzer`.
 
 **Note**: TLSAssistant is not compatible with **W**indows **S**ubsystem for **L**inux v1.
 
@@ -108,7 +112,7 @@ TLSAssistant exists thanks to the following open-source projects (from a to z):
 
 - [Androguard](https://github.com/androguard/androguard)
 - [ctfr](https://github.com/UnaPibaGeek/ctfr)
-- [mallodroid](https://github.com/sfahl/mallodroid)
+- [mallodroid](https://github.com/stfbk/mallodroid)
 - [markdown.bash](https://github.com/chadbraunduin/markdown.bash)
 - [python-stix2](https://github.com/oasis-open/cti-python-stix2)
 - [testssl.sh](https://github.com/drwetter/testssl.sh)
