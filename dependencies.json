@@ -1,0 +1,23 @@
+[
+  {
+    "type": "git",
+    "url": "https://github.com/stfbk/mallodroid"
+  },
+  {
+    "type": "git",
+    "url": "https://github.com/UnaPibaGeek/ctfr"
+  },
+  {
+    "type": "git",
+    "url": "https://github.com/tomato42/tlsfuzzer"
+  },
+  {
+    "type": "pkg",
+    "url": "https://github.com/SUPERAndroidAnalyzer/super/releases/download/0.5.1/super-analyzer_0.5.1_ubuntu_amd64.deb"
+  },
+  {
+    "type": "zip",
+    "url": "https://github.com/drwetter/testssl.sh/archive/3.0.4.zip"
+  }
+
+]
