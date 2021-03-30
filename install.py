@@ -5,10 +5,11 @@ import sys
 import aiohttp
 import async_timeout
 from zipfile import ZipFile
-from os import path, geteuid, makedirs, sep, remove
+from os import path, geteuid, mkdir, sep, remove, devnull
 import subprocess
 import argparse
 import logging
+from shutil import rmtree as rm_rf
 
 parser = argparse.ArgumentParser(description="Installer for TLSAssistant")
 parser.add_argument("-v", "--verbose", help="Verbose mode.", action="store_true")
@@ -16,7 +17,7 @@ parser.add_argument("-v", "--verbose", help="Verbose mode.", action="store_true"
 args = parser.parse_args()
 
 if args.verbose:
-    logging.basicConfig(filename="lastrun.log", level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG)
 else:
     logging.basicConfig(level=logging.INFO)
 
@@ -26,6 +27,7 @@ class Install:
         gits = []
         pkgs = []
         zips = []
+        logging.info("Loading dependencies...")
         for dependency in dependencies:
             if dependency["type"] == "git":
                 gits.append(dependency["url"])
@@ -40,7 +42,7 @@ class Install:
                 logging.warning(
                     f"Ignoring dependency {dependency['url']}, type {dependency['type']} is not recognized."
                 )
-
+        logging.info("Getting files...")
         logging.debug("Getting all pkgs...")
         loop = asyncio.get_event_loop()
         results_pkgs = loop.run_until_complete(self.download(pkgs))
@@ -67,19 +69,20 @@ class Install:
         for file in results:
             if type == 'pkgs':
                 logging.debug(f"Installing dependencies{sep}{file}")
-                subprocess.check_call(
-                    ["sudo", "apt", "get", "install", "-y", f"dependencies{sep}{file}"],
-                    stderr=sys.stderr,
-                    stdout=(
-                        sys.stdout
-                        if logging.getLogger().isEnabledFor(logging.DEBUG)
-                        else None
-                    ),
-                )
+                with open(devnull, 'w') as null:
+                    subprocess.check_call(
+                        ["sudo", "apt-get", "install", "-y", f"./dependencies{sep}{file}"],
+                        stderr=sys.stderr,
+                        stdout=(
+                            sys.stdout
+                            if logging.getLogger().isEnabledFor(logging.DEBUG)
+                            else null
+                        ),
+                    )
             elif type == 'zips':
                 logging.debug(f"Unzipping dependencies{sep}{file}")
                 with ZipFile(f"dependencies{sep}{file}", 'r') as zip:
-                    zip.extractall(f"dependencies{sep}{file.split('.')[0]}")
+                    zip.extractall(f"dependencies{sep}{file.rsplit('.', 1)[0]}")
             else:
                 logging.error('no type found.')
                 raise AssertionError("The type given doesn't match one of the existing one.")
@@ -89,18 +92,19 @@ class Install:
 
     def git_clone(self, url, path=None):
         file_name = self.get_filename(url)
-        subprocess.call(
-            [
-                "git",
-                "clone",
-                str(url),
-                f"{path if path else 'dependencies' + sep + file_name}",
-            ],
-            stderr=sys.stderr,
-            stdout=(
-                sys.stdout if logging.getLogger().isEnabledFor(logging.DEBUG) else None
-            ),
-        )
+        with open(devnull, 'w') as null:
+            subprocess.call(
+                [
+                    "git",
+                    "clone",
+                    str(url),
+                    f"{path if path else 'dependencies' + sep + file_name}",
+                ],
+                stderr=sys.stderr if logging.getLogger().isEnabledFor(logging.DEBUG) else null,
+                stdout=(
+                    sys.stdout if logging.getLogger().isEnabledFor(logging.DEBUG) else null
+                ),
+            )
 
     async def get_url(self, url, session):
 
@@ -132,7 +136,11 @@ class Install:
 
 def main():  # exec main
     if not path.exists("dependencies"):
-        makedirs("dependencies")
+        logging.debug("Folder dependencies does not exist. Creating a new one.")
+    else:
+        logging.debug("Folder dependencies exist. Removing and creating a new one.")
+        rm_rf("dependencies")
+    mkdir("dependencies")
     if path.exists("dependencies.json"):
         with open("dependencies.json", "r") as dep:  # load dependencies
             data = dep.read()
@@ -147,4 +155,5 @@ if __name__ == "__main__":
     if geteuid() == 0:  # check if sudo
         main()
     else:
+        logging.warning("This tools need SUDO to work.")
         subprocess.check_call(["sudo", sys.executable] + sys.argv)  # force sudo
