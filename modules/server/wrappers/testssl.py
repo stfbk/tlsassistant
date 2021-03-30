@@ -34,7 +34,7 @@ class Testssl:
         return []
 
     def __scan(self, hostname: str, force=False) -> [dict]:
-        return [self.__scan(ip, force) for ip in self.__scan_hostname(hostname)]
+        return [self.__scan_ip(ip, force) for ip in self.__scan_hostname(hostname)]
 
     def __scan_ip(self, ip: str, force: bool) -> dict:
         # scan
