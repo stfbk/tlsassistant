@@ -14,10 +14,10 @@ class Parser:
 
     def __parse(self):
         for result in self.__results:
-            site, ip = result['ip'].rsplit('/', 1)
-            if site == '':
-                site = 'IP_SCANS'
-            if ip != '':
+            site, ip = result["ip"].rsplit("/", 1)
+            if site == "":
+                site = "IP_SCANS"
+            if ip != "":
                 if site not in self.__output:
                     self.__output[site] = {}
                 if ip not in self.__output[site]:
@@ -25,7 +25,7 @@ class Parser:
 
                 self.__output[site][ip].append(result)
 
-    def output(self):
+    def output(self) -> dict:
         return self.__output
 
 
@@ -33,10 +33,11 @@ class Testssl:
     def __init__(self):
         self.__testssl = f"dependencies{sep}3.0.4{sep}testssl.sh-3.0.4{sep}testssl.sh"
         self.__input_dict = {}
-        self.__scan_dict = {}
+        self.__cache = {}
+        self.__ip_cache = {}
 
-    def validate_ip(self, s):
-        a = s.split(".")
+    def validate_ip(self, ip: str) -> bool:
+        a = ip.split(".")
         if len(a) != 4:
             return False
         for x in a:
@@ -52,12 +53,10 @@ class Testssl:
 
     def output(self, **kwargs) -> dict:
         return (
-            self.__scan_dict[kwargs["hostname"]]
-            if "hostname" in kwargs
-            else self.__scan_dict
+            self.__cache[kwargs["hostname"]] if "hostname" in kwargs else self.__cache
         )
 
-    def run(self, **kwargs):
+    def run(self, **kwargs) -> dict:
         self.input(**kwargs)
         if "hostname" not in self.__input_dict:
             raise AssertionError("IP or hostname args not found.")
@@ -75,7 +74,9 @@ class Testssl:
     def __scan(self, hostname: str, args: [str], force: bool, one: bool) -> dict:
         return self.__scan_hostname(hostname, args, force, one)
 
-    def __scan_hostname(self, hostname: str, args: [str], force: bool, one: bool) -> dict:
+    def __scan_hostname(
+        self, hostname: str, args: [str], force: bool, one: bool
+    ) -> dict:
         # scan
         if force:
             logging.debug("Starting testssl analysis")
@@ -110,14 +111,14 @@ class Testssl:
                 )
                 if path.exists(f"dependencies{sep}{file_name}.json"):
                     with open(
-                            f"dependencies{sep}{file_name}.json", "r"
+                        f"dependencies{sep}{file_name}.json", "r"
                     ) as file:  # load temp file
                         data = file.read()
-                        self.__scan_dict[hostname] = json.loads(data)
+                        self.__cache[hostname] = json.loads(data)
                     remove(f"dependencies{sep}{file_name}.json")
         else:
-            if hostname not in self.__scan_dict:
-                self.__scan_dict[hostname] = self.__scan_hostname(
+            if hostname not in self.__cache:
+                self.__cache[hostname] = self.__scan_hostname(
                     hostname, args=args, force=True, one=one
                 )
-        return self.__scan_dict[hostname]
+        return self.__cache[hostname]
