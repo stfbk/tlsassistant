@@ -56,7 +56,11 @@ class Testssl:
         return (
             self.__cache[kwargs["hostname"]]
             if not self.validate_ip(kwargs["hostname"])
-            else self.__cache[self.__ip_cache[kwargs["hostname"]]][kwargs["hostname"]]
+            else {
+                kwargs["hostname"]: self.__cache[self.__ip_cache[kwargs["hostname"]]][
+                    kwargs["hostname"]
+                ]
+            }
         )
 
     def merge(self, x, y):
@@ -79,12 +83,12 @@ class Testssl:
             )
         return self.output(hostname=self.__input_dict["hostname"])
 
-    def __scan(self, hostname: str, args: [str], force: bool, one: bool) -> dict:
-        return self.__scan_hostname(hostname, args, force, one)
+    def __scan(self, hostname: str, args: [str], force: bool, one: bool):
+        self.__scan_hostname(hostname, args, force, one)
 
     def __scan_hostname(
         self, hostname: str, args: [str], force: bool, one: bool
-    ) -> dict:
+    ):
         # scan
         if force:
             logging.debug("Starting testssl analysis")
@@ -133,9 +137,7 @@ class Testssl:
             if not self.validate_ip(hostname):
                 if hostname not in self.__cache:
                     self.__scan_hostname(hostname, args=args, force=True, one=one)
-                return self.__cache[hostname]
             else:
                 if hostname not in self.__ip_cache:
                     print(self.__ip_cache)
                     self.__scan_hostname(hostname, args=args, force=True, one=one)
-                    return self.__cache[self.__ip_cache[hostname]][hostname]
