@@ -6,6 +6,29 @@ import uuid
 import logging
 
 
+class Parser:
+    def __init__(self, to_parse):
+        self.__results = to_parse
+        self.__output = {}
+        self.__parse()
+
+    def __parse(self):
+        for result in self.__results:
+            site, ip = result['ip'].rsplit('/', 1)
+            if site == '':
+                site = 'IP_SCANS'
+            if ip != '':
+                if site not in self.__output:
+                    self.__output[site] = {}
+                if ip not in self.__output[site]:
+                    self.__output[site][ip] = []
+
+                self.__output[site][ip].append(result)
+
+    def output(self):
+        return self.__output
+
+
 class Testssl:
     def __init__(self):
         self.__testssl = f"dependencies{sep}3.0.4{sep}testssl.sh-3.0.4{sep}testssl.sh"
@@ -41,6 +64,7 @@ class Testssl:
         else:
             self.__scan(
                 str(self.__input_dict["hostname"]),
+                args=self.__input_dict["args"] if "args" in self.__input_dict else None,
                 force=self.__input_dict["force"]
                 if "force" in self.__input_dict
                 else False,
@@ -48,10 +72,10 @@ class Testssl:
             )
         return self.output(hostname=self.__input_dict["hostname"])
 
-    def __scan(self, hostname: str, force: bool, one: bool) -> dict:
-        return self.__scan_hostname(hostname, force, one)
+    def __scan(self, hostname: str, args: str, force: bool, one: bool) -> dict:
+        return self.__scan_hostname(hostname, args, force, one)
 
-    def __scan_hostname(self, hostname: str, force: bool, one: bool) -> dict:
+    def __scan_hostname(self, hostname: str, args: str, force: bool, one: bool) -> dict:
         # scan
         if force:
             logging.debug("Starting testssl analysis")
@@ -68,6 +92,9 @@ class Testssl:
                 if one and not self.validate_ip(hostname):
                     logging.debug("Scanning with --IP=one..")
                     cmd.append(f"--ip=one")
+                if args:
+                    logging.debug(f"Scanning with personalized args: {args}")
+                    cmd.append(args)
                 cmd.append(hostname)
                 subprocess.check_call(
                     cmd,
@@ -90,6 +117,6 @@ class Testssl:
         else:
             if hostname not in self.__scan_dict:
                 self.__scan_dict[hostname] = self.__scan_hostname(
-                    hostname, force=True, one=one
+                    hostname, args=args, force=True, one=one
                 )
         return self.__scan_dict[hostname]
