@@ -72,10 +72,10 @@ class Testssl:
             )
         return self.output(hostname=self.__input_dict["hostname"])
 
-    def __scan(self, hostname: str, args: str, force: bool, one: bool) -> dict:
+    def __scan(self, hostname: str, args: [str], force: bool, one: bool) -> dict:
         return self.__scan_hostname(hostname, args, force, one)
 
-    def __scan_hostname(self, hostname: str, args: str, force: bool, one: bool) -> dict:
+    def __scan_hostname(self, hostname: str, args: [str], force: bool, one: bool) -> dict:
         # scan
         if force:
             logging.debug("Starting testssl analysis")
@@ -94,7 +94,8 @@ class Testssl:
                     cmd.append(f"--ip=one")
                 if args:
                     logging.debug(f"Scanning with personalized args: {args}")
-                    cmd.append(args)
+                    for arg in args:
+                        cmd.append(arg)
                 cmd.append(hostname)
                 subprocess.check_call(
                     cmd,
