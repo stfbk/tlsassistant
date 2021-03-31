@@ -10,6 +10,7 @@ class Parser:
     def __init__(self, to_parse):
         self.__results = to_parse
         self.__output = {}
+        self.__ip_output = {}
         self.__parse()
 
     def __parse(self):
@@ -22,11 +23,11 @@ class Parser:
                     self.__output[site] = {}
                 if ip not in self.__output[site]:
                     self.__output[site][ip] = []
-
+                self.__ip_output[ip] = site
                 self.__output[site][ip].append(result)
 
-    def output(self) -> dict:
-        return self.__output
+    def output(self) -> (dict, dict):
+        return self.__output, self.__ip_output
 
 
 class Testssl:
@@ -53,8 +54,15 @@ class Testssl:
 
     def output(self, **kwargs) -> dict:
         return (
-            self.__cache[kwargs["hostname"]] if "hostname" in kwargs else self.__cache
+            self.__cache[kwargs["hostname"]]
+            if not self.validate_ip(kwargs["hostname"])
+            else self.__cache[self.__ip_cache[kwargs["hostname"]]][kwargs["hostname"]]
         )
+
+    def merge(self, x, y):
+        z = x.copy()
+        z.update(y)
+        return z
 
     def run(self, **kwargs) -> dict:
         self.input(**kwargs)
@@ -98,7 +106,7 @@ class Testssl:
                     for arg in args:
                         cmd.append(arg)
                 cmd.append(hostname)
-                subprocess.check_call(
+                subprocess.run(
                     cmd,
                     stderr=sys.stderr,
                     stdout=(
@@ -108,17 +116,26 @@ class Testssl:
                         )  # if the user asked for debug mode, let him see the output.
                         else null  # else /dev/null
                     ),
+                    check=True,
+                    text=True,
+                    input="yes",
                 )
                 if path.exists(f"dependencies{sep}{file_name}.json"):
                     with open(
                         f"dependencies{sep}{file_name}.json", "r"
                     ) as file:  # load temp file
                         data = file.read()
-                        self.__cache[hostname] = json.loads(data)
+                        cache, ip_cache = Parser(json.loads(data)).output()
+                        self.__cache = self.merge(self.__cache, cache)
+                        self.__ip_cache = self.merge(self.__ip_cache, ip_cache)
                     remove(f"dependencies{sep}{file_name}.json")
         else:
-            if hostname not in self.__cache:
-                self.__cache[hostname] = self.__scan_hostname(
-                    hostname, args=args, force=True, one=one
-                )
-        return self.__cache[hostname]
+            if not self.validate_ip(hostname):
+                if hostname not in self.__cache:
+                    self.__scan_hostname(hostname, args=args, force=True, one=one)
+                return self.__cache[hostname]
+            else:
+                if hostname not in self.__ip_cache:
+                    print(self.__ip_cache)
+                    self.__scan_hostname(hostname, args=args, force=True, one=one)
+                    return self.__cache[self.__ip_cache[hostname]][hostname]
