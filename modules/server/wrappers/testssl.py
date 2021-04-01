@@ -37,7 +37,7 @@ class Testssl:
         self.__cache = {}
         self.__ip_cache = {}
 
-    def validate_ip(self, ip: str) -> bool:
+    def __validate_ip(self, ip: str) -> bool:
         a = ip.split(".")
         if len(a) != 4:
             return False
@@ -55,7 +55,7 @@ class Testssl:
     def output(self, **kwargs) -> dict:
         return (
             self.__cache[kwargs["hostname"]]
-            if not self.validate_ip(kwargs["hostname"])
+            if not self.__validate_ip(kwargs["hostname"])
             else {
                 kwargs["hostname"]: self.__cache[self.__ip_cache[kwargs["hostname"]]][
                     kwargs["hostname"]
@@ -94,7 +94,9 @@ class Testssl:
                 if "force" in self.__input_dict
                 else False,
                 one=self.__input_dict["one"] if "one" in self.__input_dict else True,
-                clean=self.__input_dict["clean"] if "clean" in self.__input_dict else False,
+                clean=self.__input_dict["clean"]
+                if "clean" in self.__input_dict
+                else False,
             )
         return self.output(hostname=self.__input_dict["hostname"])
 
@@ -103,9 +105,7 @@ class Testssl:
             self.__clean_cache()
         self.__scan_hostname(hostname, args, force, one)
 
-    def __scan_hostname(
-            self, hostname: str, args: [str], force: bool, one: bool
-    ):
+    def __scan_hostname(self, hostname: str, args: [str], force: bool, one: bool):
         # scan
         if force:
             logging.debug("Starting testssl analysis")
@@ -119,7 +119,7 @@ class Testssl:
                     self.__testssl,
                     f"--jsonfile=dependencies{sep}{file_name}.json",
                 ]
-                if one and not self.validate_ip(hostname):
+                if one and not self.__validate_ip(hostname):
                     logging.debug("Scanning with --IP=one..")
                     cmd.append(f"--ip=one")
                 if args:
@@ -143,14 +143,14 @@ class Testssl:
                 )
                 if path.exists(f"dependencies{sep}{file_name}.json"):
                     with open(
-                            f"dependencies{sep}{file_name}.json", "r"
+                        f"dependencies{sep}{file_name}.json", "r"
                     ) as file:  # load temp file
                         data = file.read()
                         cache, ip_cache = Parser(json.loads(data)).output()
                         self.__update_cache(cache, ip_cache)
                     remove(f"dependencies{sep}{file_name}.json")
         else:
-            if not self.validate_ip(hostname):
+            if not self.__validate_ip(hostname):
                 if hostname not in self.__cache:
                     self.__scan_hostname(hostname, args=args, force=True, one=one)
             else:
