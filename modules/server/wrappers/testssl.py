@@ -63,10 +63,24 @@ class Testssl:
             }
         )
 
-    def merge(self, x, y):
+    def __merge(self, x, y):
         z = x.copy()
         z.update(y)
         return z
+
+    def __clean_cache(self) -> bool:
+        self.__cache = {}
+        self.__ip_cache = {}
+        return True
+
+    def __update_cache(self, cache, ip_cache):
+        # self.__cache = self.__merge(self.__cache, cache)
+        for site in cache:
+            if site not in self.__cache:
+                self.__cache[site] = {}
+            self.__cache[site] = self.__merge(self.__cache[site], cache[site])
+
+        self.__ip_cache = self.__merge(self.__ip_cache, ip_cache)
 
     def run(self, **kwargs) -> dict:
         self.input(**kwargs)
@@ -80,14 +94,17 @@ class Testssl:
                 if "force" in self.__input_dict
                 else False,
                 one=self.__input_dict["one"] if "one" in self.__input_dict else True,
+                clean=self.__input_dict["clean"] if "clean" in self.__input_dict else False,
             )
         return self.output(hostname=self.__input_dict["hostname"])
 
-    def __scan(self, hostname: str, args: [str], force: bool, one: bool):
+    def __scan(self, hostname: str, args: [str], force: bool, one: bool, clean: bool):
+        if clean:
+            self.__clean_cache()
         self.__scan_hostname(hostname, args, force, one)
 
     def __scan_hostname(
-        self, hostname: str, args: [str], force: bool, one: bool
+            self, hostname: str, args: [str], force: bool, one: bool
     ):
         # scan
         if force:
@@ -126,12 +143,11 @@ class Testssl:
                 )
                 if path.exists(f"dependencies{sep}{file_name}.json"):
                     with open(
-                        f"dependencies{sep}{file_name}.json", "r"
+                            f"dependencies{sep}{file_name}.json", "r"
                     ) as file:  # load temp file
                         data = file.read()
                         cache, ip_cache = Parser(json.loads(data)).output()
-                        self.__cache = self.merge(self.__cache, cache)
-                        self.__ip_cache = self.merge(self.__ip_cache, ip_cache)
+                        self.__update_cache(cache, ip_cache)
                     remove(f"dependencies{sep}{file_name}.json")
         else:
             if not self.validate_ip(hostname):
