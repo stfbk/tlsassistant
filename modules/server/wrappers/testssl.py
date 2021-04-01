@@ -16,7 +16,7 @@ class Parser:
     def __parse(self):
         for result in self.__results:
             site, ip = result["ip"].rsplit("/", 1)
-            if site == "":
+            if site == "" or validate_ip(site):
                 site = "IP_SCANS"
             if ip != "":
                 if site not in self.__output:
@@ -30,24 +30,26 @@ class Parser:
         return self.__output, self.__ip_output
 
 
+def validate_ip(ip: str) -> bool:
+    a = ip.split(".")
+    if len(a) != 4:
+        return False
+    for x in a:
+        if not x.isdigit():
+            return False
+        i = int(x)
+        if i < 0 or i > 255:
+            return False
+    return True
+
+
 class Testssl:
+    __cache = {}
+    __ip_cache = {}
+
     def __init__(self):
         self.__testssl = f"dependencies{sep}3.0.4{sep}testssl.sh-3.0.4{sep}testssl.sh"
         self.__input_dict = {}
-        self.__cache = {}
-        self.__ip_cache = {}
-
-    def __validate_ip(self, ip: str) -> bool:
-        a = ip.split(".")
-        if len(a) != 4:
-            return False
-        for x in a:
-            if not x.isdigit():
-                return False
-            i = int(x)
-            if i < 0 or i > 255:
-                return False
-        return True
 
     def input(self, **kwargs):
         self.__input_dict = kwargs
@@ -55,7 +57,7 @@ class Testssl:
     def output(self, **kwargs) -> dict:
         return (
             self.__cache[kwargs["hostname"]]
-            if not self.__validate_ip(kwargs["hostname"])
+            if not validate_ip(kwargs["hostname"])
             else {
                 kwargs["hostname"]: self.__cache[self.__ip_cache[kwargs["hostname"]]][
                     kwargs["hostname"]
@@ -74,7 +76,6 @@ class Testssl:
         return True
 
     def __update_cache(self, cache, ip_cache):
-        # self.__cache = self.__merge(self.__cache, cache)
         for site in cache:
             if site not in self.__cache:
                 self.__cache[site] = {}
@@ -119,7 +120,7 @@ class Testssl:
                     self.__testssl,
                     f"--jsonfile=dependencies{sep}{file_name}.json",
                 ]
-                if one and not self.__validate_ip(hostname):
+                if one and not validate_ip(hostname):
                     logging.debug("Scanning with --IP=one..")
                     cmd.append(f"--ip=one")
                 if args:
@@ -150,7 +151,7 @@ class Testssl:
                         self.__update_cache(cache, ip_cache)
                     remove(f"dependencies{sep}{file_name}.json")
         else:
-            if not self.__validate_ip(hostname):
+            if not validate_ip(hostname):
                 if hostname not in self.__cache:
                     self.__scan_hostname(hostname, args=args, force=True, one=one)
             else:
