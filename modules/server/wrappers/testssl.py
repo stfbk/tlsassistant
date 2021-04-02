@@ -22,9 +22,12 @@ class Parser:
                 if site not in self.__output:
                     self.__output[site] = {}
                 if ip not in self.__output[site]:
-                    self.__output[site][ip] = []
+                    self.__output[site][ip] = {}
                 self.__ip_output[ip] = site
-                self.__output[site][ip].append(result)
+                id = result['id']
+                result.pop('id', None)
+                result.pop('ip', None)
+                self.__output[site][ip][id] = result
 
     def output(self) -> (dict, dict):
         return self.__output, self.__ip_output
@@ -78,8 +81,11 @@ class Testssl:
     def __update_cache(self, cache, ip_cache):
         for site in cache:
             if site not in self.__cache:
-                self.__cache[site] = {}
-            self.__cache[site] = self.__merge(self.__cache[site], cache[site])
+                self.__cache[site] = cache[site]
+            else:
+                for ip in cache[site]:
+
+                    self.__cache[site][ip] = self.__merge(self.__cache[site][ip], cache[site][ip])
 
         self.__ip_cache = self.__merge(self.__ip_cache, ip_cache)
 
@@ -144,7 +150,7 @@ class Testssl:
                 )
                 if path.exists(f"dependencies{sep}{file_name}.json"):
                     with open(
-                        f"dependencies{sep}{file_name}.json", "r"
+                            f"dependencies{sep}{file_name}.json", "r"
                     ) as file:  # load temp file
                         data = file.read()
                         cache, ip_cache = Parser(json.loads(data)).output()
