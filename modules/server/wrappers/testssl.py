@@ -7,7 +7,17 @@ import logging
 
 
 class Parser:
-    def __init__(self, to_parse):
+    """
+    Class used to parse tlsfuzzer results.
+    The results are parsed and grouped by IP/SITE.
+    """
+
+    def __init__(self, to_parse: dict):
+        """
+        Init method.
+        :param to_parse: Raw JSON output of testssl.sh, given as a python dict.
+        :type to_parse: dict
+        """
         self.__results = to_parse
         self.__output = {}
         self.__ip_output = {}
@@ -30,10 +40,22 @@ class Parser:
                 self.__output[site][ip][id] = result
 
     def output(self) -> (dict, dict):
+        """
+        Output.
+        :return: returns parsed cache dicts.
+        :rtype: tuple of dict
+        """
         return self.__output, self.__ip_output
 
 
 def validate_ip(ip: str) -> bool:
+    """
+    Validate an IP
+    :param ip: String to check if it's an IP.
+    :type ip: str
+    :return: True if ip param it's an IP, false otherwise.
+    :rtype: bool
+    """
     a = ip.split(".")
     if len(a) != 4:
         return False
@@ -47,49 +69,127 @@ def validate_ip(ip: str) -> bool:
 
 
 class Testssl:
+    """
+    Testssl wrapper module.
+    """
     __cache = {}
     __ip_cache = {}
 
     def __init__(self):
+        """
+        Loads testssl variables.
+        """
         self.__testssl = f"dependencies{sep}3.0.4{sep}testssl.sh-3.0.4{sep}testssl.sh"
         self.__input_dict = {}
 
     def input(self, **kwargs):
+        """
+        Set the input for the modules
+        :param kwargs: See below
+
+        :Keyword Arguments:
+        * *hostname* (``str``) --
+          The hostname of the website to analyze. Can be an IP or a Name (DNS)
+        * *args* (``list of str``) --
+          Raw arguments for testssl.sh executable
+        * *force* (``bool``) --
+          Force rescan by ignoring cached results , Default *False*
+        * *one* (``bool``) --
+          Add ``--IP=one`` to testssl.sh executable calls, default *True*
+        * *clean* (``bool``) --
+          clear the cache, default *False*
+        """
         self.__input_dict = kwargs
 
     def output(self, **kwargs) -> dict:
-        return (
-            self.__cache[kwargs["hostname"]]
-            if not validate_ip(kwargs["hostname"])
-            else {
-                kwargs["hostname"]: self.__cache[self.__ip_cache[kwargs["hostname"]]][
-                    kwargs["hostname"]
-                ]
-            }
-        )
+        """
+        Output method of module
+        :param kwargs: See below
 
-    def __merge(self, x, y):
+        :Keyword Arguments:
+        * *hostname* (``str``) --
+          The hostname of the website analyzed. Can be an IP or a Name (DNS).
+
+        :return: Empty dict if not found, results dict if found.
+        :rtype: dict
+        :raise AssertionError: If hostname parameter is not found.
+        """
+        if 'hostname' not in kwargs:
+            raise AssertionError("Missing parameter hostname.")
+        elif kwargs["hostname"] not in self.__cache:
+            return {}  # not found
+        else:
+            return (
+                self.__cache[kwargs["hostname"]]
+                if not validate_ip(kwargs["hostname"])
+                else {
+                    kwargs["hostname"]: self.__cache[self.__ip_cache[kwargs["hostname"]]][
+                        kwargs["hostname"]
+                    ]
+                }
+            )
+
+    def __merge(self, x, y) -> dict:
+        """
+        Internal module, merge two dicts
+        :param x: source dict
+        :type x: dict
+        :param y: destination dict
+        :type y: dict
+        :return: merged dict
+        :rtype: dict
+        """
         z = x.copy()
         z.update(y)
         return z
 
     def __clean_cache(self) -> bool:
+        """
+        Clear the cache
+        :return: True
+        :rtype: bool
+        """
         self.__cache = {}
         self.__ip_cache = {}
         return True
 
     def __update_cache(self, cache, ip_cache):
+        """
+        Update the cache
+        :param cache: new results to add to the cache
+        :param ip_cache: new results of the reverse cache
+        """
         for site in cache:
             if site not in self.__cache:
                 self.__cache[site] = cache[site]
             else:
                 for ip in cache[site]:
-
                     self.__cache[site][ip] = self.__merge(self.__cache[site][ip], cache[site][ip])
 
         self.__ip_cache = self.__merge(self.__ip_cache, ip_cache)
 
     def run(self, **kwargs) -> dict:
+        """
+
+        Set the input for the modules, processes the request and returns output.
+        :param kwargs: See below
+
+        :Keyword Arguments:
+        * *hostname* (``str``) --
+          The hostname of the website to analyze. Can be an IP or a Name (DNS)
+        * *args* (``list of str``) --
+          Raw arguments for testssl.sh executable
+        * *force* (``bool``) --
+          Force rescan by ignoring cached results , Default *False*
+        * *one* (``bool``) --
+          Add ``--IP=one`` to testssl.sh executable calls, default *True*
+        * *clean* (``bool``) --
+          clear the cache, default *False*
+
+        :return: Parsed results.
+        :rtype: dict
+        :raise AssertionError: If hostname parameter is not found.
+        """
         self.input(**kwargs)
         if "hostname" not in self.__input_dict:
             raise AssertionError("IP or hostname args not found.")
@@ -108,12 +208,36 @@ class Testssl:
         return self.output(hostname=self.__input_dict["hostname"])
 
     def __scan(self, hostname: str, args: [str], force: bool, one: bool, clean: bool):
+        """
+        Scan internal module
+        :param hostname: Hostname or IP
+        :type hostname: str
+        :param args: Raw args for testssl.sh
+        :type args: list of str
+        :param force: Force the rescan, ignore the cached result.
+        :type force: bool
+        :param one: Add '--IP=one' to testssl.sh calls.
+        :type one: bool
+        :param clean: Clear the cache.
+        :type clean: bool
+
+        """
         if clean:
             self.__clean_cache()
         self.__scan_hostname(hostname, args, force, one)
 
     def __scan_hostname(self, hostname: str, args: [str], force: bool, one: bool):
-        # scan
+        """
+        Internal module of scan
+        :param hostname: Hostname or IP
+        :type hostname: str
+        :param args: Raw args for testssl.sh
+        :type args: list of str
+        :param force: Force the rescan, ignore the cached result.
+        :type force: bool
+        :param one: Add '--IP=one' to testssl.sh calls.
+        :type one: bool
+        """
         if force:
             logging.debug("Starting testssl analysis")
             file_name = uuid.uuid4().hex
