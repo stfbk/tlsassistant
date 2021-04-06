@@ -23,21 +23,27 @@ class Parser:
         self.__ip_output = {}
         self.__parse()
 
-    def __parse(self):
-        for result in self.__results:
-            site, ip = result["ip"].rsplit("/", 1)
-            if site == "" or validate_ip(site):
-                site = "IP_SCANS"
-            if ip != "":
-                if site not in self.__output:
-                    self.__output[site] = {}
-                if ip not in self.__output[site]:
-                    self.__output[site][ip] = {}
-                self.__ip_output[ip] = site
-                id = result['id']
-                result.pop('id', None)
-                result.pop('ip', None)
-                self.__output[site][ip][id] = result
+    def __parse(self):  # parse method
+        for result in self.__results:  # for each result
+            site, ip = result["ip"].rsplit("/", 1)  # split ip, it usually is website/ip
+            if site == "" or validate_ip(
+                site
+            ):  # if site value is missing or it's an IP
+                site = "IP_SCANS"  # group them by IP SCAN
+            if ip != "":  # if the ip is missing, it's nothing we care about.
+                if (
+                    site not in self.__output
+                ):  # if site is not in output, it's the first time that we see it.
+                    self.__output[site] = {}  # site inizialization
+                if (
+                    ip not in self.__output[site]
+                ):  # same for the previous comment, but with the IP
+                    self.__output[site][ip] = {}  # ip inizialization
+                self.__ip_output[ip] = site  # reverse cache
+                id = result["id"]  # obtain ID
+                result.pop("id", None)  # Remove ID from results
+                result.pop("ip", None)  # Remove IP from results
+                self.__output[site][ip][id] = result  # put the result
 
     def output(self) -> (dict, dict):
         """
@@ -72,6 +78,7 @@ class Testssl:
     """
     Testssl wrapper module.
     """
+
     __cache = {}
     __ip_cache = {}
 
@@ -114,18 +121,18 @@ class Testssl:
         :rtype: dict
         :raise AssertionError: If hostname parameter is not found.
         """
-        if 'hostname' not in kwargs:
+        if "hostname" not in kwargs:
             raise AssertionError("Missing parameter hostname.")
         elif kwargs["hostname"] not in self.__cache:
             return {}  # not found
         else:
             return (
-                self.__cache[kwargs["hostname"]]
-                if not validate_ip(kwargs["hostname"])
-                else {
-                    kwargs["hostname"]: self.__cache[self.__ip_cache[kwargs["hostname"]]][
-                        kwargs["hostname"]
-                    ]
+                self.__cache[kwargs["hostname"]]  # return cache value if
+                if not validate_ip(kwargs["hostname"])  # it's not an IP
+                else {  # else return the IP value
+                    kwargs["hostname"]: self.__cache[
+                        self.__ip_cache[kwargs["hostname"]]
+                    ][kwargs["hostname"]]
                 }
             )
 
@@ -161,12 +168,18 @@ class Testssl:
         """
         for site in cache:
             if site not in self.__cache:
-                self.__cache[site] = cache[site]
+                self.__cache[site] = cache[
+                    site
+                ]  # for each site, update the cache if not in it
             else:
                 for ip in cache[site]:
-                    self.__cache[site][ip] = self.__merge(self.__cache[site][ip], cache[site][ip])
+                    self.__cache[site][ip] = self.__merge(
+                        self.__cache[site][ip], cache[site][ip]
+                    )  # if present, merge
 
-        self.__ip_cache = self.__merge(self.__ip_cache, ip_cache)
+        self.__ip_cache = self.__merge(
+            self.__ip_cache, ip_cache
+        )  # update reverse cache
 
     def run(self, **kwargs) -> dict:
         """
@@ -193,7 +206,7 @@ class Testssl:
         self.input(**kwargs)
         if "hostname" not in self.__input_dict:
             raise AssertionError("IP or hostname args not found.")
-        else:
+        else:  # initialization of parameters
             self.__scan(
                 str(self.__input_dict["hostname"]),
                 args=self.__input_dict["args"] if "args" in self.__input_dict else None,
@@ -268,23 +281,31 @@ class Testssl:
                         )  # if the user asked for debug mode, let him see the output.
                         else null  # else /dev/null
                     ),
-                    check=True,
-                    text=True,
-                    input="yes",
+                    check=True,  # check call equivalent
+                    text=True,  # text as an input
+                    input="yes",  # if asked, write 'yes' on each prompt
                 )
-                if path.exists(f"dependencies{sep}{file_name}.json"):
+                if path.exists(
+                    f"dependencies{sep}{file_name}.json"
+                ):  # load the temp file results
                     with open(
-                            f"dependencies{sep}{file_name}.json", "r"
+                        f"dependencies{sep}{file_name}.json", "r"
                     ) as file:  # load temp file
                         data = file.read()
                         cache, ip_cache = Parser(json.loads(data)).output()
                         self.__update_cache(cache, ip_cache)
                     remove(f"dependencies{sep}{file_name}.json")
         else:
-            if not validate_ip(hostname):
+            if not validate_ip(
+                hostname
+            ):  # recursive: if force : false, check if in cache. if not, recursive call
                 if hostname not in self.__cache:
-                    self.__scan_hostname(hostname, args=args, force=True, one=one)
+                    self.__scan_hostname(
+                        hostname, args=args, force=True, one=one
+                    )  # with force = True
             else:
-                if hostname not in self.__ip_cache:
+                if (
+                    hostname not in self.__ip_cache
+                ):  # if it's an ip, check for it in reverse proxy
                     print(self.__ip_cache)
                     self.__scan_hostname(hostname, args=args, force=True, one=one)
