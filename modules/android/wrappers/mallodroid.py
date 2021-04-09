@@ -42,21 +42,17 @@ class Mallodroid:
         else:
             raise AssertionError("Path argument missing.")
 
-        self.worker(
-            args=self.__input_dict["args"] if "args" in self.__input_dict else None
-        )
-        return self.output()
+        self.__worker(self.__correct_path,
+                      args=self.__input_dict["args"] if "args" in self.__input_dict else None,
+                      force=self.__input_dict["force"] if "force" in self.__input_dict else False
+                      )
+        return self.output(path=self.__correct_path.absolute())
 
-    def worker(self, args):
-        old_args = sys.argv.copy()
-        sys.argv = []
-        sys.argv.append(f"-f {self.__correct_path}")
-        sys.argv.append("-x")
-        # todo: add mallodroid results
-        sys.argv = sys.argv + (args if args else [])
-
-        self.__instance.main()  # calls main
-
-        # todo: file scan of mallodroid results
-
-        sys.argv = old_args
+    def __worker(self, path: Path, args: list, force: bool):
+        file_id = path.absolute()
+        if force:  # todo: come salvo il file? univocamente
+            self.__cache[file_id] = self.__instance.main(path.absolute(), args, suppress_stdout=True,
+                                                         suppress_stderr=True)  # calls main
+        else:
+            if file_id not in self.__cache:
+                self.__worker(path, args, force)
