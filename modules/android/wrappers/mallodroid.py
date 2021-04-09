@@ -1,5 +1,5 @@
-import sys
-from os import sep, path
+import logging
+from os import sep
 import importlib.util
 from pathlib import Path
 
@@ -42,17 +42,29 @@ class Mallodroid:
         else:
             raise AssertionError("Path argument missing.")
 
-        self.__worker(self.__correct_path,
-                      args=self.__input_dict["args"] if "args" in self.__input_dict else None,
-                      force=self.__input_dict["force"] if "force" in self.__input_dict else False
-                      )
-        return self.output(path=self.__correct_path.absolute())
+        self.__worker(
+            self.__correct_path,
+            args=self.__input_dict["args"] if "args" in self.__input_dict else [],
+            force=self.__input_dict["force"] if "force" in self.__input_dict else False,
+        )
+        return self.output(path=str(self.__correct_path.absolute()))
 
     def __worker(self, path: Path, args: list, force: bool):
-        file_id = path.absolute()
+        file_id = str(path.absolute())
+        logging.debug(f"Starting analysis of {file_id} ...")
+        args.append("-f")
+        args.append(str(path.absolute()))
         if force:  # todo: come salvo il file? univocamente
-            self.__cache[file_id] = self.__instance.main(path.absolute(), args, suppress_stdout=True,
-                                                         suppress_stderr=True)  # calls main
+            logging.debug(f"Analysis of {file_id} (cache miss or forced by call)")
+            self.__cache[file_id] = self.__instance.main(
+                args,
+                stdout_suppress=False
+                if logging.getLogger().isEnabledFor(logging.DEBUG)
+                else True,
+                stderr_suppress=False
+                if logging.getLogger().isEnabledFor(logging.DEBUG)
+                else True,
+            )  # calls main
         else:
             if file_id not in self.__cache:
-                self.__worker(path, args, force)
+                self.__worker(path, args, force=True)
