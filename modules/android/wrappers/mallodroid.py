@@ -1,14 +1,8 @@
 import logging
 from os import sep
-import importlib.util
 from pathlib import Path
-
-
-def load_module(module_path: str, module_name: str) -> object:
-    spec = importlib.util.spec_from_file_location(module_name, module_path)
-    loaded = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(loaded)
-    return loaded
+from utils.validation import Validator
+from utils.loader import load_module
 
 
 class Mallodroid:
@@ -41,12 +35,16 @@ class Mallodroid:
                 )
         else:
             raise AssertionError("Path argument missing.")
+        # validate input types
+        args = self.__input_dict["args"] if "args" in self.__input_dict else []
+        force = self.__input_dict["force"] if "force" in self.__input_dict else False
+        Validator(
+            [
+                (args, list),
+                (force, bool)
+            ])
 
-        self.__worker(
-            self.__correct_path,
-            args=self.__input_dict["args"] if "args" in self.__input_dict else [],
-            force=self.__input_dict["force"] if "force" in self.__input_dict else False,
-        )
+        self.__worker(self.__correct_path, args=args, force=force)
         return self.output(path=str(self.__correct_path.absolute()))
 
     def __worker(self, path: Path, args: list, force: bool):

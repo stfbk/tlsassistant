@@ -4,9 +4,10 @@ import logging
 class Validator:
     def __init__(self, args=None):
         counter = 0
+        prefix = "[VALIDATOR] "
         if args and isinstance(args, list):
             for value in args:
-                logging.debug(f"Processing tuple no {counter}")
+                logging.debug(f"{prefix}Processing tuple no {counter}")
                 counter += 1
                 if isinstance(value, tuple) and len(value) == 2:
                     var, type_to_check = value

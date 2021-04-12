@@ -4,6 +4,7 @@ import sys
 from os import sep, devnull, path, remove
 import uuid
 import logging
+from utils.validation import Validator
 
 
 class Parser:
@@ -207,16 +208,29 @@ class Testssl:
         if "hostname" not in self.__input_dict:
             raise AssertionError("IP or hostname args not found.")
         else:  # initialization of parameters
+            args = self.__input_dict["args"] if "args" in self.__input_dict else []
+            force = (
+                self.__input_dict["force"] if "force" in self.__input_dict else False
+            )
+            one = self.__input_dict["one"] if "one" in self.__input_dict else True
+            clean = (
+                self.__input_dict["clean"] if "clean" in self.__input_dict else False
+            )
+            Validator(
+                [
+                    (self.__input_dict["hostname"], str),
+                    (args, list),
+                    (force, bool),
+                    (one, bool),
+                    (clean, bool),
+                ]
+            )
             self.__scan(
                 str(self.__input_dict["hostname"]),
-                args=self.__input_dict["args"] if "args" in self.__input_dict else None,
-                force=self.__input_dict["force"]
-                if "force" in self.__input_dict
-                else False,
-                one=self.__input_dict["one"] if "one" in self.__input_dict else True,
-                clean=self.__input_dict["clean"]
-                if "clean" in self.__input_dict
-                else False,
+                args=args,
+                force=force,
+                one=one,
+                clean=clean,
             )
         return self.output(hostname=self.__input_dict["hostname"])
 
