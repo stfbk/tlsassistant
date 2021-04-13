@@ -6,7 +6,7 @@ import requests
 class Https:
     HTTPS = 0
     HSTSSET = 1
-    # HSTSPRELOAD = 2
+    # HSTSPRELOAD = 2 #todo add func
     SERVERINFO = 3
     __cache = {}
     __output = {}
