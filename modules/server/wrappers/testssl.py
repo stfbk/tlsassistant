@@ -5,6 +5,7 @@ from os import sep, devnull, path, remove
 import uuid
 import logging
 from utils.validation import Validator
+from utils.urls import url_strip
 
 
 class Parser:
@@ -28,16 +29,16 @@ class Parser:
         for result in self.__results:  # for each result
             site, ip = result["ip"].rsplit("/", 1)  # split ip, it usually is website/ip
             if site == "" or validate_ip(
-                site
+                    site
             ):  # if site value is missing or it's an IP
                 site = "IP_SCANS"  # group them by IP SCAN
             if ip != "":  # if the ip is missing, it's nothing we care about.
                 if (
-                    site not in self.__output
+                        site not in self.__output
                 ):  # if site is not in output, it's the first time that we see it.
                     self.__output[site] = {}  # site inizialization
                 if (
-                    ip not in self.__output[site]
+                        ip not in self.__output[site]
                 ):  # same for the previous comment, but with the IP
                     self.__output[site][ip] = {}  # ip inizialization
                 self.__ip_output[ip] = site  # reverse cache
@@ -208,6 +209,7 @@ class Testssl:
         if "hostname" not in self.__input_dict:
             raise AssertionError("IP or hostname args not found.")
         else:  # initialization of parameters
+            self.__input_dict['hostname'] = url_strip(self.__input_dict['hostname'], strip_www=True)
             args = self.__input_dict["args"] if "args" in self.__input_dict else []
             force = (
                 self.__input_dict["force"] if "force" in self.__input_dict else False
@@ -300,10 +302,10 @@ class Testssl:
                     input="yes",  # if asked, write 'yes' on each prompt
                 )
                 if path.exists(
-                    f"dependencies{sep}{file_name}.json"
+                        f"dependencies{sep}{file_name}.json"
                 ):  # load the temp file results
                     with open(
-                        f"dependencies{sep}{file_name}.json", "r"
+                            f"dependencies{sep}{file_name}.json", "r"
                     ) as file:  # load temp file
                         data = file.read()
                         cache, ip_cache = Parser(json.loads(data)).output()
@@ -311,7 +313,7 @@ class Testssl:
                     remove(f"dependencies{sep}{file_name}.json")
         else:
             if not validate_ip(
-                hostname
+                    hostname
             ):  # recursive: if force : false, check if in cache. if not, recursive call
                 if hostname not in self.__cache:
                     self.__scan_hostname(
@@ -319,7 +321,7 @@ class Testssl:
                     )  # with force = True
             else:
                 if (
-                    hostname not in self.__ip_cache
+                        hostname not in self.__ip_cache
                 ):  # if it's an ip, check for it in reverse proxy
                     print(self.__ip_cache)
                     self.__scan_hostname(hostname, args=args, force=True, one=one)
