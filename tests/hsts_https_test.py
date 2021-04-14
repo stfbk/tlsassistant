@@ -1,4 +1,4 @@
-from modules.server.https_hsts import Https
+from modules.server.wrappers.https_hsts import Https
 
 https = Https()
 

@@ -5,6 +5,10 @@
   },
   {
     "type": "cfg",
+    "url": "https://chromium.googlesource.com/chromium/src/net/+/master/http/transport_security_state_static.json?format=TEXT"
+  },
+  {
+    "type": "cfg",
     "url": "https://hg.mozilla.org/mozilla-central/raw-file/tip/security/manager/ssl/nsSTSPreloadList.inc"
   },
   {

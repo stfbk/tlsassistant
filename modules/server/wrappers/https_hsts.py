@@ -1,18 +1,26 @@
+import logging
+
 from utils.validation import Validator
-from utils.urls import url_strip, url_tld
+from utils.urls import url_domain
 import requests
 import os.path
 from os import sep
+from base64 import b64decode
+from json import loads
 
 
-class ParseMozilla:
-    __cache = {}
-    __path = f"dependencies{sep}nsSTSPreloadList.inc"
+class Parse:
+    __path_moz = f"dependencies{sep}nsSTSPreloadList.inc"
+    __path_gog = f"dependencies{sep}transport_security_state_static.json"
 
-    def __init__(self):
-        self.__parse(self.__path)
+    def __init__(self, moz=True):
+        self.__cache = {}
+        if moz:
+            self.__parse_moz(self.__path_moz)
+        else:
+            self.__parse_gog(self.__path_gog)
 
-    def __parse(self, path):
+    def __parse_moz(self, path):
         if os.path.exists(path):
             with open(path, "r") as file:
                 start_parsing = False
@@ -25,7 +33,27 @@ class ParseMozilla:
                             self.__cache[host] = no
 
         else:
-            raise FileNotFoundError("The file provided doesn't exist.")
+            raise FileNotFoundError("The file provided for mozilla HSTS doesn't exist.")
+
+    def __parse_gog(self, path):
+        if os.path.exists(path):
+            with open(path, "r") as file:
+                raw_results = b64decode(file.read()).decode().split("\n")
+                gog = loads(
+                    "\n".join(
+                        [
+                            line
+                            for line in raw_results
+                            if not line.lstrip().startswith("//")
+                        ]
+                    )
+                )
+            for sub in gog["entries"]:
+                name = sub["name"]
+                sub.pop("name", None)
+                self.__cache[name] = sub
+        else:
+            raise FileNotFoundError("The file provided for google HSTS doesn't exist.")
 
     def output(self):
         return self.__cache
@@ -37,7 +65,8 @@ class Https:
     HSTSPRELOAD = 2
     SERVERINFO = 3
     __cache = {}
-    __preloaded = {}
+    __preloaded_moz = {}
+    __preloaded_gog = {}
     __output = {}
     __headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) "
@@ -66,9 +95,7 @@ class Https:
         elif "type" not in self.__input_dict:
             raise AssertionError("Type args not found.")
         else:  # initialization of parameters
-            self.__input_dict["hostname"] = url_strip(
-                self.__input_dict["hostname"], strip_www=True
-            )
+            self.__input_dict["hostname"] = url_domain(self.__input_dict["hostname"])
             force = (
                 self.__input_dict["force"] if "force" in self.__input_dict else False
             )
@@ -96,11 +123,18 @@ class Https:
         elif type == self.HSTSSET:
             return "strict-transport-security" in response.headers
         else:
-            if self.__preloaded:
-                return url_tld(response.request.url) in self.__preloaded
-            else:
-                self.__preloaded = ParseMozilla().output()
-                return self.__chose_results(type, response)
+            if not self.__preloaded_moz:
+                logging.debug("Preloading mozilla hsts..")
+                self.__preloaded_moz = Parse().output()
+            if not self.__preloaded_gog:
+                logging.debug("Preloading google hsts..")
+                self.__preloaded_gog = Parse(moz=False).output()
+
+            parsed_url = url_domain(response.request.url)
+            logging.debug(f"url : {parsed_url} parsed")
+            return (
+                parsed_url in self.__preloaded_moz or parsed_url in self.__preloaded_gog
+            )
 
     def __worker(self, link: str, type: int, force: bool):
 
