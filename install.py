@@ -32,6 +32,7 @@ class Install:
         gits = []
         pkgs = []
         zips = []
+        cfgs = []
         logging.info("Loading dependencies...")
         for dependency in dependencies:  # for each dependency
             if dependency["type"] == "git":  # if it's git
@@ -43,11 +44,18 @@ class Install:
             elif dependency["type"] == "zip":  # if it's zip
                 zips.append(dependency["url"])  # append it's url to the zip array
                 logging.debug(f"Added dependency zip {dependency['url']}")
+            elif dependency["type"] == "cfg":  # if it's cfg
+                cfgs.append(dependency["url"])  # append it's url to the cfg array
+                logging.debug(f"Added dependency cfg {dependency['url']}")
             else:  # if not found, throw warning
                 logging.warning(
                     f"Ignoring dependency {dependency['url']}, type {dependency['type']} is not recognized."
                 )
         logging.info("Getting files...")
+        logging.debug("Getting all cfgs...")
+        loop = asyncio.get_event_loop()
+        results_cfgs = loop.run_until_complete(self.download(cfgs))
+        logging.debug(results_cfgs)
         logging.debug("Getting all pkgs...")
         loop = asyncio.get_event_loop()  # asnychronous event loop
         results_pkgs = loop.run_until_complete(

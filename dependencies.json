@@ -4,8 +4,8 @@
     "url": "https://github.com/stfbk/mallodroid"
   },
   {
-    "type": "git",
-    "url": "https://github.com/UnaPibaGeek/ctfr"
+    "type": "cfg",
+    "url": "https://hg.mozilla.org/mozilla-central/raw-file/tip/security/manager/ssl/nsSTSPreloadList.inc"
   },
   {
     "type": "git",
