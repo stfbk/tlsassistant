@@ -11,8 +11,8 @@ class Parser:
 
     def __parse(self, results):
         for cert in results:
-            url = cert['common_name']
-            cert.pop('common_name', None)
+            url = cert["common_name"]
+            cert.pop("common_name", None)
             if url not in self.__cache:
                 self.__cache[url] = [cert]
             else:
@@ -32,21 +32,24 @@ class Certificate:
         self.__input_dict = kwargs
 
     def output(self, **kwargs) -> dict:
-        return self.__cache[kwargs["hostname"]] if "hostname" in kwargs and kwargs["hostname"] in self.__cache else {}
+        return (
+            self.__cache[kwargs["hostname"]]
+            if "hostname" in kwargs and kwargs["hostname"] in self.__cache
+            else {}
+        )
 
     def run(self, **kwargs):
         self.input(**kwargs)
         if "hostname" not in self.__input_dict:
             raise AssertionError("IP or hostname args not found.")
         force = self.__input_dict["force"] if "force" in self.__input_dict else False
-        Validator([
-            (self.__input_dict['hostname'], str),
-            (force, bool)
-        ])
+        Validator([(self.__input_dict["hostname"], str), (force, bool)])
 
-        self.__input_dict['hostname'] = url_strip(self.__input_dict['hostname'], strip_www=True)
-        self.__worker(self.__input_dict['hostname'], force)
-        return self.output(hostname=self.__input_dict['hostname'])
+        self.__input_dict["hostname"] = url_strip(
+            self.__input_dict["hostname"], strip_www=True
+        )
+        self.__worker(self.__input_dict["hostname"], force)
+        return self.output(hostname=self.__input_dict["hostname"])
 
     def __worker(self, url: str, force: bool):
         if force:

@@ -38,11 +38,7 @@ class Mallodroid:
         # validate input types
         args = self.__input_dict["args"] if "args" in self.__input_dict else []
         force = self.__input_dict["force"] if "force" in self.__input_dict else False
-        Validator(
-            [
-                (args, list),
-                (force, bool)
-            ])
+        Validator([(args, list), (force, bool)])
 
         self.__worker(self.__correct_path, args=args, force=force)
         return self.output(path=str(self.__correct_path.absolute()))
