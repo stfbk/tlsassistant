@@ -85,7 +85,7 @@ class Https:
         return (
             self.__output[kwargs["hostname"]]
             if "hostname" in kwargs and kwargs["hostname"] in self.__cache
-            else None
+            else {}
         )
 
     def run(self, **kwargs):

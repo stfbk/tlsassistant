@@ -1,3 +1,5 @@
 aiohttp==3.7.4.post0
 androguard==3.3.5
 tldextract==3.1.0
+
+tlslite-ng==0.8.0-alpha40
