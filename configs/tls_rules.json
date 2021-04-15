@@ -1,0 +1,47 @@
+[
+  {
+    "regex": "(?:DESKeySpec)|(?:getInstance\\(\\s*\"?\\s*(?:md5|MD5|md4|MD4)\\s*\"?\\s*\\))|(?:getInstance\\(\\s*\"?\\s*(?:sha-1|SHA-1)\\s*\"?\\s*\\))|(?:getInstance\\(\\s*\"?\\s*(?:rc2|RC2|rc4|RC4|AES\\s*\/\\s*ECB|(rsa|RSA)\/.+\/nopadding)\\s*\"?\\s*\\))",
+    "criticality": "high",
+    "label": "Weak Algorithms",
+    "description": "Using weak algorithms allows an attacker to break the cyphered communications gaining access to plain text content.",
+    "include_file_regex": ".java$"
+  },
+  {
+    "regex": "onReceivedSslError\\s*\\(\\s*WebView\\s*.*\\)",
+    "forward_check": "\\.\\s*proceed\\(\\s*\\)\\s*;",
+    "criticality": "critical",
+    "label": "WebView ignores SSL errors",
+    "description": "WebView is ignoring SSL errors and it accepts any SSL certificate. This application could be affected by Man in the Middle attacks.",
+    "include_file_regex": ".java$"
+  },
+  {
+    "regex": "net\\.ssl",
+    "forward_check": "(?:(?:Trust)?All(?:Trust)?SSLSocket(?:-)?Factory|NonValidatingSSLSocketFactory|ALLOW_ALL_HOSTNAME_VERIFIER|\\.setDefaultHostnameVerifier\\(.*\\)|NullHostnameVerifier\\(.*\\))",
+    "criticality": "critical",
+    "label": "Accepting all SSL certificates",
+    "description": "Insecure application SSL implementation. This application accepts all certificates, including self signed by default. This is a critical issue as Man in the Middle attacks may be performed.",
+    "include_file_regex": ".java$"
+  },
+  {
+    "regex": "\"\\s*\\w*\\.\\s*(?:p12|key|pub|crt|cert|pem|cer|jks|bks)(?:\\s*|\")",
+    "criticality": "warning",
+    "label": "Certificate or Keystore disclosure",
+    "description": "The decompilation of the source code could lead to the disclosure of hardcoded certificate or keystore."
+  },
+  {
+    "regex": "utils\\s*\\.\\s*AESObfuscator",
+    "forward_check": "getObfuscator",
+    "criticality": "warning",
+    "label": "Obfuscated code",
+    "description": "The code of this application could be obfuscated.",
+    "include_file_regex": ".java$"
+  },
+  {
+    "regex": "net\\.ssl\\.SSLSocketFactory|net\\.SSLCertificateSocketFactory",
+    "forward_check": "getInsecure\\s*\\(",
+    "criticality": "high",
+    "label": "SSL getInsecure method",
+    "description": "Insecure application SSL implementation. This applications in using the getInsecure Method which returns a new instance of a socketFactory with all SSL security checks disabled. These sockets are vulnerable to MITM attacks.",
+    "include_file_regex": ".java$"
+  }
+]

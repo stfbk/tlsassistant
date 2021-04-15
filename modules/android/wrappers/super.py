@@ -3,28 +3,30 @@ import logging
 import subprocess
 import sys
 import uuid
-from os.path import devnull, sep
+from os.path import devnull, sep, join
 from pathlib import Path
 from shutil import rmtree as rm_rf
+from os import walk
 
 from utils.validation import Validator
 
 
 class Parser:
     def __init__(self, results):
-        self.__parse(results)
         self.__cache = {}
-
-    def __filter(self, vuln):
-        return vuln["file"].lower() == "androidmanifest.xml"
+        self.__parse(results)
 
     def __remove_manifest(self, results):
         types = ["criticals", "highs", "mediums", "lows", "warnings"]
 
         for type in types:
-            for key, vuln in results[type].items():
-                if self.__filter(vuln):
-                    results[type].pop(key)
+            vulnerabilities = [
+                vuln
+                for vuln in results[type]
+                if vuln["file"].lower() != "androidmanifest.xml"
+            ]
+            results[type] = vulnerabilities
+            results[f"{type}_len"] = len(vulnerabilities)
         return results
 
     def __parse(self, results):
@@ -51,6 +53,11 @@ class Super:
             else {}
         )
 
+    def __find_file(self, folder):
+        for dirpath, dirnames, filenames in walk("."):
+            for filename in [f for f in filenames if f == "results.json"]:
+                return join(dirpath, filename)
+
     def run(self, **kwargs):
         # input parsing
         self.input(**kwargs)
@@ -73,7 +80,13 @@ class Super:
         try:
             subprocess.run(
                 cmd,
-                stderr=sys.stderr,
+                stderr=(
+                    sys.stdout
+                    if logging.getLogger().isEnabledFor(
+                        logging.DEBUG
+                    )  # if the user asked for debug mode, let him see the output.
+                    else null  # else /dev/null
+                ),
                 stdout=(
                     sys.stdout
                     if logging.getLogger().isEnabledFor(
@@ -108,7 +121,8 @@ class Super:
                     "--dist",
                     f"dependencies{sep}{folder_name}{sep}dist",
                     "--rules",
-                    f"dependencies{sep}tls_rules.json",  # todo add installer for this
+                    f"configs{sep}tls_rules.json",
+                    "--json",
                 ]
 
                 if args:
@@ -118,9 +132,7 @@ class Super:
                 cmd.append(str(path.absolute()))
                 exit_code = self.subprocess_call(cmd, null)
                 logging.debug(f"exit code: {exit_code}")
-                file_name = (
-                    f"dependencies{sep}{folder_name}{sep}results{sep}results.json"
-                )
+                file_name = self.__find_file(folder_name)
                 if Path(file_name).exists():  # load the temp file results
                     with open(file_name, "r") as file:  # load temp file
                         data = file.read()
@@ -128,7 +140,7 @@ class Super:
                             json.loads(data)
                         ).output()
 
-                    rm_rf(f"dependencies{sep}{folder_name}.json")
+                    rm_rf(f"dependencies{sep}{folder_name}")
                 else:
                     raise Exception("Couldn't decompile the APK")
         else:
