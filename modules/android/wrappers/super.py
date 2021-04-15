@@ -54,7 +54,7 @@ class Super:
         )
 
     def __find_file(self, folder):
-        for dirpath, dirnames, filenames in walk("."):
+        for dirpath, dirnames, filenames in walk(folder):
             for filename in [f for f in filenames if f == "results.json"]:
                 return join(dirpath, filename)
 
@@ -132,7 +132,7 @@ class Super:
                 cmd.append(str(path.absolute()))
                 exit_code = self.subprocess_call(cmd, null)
                 logging.debug(f"exit code: {exit_code}")
-                file_name = self.__find_file(folder_name)
+                file_name = self.__find_file(f"dependencies{sep}{folder_name}{sep}results")
                 if Path(file_name).exists():  # load the temp file results
                     with open(file_name, "r") as file:  # load temp file
                         data = file.read()
