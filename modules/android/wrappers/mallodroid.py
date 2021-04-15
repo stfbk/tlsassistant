@@ -48,7 +48,7 @@ class Mallodroid:
         logging.debug(f"Starting analysis of {file_id} ...")
         args.append("-f")
         args.append(str(path.absolute()))
-        if force:  # todo: come salvo il file? univocamente
+        if force:
             logging.debug(f"Analysis of {file_id} (cache miss or forced by call)")
             self.__cache[file_id] = self.__instance.main(
                 args,
