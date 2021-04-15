@@ -325,5 +325,4 @@ class Testssl:
                 if (
                     hostname not in self.__ip_cache
                 ):  # if it's an ip, check for it in reverse proxy
-                    print(self.__ip_cache)
                     self.__scan_hostname(hostname, args=args, force=True, one=one)
