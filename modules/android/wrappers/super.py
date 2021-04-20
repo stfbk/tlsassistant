@@ -132,7 +132,9 @@ class Super:
                 cmd.append(str(path.absolute()))
                 exit_code = self.subprocess_call(cmd, null)
                 logging.debug(f"exit code: {exit_code}")
-                file_name = self.__find_file(f"dependencies{sep}{folder_name}{sep}results")
+                file_name = self.__find_file(
+                    f"dependencies{sep}{folder_name}{sep}results"
+                )
                 if Path(file_name).exists():  # load the temp file results
                     with open(file_name, "r") as file:  # load temp file
                         data = file.read()
