@@ -1,0 +1,22 @@
+{
+   "name":"test_configuration",
+   "description":"Template for other configuration regarding Compliances",
+   "modules":[
+      "certificate",
+      "testssl"
+   ],
+   "args":{
+      "certificate":{
+        "hostname": "fbk.eu"
+      },
+     "testssl":{
+        "hostname": "fbk.eu",
+       "args": [
+         "-R"
+       ]
+      },
+      "Compliance":[
+         "Generic"
+      ]
+   }
+}
