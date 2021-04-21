@@ -1,0 +1,30 @@
+{
+   "input":[
+      {
+         "name":"a",
+         "type":"int",
+         "description":"does x, y with z",
+         "required":"False"
+      },
+      {
+         "name":"sum",
+         "type":"Str",
+         "description":"Needed for...",
+         "required":"True",
+         "args":[
+            "sum",
+            "s"
+         ]
+      }
+   ],
+   "description":"Bla Bla Bla",
+   "path":"modules/server/wrappers/testssl.py",
+   "class_name":"Testssl",
+   "output":[
+      {
+         "name":"x",
+         "type":"Str",
+         "description":"Keks"
+      }
+   ]
+}
