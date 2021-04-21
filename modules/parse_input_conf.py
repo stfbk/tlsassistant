@@ -47,12 +47,11 @@ class Parser:
                     if "include" in data:
                         data = self.validate_include(data)
                 if "remove" in included:  # removed
-                    # print(data)
                     for key, value in included["remove"].items():
-                        print(self.remove(data, key, value))
-                    # print(data)
-                    input()
+                        self.remove(data, key, value)
                 if "add" in included:
+                    for key, value in included["add"].items():  # needed to remove cloned data
+                        self.remove(data, key, value)
                     data = merge(data, included['add'])
 
                 return data
