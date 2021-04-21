@@ -3,6 +3,7 @@ from pathlib import Path
 from utils.validation import Validator
 from utils.loader import load_class
 from os.path import sep
+from utils.configuration import merge
 
 
 class Parser:
@@ -11,8 +12,29 @@ class Parser:
     def __init__(self, to_parse: str):
         self.__input_dict = {}
         self.__output = []
-        self.__parse(to_parse)
         self.__configs_path = f"configs{sep}modules{sep}"
+        self.__parse(to_parse)
+
+    def remove(self, data, key, value):
+        if key in data:
+            if not value:  # value is empty or false, just remove it
+                data.pop(key, None)  # delete
+            elif isinstance(value, type(data[key])):  # if same type
+                if isinstance(
+                        value, list
+                ):  # if it's a list, like modules
+                    data[key] = list(set(data[key]) - set(value))
+                elif isinstance(
+                        value, dict
+                ):  # if it's a dict, difference of the keys and rebuild dict
+                    for k, v in value.items():
+                        data[key][k] = self.remove(data[key], k, v)
+            else:
+                raise TypeError(
+                    f"Value of {key} is {type(value)} and"
+                    f" the imported {key} is {type(data[key])}. Type mismatch."
+                )
+        return data[key]
 
     def validate_include(self, included):
         if "file" not in included:
@@ -25,40 +47,13 @@ class Parser:
                     if "include" in data:
                         data = self.validate_include(data)
                 if "remove" in included:  # removed
-                    for key, value in included["remove"]:
-                        if key in data:
-                            if not value:  # value is empty or false, just remove it
-                                data.pop(key, None)  # delete
-                            elif isinstance(value, type(data[key])):  # if same type
-                                if isinstance(
-                                    value, list
-                                ):  # if it's a list, like modules
-                                    data[key] = list(set(data[key]) - set(value))
-                                elif isinstance(
-                                    value, dict
-                                ):  # if it's a dict, difference of the keys and rebuild dict
-                                    data[key] = {
-                                        k: data[key][k]
-                                        for k in set(data[key]) - set(value)
-                                    }
-                                else:  # if it's something else, just remove it
-                                    data.pop(key, None)  # delete
-                            else:
-                                raise TypeError(
-                                    f"Value of {key} is {type(value)} and"
-                                    f" the imported {key} is {type(data[key])}. Type mismatch."
-                                )
+                    # print(data)
+                    for key, value in included["remove"].items():
+                        print(self.remove(data, key, value))
+                    # print(data)
+                    input()
                 if "add" in included:
-                    for key, value in included["add"]:
-                        if key in data and isinstance(value, type(data[key])):
-                            if isinstance(value, list):
-                                data[key] += value
-                            elif isinstance(value, dict):
-                                data[key].update(value)
-                            else:
-                                data[key] = value
-                        else:
-                            data[key] = value
+                    data = merge(data, included['add'])
 
                 return data
             else:
