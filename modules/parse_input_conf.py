@@ -20,12 +20,10 @@ class Parser:
             if not value:  # value is empty or false, just remove it
                 data.pop(key, None)  # delete
             elif isinstance(value, type(data[key])):  # if same type
-                if isinstance(
-                        value, list
-                ):  # if it's a list, like modules
+                if isinstance(value, list):  # if it's a list, like modules
                     data[key] = list(set(data[key]) - set(value))
                 elif isinstance(
-                        value, dict
+                    value, dict
                 ):  # if it's a dict, difference of the keys and rebuild dict
                     for k, v in value.items():
                         data[key][k] = self.remove(data[key], k, v)
@@ -50,9 +48,11 @@ class Parser:
                     for key, value in included["remove"].items():
                         self.remove(data, key, value)
                 if "add" in included:
-                    for key, value in included["add"].items():  # needed to remove cloned data
+                    for key, value in included[
+                        "add"
+                    ].items():  # needed to remove cloned data
                         self.remove(data, key, value)
-                    data = merge(data, included['add'])
+                    data = merge(data, included["add"])
 
                 return data
             else:
