@@ -289,20 +289,23 @@ class Testssl:
                     for arg in args:
                         cmd.append(arg)
                 cmd.append(hostname)
-                subprocess.run(
-                    cmd,
-                    stderr=sys.stderr,
-                    stdout=(
-                        sys.stdout
-                        if logging.getLogger().isEnabledFor(
-                            logging.DEBUG
-                        )  # if the user asked for debug mode, let him see the output.
-                        else null  # else /dev/null
-                    ),
-                    check=True,  # check call equivalent
-                    text=True,  # text as an input
-                    input="yes",  # if asked, write 'yes' on each prompt
-                )
+                try:
+                    subprocess.run(
+                        cmd,
+                        stderr=sys.stderr,
+                        stdout=(
+                            sys.stdout
+                            if logging.getLogger().isEnabledFor(
+                                logging.DEBUG
+                            )  # if the user asked for debug mode, let him see the output.
+                            else null  # else /dev/null
+                        ),
+                        check=True,  # check call equivalent
+                        text=True,  # text as an input
+                        input="yes",  # if asked, write 'yes' on each prompt
+                    )
+                except subprocess.CalledProcessError as c:
+                    logging.debug(c)
                 if path.exists(
                     f"dependencies{sep}{file_name}.json"
                 ):  # load the temp file results
