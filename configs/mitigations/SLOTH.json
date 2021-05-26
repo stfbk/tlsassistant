@@ -1,0 +1,21 @@
+{
+  "Entry": {
+    "Name": "SLOTH",
+    "ExtendedName": "**S**ecurity **L**osses from **O**bsolete and **T**runcated transcript **H**ashes",
+    "CVE": "2015-7575",
+    "CVSS3": "5.9 (Medium)",
+    "#comment": " AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N ",
+    "Description": "Due to the support for RSA-MD5 certificate signature, TLS 1.2 is prone to a series of transcript collision attacks. If a client uses the same certificate to authenticate with different servers, an attacker can force the victim to create a signature that can be used to impersonate it.",
+    "Mitigation": {
+      "Textual": "Update the TLS library to a version that contains the custom mitigations (e.g. OpenSSL v1.0.1f+).",
+      "Snippet": {
+        "apache": "No snippet available",
+        "nginx": "No snippet available",
+        "#comment": "check if !MD5 can fix that"
+      }
+    }
+  },
+  "#comment": " https://www.mitls.org/pages/attacks/SLOTH ",
+  "#comment1": " https://nvd.nist.gov/vuln/detail/CVE-2015-7575 ",
+  "#omit-xml-declaration": "yes"
+}

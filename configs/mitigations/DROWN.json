@@ -1,0 +1,20 @@
+{
+  "Entry": {
+    "Name": "DROWN",
+    "ExtendedName": "**D**ecrypting **R**SA with **O**bsolete and **W**eakened e**N**cryption",
+    "CVE": "2016-0800",
+    "CVSS3": "5.9 (Medium)",
+    "#comment": " AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N ",
+    "Description": "By exploiting export-grade symmetric ciphers supported by SSLv2, an attacker is able to retrieve the `MasterSecret` that identifies the TLS session. The attack is performed by sniffing the network (or intentionally making requests to the server) looking for a vulnerable connection. Once found, the attacker repeatedly connects to the server using SSLv2 with export-grade RSA and a `ClientMasterKey` derived from the transmission he wants to decrypt. The `MasterSecret` can be used to decrypt the content of the transmission.",
+    "Mitigation": {
+      "Textual": "Disable SSLv2 protocol support.",
+      "Snippet": {
+        "apache": "1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);\n2. search for the line starting with: **SSLProtocol**\n   - if it contains the substring `+SSLv2`, remove it;\n   - otherwise, add `-SSLv2` at the end of the line.\n\nN.B. restart the server by typing: `sudo service apache2 restart`.",
+        "nginx": "1. In a default situation, you can edit your website configuration */etc/nginx/sites-enabled/default*\n\t(if you changed your site conf name */etc/nginx/sites-enabled/YOURSITECONFIGURATION*);\n2. Inside `server {...}` brackets configuration, find `ssl_protocols`;\n3. Remove `SSLv2` (if any). Make sure you have atleast another TLS protocol. If you can't find `ssl_protocols` you should be fine if your NGINX is updated.\n\n\nN.B. restart the server by typing: `sudo service nginx restart`.\n"
+      }
+    }
+  },
+  "#comment": " www.drownattack.com/ ",
+  "#comment1": " https://www.acunetix.com/vulnerabilities/web/the-drown-attack-sslv2-supported/ ",
+  "#omit-xml-declaration": "yes"
+}

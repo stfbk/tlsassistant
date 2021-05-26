@@ -1,0 +1,19 @@
+{
+  "Entry": {
+    "Name": "Bar Mitzvah",
+    "ExtendedName": "Bar Mitzvah",
+    "CVE": "2015-2808",
+    "CVSS2": "4.3 (Medium)",
+    "#comment": " AV:N/AC:M/Au:N/C:P/I:N/A:N ",
+    "Description": "By exploiting the invariance weakness of the RC4 stream cipher, an attacker is able to retrieve the session cookie by guessing the LSBs (least significant bits) of the keystream. After a phase in which the attacker sniffs the connection between two parties, it detects a weak key usage and tries to exploit the weakness.",
+    "Mitigation": {
+      "Textual": "Disable the RC4 stream cipher.",
+      "Snippet": {
+        "apache": "1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);\n2. find the line starting with: **SSLCipherSuite**;\n3. add the string `:!RC4` at the end.\n\nN.B. restart the server by typing: `sudo service apache2 restart`.",
+        "nginx": "1. In a default situation, you can edit your website configuration */etc/nginx/sites-enabled/default*\n\t(if you changed your site conf name */etc/nginx/sites-enabled/YOURSITECONFIGURATION*);\n2. Inside `server {...}` brackets configuration, find `ssl_ciphers`;\n3. Remove `RC4` (if any) and add `:!RC4` at the end. \n\n\nN.B. restart the server by typing: `sudo service nginx restart`.\n"
+      }
+    }
+  },
+  "#comment": " https://nvd.nist.gov/vuln/detail/CVE-2015-2808 ",
+  "#omit-xml-declaration": "yes"
+}

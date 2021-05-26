@@ -1,0 +1,12 @@
+{
+  "Entry": {
+    "Name": "Accepting All SSL Certificates",
+    "ExtendedName": "Accepting All SSL Certificates",
+    "Description": "The SSLSocket/SSLFactory accepts all certificates or NonValidatingSSLSocketFactory/setDefaultHostnameVerifier/NullHostnameVerifier is present. \n       ",
+    "Mitigation": {
+      "Textual": "You should set a certificate and properly config this line (or remove it), so nobody can truly use self-signed\n                certificates, changing the SSLSocket/SSLFactory to accept trusted certificates or by removing NonValidatingSSLSocketFactory/setDefaultHostnameVerifier/NullHostnameVerifier.\n            ",
+      "Snippet": "\n\t\t"
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}

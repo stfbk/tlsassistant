@@ -1,0 +1,20 @@
+{
+  "Entry": {
+    "Name": "Lucky 13",
+    "ExtendedName": "Lucky 13",
+    "CVE": "2013-0169",
+    "CVSS2": "2.6 (Low)",
+    "#comment": " AV:N/AC:H/Au:N/C:P/I:N/A:N ",
+    "Description": "By exploiting the structure of the Cipher Block Chaining (CBC) mode, an attacker can infer the content of a transmission. The attack is performed by capturing, tampering (actually damaging) and re-transmitting the messages sent by the client to see how the server responds.\nThe attack, by breaching in the authentication mechanism, has a serious impact on the transmission.",
+    "Mitigation": {
+      "Textual": "Update the TLS library to a version that contains the custom mitigations (e.g. OpenSSL v1.0.2h+).",
+      "Snippet": {
+        "apache": "No snippet available",
+        "nginx": "The best mitigation is to update the OpenSSL libraries. The fastest mitigation is to disable all CBC ciphers.\n\n1. In a default situation, you can edit your website configuration */etc/nginx/sites-enabled/default*\n\t(if you changed your site conf name */etc/nginx/sites-enabled/YOURSITECONFIGURATION*);\n2. Inside `server {...}` brackets configuration, find `ssl_ciphers`;\n3. Remove any CBC-related cipher (even nested one).\n\n\nN.B. restart the server by typing: `sudo service nginx restart`.\n"
+      }
+    }
+  },
+  "#comment": " http://www.isg.rhul.ac.uk/tls/Lucky13.html ",
+  "#comment1": " https://nvd.nist.gov/vuln/detail/CVE-2013-0169 ",
+  "#omit-xml-declaration": "yes"
+}

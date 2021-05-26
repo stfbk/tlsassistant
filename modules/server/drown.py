@@ -10,7 +10,3 @@ class Drown(Testssl_base):
     # to override
     def _worker(self, results):
         return self._obtain_results(results, ["DROWN", "DROWN_hint"])
-
-    def _set_mitigation(self):
-        pass
-        # todo : decide how to save mitigations

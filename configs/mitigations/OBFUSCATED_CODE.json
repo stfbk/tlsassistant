@@ -1,0 +1,12 @@
+{
+  "Entry": {
+    "Name": "Obfuscated Code",
+    "ExtendedName": "Obfuscated Code",
+    "Description": "\n            The code seems obfuscated.\n           ",
+    "Mitigation": {
+      "Textual": "\n                    You should run this tool on a clean APK, so it's easy to detect and find vulnerabilities.\n            ",
+      "Snippet": "\n            "
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}

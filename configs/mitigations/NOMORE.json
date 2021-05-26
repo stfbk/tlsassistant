@@ -1,0 +1,18 @@
+{
+  "Entry": {
+    "Name": "RC4 NOMORE",
+    "ExtendedName": "RC4 **N**umerous **O**ccurrence **MO**nitoring & **R**ecovery **E**xploit",
+    "CVE": "Not available",
+    "CVSS3": "Not available",
+    "Description": "Given the biases existing in the key generation algorithm, an attacker can use statistics to guess information. The capture of the session cookie is operated by surrounding the token itself with known plaintext and repeatedly connecting to the server. After collecting a fair amount of packets, the attacker can exploit the biases to calculate the cookie.",
+    "Mitigation": {
+      "Textual": "Disable the RC4 stream cipher.",
+      "Snippet": {
+        "apache": "1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);\n2. find the line starting with: **SSLCipherSuite**;\n3. add the string `:!RC4` at the end.\n\nN.B. restart the server by typing: `sudo service apache2 restart`.",
+        "nginx": "1. In a default situation, you can edit your website configuration */etc/nginx/sites-enabled/default*\n\t(if you changed your site conf name */etc/nginx/sites-enabled/YOURSITECONFIGURATION*);\n2. Inside `server {...}` brackets configuration, find `ssl_ciphers`;\n3. Remove `RC4` (if any) and add `:!RC4` at the end.\n\n\nN.B. restart the server by typing: `sudo service nginx restart`.\n"
+      }
+    }
+  },
+  "#comment": " www.rc4nomore.com ",
+  "#omit-xml-declaration": "yes"
+}

@@ -12,7 +12,3 @@ class Pfs(Testssl_base):
         return self._obtain_results(
             results, ["PFS_ciphers", "PFS_ECDHE_curves", "DH_groups"]
         )
-
-    def _set_mitigation(self):
-        pass
-        # todo : decide how to save mitigations

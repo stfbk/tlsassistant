@@ -1,0 +1,16 @@
+{
+  "Entry": {
+    "Name": "HTTPS not enforced",
+    "ExtendedName": "HTTPS not enforced",
+    "Description": "If HTTPS is not enforced, a client may be tricked into visiting the unsecure (HTTP) version of a website. This would allow an attacker to read and manipulate his messages.",
+    "Mitigation": {
+      "Textual": "For each HTTP connection the server must send a response containing: \n1. a permanent redirect (i.e. `301 Moved Permanently`);\n2. a `Location` field indicating the proper URI to connect to (hostname preceded by *https://*).",
+      "Snippet": {
+        "apache": "1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);\n2. find the VirtualHost that handles the connections to port 80 (it starts with `<VirtualHost *:80>`);\n3. add the string `Redirect / https://website` where \"website\" is the URL you want to point the users to (e.g. www.fbk.eu).\n\nN.B. restart the server by typing: `sudo service apache2 restart`.",
+        "nginx": "1. In a default situation, you can edit your website configuration */etc/nginx/sites-enabled/default*\n\t(if you changed your site conf name */etc/nginx/sites-enabled/YOURSITECONFIGURATION*);\n2. add \n\t\n\t\tserver {\n    \tlisten 80 default_server;\n    \tserver_name _;\n    \treturn 301 https://$host$request_uri;\n\t\t}\n3. remove ALL other `listen 80` inside `server{...}` brackets (except for the previous one)\n\n\nN.B. restart the server by typing: `sudo service nginx restart`.\n"
+      }
+    }
+  },
+  "#comment": " https://tools.ietf.org/pdf/rfc6797.pdf #Section 7.2 ",
+  "#omit-xml-declaration": "yes"
+}

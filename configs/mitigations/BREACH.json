@@ -1,0 +1,21 @@
+{
+  "Entry": {
+    "Name": "BREACH",
+    "ExtendedName": "**B**rowser **R**econnaissance and **E**xfiltration via **A**daptive **C**ompression of **H**ypertext",
+    "CVE": "2013-3587",
+    "CVSS3": "5.9 (Medium)",
+    "#comment": " CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N ",
+    "Description": "By exploiting the information leakage provided by DEFLATE (compression algorithm), an attacker is able to retrieve the session cookie. In particular, the attacker guesses parts of the cookie, injects them in a valid client packet and analyzes the server's response. Thanks to the properties of a DEFLATE output, if the server's response is bigger than an untouched packet, then the guess is wrong.",
+    "Mitigation": {
+      "Textual": "Disable the HTTP compression mechanism.",
+      "Snippet": {
+        "apache": "- If Apache has been installed via package manager:\n\tdisable the DEFLATE module at OS level (e.g. on Ubuntu, run `sudo a2dismod deflate`);\n\n\n- if Apache has been manually installed:\n\t1. open your Apache configuration file (default: */usr/local/apache2/conf/httpd.conf*);\n\t2. search for the line containing : **mod_deflate.so**;\n\t3. comment or delete it.\n\nN.B. restart the server by typing: `sudo service apache2 restart`.",
+        "nginx": "In a default situation, you can edit your website configuration */etc/nginx/sites-enabled/default*\n\t(if you changed your site conf name */etc/nginx/sites-enabled/YOURSITECONFIGURATION*);\n\n- Do the following:\n\t1. Edit this file with an editor;\n\t2. add in your server configuration the string `gzip off;`. \n\tIf not missing, set it off by changing `gzip on;` to `gzip off;`\n\n- Example: \n\t*For example, assuming this is your configuration:*\n\n\n\t\tserver{\n\t\t\tgzip on;\n\t\t}\n\n\n\tChange it in:\n\n\n\t\tserver{\n\t\t\tgzip off;\n\t\t}\n\n\n\tIf missing, just add `gzip off;` inside brackets.\n\nN.B. restart the server by typing: `sudo service nginx restart`.\n\n**However this should be a fast temporary measure**, use [this](https://github.com/nulab/nginx-length-hiding-filter-module) instead.\n\n*Disabling gzip will disable compression in your website.*"
+      }
+    }
+  },
+  "#comment": " http://breachattack.com ",
+  "#comment1": " https://www.acunetix.com/vulnerabilities/web/breach-attack/ ",
+  "#comment2": " http://manpages.ubuntu.com/manpages/xenial/man8/a2enmod.8.html ",
+  "#omit-xml-declaration": "yes"
+}
