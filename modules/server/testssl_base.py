@@ -17,9 +17,11 @@ class Testssl_base:
     def input(self, **kwargs):
         self._input_dict = kwargs
 
-    def _set_mitigations(self, result: dict, key: str) -> dict:
-        result["mitigation"] = load_mitigation(key)
-        return result
+    def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
+        if condition:
+            result["mitigation"] = load_mitigation(key,
+                                                   raise_error=False)  # todo: remove, debug until we have all mitigations
+        return result if condition else {}
 
     # to override
     def _set_arguments(self):
@@ -39,12 +41,13 @@ class Testssl_base:
                     results[ip][key] = {"finding": "ERROR_NOT_FOUND"}
                 if ip not in out:
                     out[ip] = {}
-                # check for severity != OK or info
-                if "severity" in results[ip][key] and (
-                    results[ip][key]["severity"] != "OK"
-                    or results[ip][key]["severity"] != "INFO"
-                ):
-                    out[ip][key] = self._set_mitigations(results[ip][key], key)
+                # check for severity != OK or info or warn
+                condition = "severity" in results[ip][key] and (
+                        results[ip][key]["severity"] != "OK"
+                        and results[ip][key]["severity"] != "INFO"
+                        and results[ip][key]["severity"] != "WARN"
+                )
+                out[ip][key] = self._set_mitigations(results[ip][key], key, condition)
         return out
 
     def run(self, **kwargs):
