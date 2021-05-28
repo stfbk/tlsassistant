@@ -38,11 +38,12 @@ class Core:
         return testssl_args
 
     def __preanalysis_testssl(self, testssl_args: list):
-        self.__logging.debug(
-            f"Starting preanalysis testssl with args {testssl_args}..."
-        )
-        Testssl().run(hostname=self.__input_dict["hostname"], args=testssl_args)
-        self.__logging.debug(f"Preanalysis testssl done.")
+        if testssl_args:
+            self.__logging.debug(
+                f"Starting preanalysis testssl with args {testssl_args}..."
+            )
+            Testssl().run(hostname=self.__input_dict["hostname"], args=testssl_args)
+            self.__logging.debug(f"Preanalysis testssl done.")
 
     def __exec(self):
         configuration_name = self.__input_dict["configuration"]
@@ -59,6 +60,8 @@ class Core:
             loaded_modules[name] = Module()
             loaded_arguments[name] = args
             testssl_args = self.__add_testssl_args(loaded_modules[name], testssl_args)
+        # preanalysis if needed
+        self.__preanalysis_testssl(testssl_args)
         for name, module in loaded_modules.items():
             args = loaded_arguments[name]
             self.__logging.debug(f"Running {name}...")
