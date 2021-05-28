@@ -15,20 +15,19 @@ class Core:
         self.__exec()
 
     def input(self, **kwargs):
-        assert 'configuration' in kwargs, "Missing configuration."
-        assert 'hostname' in kwargs, "Missing hostname."
-        configuration = kwargs['configuration']
-        hostname = kwargs['hostname']
-        Validator([
-            (configuration, str),
-            (hostname, str)
-        ])
+        assert "configuration" in kwargs, "Missing configuration."
+        assert "hostname" in kwargs, "Missing hostname."
+        configuration = kwargs["configuration"]
+        hostname = kwargs["hostname"]
+        Validator([(configuration, str), (hostname, str)])
         self.__input_dict = kwargs
 
     def __load_configuration(self):
-        assert 'configuration' in self.__input_dict, "Missing configuration."
-        self.__logging.debug(f"Loading configuration {self.__input_dict['configuration']}")
-        return Parser(self.__input_dict['configuration']).output()
+        assert "configuration" in self.__input_dict, "Missing configuration."
+        self.__logging.debug(
+            f"Loading configuration {self.__input_dict['configuration']}"
+        )
+        return Parser(self.__input_dict["configuration"]).output()
 
     def __is_testssl(self, module: object) -> bool:
         return isinstance(module, Testssl_base)
@@ -39,12 +38,14 @@ class Core:
         return testssl_args
 
     def __preanalysis_testssl(self, testssl_args: list):
-        self.__logging.debug(f"Starting preanalysis testssl with args {testssl_args}...")
-        Testssl().run(hostname=self.__input_dict['hostname'], args=testssl_args)
+        self.__logging.debug(
+            f"Starting preanalysis testssl with args {testssl_args}..."
+        )
+        Testssl().run(hostname=self.__input_dict["hostname"], args=testssl_args)
         self.__logging.debug(f"Preanalysis testssl done.")
 
     def __exec(self):
-        configuration_name = self.__input_dict['configuration']
+        configuration_name = self.__input_dict["configuration"]
         parsed_configuration = self.__cache[configuration_name]
         loaded_modules = {}
         loaded_arguments = {}

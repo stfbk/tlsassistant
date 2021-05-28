@@ -8,7 +8,9 @@ class Logger:
         elif isinstance(obj, object):
             self.__class_name = object.__class__.__name__
         else:
-            raise TypeError(f"Obj is of type {type(obj)}, the required type is 'str' or 'object'")
+            raise TypeError(
+                f"Obj is of type {type(obj)}, the required type is 'str' or 'object'"
+            )
 
     def debug(self, string: str):
         logging.debug(f"[{self.__class_name}]{string}")

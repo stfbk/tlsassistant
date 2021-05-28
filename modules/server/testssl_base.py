@@ -19,8 +19,9 @@ class Testssl_base:
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         if condition:
-            result["mitigation"] = load_mitigation(key,
-                                                   raise_error=False)  # todo: remove, debug until we have all mitigations
+            result["mitigation"] = load_mitigation(
+                key, raise_error=False
+            )  # todo: remove, debug until we have all mitigations
         return result if condition else {}
 
     # to override
@@ -43,9 +44,9 @@ class Testssl_base:
                     out[ip] = {}
                 # check for severity != OK or info or warn
                 condition = "severity" in results[ip][key] and (
-                        results[ip][key]["severity"] != "OK"
-                        and results[ip][key]["severity"] != "INFO"
-                        and results[ip][key]["severity"] != "WARN"
+                    results[ip][key]["severity"] != "OK"
+                    and results[ip][key]["severity"] != "INFO"
+                    and results[ip][key]["severity"] != "WARN"
                 )
                 out[ip][key] = self._set_mitigations(results[ip][key], key, condition)
         return out
