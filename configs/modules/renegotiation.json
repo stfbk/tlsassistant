@@ -1,0 +1,20 @@
+{
+   "input":[
+      {
+         "name":"hostname",
+         "type":"str",
+         "description":"Hostname to analyze",
+         "required":"True"
+      }
+   ],
+   "description":"This modules checks for secure renegotiation and secure client renegotiation.",
+   "path":"modules/server/renegotiation.py",
+   "class_name":"Renegotiation",
+   "output":[
+      {
+         "name":"results",
+         "type":"dict",
+         "description":"results of the scan"
+      }
+   ]
+}

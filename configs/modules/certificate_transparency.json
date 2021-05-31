@@ -1,0 +1,20 @@
+{
+   "input":[
+      {
+         "name":"hostname",
+         "type":"str",
+         "description":"Hostname to analyze",
+         "required":"True"
+      }
+   ],
+   "description":"This modules checks the certificate transparency of the hostname provided.",
+   "path":"modules/server/certificate_transparency.py",
+   "class_name":"Certificate_transparency",
+   "output":[
+      {
+         "name":"results",
+         "type":"dict",
+         "description":"results of the scan"
+      }
+   ]
+}

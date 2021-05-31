@@ -61,7 +61,7 @@ class Parser:
     def __parse(self, to_parse):
         path = Path(to_parse)
         if not path.exists():
-            raise FileNotFoundError("Configuration file not found.")
+            raise FileNotFoundError(f"Configuration file {path.absolute()} not found.")
         else:
             with path.open() as file:
                 data = json.load(file)
@@ -104,7 +104,7 @@ class Parser:
                     ),
                     data["args"][module]
                     if "args" in data and module in data["args"]
-                    else [],
+                    else {},
                 )
                 # todo validazione input: args quali? tipizzati giusti? effettuarne il controllo preventivamente
 

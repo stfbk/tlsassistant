@@ -1,0 +1,9 @@
+{
+   "name":"analysis_test",
+   "description":"Template for other configuration",
+   "modules":[
+      "beast",
+      "breach",
+     "certificate_transparency"
+   ]
+}

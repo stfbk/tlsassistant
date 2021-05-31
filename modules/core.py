@@ -7,7 +7,7 @@ from modules.parse_input_conf import Parser
 
 class Core:
     def __init__(self, hostname: str, configuration: str):
-        self.__logging = Logger(self)
+        self.__logging = Logger("Core")
         self.__input_dict = {}
         self.__cache = {}
         self.input(configuration=configuration, hostname=hostname)
@@ -16,7 +16,9 @@ class Core:
 
     def input(self, **kwargs):
         assert "configuration" in kwargs, "Missing configuration."
-        assert "hostname" in kwargs, "Missing hostname."
+        assert (
+            "hostname" in kwargs
+        ), "Missing hostname."  # todo: facultative hostname, we should use configs sometimes
         configuration = kwargs["configuration"]
         hostname = kwargs["hostname"]
         Validator([(configuration, str), (hostname, str)])
@@ -63,7 +65,13 @@ class Core:
         # preanalysis if needed
         self.__preanalysis_testssl(testssl_args)
         for name, module in loaded_modules.items():
+            if "hostname" not in loaded_arguments[name]:
+                loaded_arguments[name]["hostname"] = self.__input_dict["hostname"]
             args = loaded_arguments[name]
             self.__logging.debug(f"Running {name}...")
             results[name] = module.run(**args)
-        # todo: output call
+        # todo remove, here for debug:
+        for name, value in results.items():
+            print(name)
+            print(value)
+        # todo add output module call
