@@ -1,6 +1,5 @@
 from os import mkdir
 from pathlib import Path
-from markdown2 import markdown
 
 from utils.validation import Validator
 from utils import md

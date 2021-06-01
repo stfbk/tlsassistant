@@ -7,6 +7,25 @@ H4 = 4
 H5 = 5
 
 
+def recursive_parsing(value, hlevel: int) -> str:
+    results = []
+    if isinstance(value, list):
+        for v in value:
+            results.append(recursive_parsing(v, hlevel + 1))
+    elif isinstance(value, dict):
+        for k, v in value.items():
+            if hlevel > 6:
+                hlevel = 6
+            if hlevel < 1:
+                hlevel = 1
+            header = "".join(["#" for i in range(0, hlevel)])
+            results.append(f"{header} {k}")
+            results.append(recursive_parsing(v, hlevel + 1))
+    else:
+        results.append(value)
+    return "\n".join(results)
+
+
 def md_to_html(extras, results, output_file="output.html", css_file=None):
     with open(output_file, "w") as file:
         if css_file:
