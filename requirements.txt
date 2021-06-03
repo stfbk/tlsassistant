@@ -5,3 +5,4 @@ tldextract==3.1.0
 tlslite-ng==0.8.0-alpha40
 jsonmerge==1.8.0
 markdown2==2.4.0
+xhtml2pdf==0.2.5
