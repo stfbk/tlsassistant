@@ -46,7 +46,6 @@ class Report:
         self.__logging.debug("Recursive parsing...")
         output.append(md.recursive_parsing(raw_results, md.H1, bold_instead=True))
 
-        print(output)
         self.__logging.debug("Recursive parsing done.")
         if not Path("results").exists():
             self.__logging.debug("Adding result folder...")
@@ -57,7 +56,12 @@ class Report:
         output_path = output_file.absolute()
 
         md.md_to_html(
-            ["break-on-newline", "fenced-code-blocks", "code-friendly","cuddled-lists"],
+            [
+                "break-on-newline",
+                "fenced-code-blocks",
+                "code-friendly",
+                "cuddled-lists",
+            ],
             "\n".join(output),
             output_file=output_file.absolute(),
             css_file=f"dependencies{sep}typora-mo-theme{sep}mo.css",

@@ -1,3 +1,6 @@
+from os.path import sep
+from pathlib import Path
+
 from modules.server.testssl_base import Testssl_base
 from modules.server.wrappers.testssl import Testssl
 from utils.logger import Logger
@@ -45,12 +48,16 @@ class Core:
                 (kwargs["configuration"], str),
                 (kwargs["hostname"], str),
                 (
-                    self.Report.HTML if "output_type" not in kwargs or not kwargs['output_type'] else kwargs["output_type"],
+                    self.Report.HTML
+                    if "output_type" not in kwargs or not kwargs["output_type"]
+                    else kwargs["output_type"],
                     self.Report,
                 ),
                 # can be none
                 (
-                    '' if "output" not in kwargs or not kwargs['output'] else kwargs["output"],
+                    ""
+                    if "output" not in kwargs or not kwargs["output"]
+                    else kwargs["output"],
                     str,
                 ),  # can be none
             ]
@@ -60,7 +67,8 @@ class Core:
         if "output" not in kwargs or not kwargs["output"]:  # if not output
             file_name = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
         else:
-            file_name = kwargs["output"]
+            fl = Path(kwargs["output"])
+            file_name = f"{fl.absolute().parent}{sep}{fl.absolute().stem}"
 
         # if not output type, just parse it from the file name
         if "output_type" not in kwargs or not kwargs["output_type"]:
@@ -138,19 +146,22 @@ class Core:
         self.__logging.debug("Output generated.")
 
     def __exec(self):
+        self.__logging.info(f"Started analysis on {self.__input_dict['hostname']}.")
         configuration_name = self.__input_dict["configuration"]
+        self.__logging.info(f"Loading configuration {configuration_name} ..")
         parsed_configuration = self.__cache[configuration_name]
 
-        self.__logging.debug(f"Loading modules..")
+        self.__logging.info(f"Loading modules..")
         # loading modules
         loaded_modules, loaded_arguments, testssl_args = self.__load_modules(
             parsed_configuration
         )
 
         # preanalysis if needed
+        self.__logging.info(f"Running analysis..")
         self.__preanalysis_testssl(testssl_args)
 
         results = self.__run_analysis(loaded_modules, loaded_arguments)
-
+        self.__logging.info(f"Generating output..")
         self.__call_output_modules(loaded_modules, results)
         # todo add output attack trees

@@ -44,11 +44,13 @@ class Testssl_base:
                     out[ip] = {}
                 # check for severity != OK or info or warn
                 condition = "severity" in results[ip][key] and (
-                        results[ip][key]["severity"] != "OK"
-                        and results[ip][key]["severity"] != "INFO"
-                        and results[ip][key]["severity"] != "WARN"
+                    results[ip][key]["severity"] != "OK"
+                    and results[ip][key]["severity"] != "INFO"
+                    and results[ip][key]["severity"] != "WARN"
                 )
-                conditioned_result = self._set_mitigations(results[ip][key], key, condition)
+                conditioned_result = self._set_mitigations(
+                    results[ip][key], key, condition
+                )
                 if conditioned_result:
                     out[ip][key] = conditioned_result
         return out

@@ -1,4 +1,8 @@
 from markdown2 import markdown
+from xhtml2pdf import pisa  # import python module
+from os.path import exists
+from os import remove
+import codecs
 
 H1 = 1
 H2 = 2
@@ -7,23 +11,68 @@ H4 = 4
 H5 = 5
 
 
-def recursive_parsing(value, hlevel: int) -> str:
+def recursive_parsing(value, hlevel: int, bold_instead: bool) -> str:
+    return __recursive_parsing_runner(value, hlevel, hlevel, bold_instead)
+
+
+def __repeat_to_length(string_to_expand, length):
+    return (string_to_expand * (int(length / len(string_to_expand)) + 1))[:length]
+
+
+def __recursive_parsing_runner(
+    value, hlevel: int, initial_hlevel: int, bold_instead: bool, is_code=False
+):
     results = []
+
     if isinstance(value, list):
         for v in value:
-            results.append(recursive_parsing(v, hlevel + 1))
+            results.append(
+                __recursive_parsing_runner(
+                    v, hlevel + 1, initial_hlevel, bold_instead, is_code
+                )
+            )
     elif isinstance(value, dict):
         for k, v in value.items():
             if hlevel > 6:
                 hlevel = 6
             if hlevel < 1:
                 hlevel = 1
-            header = "".join(["#" for i in range(0, hlevel)])
-            results.append(f"{header} {k}")
-            results.append(recursive_parsing(v, hlevel + 1))
+
+            rec_result = __recursive_parsing_runner(
+                v, hlevel + 1, initial_hlevel, bold_instead, is_code=("code" in k)
+            )
+            if (v or v is False) and (rec_result or rec_result is False):
+                # prepend = __repeat_to_length('    ', hlevel - initial_hlevel) + '- ' if hlevel != initial_hlevel else ''
+                prepend = "- "
+                results.append(
+                    f"{prepend}{title(k, hlevel) if not bold_instead else bold(k)}"
+                )
+
+                results.append(rec_result)
     else:
-        results.append(value)
+        results.append(
+            f"{__repeat_to_length('    ', hlevel - initial_hlevel + 1)}- {value}"
+            if not is_code
+            else multiline_code(value)
+        )
     return "\n".join(results)
+
+
+def html_to_pdf(source_path: str, output_filename: str, delete_html=True) -> bool:
+    # open output file for writing (truncated binary)
+    assert exists(source_path), "The input file MUST exists!"
+    with open(output_filename, "w+b") as result_file:
+        with codecs.open(source_path, "r") as source_file:
+            # convert HTML to PDF
+            source_html = source_file.read()
+            pisa_status = pisa.CreatePDF(
+                source_html, dest=result_file  # the HTML to convert
+            )  # file handle to recieve result
+
+        if delete_html:
+            remove(source_html)
+            # return False on success and True on errors
+    return pisa_status.err
 
 
 def md_to_html(extras, results, output_file="output.html", css_file=None):

@@ -3,6 +3,11 @@ from tldextract import extract
 import logging
 
 
+# todo: fix info logging
+
+# logging.getLogger('tldextract').disabled = False if logging.getLogger().isEnabledFor(logging.DEBUG) else True
+
+
 def url_strip(input_url, strip_www=False):
     url = (
         re.compile(r"https?://") if not strip_www else re.compile(r"https?://(www\.)?")
