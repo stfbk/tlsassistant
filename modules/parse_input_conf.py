@@ -9,11 +9,16 @@ from utils.configuration import merge
 class Parser:
     __cache = {}
 
-    def __init__(self, to_parse: str):
+    def __init__(self, to_parse: str or list):
         self.__input_dict = {}
         self.__output = []
         self.__configs_path = f"configs{sep}modules{sep}"
-        self.__parse(to_parse)
+        if isinstance(to_parse, str):
+            self.__parse(to_parse)
+        elif isinstance(to_parse, list):
+            self.__get_modules({"modules": to_parse})
+        else:
+            raise NotImplementedError("Not yet implemented parsing method")
 
     def remove(self, data, key, value):
         if key in data:
@@ -85,8 +90,12 @@ class Parser:
 
         if "args" in data:
             Validator().dict(data["args"])
+        self.__get_modules(data)
 
+    def __get_modules(self, data: dict):
+        v = Validator([(data["modules"], list)])
         for module in data["modules"]:
+            v.string(module)
             module_path = Path(
                 f"{self.__configs_path}{module}.json"
             )  # search for config file
@@ -96,17 +105,22 @@ class Parser:
                 )
             with module_path.open() as mod_file:
                 mod_data = json.load(mod_file)
-                self.__cache[Path(mod_data["path"]).stem] = (
+                mod_path = Path(mod_data["path"])
+                self.__cache[mod_path.stem] = (
                     load_class(
                         mod_data["path"],
-                        Path(mod_data["path"]).stem,
+                        mod_path.stem,
                         mod_data["class_name"],
                     ),
                     data["args"][module]
                     if "args" in data and module in data["args"]
                     else {},
                 )
-                # todo validazione input: args quali? tipizzati giusti? effettuarne il controllo preventivamente
+                for mod_folder in [
+                    a.stem.lower() for a in mod_path.parents
+                ]:  # check if parent folder is android
+                    if mod_folder == "android":  # to know if android or not
+                        self.__cache[mod_path.stem][0].is_android = True
 
     def output(self):
         return self.__cache

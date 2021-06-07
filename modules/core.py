@@ -4,7 +4,7 @@ from pathlib import Path
 from modules.server.testssl_base import Testssl_base
 from modules.server.wrappers.testssl import Testssl
 from utils.logger import Logger
-from utils.validation import Validator
+from utils.validation import Validator, is_apk
 from modules.parse_input_conf import Parser
 import datetime
 from enum import Enum
@@ -60,6 +60,7 @@ class Core:
                     else kwargs["output"],
                     str,
                 ),  # can be none
+                (kwargs['apk'], bool),
             ]
         )
 
@@ -117,6 +118,11 @@ class Core:
         for name, module_args in parsed_configuration.items():
             Module, args = module_args
             self.__logging.debug(f"Loading {name}...")
+            if self.__input_dict['apk']:
+                assert is_apk(Module), f"The module {name} isn't APK related!"
+            else:
+                assert not is_apk(Module), f"The module {name} isn't Server related!"
+
             loaded_modules[name] = Module()
             loaded_arguments[name] = args
             testssl_args = self.__add_testssl_args(loaded_modules[name], testssl_args)
@@ -135,8 +141,8 @@ class Core:
 
     def __call_output_modules(self, loaded_modules: dict, results: dict):
         if (
-            self.__input_dict["output_type"] == self.Report.HTML
-            or self.__input_dict["output_type"] == self.Report.PDF
+                self.__input_dict["output_type"] == self.Report.HTML
+                or self.__input_dict["output_type"] == self.Report.PDF
         ):
             Report_module().run(
                 path=self.__input_dict["output"],
