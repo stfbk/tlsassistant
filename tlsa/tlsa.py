@@ -21,10 +21,11 @@ class Tlsa:
         logging.basicConfig(level=logging.DEBUG if args.verbosity else logging.INFO)
         self.__logging.debug("Started anaylsis with verbosity on.")
         self.__logging.debug("Initializing Core element.")
+        config_or_modules = args.configuration
         if args.server:
             Core(
                 hostname=args.server,
-                configuration=args.configuration,
+                configuration=config_or_modules,
                 output=args.output,
                 output_type=self.__to_report_type(args.output_type),
             )

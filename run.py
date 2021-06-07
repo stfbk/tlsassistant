@@ -53,10 +53,18 @@ if __name__ == "__main__":
     configurations.add_argument(
         "-c" "--conf",
         "--configuration",
-        action="store",
-        type=str,
+        action="store_const",
+        dest="configuration",
         help="Configuration path.",
-        default="default.json",
+        const="default.json",
+    )
+    configurations.add_argument(
+        "-l",
+        "--list",
+        action="store",
+        dest="configuration",
+        nargs="+",
+        help="List of modules to run" "\nFor example\n\t-l breach crime freak",
     )
     # todo add default aliases configurations for analysis
     # configurations.add_argument()

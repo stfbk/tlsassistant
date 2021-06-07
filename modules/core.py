@@ -19,18 +19,23 @@ class Core:
         ATTACK_TREES = 3  # todo implement attack trees module
 
     def __init__(
-        self, hostname: str, configuration: str, output=None, output_type=None
+            self, hostname: str, configuration: str or list, output=None, output_type=None, apk=False
     ):
         self.__logging = Logger("Core")
         self.__input_dict = {}
         self.__cache = {}
+        modules = None
+        if isinstance(configuration, list):  # if modules as argument
+            modules = configuration
+            configuration = "modules_list"
         self.input(
             configuration=configuration,
             hostname=hostname,
             output=output,
             output_type=output_type,
+            apk=apk
         )
-        self.__cache[configuration] = self.__load_configuration()
+        self.__cache[configuration] = self.__load_configuration(modules)
         self.__exec()
 
     def __string_output_type(self, kwargs_type: Report) -> str:
@@ -88,12 +93,12 @@ class Core:
 
         self.__input_dict = kwargs
 
-    def __load_configuration(self):
+    def __load_configuration(self, modules):
         assert "configuration" in self.__input_dict, "Missing configuration."
         self.__logging.debug(
             f"Loading configuration {self.__input_dict['configuration']}"
         )
-        return Parser(self.__input_dict["configuration"]).output()
+        return Parser(self.__input_dict["configuration"] if not modules else modules).output()
 
     def __is_testssl(self, module: object) -> bool:
         return isinstance(module, Testssl_base)
