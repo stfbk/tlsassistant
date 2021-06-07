@@ -1,6 +1,10 @@
 import logging
 
 
+def is_apk(module):
+    return hasattr(module, "is_android")
+
+
 class Validator:
     def __init__(self, args=None):
         counter = 0
