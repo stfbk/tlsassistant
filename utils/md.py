@@ -1,5 +1,5 @@
 from markdown2 import markdown
-from xhtml2pdf import pisa  # import python module
+from pdfkit import from_file  # import python module
 from os.path import exists
 from os import remove
 import codecs
@@ -20,7 +20,7 @@ def __repeat_to_length(string_to_expand, length):
 
 
 def __recursive_parsing_runner(
-    value, hlevel: int, initial_hlevel: int, bold_instead: bool, is_code=False
+        value, hlevel: int, initial_hlevel: int, bold_instead: bool, is_code=False
 ):
     results = []
 
@@ -58,21 +58,13 @@ def __recursive_parsing_runner(
     return "\n".join(results)
 
 
-def html_to_pdf(source_path: str, output_filename: str, delete_html=True) -> bool:
+def html_to_pdf(source_path: str, output_filename: str, delete_html=True):
     # open output file for writing (truncated binary)
     assert exists(source_path), "The input file MUST exists!"
-    with open(output_filename, "w+b") as result_file:
-        with codecs.open(source_path, "r") as source_file:
-            # convert HTML to PDF
-            source_html = source_file.read()
-            pisa_status = pisa.CreatePDF(
-                source_html, dest=result_file  # the HTML to convert
-            )  # file handle to recieve result
-
-        if delete_html:
-            remove(source_html)
-            # return False on success and True on errors
-    return pisa_status.err
+    from_file(source_path, output_filename)
+    if delete_html:
+        remove(source_path)
+        # return False on success and True on errors
 
 
 def md_to_html(extras, results, output_file="output.html", css_file=None):

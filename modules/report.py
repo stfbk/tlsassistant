@@ -70,7 +70,7 @@ class Report:
         self.__logging.debug("Checking if needs pdf...")
 
         if self.__path.suffix.lower() == ".pdf":
-            output_path = f"{output_file.absolute().parent}{output_file.stem}.pdf"
+            output_path = f"{output_file.absolute().parent}{sep}{output_file.stem}.pdf"
             self.__logging.debug("Starting HTML to PDF...")
             md.html_to_pdf(str(output_file.absolute()), output_path)
         self.__logging.info(f"Report generated at {output_path}")
