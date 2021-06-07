@@ -33,6 +33,7 @@ class Install:
         pkgs = []
         zips = []
         cfgs = []
+        apts = []
         logging.info("Loading dependencies...")
         for dependency in dependencies:  # for each dependency
             if dependency["type"] == "git":  # if it's git
@@ -41,6 +42,9 @@ class Install:
             elif dependency["type"] == "pkg":  # if it's pkg
                 pkgs.append(dependency["url"])  # append it's url to the pkg array
                 logging.debug(f"Added dependency pkg {dependency['url']}")
+            elif dependency["type"] == "apt":  # if it's zip
+                apts.append(dependency["url"])  # append it's url to the zip array
+                logging.debug(f"Added dependency apt {dependency['url']}")
             elif dependency["type"] == "zip":  # if it's zip
                 zips.append(dependency["url"])  # append it's url to the zip array
                 logging.debug(f"Added dependency zip {dependency['url']}")
@@ -54,6 +58,7 @@ class Install:
         logging.info("Getting files...")
         logging.debug("Getting all cfgs...")
         loop = asyncio.get_event_loop()
+        results_apts = apts
         results_cfgs = loop.run_until_complete(self.download(cfgs))
         logging.debug(results_cfgs)
         logging.debug("Getting all pkgs...")
@@ -74,16 +79,39 @@ class Install:
             logging.info(f"{file_name} done.")
 
         logging.info("Installing dependencies...")
+        self.apt_update()
         self.install_dependencies("pkgs", results_pkgs)  # install the dependencies pkg
+        self.install_dependencies("apts", results_apts)  # install the dependencies pkg
         logging.info("Unzipping dependencies...")
         self.install_dependencies("zips", results_zips)  # unzips the zips
         logging.info("All done!")
 
+    def apt_update(self):
+        logging.debug("Updating repositories...")
+        with open(devnull, "w") as null:
+            subprocess.check_call(
+                [
+                    "sudo",
+                    "apt-get",
+                    "update",
+                    "-y"
+                ],
+                stderr=sys.stderr,
+                stdout=(
+                    sys.stdout
+                    if logging.getLogger().isEnabledFor(
+                        logging.DEBUG
+                    )  # if the user asked for debug mode, let him see the output.
+                    else null  # else /dev/null
+                ),
+            )
+
     def install_dependencies(self, type, results):
 
         for file in results:
-            if type == "pkgs":
+            if type == "pkgs" or type == "apts":
                 logging.debug(f"Installing dependencies{sep}{file}")
+                f_path = f"./dependencies{sep}{file}"
                 with open(devnull, "w") as null:
                     subprocess.check_call(
                         [
@@ -91,7 +119,7 @@ class Install:
                             "apt-get",
                             "install",
                             "-y",
-                            f"./dependencies{sep}{file}",
+                            f"{f_path if type == 'pkgs' else file}",
                         ],
                         stderr=sys.stderr,
                         stdout=(
@@ -105,7 +133,7 @@ class Install:
             elif type == "zips":
                 logging.debug(f"Unzipping dependencies{sep}{file}")
                 with ZipFile(
-                    f"dependencies{sep}{file}", "r"
+                        f"dependencies{sep}{file}", "r"
                 ) as zip:  # while opening the zip
                     zip.extractall(
                         f"dependencies{sep}{file.rsplit('.', 1)[0]}"
@@ -116,7 +144,7 @@ class Install:
                     "The type given doesn't match one of the existing one."
                 )
             if path.exists(
-                f"dependencies{sep}{file}"
+                    f"dependencies{sep}{file}"
             ):  # delete the files .deb and .zip after all.
                 logging.debug(f"Removing file dependencies{sep}{file}")
                 remove(f"dependencies{sep}{file}")
