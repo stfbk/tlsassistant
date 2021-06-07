@@ -53,10 +53,10 @@ if __name__ == "__main__":
     configurations.add_argument(
         "-c" "--conf",
         "--configuration",
-        action="store_const",
+        action="store",
         dest="configuration",
         help="Configuration path.",
-        const="default.json",
+        default="default.json",
     )
     configurations.add_argument(
         "-l",
