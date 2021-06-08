@@ -1,4 +1,5 @@
 import logging
+from utils.configuration import Color
 
 
 class Logger:
@@ -15,11 +16,11 @@ class Logger:
     def debug(self, string: str):
         logging.debug(f"[{self.__class_name}]{string}")
 
-    def warn(self, string: str):
-        logging.warning(f"[{self.__class_name}]{string}")
+    def warning(self, string: str):
+        logging.warning(f"{Color.WARNING}[{self.__class_name}]{string}{Color.ENDC}")
 
     def info(self, string: str):
-        logging.info(f"[{self.__class_name}]{string}")
+        logging.info(f"{Color.CGREEN}[{self.__class_name}]{string}{Color.ENDC}")
 
     def error(self, string: str):
-        logging.error(f"[{self.__class_name}]{string}")
+        logging.error(f"{Color.FAIL}[{self.__class_name}]{string}{Color.ENDC}")

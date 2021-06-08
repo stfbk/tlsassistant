@@ -1,7 +1,6 @@
 import re
 from tldextract import extract
-import logging
-
+from utils.logger import Logger
 
 # todo: fix info logging
 
@@ -18,5 +17,5 @@ def url_strip(input_url, strip_www=False):
 def url_domain(url, keep_subdomain=True) -> str:
     results = extract(url)
     output = f"{results.subdomain + '.' if keep_subdomain and results.subdomain != '' else ''}{results.domain}.{results.suffix}"
-    logging.debug(f"[url_domain] parsed {url} into {output}")
+    Logger("URL_Domain").debug(f"parsed {url} into {output}")
     return output

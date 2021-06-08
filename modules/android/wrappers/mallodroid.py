@@ -1,6 +1,8 @@
 import logging
 from os import sep
 from pathlib import Path
+
+from utils.logger import Logger
 from utils.validation import Validator
 from utils.loader import load_module
 
@@ -10,6 +12,7 @@ class Mallodroid:
     __instance = None
 
     def __init__(self):
+        self.__logging = Logger("Mallodroid")
         self.__mallodroid = f"dependencies{sep}mallodroid{sep}mallodroid.py"
         self.__instance = load_module(self.__mallodroid, "mallodroid")
         self.__input_dict = {}
@@ -45,11 +48,13 @@ class Mallodroid:
 
     def __worker(self, path: Path, args: list, force: bool):
         file_id = str(path.absolute())
-        logging.debug(f"Starting analysis of {file_id} ...")
+        self.__logging.debug(f"Starting analysis of {file_id} ...")
         args.append("-f")
         args.append(str(path.absolute()))
         if force:
-            logging.debug(f"Analysis of {file_id} (cache miss or forced by call)")
+            self.__logging.debug(
+                f"Analysis of {file_id} (cache miss or forced by call)"
+            )
             self.__cache[file_id] = self.__instance.main(
                 args,
                 stdout_suppress=False

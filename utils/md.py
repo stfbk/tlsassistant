@@ -20,7 +20,7 @@ def __repeat_to_length(string_to_expand, length):
 
 
 def __recursive_parsing_runner(
-        value, hlevel: int, initial_hlevel: int, bold_instead: bool, is_code=False
+    value, hlevel: int, initial_hlevel: int, bold_instead: bool, is_code=False
 ):
     results = []
 

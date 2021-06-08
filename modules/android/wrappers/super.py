@@ -8,6 +8,7 @@ from pathlib import Path
 from shutil import rmtree as rm_rf
 from os import walk
 
+from utils.logger import Logger
 from utils.validation import Validator
 
 
@@ -40,6 +41,7 @@ class Super:
     __cache = {}
 
     def __init__(self):
+        self.__logging = Logger("SUPER")
         self.__input_dict = {}
         self.__correct_path = None
 
@@ -100,7 +102,7 @@ class Super:
             )
             return 1 if try_again else 0  # failed 1 times or zero times
         except subprocess.CalledProcessError as c:
-            logging.debug(c)
+            self.__logging.debug(str(c))
             if not try_again:
                 self.subprocess_call(cmd, null, try_again=True)
             else:
@@ -108,9 +110,9 @@ class Super:
 
     def __super_scan(self, path: Path, args: list, force: bool):
         if force:
-            logging.debug("Starting SUPER analysis")
+            self.__logging.debug("Starting SUPER analysis")
             folder_name = uuid.uuid4().hex
-            logging.debug(
+            self.__logging.debug(
                 f"Scanning {path.absolute()}, saving result to temp folder {folder_name}"
             )
             with open(devnull, "w") as null:
@@ -126,12 +128,12 @@ class Super:
                 ]
 
                 if args:
-                    logging.debug(f"Scanning with personalized args: {args}")
+                    self.__logging.debug(f"Scanning with personalized args: {args}")
                     for arg in args:
                         cmd.append(arg)
                 cmd.append(str(path.absolute()))
                 exit_code = self.subprocess_call(cmd, null)
-                logging.debug(f"exit code: {exit_code}")
+                self.__logging.debug(f"exit code: {exit_code}")
                 file_name = self.__find_file(
                     f"dependencies{sep}{folder_name}{sep}results"
                 )

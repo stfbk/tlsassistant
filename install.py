@@ -12,6 +12,8 @@ import logging
 from shutil import rmtree as rm_rf
 
 # parser for the arguments
+from utils.logger import Logger
+
 parser = argparse.ArgumentParser(
     description="Installer for TLSAssistant"
 )  # todo: edit the description of the tool
@@ -20,7 +22,7 @@ parser.add_argument(
 )  # verbose flag
 
 args = parser.parse_args()  # parse arguments
-
+logger = Logger("INSTALLER")
 if args.verbose:  # if verbose is set
     logging.basicConfig(level=logging.DEBUG)  # logger is set to debug
 else:
@@ -34,68 +36,63 @@ class Install:
         zips = []
         cfgs = []
         apts = []
-        logging.info("Loading dependencies...")
+        logger.info("Loading dependencies...")
         for dependency in dependencies:  # for each dependency
             if dependency["type"] == "git":  # if it's git
                 gits.append(dependency["url"])  # append it's url to the git array
-                logging.debug(f"Added dependency git {dependency['url']}")
+                logger.debug(f"Added dependency git {dependency['url']}")
             elif dependency["type"] == "pkg":  # if it's pkg
                 pkgs.append(dependency["url"])  # append it's url to the pkg array
-                logging.debug(f"Added dependency pkg {dependency['url']}")
+                logger.debug(f"Added dependency pkg {dependency['url']}")
             elif dependency["type"] == "apt":  # if it's zip
                 apts.append(dependency["url"])  # append it's url to the zip array
-                logging.debug(f"Added dependency apt {dependency['url']}")
+                logger.debug(f"Added dependency apt {dependency['url']}")
             elif dependency["type"] == "zip":  # if it's zip
                 zips.append(dependency["url"])  # append it's url to the zip array
-                logging.debug(f"Added dependency zip {dependency['url']}")
+                logger.debug(f"Added dependency zip {dependency['url']}")
             elif dependency["type"] == "cfg":  # if it's cfg
                 cfgs.append(dependency["url"])  # append it's url to the cfg array
-                logging.debug(f"Added dependency cfg {dependency['url']}")
+                logger.debug(f"Added dependency cfg {dependency['url']}")
             else:  # if not found, throw warning
-                logging.warning(
+                logger.warning(
                     f"Ignoring dependency {dependency['url']}, type {dependency['type']} is not recognized."
                 )
-        logging.info("Getting files...")
-        logging.debug("Getting all cfgs...")
+        logger.info("Getting files...")
+        logger.debug("Getting all cfgs...")
         loop = asyncio.get_event_loop()
         results_apts = apts
         results_cfgs = loop.run_until_complete(self.download(cfgs))
-        logging.debug(results_cfgs)
-        logging.debug("Getting all pkgs...")
+        logger.debug(results_cfgs)
+        logger.debug("Getting all pkgs...")
         loop = asyncio.get_event_loop()  # asnychronous event loop
         results_pkgs = loop.run_until_complete(
             self.download(pkgs)
         )  # download asynchronously all the files
-        logging.debug(results_pkgs)
-        logging.debug("Getting all zips...")
+        logger.debug(results_pkgs)
+        logger.debug("Getting all zips...")
         loop = asyncio.get_event_loop()
         results_zips = loop.run_until_complete(self.download(zips))
-        logging.debug(results_zips)
-        logging.debug("Getting all git...")
+        logger.debug(results_zips)
+        logger.debug("Getting all git...")
         for git in gits:  # for each git url,
             file_name = self.get_filename(git)  # get the file name
-            logging.info(f"getting {file_name}...")
+            logger.info(f"getting {file_name}...")
             self.git_clone(git)  # and clone it
-            logging.info(f"{file_name} done.")
+            logger.info(f"{file_name} done.")
 
-        logging.info("Installing dependencies...")
+        logger.info("Installing dependencies...")
         self.apt_update()
         self.install_dependencies("pkgs", results_pkgs)  # install the dependencies pkg
         self.install_dependencies("apts", results_apts)  # install the dependencies pkg
-        logging.info("Unzipping dependencies...")
+        logger.info("Unzipping dependencies...")
         self.install_dependencies("zips", results_zips)  # unzips the zips
-        logging.info("All done!")
+        logger.info("All done!")
 
     def apt_update(self):
-        logging.debug("Updating repositories...")
+        logger.debug("Updating repositories...")
         with open(devnull, "w") as null:
             subprocess.check_call(
-                [
-                    "sudo",
-                    "apt-get",
-                    "update",
-                    "-y"
-                ],
+                ["sudo", "apt-get", "update", "-y"],
                 stderr=sys.stderr,
                 stdout=(
                     sys.stdout
@@ -110,7 +107,7 @@ class Install:
 
         for file in results:
             if type == "pkgs" or type == "apts":
-                logging.debug(f"Installing dependencies{sep}{file}")
+                logger.debug(f"Installing dependencies{sep}{file}")
                 f_path = f"./dependencies{sep}{file}"
                 with open(devnull, "w") as null:
                     subprocess.check_call(
@@ -131,22 +128,22 @@ class Install:
                         ),
                     )
             elif type == "zips":
-                logging.debug(f"Unzipping dependencies{sep}{file}")
+                logger.debug(f"Unzipping dependencies{sep}{file}")
                 with ZipFile(
-                        f"dependencies{sep}{file}", "r"
+                    f"dependencies{sep}{file}", "r"
                 ) as zip:  # while opening the zip
                     zip.extractall(
                         f"dependencies{sep}{file.rsplit('.', 1)[0]}"
                     )  # extract it and remove the extension (myzip.zip) in the folder myzip
             else:  # if the type is not found, stop everything, we have an issue.
-                logging.error("no type found.")
+                logger.error("no type found.")
                 raise AssertionError(
                     "The type given doesn't match one of the existing one."
                 )
             if path.exists(
-                    f"dependencies{sep}{file}"
+                f"dependencies{sep}{file}"
             ):  # delete the files .deb and .zip after all.
-                logging.debug(f"Removing file dependencies{sep}{file}")
+                logger.debug(f"Removing file dependencies{sep}{file}")
                 remove(f"dependencies{sep}{file}")
 
     def git_clone(self, url, path=None):
@@ -199,9 +196,9 @@ class Install:
 
 def main():  # exec main
     if not path.exists("dependencies"):  # if can't find dependency folder
-        logging.debug("Folder dependencies does not exist. Creating a new one.")
+        logger.debug("Folder dependencies does not exist. Creating a new one.")
     else:
-        logging.debug("Folder dependencies exist. Removing and creating a new one.")
+        logger.debug("Folder dependencies exist. Removing and creating a new one.")
         rm_rf("dependencies")  # delete the folder
     mkdir("dependencies")  # create the folder
     if path.exists("dependencies.json"):  # if  find the dependency file
@@ -210,7 +207,7 @@ def main():  # exec main
             dependencies = json.loads(data)
             Install(dependencies)  # install dependencies
     else:  # there's no file dependencies.json
-        logging.error("File not found, dependency links are missing. Abort.")
+        logger.error("File not found, dependency links are missing. Abort.")
         raise FileNotFoundError("File dependencies is not found, Abort.")
 
 
@@ -218,7 +215,7 @@ if __name__ == "__main__":
     if geteuid() == 0:  # check if sudo
         main()  # start
     else:
-        logging.warning("This tools need SUDO to work!")
+        logger.warning("This tools need SUDO to work!")
         subprocess.check_call(
             ["sudo", sys.executable] + sys.argv
         )  # force sudo, rerun the script as sudo
