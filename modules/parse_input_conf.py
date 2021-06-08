@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from utils.validation import Validator
-from utils.loader import load_class
+from utils.loader import load_class, load_configuration
 from os.path import sep
 from utils.configuration import merge
 
@@ -95,32 +95,23 @@ class Parser:
     def __get_modules(self, data: dict):
         v = Validator([(data["modules"], list)])
         for module in data["modules"]:
-            v.string(module)
-            module_path = Path(
-                f"{self.__configs_path}{module}.json"
-            )  # search for config file
-            if not module_path.exists():
-                raise FileNotFoundError(
-                    f"Couldn't find the configuration file of the module {module_path.absolute()}"
-                )
-            with module_path.open() as mod_file:
-                mod_data = json.load(mod_file)
-                mod_path = Path(mod_data["path"])
-                self.__cache[mod_path.stem] = (
-                    load_class(
-                        mod_data["path"],
-                        mod_path.stem,
-                        mod_data["class_name"],
-                    ),
-                    data["args"][module]
-                    if "args" in data and module in data["args"]
-                    else {},
-                )
-                for mod_folder in [
-                    a.stem.lower() for a in mod_path.parents
-                ]:  # check if parent folder is android
-                    if mod_folder == "android":  # to know if android or not
-                        self.__cache[mod_path.stem][0].is_android = True
+            mod_data = load_configuration(module, configs_path=self.__configs_path)
+            mod_path = Path(mod_data["path"])
+            self.__cache[mod_path.stem] = (
+                load_class(
+                    mod_data["path"],
+                    mod_path.stem,
+                    mod_data["class_name"],
+                ),
+                data["args"][module]
+                if "args" in data and module in data["args"]
+                else {},
+            )
+            for mod_folder in [
+                a.stem.lower() for a in mod_path.parents
+            ]:  # check if parent folder is android
+                if mod_folder == "android":  # to know if android or not
+                    self.__cache[mod_path.stem][0].is_android = True
 
     def output(self):
         return self.__cache

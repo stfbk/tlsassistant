@@ -4,10 +4,12 @@ from tlsa.tlsa import Tlsa
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="TLSAssistant Help",
+        prog="TLSAssistant",
+        description="%(prog)s Help",
         formatter_class=RawTextHelpFormatter,  # todo: change the desc
-        epilog="https://st.fbk.eu - Security and Trust Unit",
+        epilog="https://st.fbk.eu - FBK Security and Trust Unit",
     )
+    parser.add_argument("--version", action="version", version="%(prog)s v2")
     parser.add_argument(
         "-v",
         "--verbosity",
@@ -43,6 +45,13 @@ if __name__ == "__main__":
         help="The hostname, target of the analysis.",
     )
     hostname_or_apk.add_argument(
+        "-l",
+        "--list",
+        nargs="?",
+        help="List all modules or print an help of a module.\nFor Example\n-l freak",
+        default="",
+    )
+    hostname_or_apk.add_argument(
         "-a",
         "--apk",
         type=str,
@@ -59,12 +68,12 @@ if __name__ == "__main__":
         default="default.json",
     )
     configurations.add_argument(
-        "-l",
-        "--list",
+        "-m",
+        "--modules",
         action="store",
         dest="configuration",
         nargs="+",
-        help="List of modules to run" "\nFor example\n\t-l breach crime freak",
+        help="List of modules to run" "\nFor example\n\t-m breach crime freak",
     )
     # todo add default aliases configurations for analysis
     # configurations.add_argument()

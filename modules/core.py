@@ -19,7 +19,12 @@ class Core:
         ATTACK_TREES = 3  # todo implement attack trees module
 
     def __init__(
-            self, hostname: str, configuration: str or list, output=None, output_type=None, apk=False
+        self,
+        hostname: str,
+        configuration: str or list,
+        output=None,
+        output_type=None,
+        apk=False,
     ):
         self.__logging = Logger("Core")
         self.__input_dict = {}
@@ -33,7 +38,7 @@ class Core:
             hostname=hostname,
             output=output,
             output_type=output_type,
-            apk=apk
+            apk=apk,
         )
         self.__cache[configuration] = self.__load_configuration(modules)
         self.__exec()
@@ -65,7 +70,7 @@ class Core:
                     else kwargs["output"],
                     str,
                 ),  # can be none
-                (kwargs['apk'], bool),
+                (kwargs["apk"], bool),
             ]
         )
 
@@ -98,7 +103,9 @@ class Core:
         self.__logging.debug(
             f"Loading configuration {self.__input_dict['configuration']}"
         )
-        return Parser(self.__input_dict["configuration"] if not modules else modules).output()
+        return Parser(
+            self.__input_dict["configuration"] if not modules else modules
+        ).output()
 
     def __is_testssl(self, module: object) -> bool:
         return isinstance(module, Testssl_base)
@@ -123,7 +130,7 @@ class Core:
         for name, module_args in parsed_configuration.items():
             Module, args = module_args
             self.__logging.debug(f"Loading {name}...")
-            if self.__input_dict['apk']:
+            if self.__input_dict["apk"]:
                 assert is_apk(Module), f"The module {name} isn't APK related!"
             else:
                 assert not is_apk(Module), f"The module {name} isn't Server related!"
@@ -146,8 +153,8 @@ class Core:
 
     def __call_output_modules(self, loaded_modules: dict, results: dict):
         if (
-                self.__input_dict["output_type"] == self.Report.HTML
-                or self.__input_dict["output_type"] == self.Report.PDF
+            self.__input_dict["output_type"] == self.Report.HTML
+            or self.__input_dict["output_type"] == self.Report.PDF
         ):
             Report_module().run(
                 path=self.__input_dict["output"],

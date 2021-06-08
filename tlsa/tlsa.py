@@ -1,6 +1,12 @@
 import logging
+from pathlib import Path
+
 from utils.logger import Logger
+from utils.loader import load_configuration
+from utils.configuration import pretty
 from modules.core import Core
+from os import listdir
+from os.path import isfile, join, sep
 
 
 class Tlsa:
@@ -17,6 +23,22 @@ class Tlsa:
         else:
             raise NotImplementedError("Report type not yet implemented.")
 
+    def __print_module(self, module=None, configs_path=f"configs{sep}modules{sep}"):
+        if module:
+            pretty(load_configuration(module))
+        else:
+            all_modules = "\n\t".join(
+                [
+                    Path(f).stem
+                    for f in listdir(configs_path)
+                    if isfile(join(configs_path, f))
+                ]
+            )
+            print(
+                f"Here's a list of all the modules available:\n{all_modules}"
+                f"\nUse \n\t-l module_name\n to read the details."
+            )
+
     def __start_analysis(self, args):
         logging.basicConfig(level=logging.DEBUG if args.verbosity else logging.INFO)
         self.__logging.debug("Started anaylsis with verbosity on.")
@@ -31,3 +53,5 @@ class Tlsa:
             )
         elif args.apk:
             raise NotImplementedError("APK not yet implemented.")
+        else:  # must be args.list, unless argparse throws error.
+            self.__print_module(args.list)
