@@ -3,7 +3,7 @@ from pathlib import Path
 
 from utils.logger import Logger
 from utils.loader import load_configuration
-from utils.configuration import pretty
+from utils.configuration import pretty, Color
 from modules.core import Core
 from os import listdir
 from os.path import isfile, join, sep
@@ -29,13 +29,13 @@ class Tlsa:
         else:
             all_modules = "\n\t".join(
                 [
-                    Path(f).stem
+                    f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
                     for f in listdir(configs_path)
                     if isfile(join(configs_path, f))
                 ]
             )
             print(
-                f"Here's a list of all the modules available:\n{all_modules}"
+                f"Here's a list of all the modules available:\n\t{all_modules}"
                 f"\nUse \n\t-l module_name\n to read the details."
             )
 
