@@ -85,7 +85,7 @@ class Https:
         return (
             self.__output[kwargs["hostname"]]
             if "hostname" in kwargs and kwargs["hostname"] in self.__cache
-            else {}
+            else False
         )
 
     def run(self, **kwargs):
@@ -114,10 +114,11 @@ class Https:
         return self.output(hostname=link)
 
     def __chose_results(self, type: int, response: requests.Response):
+        logging.debug(response.headers)
         if type == self.HTTPS:
-            return response.headers["location"].startswith("https") and (
+            return (
                 response.is_redirect or response.is_permanent_redirect
-            )
+            ) and response.headers["location"].startswith("https")
         elif type == self.SERVERINFO:
             return response.headers["server"] if "server" in response.headers else ""
         elif type == self.HSTSSET:
@@ -129,9 +130,11 @@ class Https:
             if not self.__preloaded_gog:
                 logging.debug("Preloading google hsts..")
                 self.__preloaded_gog = Parse(moz=False).output()
-
-            parsed_url = url_domain(response.request.url)
-            logging.debug(f"url : {parsed_url} parsed")
+            if response.request:
+                parsed_url = url_domain(response.request.url)
+                logging.debug(f"url : {parsed_url} parsed")
+            else:
+                parsed_url = None
             return (
                 parsed_url in self.__preloaded_moz or parsed_url in self.__preloaded_gog
             )
@@ -139,7 +142,26 @@ class Https:
     def __worker(self, link: str, type: int, force: bool):
 
         if force:
-            self.__cache[link] = requests.head(link, headers=self.__headers, timeout=60)
+            try:
+                self.__cache[link] = requests.head(
+                    link, headers=self.__headers, timeout=5
+                )
+            except requests.exceptions.SSLError as ex:
+                logging.error(f"I can't connect to SSL/TLS:\n{ex}")
+                logging.warning(
+                    "The HTTPS_HSTS analysis cannot proceed and result will be set as vulnerable."
+                )
+                return self.__chose_results(
+                    type, requests.Response()
+                )  # default response
+            except requests.exceptions.ConnectTimeout as ex:
+                logging.error(f"I can't connect to host:\n{ex}")
+                logging.warning(
+                    "The HTTPS_HSTS analysis cannot proceed and result will be set as vulnerable."
+                )
+                return self.__chose_results(
+                    type, requests.Response()
+                )  # default response
         else:
             if link not in self.__cache:
                 self.__worker(link, type, force=True)

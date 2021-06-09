@@ -1,0 +1,20 @@
+{
+   "input":[
+      {
+         "name":"hostname",
+         "type":"str",
+         "description":"Hostname to analyze",
+         "required":"True"
+      }
+   ],
+   "description":"This modules checks if the hostname HSTS is preloaded.",
+   "path":"modules/server/hsts_not_preloaded.py",
+   "class_name":"Hsts_not_preloaded",
+   "output":[
+      {
+         "name":"results",
+         "type":"dict",
+         "description":"results of the scan"
+      }
+   ]
+}
