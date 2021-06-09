@@ -3,7 +3,17 @@ from enum import Enum
 from jsonmerge import Merger
 
 
-def merge(base, head):
+def merge(base: dict, head: dict) -> dict:
+    """
+    Merge base with head dict.
+
+    :param base: dict to get merged with head.
+    :type base: dict
+    :param head: dict to merge in base.
+    :type head: dict
+    :return: The merged dict.
+    :rtype: dict
+    """
     merger = Merger(
         {
             "oneOf": [
@@ -17,7 +27,16 @@ def merge(base, head):
     return merger.merge(base, head)
 
 
-def pretty(d, indent=0, is_list=False):
+def pretty(d, indent: int = 0, is_list: bool = False):
+    """
+    Pretty print dict.
+
+    :param d: Dict or list to print in pretty mode
+    :param indent: Intentation level.
+    :type indent: int
+    :param is_list: is it a list? recursive parameter
+    :type is_list: bool
+    """
     if not is_list:
         for key, value in d.items():
             print("\t" * indent + f"{Color.CBEIGE} {key}{Color.ENDC}")

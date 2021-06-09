@@ -12,10 +12,21 @@ H5 = 5
 
 
 def recursive_parsing(value, hlevel: int, bold_instead: bool) -> str:
+    """
+    Parse the output and prepare md for the report recursively.
+
+    :param value: The object to prepare as output
+    :param hlevel: The height level
+    :type hlevel: int
+    :param bold_instead: Instead of using H1, H2, H3, ... use a simple bold in markdown.
+    :type bold_instead: bool
+    :return: String to insert into the md file.
+    :rtype: str
+    """
     return __recursive_parsing_runner(value, hlevel, hlevel, bold_instead)
 
 
-def __repeat_to_length(string_to_expand, length):
+def __repeat_to_length(string_to_expand: str, length: int) -> str:
     return (string_to_expand * (int(length / len(string_to_expand)) + 1))[:length]
 
 
@@ -42,7 +53,6 @@ def __recursive_parsing_runner(
                 v, hlevel + 1, initial_hlevel, bold_instead, is_code=("code" in k)
             )
             if (v or v is False) and (rec_result or rec_result is False):
-                # prepend = __repeat_to_length('    ', hlevel - initial_hlevel) + '- ' if hlevel != initial_hlevel else ''
                 prepend = "- "
                 results.append(
                     f"{prepend}{title(k, hlevel) if not bold_instead else bold(k)}"
@@ -59,6 +69,16 @@ def __recursive_parsing_runner(
 
 
 def html_to_pdf(source_path: str, output_filename: str, delete_html=True):
+    """
+    Convert an HTML file to PDF.
+
+    :param source_path: The input HTML file path
+    :type source_path: str
+    :param output_filename: The output PDF file path
+    :type source_path: str
+    :param delete_html: Delete HTML file after doing the conversion. Default: True
+    :type delete_html: bool
+    """
     # open output file for writing (truncated binary)
     assert exists(source_path), "The input file MUST exists!"
     from_file(source_path, output_filename)
@@ -67,7 +87,19 @@ def html_to_pdf(source_path: str, output_filename: str, delete_html=True):
         # return False on success and True on errors
 
 
-def md_to_html(extras, results, output_file="output.html", css_file=None):
+def md_to_html(extras: list, results: dict, output_file="output.html", css_file=None):
+    """
+    Convert an md string to HTML file.
+
+    :param results: The results from the computation.
+    :type results:dict
+    :param extras: Extras of Markdown2 (check wiki)
+    :type extras: list of str
+    :param output_file: output file path
+    :type output_file: str
+    :param css_file: CSS file path to beautify the HTML output.
+    :type css_file: str
+    """
     with open(output_file, "w") as file:
         if css_file:
             with open(css_file, "r") as style:
@@ -89,28 +121,77 @@ def md_to_html(extras, results, output_file="output.html", css_file=None):
             file.write(markdown(results, extras=extras))
 
 
-def title(string, level=H1):
+def title(string: str, level=H1) -> str:
+    """
+    Add title md style.
+
+    :param string: The string to process.
+    :type string:str
+    :param level: depth level for the header (h1,h2,h3..)
+    :type level: int
+    :return: Formatted String.
+    :rtype: str
+    """
     appended = []
     for lvl in range(0, level):
         appended.append("#")
     return f"{''.join(appended)} {string}"
 
 
-def bold(string):
+def bold(string: str) -> str:
+    """
+    Add bold md style.
+
+    :param string: The string to process.
+    :type string:str
+    :return: Formatted String.
+    :rtype: str
+    """
     return f"**{string}**"
 
 
-def line():
+def line() -> str:
+    """
+    Add line md style.
+
+    :return: Formatted line in md style.
+    :rtype: str
+    """
     return f"---"
 
 
-def italic(string):
+def italic(string: str) -> str:
+    """
+    Add italic md style.
+
+    :param string: The string to process.
+    :type string:str
+    :return: Formatted String.
+    :rtype: str
+    """
     return f"*{string}*"
 
 
-def code(string):
+def code(string: str) -> str:
+    """
+    Add code md style.
+
+    :param string: The string to process.
+    :type string:str
+    :return: Formatted String.
+    :rtype: str
+    """
     return f"`{string}`"
 
 
-def multiline_code(string, language=None):
+def multiline_code(string: str, language=None) -> str:
+    """
+    Add multiline code md style.
+
+    :param language: Language of the code (default NONE)
+    :param string: The string to process.
+    :type string:str
+    :return: Formatted String.
+    :rtype: str
+    """
     return f"```{language if language else ''} {string} ```"
