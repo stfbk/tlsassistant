@@ -3,7 +3,8 @@ from pathlib import Path
 
 from modules.server.testssl_base import Testssl_base
 from modules.server.wrappers.testssl import Testssl
-from utils.logger import Logger, Color
+from utils.logger import Logger
+from utils.colors import Color
 from utils.validation import Validator, is_apk
 from modules.parse_input_conf import Parser
 import datetime

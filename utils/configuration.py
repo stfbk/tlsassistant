@@ -1,6 +1,6 @@
 from jsonmerge import Merger
 
-from utils.logger import Color
+from utils.colors import Color
 
 
 def merge(base: dict, head: dict) -> dict:

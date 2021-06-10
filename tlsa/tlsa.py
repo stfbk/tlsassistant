@@ -1,7 +1,8 @@
 import logging
 from pathlib import Path
 
-from utils.logger import Logger, Color
+from utils.logger import Logger
+from utils.colors import Color
 from utils.loader import load_configuration
 from utils.configuration import pretty
 from modules.core import Core
