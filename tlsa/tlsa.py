@@ -11,6 +11,9 @@ from os.path import isfile, join, sep
 
 class Tlsa:
     def __init__(self, args):
+        logging.getLogger("filelock").setLevel(
+            logging.ERROR
+        )  # remove annoying info messages
         self.args = args
         self.__logging = Logger("TLSA")
         self.__start_analysis(args)

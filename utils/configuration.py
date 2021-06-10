@@ -53,5 +53,3 @@ def __print_pretty_value(value, indent):
         pretty(value, indent + 1, is_list=True)
     else:
         print("\t" * (indent + 1) + f"{value}")
-
-

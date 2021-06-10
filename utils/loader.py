@@ -52,7 +52,7 @@ def obtain_type(type_: str):
 
 
 def load_configuration(module: str, configs_path=f"configs{sep}modules{sep}") -> dict:
-    """
+    """tlsa
     Load the configuration and return the dict of the configuration loaded
 
     :param module: The module name to load the configuration.

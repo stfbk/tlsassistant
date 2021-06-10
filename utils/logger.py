@@ -26,7 +26,7 @@ class Logger:
         :param string: The string message.
         :type string: str
         """
-        logging.debug(f"[{self.__class_name}]{string}")
+        logging.debug(f"[{self.__class_name}] {string}")
 
     def warning(self, string: str):
         """
@@ -35,7 +35,7 @@ class Logger:
         :param string: The string message.
         :type string: str
         """
-        logging.warning(f"{Color.WARNING}[{self.__class_name}]{string}{Color.ENDC}")
+        logging.warning(f"{Color.WARNING}[{self.__class_name}] {string}{Color.ENDC}")
 
     def info(self, string: str):
         """
@@ -44,7 +44,7 @@ class Logger:
         :param string: The string message.
         :type string: str
         """
-        logging.info(f"{Color.CGREEN}[{self.__class_name}]{string}{Color.ENDC}")
+        logging.info(f"{Color.CGREEN}[{self.__class_name}] {string}{Color.ENDC}")
 
     def error(self, string: str):
         """
@@ -53,7 +53,7 @@ class Logger:
         :param string: The string message.
         :type string: str
         """
-        logging.error(f"{Color.FAIL}[{self.__class_name}]{string}{Color.ENDC}")
+        logging.error(f"{Color.FAIL}[{self.__class_name}] {string}{Color.ENDC}")
 
 
 class Color:

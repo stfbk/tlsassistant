@@ -3,7 +3,7 @@ from pathlib import Path
 
 from modules.server.testssl_base import Testssl_base
 from modules.server.wrappers.testssl import Testssl
-from utils.logger import Logger
+from utils.logger import Logger, Color
 from utils.validation import Validator, is_apk
 from modules.parse_input_conf import Parser
 import datetime
@@ -146,7 +146,7 @@ class Core:
             if "hostname" not in loaded_arguments[name]:
                 loaded_arguments[name]["hostname"] = self.__input_dict["hostname"]
             args = loaded_arguments[name]
-            self.__logging.debug(f"Running {name}...")
+            self.__logging.info(f"{Color.CBEIGE}Running {name} module...")
             results[name] = module.run(**args)
 
         return results

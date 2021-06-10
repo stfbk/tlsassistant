@@ -37,32 +37,50 @@ class Tlsfuzzer_base:
     def _worker(self, results):
         raise NotImplementedError("This method should be reimplemented!")
 
-    def _obtain_results(self, results: dict, keys: dict):  # todo AssertionError Checks, maybe
+    def _obtain_results(
+        self, results: dict, keys: dict
+    ):  # todo AssertionError Checks, maybe
         val = Validator([(results, dict), (keys, dict)])
         out = {}
         for script, list_of_checks in keys.items():
             assert script in results, f"Script {script} missing in results!"
             if grep("sanity", results[script]) == 2:
-                # self.__logging.debug(results[script])
-                set_mitigations = False
-                for check, safe_value in list_of_checks.items():
-                    if check != "MITIGATION":
-                        out[check] = {}
-                        string_to_grep = check
-                        occurrencies = grep(string_to_grep, results[script])
-                        if occurrencies > safe_value:
-                            self.__logging.debug(
-                                f"Found {occurrencies} occurrencies of {check}"
-                                f" with script {script} (safe value is <={safe_value})"
-                            )
-                            set_mitigations = True
-                if set_mitigations:
-                    out = self._set_mitigations(out, list_of_checks["MITIGATION"], True)
+                if (
+                    grep(
+                        "AssertionError: Unexpected message from peer:", results[script]
+                    )
+                    != 0
+                ):
+                    # self.__logging.debug(results[script])
+                    set_mitigations = False
+                    for check, safe_value in list_of_checks.items():
+                        if check != "MITIGATION":
+                            out[check] = {}
+                            string_to_grep = check
+                            occurrencies = grep(string_to_grep, results[script])
+                            if occurrencies > safe_value:
+                                self.__logging.debug(
+                                    f"Found {occurrencies} occurrencies of {check}"
+                                    f" with script {script} (safe value is <={safe_value})"
+                                )
+                                set_mitigations = True
+                    if set_mitigations:
+                        out = self._set_mitigations(
+                            out, list_of_checks["MITIGATION"], True
+                        )
+                else:
+                    self.__logging.warning(
+                        f"The script {script} received a strange response from the server."
+                    )
+                    self.__logging.info(
+                        "Handshake failed, the server probably isn't using a mutual authentication.\n"
+                        f"Ignoring {script} analysis.\n"
+                    )
             else:
                 self.__logging.warning(
-                    f"Results won't make sense for script {script}, sanity check failed.\n"
-                    f"Ignoring {script} analysis."
+                    f"Results won't make sense for script {script}, sanity check failed."
                 )
+                self.__logging.info(f"Ignoring {script} analysis.\n")
         return out
 
     def run(self, **kwargs):
