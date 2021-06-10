@@ -86,7 +86,45 @@ class Install:
         self.install_dependencies("apts", results_apts)  # install the dependencies pkg
         logger.info("Unzipping dependencies...")
         self.install_dependencies("zips", results_zips)  # unzips the zips
+        logger.info("Generating Certificates...")
+        self.generate_cert()
         logger.info("All done!")
+
+    def generate_cert(self):
+        logger.debug("Generating certificates...")
+        mkdir(f"dependencies{sep}certificates")  # create the folder
+        with open(devnull, "w") as null:
+            subprocess.check_call(
+                [
+                    "openssl",
+                    "req",
+                    "-x509",
+                    "-newkey",
+                    "rsa",
+                    "-keyout",
+                    f"dependencies{sep}certificates{sep}localuser.key",
+                    "-out",
+                    f"dependencies{sep}certificates{sep}localuser.crt",
+                    "-nodes",
+                    "-batch",
+                    "-subj",
+                    "/CN=Local User",
+                ],
+                stderr=(
+                    sys.stderr
+                    if logging.getLogger().isEnabledFor(
+                        logging.DEBUG
+                    )  # if the user asked for debug mode, let him see the output.
+                    else null  # else /dev/null
+                ),
+                stdout=(
+                    sys.stdout
+                    if logging.getLogger().isEnabledFor(
+                        logging.DEBUG
+                    )  # if the user asked for debug mode, let him see the output.
+                    else null  # else /dev/null
+                ),
+            )
 
     def apt_update(self):
         logger.debug("Updating repositories...")

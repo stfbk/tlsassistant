@@ -1,9 +1,9 @@
 import logging
 from pathlib import Path
 
-from utils.logger import Logger
+from utils.logger import Logger, Color
 from utils.loader import load_configuration
-from utils.configuration import pretty, Color
+from utils.configuration import pretty
 from modules.core import Core
 from os import listdir
 from os.path import isfile, join, sep
