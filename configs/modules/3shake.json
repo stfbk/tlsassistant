@@ -1,0 +1,20 @@
+{
+   "input":[
+      {
+         "name":"hostname",
+         "type":"str",
+         "description":"Hostname to analyze",
+         "required":"True"
+      }
+   ],
+   "description":"This modules runs the vulnerability check for 3SHAKE.",
+   "path":"modules/server/three_shake.py",
+   "class_name":"Three_shake",
+   "output":[
+      {
+         "name":"results",
+         "type":"dict",
+         "description":"results of the scan"
+      }
+   ]
+}
