@@ -7,9 +7,9 @@ if __name__ == "__main__":
         prog="TLSAssistant",
         description="%(prog)s Help",
         formatter_class=RawTextHelpFormatter,  # todo: change the desc
-        epilog="https://st.fbk.eu - FBK Security and Trust Unit",
+        epilog="https://st.fbk.eu -  Security and Trust, FBK Research Unit",
     )
-    parser.add_argument("--version", action="version", version="%(prog)s v2")
+    parser.add_argument("--version", action="version", version="%(prog)s v2 alpha closed release")
     parser.add_argument(
         "-v",
         "--verbosity",
