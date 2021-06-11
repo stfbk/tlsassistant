@@ -3,11 +3,6 @@ from tldextract import extract
 from utils.logger import Logger
 
 
-# todo: fix info logging
-
-# logging.getLogger('tldextract').disabled = False if logging.getLogger().isEnabledFor(logging.DEBUG) else True
-
-
 def url_strip(input_url, strip_www=False) -> str:
     """
     Strip URL with regex and obtain domain (DEPRECATED, USE url_domain).
