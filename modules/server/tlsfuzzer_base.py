@@ -26,7 +26,7 @@ class Tlsfuzzer_base:
         if condition:
             result["mitigation"] = load_mitigation(
                 key, raise_error=False
-            )  # todo: remove, debug until we have all mitigations
+            )
         return result if condition else {}
 
     # to override
@@ -39,7 +39,7 @@ class Tlsfuzzer_base:
 
     def _obtain_results(
         self, results: dict, keys: dict
-    ):  # todo AssertionError Checks, maybe
+    ):
         val = Validator([(results, dict), (keys, dict)])
         out = {}
         for script, list_of_checks in keys.items():

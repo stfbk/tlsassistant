@@ -51,8 +51,8 @@ def obtain_type(type_: str):
     return locate(type_)
 
 
-def load_configuration(module: str, configs_path=f"configs{sep}modules{sep}") -> dict:
-    """tlsa
+def load_configuration(module: str, configs_path=None) -> dict:
+    """
     Load the configuration and return the dict of the configuration loaded
 
     :param module: The module name to load the configuration.
@@ -64,11 +64,26 @@ def load_configuration(module: str, configs_path=f"configs{sep}modules{sep}") ->
     :raise FileNotFoundError: If configuration file not found
     """
     Validator().string(module)
-    module_path = Path(f"{configs_path}{module}.json")  # search for config file
-    if not module_path.exists():
-        raise FileNotFoundError(
-            f"Couldn't find the configuration file of the module {module_path.absolute()}"
-        )
+    if configs_path:
+        module_path = Path(f"{configs_path}{module}.json")  # search for config file
+        if not module_path.exists():
+            raise FileNotFoundError(
+                f"Couldn't find the configuration file of the module {module_path.absolute()}"
+            )
+    else:
+
+        server_path = Path(f"configs{sep}modules{sep}server{sep}{module}.json")  # search for config file in server
+        android_path = Path(f"configs{sep}modules{sep}android{sep}{module}.json")  # search for config file in android
+
+        if server_path.exists():
+            module_path = server_path
+        elif android_path.exists():
+            module_path = android_path
+        else:
+            raise FileNotFoundError(
+                f"Couldn't find the configuration file of the module {module}.json"
+            )
+
     with module_path.open() as mod_file:
         mod_data = json.load(mod_file)
     return mod_data
