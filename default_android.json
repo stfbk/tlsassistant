@@ -1,0 +1,15 @@
+{
+  "name": "default_android_configuration",
+  "description": "Default android analysis configuration",
+  "modules": [
+    "accepting_all_certificates",
+    "certificate_keystore_disclosure",
+    "hostnameverifier",
+    "obfuscated_code",
+    "ssl_error",
+    "ssl_getinsecure_method",
+    "trustmanager",
+    "weak_algorithms",
+    "webview_ssl_errors"
+  ]
+}

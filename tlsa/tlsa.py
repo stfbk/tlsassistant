@@ -41,24 +41,24 @@ class Tlsa:
                 )
             else:
                 android_modules = (
-                    f"{Color.CGREEN}Android:{Color.ENDC}\n\t"
-                    + "\n\t".join(
-                        [
-                            f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
-                            for f in listdir(f"configs{sep}modules{sep}android{sep}")
-                            if isfile(join(f"configs{sep}modules{sep}android{sep}", f))
-                        ]
-                    )
+                        f"{Color.CGREEN}Android:{Color.ENDC}\n\t"
+                        + "\n\t".join(
+                    [
+                        f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
+                        for f in listdir(f"configs{sep}modules{sep}android{sep}")
+                        if isfile(join(f"configs{sep}modules{sep}android{sep}", f))
+                    ]
+                )
                 )
                 server_modules = (
-                    f"{Color.CYELLOW}Server:{Color.ENDC}\n\t"
-                    + "\n\t".join(
-                        [
-                            f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
-                            for f in listdir(f"configs{sep}modules{sep}server{sep}")
-                            if isfile(join(f"configs{sep}modules{sep}server{sep}", f))
-                        ]
-                    )
+                        f"{Color.CYELLOW}Server:{Color.ENDC}\n\t"
+                        + "\n\t".join(
+                    [
+                        f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
+                        for f in listdir(f"configs{sep}modules{sep}server{sep}")
+                        if isfile(join(f"configs{sep}modules{sep}server{sep}", f))
+                    ]
+                )
                 )
                 all_modules = f"{android_modules}\n{server_modules}"
 
@@ -71,6 +71,8 @@ class Tlsa:
         logging.basicConfig(level=logging.DEBUG if args.verbosity else logging.INFO)
         self.__logging.debug("Started anaylsis with verbosity on.")
         self.__logging.debug("Initializing Core element.")
+        if isinstance(args.configuration, str) and args.configuration == "default":
+            args.configuration = f"default{'_android.json' if args.apk else '_server.json'}"
         config_or_modules = args.configuration
         if args.server:
             Core(

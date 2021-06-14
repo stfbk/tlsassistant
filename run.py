@@ -67,7 +67,7 @@ if __name__ == "__main__":
         action="store",
         dest="configuration",
         help="Configuration path.",
-        default="default.json",
+        default="default",
     )
     configurations.add_argument(
         "-m",
