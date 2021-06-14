@@ -20,12 +20,12 @@ class Core:
         ATTACK_TREES = 3  # todo implement attack trees module
 
     def __init__(
-        self,
-        hostname: str,
-        configuration: str or list,
-        output=None,
-        output_type=None,
-        apk=False,
+            self,
+            hostname_or_path: str,
+            configuration: str or list,
+            output=None,
+            output_type=None,
+            apk=False,
     ):
         self.__logging = Logger("Core")
         self.__input_dict = {}
@@ -36,7 +36,7 @@ class Core:
             configuration = "modules_list"
         self.input(
             configuration=configuration,
-            hostname=hostname,
+            hostname_or_path=hostname_or_path,
             output=output,
             output_type=output_type,
             apk=apk,
@@ -50,14 +50,14 @@ class Core:
     def input(self, **kwargs):
         assert "configuration" in kwargs, "Missing configuration."
         assert (
-            "hostname" in kwargs
+                "hostname_or_path" in kwargs
         ), "Missing hostname."  # todo: facultative hostname, we should use configs sometimes
 
         # validate
         Validator(
             [
                 (kwargs["configuration"], str),
-                (kwargs["hostname"], str),
+                (kwargs["hostname_or_path"], str),
                 (
                     self.Report.HTML
                     if "output_type" not in kwargs or not kwargs["output_type"]
@@ -117,11 +117,11 @@ class Core:
         return testssl_args
 
     def __preanalysis_testssl(self, testssl_args: list):
-        if testssl_args:
+        if testssl_args and not self.__input_dict['apk']:
             self.__logging.debug(
                 f"Starting preanalysis testssl with args {testssl_args}..."
             )
-            Testssl().run(hostname=self.__input_dict["hostname"], args=testssl_args)
+            Testssl().run(hostname=self.__input_dict["hostname_or_path"], args=testssl_args)
             self.__logging.debug(f"Preanalysis testssl done.")
 
     def __load_modules(self, parsed_configuration: dict) -> (dict, dict, list):
@@ -143,9 +143,13 @@ class Core:
 
     def __run_analysis(self, loaded_modules: dict, loaded_arguments: dict) -> dict:
         results = {}
+        if not self.__input_dict["apk"]:  # server analysis
+            hostname_or_path = "hostname"
+        else:  # android analysis
+            hostname_or_path = "path"
         for name, module in loaded_modules.items():
-            if "hostname" not in loaded_arguments[name]:
-                loaded_arguments[name]["hostname"] = self.__input_dict["hostname"]
+            if hostname_or_path not in loaded_arguments[name]:
+                loaded_arguments[name][hostname_or_path] = self.__input_dict["hostname_or_path"]
             args = loaded_arguments[name]
             self.__logging.info(f"{Color.CBEIGE}Running {name} module...")
             results[name] = module.run(**args)
@@ -154,8 +158,8 @@ class Core:
 
     def __call_output_modules(self, loaded_modules: dict, results: dict):
         if (
-            self.__input_dict["output_type"] == self.Report.HTML
-            or self.__input_dict["output_type"] == self.Report.PDF
+                self.__input_dict["output_type"] == self.Report.HTML
+                or self.__input_dict["output_type"] == self.Report.PDF
         ):
             Report_module().run(
                 path=self.__input_dict["output"],
@@ -165,7 +169,7 @@ class Core:
         self.__logging.debug("Output generated.")
 
     def __exec(self):
-        self.__logging.info(f"Started analysis on {self.__input_dict['hostname']}.")
+        self.__logging.info(f"Started analysis on {self.__input_dict['hostname_or_path']}.")
         configuration_name = self.__input_dict["configuration"]
         self.__logging.info(f"Loading configuration {configuration_name} ..")
         parsed_configuration = self.__cache[configuration_name]

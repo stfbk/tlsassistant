@@ -12,6 +12,9 @@ class Mallodroid:
     __instance = None
 
     def __init__(self):
+        logging.getLogger("androguard.analysis").setLevel(
+            logging.ERROR if not logging.getLogger().isEnabledFor(logging.DEBUG) else logging.DEBUG
+        )  # remove annoying info messages
         self.__logging = Logger("Mallodroid")
         self.__mallodroid = f"dependencies{sep}mallodroid{sep}mallodroid.py"
         self.__instance = load_module(self.__mallodroid, "mallodroid")
