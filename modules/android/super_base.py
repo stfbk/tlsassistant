@@ -43,7 +43,7 @@ class Super_base:
             for type_ in types:
                 val.string(type_)
                 for value in results[type_]:
-                    if value['name'].lower() == key.lower():
+                    if value["name"].lower() == key.lower():
                         single = self._set_mitigations(value, value["name"], True)
                         if key not in out:
                             out[key] = []

@@ -12,6 +12,4 @@ class Weak_algorithms(Super_base):
 
     # to override
     def _worker(self, results):
-        return self._obtain_results(
-            results, ["Weak Algorithms"], ['highs']
-        )
+        return self._obtain_results(results, ["Weak Algorithms"], ["highs"])

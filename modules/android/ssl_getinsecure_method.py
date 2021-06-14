@@ -12,6 +12,4 @@ class Ssl_getinsecure_method(Super_base):
 
     # to override
     def _worker(self, results):
-        return self._obtain_results(
-            results, ["SSL getInsecure method"], ['highs']
-        )
+        return self._obtain_results(results, ["SSL getInsecure method"], ["highs"])

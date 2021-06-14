@@ -13,5 +13,5 @@ class Accepting_all_certificates(Super_base):
     # to override
     def _worker(self, results):
         return self._obtain_results(
-            results, ["Accepting all SSL certificates"], ['criticals']
+            results, ["Accepting all SSL certificates"], ["criticals"]
         )

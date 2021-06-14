@@ -13,5 +13,5 @@ class Certificate_keystore_disclosure(Super_base):
     # to override
     def _worker(self, results):
         return self._obtain_results(
-            results, ["Certificate or Keystore disclosure"], ['warnings']
+            results, ["Certificate or Keystore disclosure"], ["warnings"]
         )

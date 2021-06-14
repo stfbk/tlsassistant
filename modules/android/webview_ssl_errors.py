@@ -13,5 +13,5 @@ class Webview_ssl_errors(Super_base):
     # to override
     def _worker(self, results):
         return self._obtain_results(
-            results, ["WebView ignores SSL errors"], ['criticals']
+            results, ["WebView ignores SSL errors"], ["criticals"]
         )

@@ -12,6 +12,4 @@ class Obfuscated_code(Super_base):
 
     # to override
     def _worker(self, results):
-        return self._obtain_results(
-            results, ["Obfuscated code"], ['warnings']
-        )
+        return self._obtain_results(results, ["Obfuscated code"], ["warnings"])
