@@ -12,7 +12,7 @@ class Parser:
     def __init__(self, to_parse: str or list):
         self.__input_dict = {}
         self.__output = []
-        self.__configs_path = f"configs{sep}modules{sep}"
+        # self.__configs_path = f"configs{sep}modules{sep}"
         if isinstance(to_parse, str):
             self.__parse(to_parse)
         elif isinstance(to_parse, list):
@@ -28,7 +28,7 @@ class Parser:
                 if isinstance(value, list):  # if it's a list, like modules
                     data[key] = list(set(data[key]) - set(value))
                 elif isinstance(
-                    value, dict
+                        value, dict
                 ):  # if it's a dict, difference of the keys and rebuild dict
                     for k, v in value.items():
                         data[key][k] = self.remove(data[key], k, v)
@@ -95,7 +95,7 @@ class Parser:
     def __get_modules(self, data: dict):
         v = Validator([(data["modules"], list)])
         for module in data["modules"]:
-            mod_data = load_configuration(module, configs_path=self.__configs_path)
+            mod_data = load_configuration(module)
             mod_path = Path(mod_data["path"])
             self.__cache[mod_path.stem] = (
                 load_class(
