@@ -69,8 +69,7 @@ class Testssl_base:
 
         self._output_dict = self._worker(
             self._instance.run(
-                hostname=self._input_dict["hostname"],
-                args=self._arguments
+                hostname=self._input_dict["hostname"], args=self._arguments
             )
         )
         return self.output()

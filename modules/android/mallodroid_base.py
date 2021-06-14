@@ -35,20 +35,18 @@ class Mallodroid_base:
     def _worker(self, results):
         raise NotImplementedError("This method should be reimplemented!")
 
-    def _obtain_results(
-            self, results: dict, keys: list
-    ):
+    def _obtain_results(self, results: dict, keys: list):
         val = Validator([(results, dict), (keys, list)])
         out = {}
 
         for key in keys:
             val.string(key)
             for value in results[key]:
-                if 'empty' in value:
-                    single = self._set_mitigations(value, key, value['empty'])
+                if "empty" in value:
+                    single = self._set_mitigations(value, key, value["empty"])
                     # removing useless information atm
-                    single.pop('xref', None)
-                    single.pop('java_b64', None)
+                    single.pop("xref", None)
+                    single.pop("java_b64", None)
 
                     if key not in out:
                         out[key] = []
@@ -64,9 +62,7 @@ class Mallodroid_base:
         Validator([(self._input_dict["path"], str)])
         self._input_dict["path"] = self._input_dict["path"]
         self._output_dict = self._worker(
-            self._instance.run(
-                path=self._input_dict["path"], args=self._arguments
-            )
+            self._instance.run(path=self._input_dict["path"], args=self._arguments)
         )
         return self.output()
 

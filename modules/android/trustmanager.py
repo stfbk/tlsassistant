@@ -18,4 +18,4 @@ class Trustmanager(Mallodroid_base):
 
     # to override
     def _worker(self, results):
-        return self._obtain_results(results, ['trustmanager','insecuresocketfactory'])
+        return self._obtain_results(results, ["trustmanager", "insecuresocketfactory"])

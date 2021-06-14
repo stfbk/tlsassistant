@@ -72,8 +72,12 @@ def load_configuration(module: str, configs_path=None) -> dict:
             )
     else:
 
-        server_path = Path(f"configs{sep}modules{sep}server{sep}{module}.json")  # search for config file in server
-        android_path = Path(f"configs{sep}modules{sep}android{sep}{module}.json")  # search for config file in android
+        server_path = Path(
+            f"configs{sep}modules{sep}server{sep}{module}.json"
+        )  # search for config file in server
+        android_path = Path(
+            f"configs{sep}modules{sep}android{sep}{module}.json"
+        )  # search for config file in android
 
         if server_path.exists():
             module_path = server_path

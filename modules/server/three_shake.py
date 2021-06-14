@@ -4,7 +4,11 @@ from utils.mitigations import load_mitigation
 
 class Three_shake(Testssl_base):
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
-        condition = 'extended master secret/#23' not in result['finding'] if 'finding' in result else False
+        condition = (
+            "extended master secret/#23" not in result["finding"]
+            if "finding" in result
+            else False
+        )
         if condition:
             result["mitigation"] = load_mitigation("3SHAKE")
         return result if condition else {}
@@ -15,4 +19,4 @@ class Three_shake(Testssl_base):
 
     # to override
     def _worker(self, results):
-        return self._obtain_results(results, ['TLS_extensions'])
+        return self._obtain_results(results, ["TLS_extensions"])

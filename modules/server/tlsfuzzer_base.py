@@ -24,9 +24,7 @@ class Tlsfuzzer_base:
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         if condition:
-            result["mitigation"] = load_mitigation(
-                key, raise_error=False
-            )
+            result["mitigation"] = load_mitigation(key, raise_error=False)
         return result if condition else {}
 
     # to override
@@ -37,9 +35,7 @@ class Tlsfuzzer_base:
     def _worker(self, results):
         raise NotImplementedError("This method should be reimplemented!")
 
-    def _obtain_results(
-        self, results: dict, keys: dict
-    ):
+    def _obtain_results(self, results: dict, keys: dict):
         val = Validator([(results, dict), (keys, dict)])
         out = {}
         for script, list_of_checks in keys.items():

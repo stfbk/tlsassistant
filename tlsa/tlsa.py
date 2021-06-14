@@ -40,19 +40,25 @@ class Tlsa:
                     ]
                 )
             else:
-                android_modules = f"{Color.CGREEN}Android:{Color.ENDC}\n\t" + "\n\t".join(
-                    [
-                        f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
-                        for f in listdir(f"configs{sep}modules{sep}android{sep}")
-                        if isfile(join(f"configs{sep}modules{sep}android{sep}", f))
-                    ]
+                android_modules = (
+                    f"{Color.CGREEN}Android:{Color.ENDC}\n\t"
+                    + "\n\t".join(
+                        [
+                            f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
+                            for f in listdir(f"configs{sep}modules{sep}android{sep}")
+                            if isfile(join(f"configs{sep}modules{sep}android{sep}", f))
+                        ]
+                    )
                 )
-                server_modules = f"{Color.CYELLOW}Server:{Color.ENDC}\n\t" + "\n\t".join(
-                    [
-                        f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
-                        for f in listdir(f"configs{sep}modules{sep}server{sep}")
-                        if isfile(join(f"configs{sep}modules{sep}server{sep}", f))
-                    ]
+                server_modules = (
+                    f"{Color.CYELLOW}Server:{Color.ENDC}\n\t"
+                    + "\n\t".join(
+                        [
+                            f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
+                            for f in listdir(f"configs{sep}modules{sep}server{sep}")
+                            if isfile(join(f"configs{sep}modules{sep}server{sep}", f))
+                        ]
+                    )
                 )
                 all_modules = f"{android_modules}\n{server_modules}"
 
@@ -79,7 +85,7 @@ class Tlsa:
                 configuration=config_or_modules,
                 output=args.output,
                 output_type=self.__to_report_type(args.output_type),
-                apk=True
+                apk=True,
             )
         else:  # must be args.list, unless argparse throws error.
             self.__print_module(args.list)

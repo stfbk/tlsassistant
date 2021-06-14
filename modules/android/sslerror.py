@@ -9,8 +9,9 @@ class Ssl_error(Mallodroid_base):
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         if condition:
-            result["mitigation"] = load_mitigation("SSL_Error",
-                                                   raise_error=False)  # todo: we are missing a mitigation!
+            result["mitigation"] = load_mitigation(
+                "SSL_Error", raise_error=False
+            )  # todo: we are missing a mitigation!
         return result if condition else {}
 
     # to override
@@ -19,4 +20,4 @@ class Ssl_error(Mallodroid_base):
 
     # to override
     def _worker(self, results):
-        return self._obtain_results(results, ['onreceivedsslerror'])
+        return self._obtain_results(results, ["onreceivedsslerror"])

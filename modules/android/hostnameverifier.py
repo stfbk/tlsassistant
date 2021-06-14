@@ -9,8 +9,9 @@ class Hostnameverifier(Mallodroid_base):
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         if condition:
-            result["mitigation"] = load_mitigation("HOSTNAME_VERIFIER",
-                                                   raise_error=False)  # todo: we are missing a mitigation!
+            result["mitigation"] = load_mitigation(
+                "HOSTNAME_VERIFIER", raise_error=False
+            )  # todo: we are missing a mitigation!
         return result if condition else {}
 
     # to override
@@ -19,4 +20,6 @@ class Hostnameverifier(Mallodroid_base):
 
     # to override
     def _worker(self, results):
-        return self._obtain_results(results, ['customhostnameverifier', 'allowallhostnameverifier'])
+        return self._obtain_results(
+            results, ["customhostnameverifier", "allowallhostnameverifier"]
+        )
