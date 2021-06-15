@@ -76,7 +76,7 @@ class Hsts_base:
         self._output_dict = self._worker(
             self._instance.run(
                 hostname=self._input_dict["hostname"],
-                port=self._input_dict['port'],
+                port=self._input_dict["port"],
                 type=self._arguments,
                 force=True,
             )

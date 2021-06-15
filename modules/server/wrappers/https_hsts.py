@@ -70,9 +70,9 @@ class Https:
     __output = {}
     __headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) "
-                      "AppleWebKit/537.36 (KHTML, like Gecko) "
-                      "Chrome/39.0.2171.95 "
-                      "Safari/537.36"
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/39.0.2171.95 "
+        "Safari/537.36"
     }
 
     def __init__(self):
@@ -101,8 +101,12 @@ class Https:
             )
             if "port" not in self.__input_dict:
                 self.__input_dict["port"] = "443"
-            port_to_add = ":" + port_parse(self.__input_dict["port"]) if self.__input_dict["type"] != self.HTTPS and \
-                                                                         self.__input_dict["port"] != "443" else ""
+            port_to_add = (
+                ":" + port_parse(self.__input_dict["port"])
+                if self.__input_dict["type"] != self.HTTPS
+                and self.__input_dict["port"] != "443"
+                else ""
+            )
             Validator(
                 [
                     (self.__input_dict["hostname"], str),
@@ -111,9 +115,11 @@ class Https:
                 ]
             )
             # request
-            link = f'{"http" if self.__input_dict["type"] == self.HTTPS else "https"}://' \
-                   f'{self.__input_dict["hostname"]}' \
-                   f'{port_to_add}'
+            link = (
+                f'{"http" if self.__input_dict["type"] == self.HTTPS else "https"}://'
+                f'{self.__input_dict["hostname"]}'
+                f"{port_to_add}"
+            )
             self.__output[link] = self.__worker(
                 link,
                 self.__input_dict["type"],
@@ -126,8 +132,8 @@ class Https:
         logging.debug(response.headers)
         if type == self.HTTPS:
             return (
-                           response.is_redirect or response.is_permanent_redirect
-                   ) and response.headers["location"].startswith("https")
+                response.is_redirect or response.is_permanent_redirect
+            ) and response.headers["location"].startswith("https")
         elif type == self.SERVERINFO:
             return response.headers["server"] if "server" in response.headers else ""
         elif type == self.HSTSSET:
@@ -145,7 +151,7 @@ class Https:
             else:
                 parsed_url = None
             return (
-                    parsed_url in self.__preloaded_moz or parsed_url in self.__preloaded_gog
+                parsed_url in self.__preloaded_moz or parsed_url in self.__preloaded_gog
             )
 
     def __worker(self, link: str, type: int, force: bool):

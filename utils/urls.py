@@ -66,7 +66,9 @@ def url_domain(url, keep_subdomain=True) -> str:
     :rtype: str
     """
     results = extract(url)
-    output = f"{results.subdomain + '.' if keep_subdomain and results.subdomain != '' else ''}{results.domain}" \
-             f"{'.' + results.suffix if results.suffix != '' else ''}"
+    output = (
+        f"{results.subdomain + '.' if keep_subdomain and results.subdomain != '' else ''}{results.domain}"
+        f"{'.' + results.suffix if results.suffix != '' else ''}"
+    )
     Logger("URL_Domain").debug(f"parsed {url} into {output}")
     return output

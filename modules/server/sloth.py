@@ -28,21 +28,15 @@ class Sloth(Tlsfuzzer_base):
             ),
             (
                 "test-sig-algs",
-                [
-
-                ],
+                [],
             ),
             (
                 "test-clienthello-md5",
-                [
-
-                ],
+                [],
             ),
             (
                 "test-tls13-pkcs-signature",
-                [
-
-                ],
+                [],
             ),
         ]
 

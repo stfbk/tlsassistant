@@ -29,16 +29,16 @@ class Parser:
         for result in self.__results:  # for each result
             site, ip = result["ip"].rsplit("/", 1)  # split ip, it usually is website/ip
             if site == "" or validate_ip(
-                    site
+                site
             ):  # if site value is missing or it's an IP
                 site = "IP_SCANS"  # group them by IP SCAN
             if ip != "":  # if the ip is missing, it's nothing we care about.
                 if (
-                        site not in self.__output
+                    site not in self.__output
                 ):  # if site is not in output, it's the first time that we see it.
                     self.__output[site] = {}  # site inizialization
                 if (
-                        ip not in self.__output[site]
+                    ip not in self.__output[site]
                 ):  # same for the previous comment, but with the IP
                     self.__output[site][ip] = {}  # ip inizialization
                 self.__ip_output[ip] = site  # reverse cache
@@ -304,10 +304,10 @@ class Testssl:
                 except subprocess.CalledProcessError as c:
                     logging.debug(c)
                 if path.exists(
-                        f"dependencies{sep}{file_name}.json"
+                    f"dependencies{sep}{file_name}.json"
                 ):  # load the temp file results
                     with open(
-                            f"dependencies{sep}{file_name}.json", "r"
+                        f"dependencies{sep}{file_name}.json", "r"
                     ) as file:  # load temp file
                         data = file.read()
                         cache, ip_cache = Parser(json.loads(data)).output()
@@ -315,12 +315,14 @@ class Testssl:
                     remove(f"dependencies{sep}{file_name}.json")
         else:
             if not validate_ip(
-                    hostname
+                hostname
             ):  # recursive: if force : false, check if in cache. if not, recursive call
                 if link_sep(hostname)[0] not in self.__cache:
                     self.__scan_hostname(
                         hostname, args=args, force=True, one=one
                     )  # with force = True
             else:
-                if link_sep(hostname)[0] not in self.__ip_cache:  # if it's an ip, check for it in reverse proxy
+                if (
+                    link_sep(hostname)[0] not in self.__ip_cache
+                ):  # if it's an ip, check for it in reverse proxy
                     self.__scan_hostname(hostname, args=args, force=True, one=one)

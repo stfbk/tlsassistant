@@ -85,9 +85,9 @@ class Tlsfuzzer_base:
         if "hostname" not in kwargs:
             raise AssertionError("Hostname is missing!")
         if "port" not in kwargs:
-            self._input_dict["port"] = '443'
+            self._input_dict["port"] = "443"
         else:
-            self._input_dict['port'] = port_parse(self._input_dict['port'])
+            self._input_dict["port"] = port_parse(self._input_dict["port"])
         Validator(
             [(self._input_dict["hostname"], str), (self._input_dict["port"], str)]
         )
@@ -100,7 +100,9 @@ class Tlsfuzzer_base:
 
         self._output_dict = self._worker(
             self._instance.run(
-                hostname=self._input_dict["hostname"], port = self._input_dict['port'],scripts=self._arguments
+                hostname=self._input_dict["hostname"],
+                port=self._input_dict["port"],
+                scripts=self._arguments,
             )
         )
         return self.output()
