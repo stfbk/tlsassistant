@@ -1,6 +1,6 @@
 from modules.server.wrappers.testssl import Testssl
 from utils.validation import Validator
-from utils.urls import url_domain
+from utils.urls import url_domain, port_parse
 from utils.mitigations import load_mitigation
 import logging
 
@@ -44,9 +44,9 @@ class Testssl_base:
                     out[ip] = {}
                 # check for severity != OK or info or warn
                 condition = "severity" in results[ip][key] and (
-                    results[ip][key]["severity"] != "OK"
-                    and results[ip][key]["severity"] != "INFO"
-                    and results[ip][key]["severity"] != "WARN"
+                        results[ip][key]["severity"] != "OK"
+                        and results[ip][key]["severity"] != "INFO"
+                        and results[ip][key]["severity"] != "WARN"
                 )
                 conditioned_result = self._set_mitigations(
                     results[ip][key], key, condition
@@ -62,11 +62,14 @@ class Testssl_base:
             raise AssertionError("Hostname is missing!")
         Validator([(self._input_dict["hostname"], str)])
         self._input_dict["hostname"] = url_domain(self._input_dict["hostname"])
+        if "port" in self._input_dict:
+            self._input_dict[
+                "hostname"
+            ] = f'{self._input_dict["hostname"]}:{port_parse(self._input_dict["port"])}'
 
         logging.debug(
             f"Executing analysis in {self._input_dict['hostname']} with args {self._arguments}"
         )
-
         self._output_dict = self._worker(
             self._instance.run(
                 hostname=self._input_dict["hostname"], args=self._arguments

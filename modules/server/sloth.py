@@ -13,7 +13,6 @@ class Sloth(Tlsfuzzer_base):
     def _set_arguments(self):
         cert_location = f"dependencies{sep}certificates{sep}localuser.crt"
         key_location = f"dependencies{sep}certificates{sep}localuser.key"
-        port = "443"  # todo personalized port
         assert Path(cert_location).exists(), (
             f"The certificate isn't "
             f"present at location {Path(cert_location).absolute()}"
@@ -25,27 +24,24 @@ class Sloth(Tlsfuzzer_base):
         self._arguments = [
             (
                 "test-certificate-verify",
-                ["-p", port, "-k", key_location, "-c", cert_location],
+                ["-k", key_location, "-c", cert_location],
             ),
             (
                 "test-sig-algs",
                 [
-                    "-p",
-                    port,
+
                 ],
             ),
             (
                 "test-clienthello-md5",
                 [
-                    "-p",
-                    port,
+
                 ],
             ),
             (
                 "test-tls13-pkcs-signature",
                 [
-                    "-p",
-                    port,
+
                 ],
             ),
         ]

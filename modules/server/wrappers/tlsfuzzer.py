@@ -45,6 +45,7 @@ class Tlsfuzzer:
         Validator(
             [
                 (self.__input_dict["hostname"], str),
+                (self.__input_dict["port"] if "port" in self.__input_dict else "", str),
                 (force, bool),
                 (scripts, list),
             ]
@@ -77,18 +78,30 @@ class Tlsfuzzer:
             tmp_path = Path(dest)
             path_scripts.append((tmp_path, script_args))
 
-        self.__worker(self.__input_dict["hostname"], path_scripts, force)
+        self.__worker(
+            self.__input_dict["hostname"],
+            path_scripts,
+            force,
+            port=self.__input_dict["port"],
+        )
         return self.output(hostname=self.__input_dict["hostname"], scripts=script_names)
 
-    def __worker(self, hostname: str, scripts: list, force: bool):
+    def __worker(self, hostname: str, scripts: list, force: bool, port="443"):
         if force:
             for script in scripts:
 
                 script_name, script_args = script
-                cmd = ["python3", f"{script_name}", "-h", f"{hostname}"]
+                cmd = [
+                    "python3",
+                    f"{script_name}",
+                    "-h",
+                    f"{hostname}",
+                    "-p",
+                    f"{port}",
+                ]
                 cmd += script_args
                 logging.debug(
-                    f"Calling {script_name} for {hostname}{' with args' + ' '.join(script_args) if script_args else ''} ..."
+                    f"Calling {script_name} for {hostname}{' with args ' + ' '.join(script_args) if script_args else ''} ..."
                 )
                 try:
                     output = subprocess.check_output(cmd).decode()

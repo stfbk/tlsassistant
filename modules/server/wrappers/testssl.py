@@ -5,7 +5,7 @@ from os import sep, devnull, path, remove
 import uuid
 import logging
 from utils.validation import Validator
-from utils.urls import url_strip
+from utils.urls import url_strip, link_sep
 
 
 class Parser:
@@ -29,16 +29,16 @@ class Parser:
         for result in self.__results:  # for each result
             site, ip = result["ip"].rsplit("/", 1)  # split ip, it usually is website/ip
             if site == "" or validate_ip(
-                site
+                    site
             ):  # if site value is missing or it's an IP
                 site = "IP_SCANS"  # group them by IP SCAN
             if ip != "":  # if the ip is missing, it's nothing we care about.
                 if (
-                    site not in self.__output
+                        site not in self.__output
                 ):  # if site is not in output, it's the first time that we see it.
                     self.__output[site] = {}  # site inizialization
                 if (
-                    ip not in self.__output[site]
+                        ip not in self.__output[site]
                 ):  # same for the previous comment, but with the IP
                     self.__output[site][ip] = {}  # ip inizialization
                 self.__ip_output[ip] = site  # reverse cache
@@ -64,7 +64,7 @@ def validate_ip(ip: str) -> bool:
     :return: True if ip param it's an IP, false otherwise.
     :rtype: bool
     """
-    a = ip.split(".")
+    a = ip.rsplit(":", 1)[0].split(".")
     if len(a) != 4:
         return False
     for x in a:
@@ -178,10 +178,7 @@ class Testssl:
                     self.__cache[site][ip] = self.__merge(
                         self.__cache[site][ip], cache[site][ip]
                     )  # if present, merge
-
-        self.__ip_cache = self.__merge(
-            self.__ip_cache, ip_cache
-        )  # update reverse cache
+        self.__ip_cache.update(ip_cache)
 
     def run(self, **kwargs) -> dict:
         """
@@ -307,10 +304,10 @@ class Testssl:
                 except subprocess.CalledProcessError as c:
                     logging.debug(c)
                 if path.exists(
-                    f"dependencies{sep}{file_name}.json"
+                        f"dependencies{sep}{file_name}.json"
                 ):  # load the temp file results
                     with open(
-                        f"dependencies{sep}{file_name}.json", "r"
+                            f"dependencies{sep}{file_name}.json", "r"
                     ) as file:  # load temp file
                         data = file.read()
                         cache, ip_cache = Parser(json.loads(data)).output()
@@ -318,14 +315,12 @@ class Testssl:
                     remove(f"dependencies{sep}{file_name}.json")
         else:
             if not validate_ip(
-                hostname
+                    hostname
             ):  # recursive: if force : false, check if in cache. if not, recursive call
-                if hostname not in self.__cache:
+                if link_sep(hostname)[0] not in self.__cache:
                     self.__scan_hostname(
                         hostname, args=args, force=True, one=one
                     )  # with force = True
             else:
-                if (
-                    hostname not in self.__ip_cache
-                ):  # if it's an ip, check for it in reverse proxy
+                if link_sep(hostname)[0] not in self.__ip_cache:  # if it's an ip, check for it in reverse proxy
                     self.__scan_hostname(hostname, args=args, force=True, one=one)

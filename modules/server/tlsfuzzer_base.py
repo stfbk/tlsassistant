@@ -1,6 +1,6 @@
 from modules.server.wrappers.tlsfuzzer import Tlsfuzzer
 from utils.validation import Validator
-from utils.urls import url_domain
+from utils.urls import url_domain, port_parse
 from utils.mitigations import load_mitigation
 from utils.counter import count_occurrencies as grep
 import logging
@@ -84,17 +84,23 @@ class Tlsfuzzer_base:
 
         if "hostname" not in kwargs:
             raise AssertionError("Hostname is missing!")
-        Validator([(self._input_dict["hostname"], str)])
+        if "port" not in kwargs:
+            self._input_dict["port"] = '443'
+        else:
+            self._input_dict['port'] = port_parse(self._input_dict['port'])
+        Validator(
+            [(self._input_dict["hostname"], str), (self._input_dict["port"], str)]
+        )
         self._input_dict["hostname"] = url_domain(self._input_dict["hostname"])
 
         logging.debug(
-            f"Executing analysis in {self._input_dict['hostname']} with scripts "
+            f"Executing analysis in {self._input_dict['hostname']} in port {self._input_dict['port']} with scripts "
             f"{', '.join([s[0] for s in self._arguments])}"
         )
 
         self._output_dict = self._worker(
             self._instance.run(
-                hostname=self._input_dict["hostname"], scripts=self._arguments
+                hostname=self._input_dict["hostname"], port = self._input_dict['port'],scripts=self._arguments
             )
         )
         return self.output()

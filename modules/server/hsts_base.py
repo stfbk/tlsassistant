@@ -1,5 +1,5 @@
 from utils.validation import Validator
-from utils.urls import url_domain
+from utils.urls import url_domain, port_parse
 from utils.mitigations import load_mitigation
 from modules.server.wrappers.https_hsts import Https
 
@@ -76,6 +76,7 @@ class Hsts_base:
         self._output_dict = self._worker(
             self._instance.run(
                 hostname=self._input_dict["hostname"],
+                port=self._input_dict['port'],
                 type=self._arguments,
                 force=True,
             )

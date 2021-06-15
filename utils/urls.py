@@ -3,6 +3,36 @@ from tldextract import extract
 from utils.logger import Logger
 
 
+def port_parse(port: str) -> str:
+    """
+    Parse port, checks for validity.
+
+    :param port: The port number.
+    :type port: str
+    :return: stripped port.
+    :rtype: str
+    :raise AssertionError: If invalid number of port.
+    """
+    assert 1 <= int(port) <= 65535, "The port number is invalid!"
+    return str(int(port))  # truncate floating point if any
+
+
+def link_sep(input_url: str) -> [str, str]:
+    """
+    Strip URL with and obtain url and port.
+
+    :param input_url: The url to strip
+    :type input_url: str
+    :return: stripped url and the port.
+    :rtype: list of str
+    """
+    splitted = input_url.rsplit(":", 1)
+    if len(splitted) != 2:
+        splitted.append("443")
+    splitted[1] = port_parse(splitted[1])
+    return splitted
+
+
 def url_strip(input_url, strip_www=False) -> str:
     """
     Strip URL with regex and obtain domain (DEPRECATED, USE url_domain).
@@ -36,6 +66,7 @@ def url_domain(url, keep_subdomain=True) -> str:
     :rtype: str
     """
     results = extract(url)
-    output = f"{results.subdomain + '.' if keep_subdomain and results.subdomain != '' else ''}{results.domain}.{results.suffix}"
+    output = f"{results.subdomain + '.' if keep_subdomain and results.subdomain != '' else ''}{results.domain}" \
+             f"{'.' + results.suffix if results.suffix != '' else ''}"
     Logger("URL_Domain").debug(f"parsed {url} into {output}")
     return output

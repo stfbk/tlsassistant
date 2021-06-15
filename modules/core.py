@@ -10,6 +10,7 @@ from modules.parse_input_conf import Parser
 import datetime
 from enum import Enum
 from modules.report import Report as Report_module
+from utils.urls import link_sep
 
 
 class Core:
@@ -122,7 +123,8 @@ class Core:
                 f"Starting preanalysis testssl with args {testssl_args}..."
             )
             Testssl().run(
-                hostname=self.__input_dict["hostname_or_path"], args=testssl_args
+                hostname=f'{self.__input_dict["hostname_or_path"]}:{self.__input_dict["port"]}',
+                args=testssl_args,
             )
             self.__logging.debug(f"Preanalysis testssl done.")
 
@@ -145,8 +147,10 @@ class Core:
 
     def __run_analysis(self, loaded_modules: dict, loaded_arguments: dict) -> dict:
         results = {}
+        port = None
         if not self.__input_dict["apk"]:  # server analysis
             hostname_or_path = "hostname"
+            port = self.__input_dict["port"]
         else:  # android analysis
             hostname_or_path = "path"
         for name, module in loaded_modules.items():
@@ -155,6 +159,8 @@ class Core:
                     "hostname_or_path"
                 ]
             args = loaded_arguments[name]
+            if not self.__input_dict["apk"]:  # server analysis
+                args["port"] = port  # set the port
             self.__logging.info(f"{Color.CBEIGE}Running {name} module...")
             results[name] = module.run(**args)
 
@@ -176,6 +182,10 @@ class Core:
         self.__logging.info(
             f"Started analysis on {self.__input_dict['hostname_or_path']}."
         )
+        if not self.__input_dict["apk"]:
+            self.__input_dict["hostname_or_path"], self.__input_dict["port"] = link_sep(
+                self.__input_dict["hostname_or_path"]
+            )
         configuration_name = self.__input_dict["configuration"]
         self.__logging.info(f"Loading configuration {configuration_name} ..")
         parsed_configuration = self.__cache[configuration_name]
