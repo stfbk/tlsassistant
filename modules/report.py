@@ -25,11 +25,16 @@ class Report:
             raise AssertionError("Missing modules list")
         if "results" not in self.__input_dict:
             raise AssertionError("Missing results list")
+        if "hostname_or_path" not in self.__input_dict:
+            raise AssertionError("Missing hostname of the server or path of apk")
 
         path = self.__input_dict["path"]
         modules = self.__input_dict["modules"]
         raw_results = self.__input_dict["results"]
-        Validator([(path, str), (modules, dict), (raw_results, dict)])
+        hostname_or_path = self.__input_dict["hostname_or_path"]
+        Validator(
+            [(path, str), (modules, dict), (raw_results, dict), (hostname_or_path, str)]
+        )
 
         self.__path = Path(path)
         dt_string = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -38,7 +43,7 @@ class Report:
         output = [
             md.title("TLSA Analysis"),
             md.line(),
-            md.italic(dt_string),
+            md.italic(f"{dt_string} - {hostname_or_path}"),
             md.title("Modules used", level=md.H2),
             ", ".join([md.italic(module) for module in modules]),
             md.title("Vulnerabilities found", level=md.H2),

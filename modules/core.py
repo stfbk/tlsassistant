@@ -166,7 +166,9 @@ class Core:
 
         return results
 
-    def __call_output_modules(self, loaded_modules: dict, results: dict):
+    def __call_output_modules(
+        self, loaded_modules: dict, results: dict, hostname_or_path: str
+    ):
         if (
             self.__input_dict["output_type"] == self.Report.HTML
             or self.__input_dict["output_type"] == self.Report.PDF
@@ -175,6 +177,7 @@ class Core:
                 path=self.__input_dict["output"],
                 modules=loaded_modules,
                 results=results,
+                hostname_or_path=hostname_or_path,
             )
         self.__logging.debug("Output generated.")
 
@@ -202,5 +205,9 @@ class Core:
 
         results = self.__run_analysis(loaded_modules, loaded_arguments)
         self.__logging.info(f"Generating output..")
-        self.__call_output_modules(loaded_modules, results)
+        self.__call_output_modules(
+            loaded_modules,
+            results,
+            hostname_or_path=self.__input_dict["hostname_or_path"],
+        )
         # todo add output attack trees

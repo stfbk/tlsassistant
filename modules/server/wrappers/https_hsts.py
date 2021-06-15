@@ -103,8 +103,10 @@ class Https:
                 self.__input_dict["port"] = "443"
             port_to_add = (
                 ":" + port_parse(self.__input_dict["port"])
-                if self.__input_dict["type"] != self.HTTPS
-                and self.__input_dict["port"] != "443"
+                if self.__input_dict[  # self.__input_dict["type"] != self.HTTPS and
+                    "port"
+                ]
+                != "443"
                 else ""
             )
             Validator(
