@@ -36,7 +36,7 @@ class Tlsa:
                     [
                         f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
                         for f in listdir(configs_path)
-                        if isfile(join(configs_path, f))
+                        if f.endswith(".json") and isfile(join(configs_path, f))
                     ]
                 )
             else:
@@ -46,7 +46,7 @@ class Tlsa:
                         [
                             f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
                             for f in listdir(f"configs{sep}modules{sep}android{sep}")
-                            if isfile(join(f"configs{sep}modules{sep}android{sep}", f))
+                            if f.endswith(".json") and isfile(join(f"configs{sep}modules{sep}android{sep}", f))
                         ]
                     )
                 )
@@ -56,7 +56,7 @@ class Tlsa:
                         [
                             f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
                             for f in listdir(f"configs{sep}modules{sep}server{sep}")
-                            if isfile(join(f"configs{sep}modules{sep}server{sep}", f))
+                            if f.endswith(".json") and isfile(join(f"configs{sep}modules{sep}server{sep}", f))
                         ]
                     )
                 )
