@@ -27,7 +27,7 @@ if __name__ == "__main__":
         action="store",
         type=str,
         choices=["pdf", "html"],
-        default="html",
+        default=None,
         help="The type of the report output.\nOutput type can be omitted and can be obtained"
         " by --output extension.",
     )

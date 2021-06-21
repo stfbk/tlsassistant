@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from markdown2 import markdown
 from pdfkit import from_file  # import python module
 from os.path import exists
@@ -87,7 +89,9 @@ def html_to_pdf(source_path: str, output_filename: str, delete_html=True):
         # return False on success and True on errors
 
 
-def md_to_html(extras: list, results: dict, output_file="output.html", css_file=None):
+def md_to_html(
+    extras: list, results: dict, output_file: str or Path = "output.html", css_file=None
+):
     """
     Convert an md string to HTML file.
 

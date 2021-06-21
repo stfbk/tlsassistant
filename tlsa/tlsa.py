@@ -24,6 +24,8 @@ class Tlsa:
             return Core.Report.PDF
         elif string == "html":
             return Core.Report.HTML
+        elif string is None:
+            return None
         else:
             raise NotImplementedError("Report type not yet implemented.")
 
@@ -46,7 +48,8 @@ class Tlsa:
                         [
                             f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
                             for f in listdir(f"configs{sep}modules{sep}android{sep}")
-                            if f.endswith(".json") and isfile(join(f"configs{sep}modules{sep}android{sep}", f))
+                            if f.endswith(".json")
+                            and isfile(join(f"configs{sep}modules{sep}android{sep}", f))
                         ]
                     )
                 )
@@ -56,7 +59,8 @@ class Tlsa:
                         [
                             f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
                             for f in listdir(f"configs{sep}modules{sep}server{sep}")
-                            if f.endswith(".json") and isfile(join(f"configs{sep}modules{sep}server{sep}", f))
+                            if f.endswith(".json")
+                            and isfile(join(f"configs{sep}modules{sep}server{sep}", f))
                         ]
                     )
                 )

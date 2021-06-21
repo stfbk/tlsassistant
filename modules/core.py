@@ -79,17 +79,19 @@ class Core:
         # set outputfilename if not already set
         if "output" not in kwargs or not kwargs["output"]:  # if not output
             file_name = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+            fl = str(Path(file_name).absolute()).lower()
         else:
             fl = Path(kwargs["output"])
             file_name = f"{fl.absolute().parent}{sep}{fl.absolute().stem}"
+            fl = str(Path(kwargs["output"]).absolute()).lower()
 
         # if not output type, just parse it from the file name
         if "output_type" not in kwargs or not kwargs["output_type"]:
-            if file_name.lower().endswith(".pdf"):
+            if fl.endswith(".pdf"):
                 kwargs["output_type"] = self.Report.PDF
-            elif file_name.lower().endswith(".html"):
+            elif fl.endswith(".html"):
                 kwargs["output_type"] = self.Report.HTML
-            elif file_name.lower().endswith(".raw"):
+            elif fl.endswith(".raw"):
                 kwargs["output_type"] = self.Report.RAW
             else:
                 kwargs["output_type"] = self.Report.HTML  # or default HTML
