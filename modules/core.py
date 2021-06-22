@@ -32,6 +32,7 @@ class Core:
         output=None,
         output_type=None,
         type_of_analysis=Analysis.HOST,
+        scoreboard=False,
     ):
         self.__logging = Logger("Core")
         self.__input_dict = {}
@@ -46,6 +47,7 @@ class Core:
             output=output,
             output_type=output_type,
             type_of_analysis=type_of_analysis,
+            scoreboard=scoreboard,
         )
         self.__cache[configuration] = self.__load_configuration(modules)
         self.__exec(
@@ -158,7 +160,7 @@ class Core:
                 assert not is_apk(Module), f"The module {name} isn't Server related!"
 
             loaded_modules[name] = Module()
-            loaded_arguments[name] = args
+            loaded_arguments[name] = args.copy()
             testssl_args = self.__add_testssl_args(loaded_modules[name], testssl_args)
         return loaded_modules, loaded_arguments, testssl_args
 
@@ -183,7 +185,6 @@ class Core:
                 args["port"] = port  # set the port
             self.__logging.info(f"{Color.CBEIGE}Running {name} module...")
             results[name] = module.run(**args)
-
         return results
 
     def __call_output_modules(self, res: dict, hostname_or_path: str):
@@ -195,6 +196,9 @@ class Core:
                 path=self.__input_dict["output"],
                 results=res,
                 hostname_or_path=hostname_or_path,
+                mode=Report_module.Mode.SCOREBOARD
+                if "scoreboard" in self.__input_dict and self.__input_dict["scoreboard"]
+                else Report_module.Mode.DEFAULT,
             )
         self.__logging.debug("Output generated.")
 
@@ -221,7 +225,9 @@ class Core:
             (
                 res[hostname_or_path]["loaded_modules"],
                 res[hostname_or_path]["results"],
-            ) = self.__exec_anaylsis(type_of_analysis, hostname_or_path, configuration)
+            ) = self.__exec_anaylsis(
+                type_of_analysis, hostname_or_path, configuration, port
+            )
         self.__logging.info(f"Generating output..")
         self.__call_output_modules(
             res,
@@ -247,7 +253,6 @@ class Core:
         loaded_modules, loaded_arguments, testssl_args = self.__load_modules(
             parsed_configuration
         )
-
         # preanalysis if needed
         self.__logging.info(f"Running analysis..")
         self.__preanalysis_testssl(
@@ -258,6 +263,5 @@ class Core:
             loaded_modules, type_of_analysis, hostname_or_path, loaded_arguments, port
         )
         self.__logging.info(f"Analysis of {hostname_or_path} done.")
-
         return loaded_modules, results
         # todo add output attack trees

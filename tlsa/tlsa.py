@@ -88,6 +88,7 @@ class Tlsa:
                 output=args.output,
                 output_type=self.__to_report_type(args.output_type),
                 type_of_analysis=Core.Analysis.HOST,
+                scoreboard=args.scoreboard,
             )
         elif args.apk:
             Core(
@@ -96,6 +97,7 @@ class Tlsa:
                 output=args.output,
                 output_type=self.__to_report_type(args.output_type),
                 type_of_analysis=Core.Analysis.APK,
+                scoreboard=args.scoreboard,
             )
         elif args.domain_file:
             Core(
@@ -104,6 +106,7 @@ class Tlsa:
                 output=args.output,
                 output_type=self.__to_report_type(args.output_type),
                 type_of_analysis=Core.Analysis.DOMAINS,
+                scoreboard=args.scoreboard,
             )
 
         else:  # must be args.list, unless argparse throws error.

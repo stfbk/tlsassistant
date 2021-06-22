@@ -39,6 +39,12 @@ if __name__ == "__main__":
         help="Set report path.",
         default=None,
     )
+    parser.add_argument(
+        "--scoreboard",
+        action="store_true",
+        help="Show Scoreboard instead of normal report.",
+        default=False,
+    )
     hostname_or_apk.add_argument(
         "-s",
         "--server",

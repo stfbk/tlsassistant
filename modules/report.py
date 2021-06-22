@@ -1,3 +1,4 @@
+from enum import Enum
 from os import mkdir
 from pathlib import Path
 
@@ -6,9 +7,14 @@ from utils import md
 from datetime import datetime
 from os.path import sep
 from utils.logger import Logger
+from utils.prune import pruner
 
 
 class Report:
+    class Mode(Enum):
+        DEFAULT = 0
+        SCOREBOARD = 1
+
     def __init__(self):
         self.__input_dict = {}
         self.__path = ""
@@ -17,23 +23,8 @@ class Report:
     def input(self, **kwargs):
         self.__input_dict = kwargs
 
-    def run(self, **kwargs):
-        self.input(**kwargs)
-        if "path" not in self.__input_dict:
-            raise AssertionError("Missing output path")
-        if "results" not in self.__input_dict:
-            raise AssertionError("Missing results list")
-        # if "hostname_or_path" not in self.__input_dict:
-        #    raise AssertionError("Missing hostname of the server or path of apk")
-
-        path = self.__input_dict["path"]
-        self.__path = Path(path)
-
-        v = Validator([(path, str)])
-        output = [
-            md.title("TLSA Analysis"),
-            "\n",
-        ]
+    def __get_default(self, output):
+        v = Validator()
         for hostname_or_path in self.__input_dict["results"]:
             res = self.__input_dict["results"][hostname_or_path]
             raw_results = res["results"]
@@ -42,6 +33,7 @@ class Report:
             v.string(hostname_or_path)
             v.dict(modules)
             self.__logging.debug("Added headers...")
+            raw_results = pruner(raw_results)
             dt_string = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             output += [
                 md.italic(f"{dt_string} - {hostname_or_path}"),
@@ -56,6 +48,63 @@ class Report:
             self.__logging.debug("Recursive parsing done.")
             output.append("\n")
             output.append(md.line())
+        return output
+
+    def __get_scoreboard(self, output):
+        self.__logging.info(f"Generating Scoreboard..")
+        v = Validator()
+        once = False
+        dt_string = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        output.append(md.italic(f"{dt_string}"))
+        for hostname_or_path in self.__input_dict["results"]:
+            res = self.__input_dict["results"][hostname_or_path]
+            raw_results = res["results"]
+            modules = res["loaded_modules"]
+            v.dict(raw_results)
+            v.string(hostname_or_path)
+            v.dict(modules)
+            raw_results = pruner(raw_results)  # remove useless data
+            self.__logging.debug("Added headers...")
+            if not once:
+                partial = [md.table.wrap("  ")]
+                for module in modules:
+                    partial.append(md.table.title(module.replace("_", " ")))
+                once = True
+                output.append(f"|{''.join(partial)}|")
+
+            partial = [md.table.bold(f"{hostname_or_path}")]
+            for module in modules:
+                partial.append(
+                    md.table.wrap("❌" if module in raw_results and raw_results else "✅")
+                )
+            output.append(f"|{''.join(partial)}|")
+        output.append("\n")
+        output.append(md.line())
+        return output
+
+    def run(self, **kwargs):
+        self.input(**kwargs)
+        if "path" not in self.__input_dict:
+            raise AssertionError("Missing output path")
+        if "results" not in self.__input_dict:
+            raise AssertionError("Missing results list")
+        # if "hostname_or_path" not in self.__input_dict:
+        #    raise AssertionError("Missing hostname of the server or path of apk")
+
+        path = self.__input_dict["path"]
+        self.__path = Path(path)
+
+        Validator([(path, str)])
+        output = [
+            md.title("TLSA Analysis"),
+            "\n",
+        ]
+        output = (
+            self.__get_scoreboard(output)
+            if "mode" in self.__input_dict
+               and self.__input_dict["mode"] == self.Mode.SCOREBOARD
+            else self.__get_default(output)
+        )
         if not Path("results").exists():
             self.__logging.debug("Adding result folder...")
             mkdir("results")
@@ -63,14 +112,19 @@ class Report:
         output_file = Path(f"results{sep}{self.__path.stem}.html")
         self.__logging.debug("Starting MD to HTML...")
         output_path = output_file.absolute()
-
+        options = [
+            "break-on-newline",
+            "fenced-code-blocks",
+            "code-friendly",
+            "cuddled-lists",
+        ]
+        if (
+                "mode" in self.__input_dict
+                and self.__input_dict["mode"] == self.Mode.SCOREBOARD
+        ):
+            options.append("wiki-tables")
         md.md_to_html(
-            [
-                "break-on-newline",
-                "fenced-code-blocks",
-                "code-friendly",
-                "cuddled-lists",
-            ],
+            options,
             "\n".join(output),
             output_file=str(output_file.absolute()),
             css_file=f"dependencies{sep}typora-mo-theme{sep}mo.css",
