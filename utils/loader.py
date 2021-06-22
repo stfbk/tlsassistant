@@ -4,6 +4,7 @@ from os.path import sep
 from pathlib import Path
 from pydoc import locate
 
+from utils.urls import link_sep, url_domain
 from utils.validation import Validator
 
 
@@ -91,3 +92,14 @@ def load_configuration(module: str, configs_path=None) -> dict:
     with module_path.open() as mod_file:
         mod_data = json.load(mod_file)
     return mod_data
+
+
+def load_list_of_domains(path: str) -> [str]:
+    file = Path(path)
+    urls = []
+    assert file.exists(), f"Path {file.absolute()} not found."
+    with file.open() as f:
+        for line in f:
+            url, port = link_sep(line)
+            urls.append(url_domain(url))
+    return urls

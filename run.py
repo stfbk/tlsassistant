@@ -47,6 +47,13 @@ if __name__ == "__main__":
         help="The hostname, target of the analysis.",
     )
     hostname_or_apk.add_argument(
+        "-d",
+        "--domain_file",
+        type=str,
+        action="store",
+        help="The file path which has the hostname to analyze.",
+    )
+    hostname_or_apk.add_argument(
         "-l",
         "--list",
         nargs="?",

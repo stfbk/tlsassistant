@@ -140,3 +140,4 @@ class Tlsfuzzer:
                         0
                     ].exists():  # workaround, remove temp file moved to the root of tlsfuzzer
                         remove(str(value[0].absolute()))
+                print(self.__cache)

@@ -29,6 +29,7 @@ def link_sep(input_url: str) -> [str, str]:
     splitted = input_url.rsplit(":", 1)
     if len(splitted) != 2:
         splitted.append("443")
+    splitted[1] = splitted[1].split("/", 1)[0].split("?", 1)[0]
     splitted[1] = port_parse(splitted[1])
     return splitted
 

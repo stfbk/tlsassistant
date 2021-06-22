@@ -185,6 +185,7 @@ class Https:
                 self.__worker(link, type, force=True)
         response = self.__cache[link]
         if response.ok:
+            print(self.__cache)
             return self.__chose_results(type, response)
         else:
             raise Exception(f"Received Status Code {response.status_code}, abort.")

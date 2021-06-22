@@ -5,6 +5,7 @@ from utils.logger import Logger
 from utils.colors import Color
 from utils.loader import load_configuration
 from utils.configuration import pretty
+from utils.loader import load_list_of_domains
 from modules.core import Core
 from os import listdir
 from os.path import isfile, join, sep
@@ -86,6 +87,7 @@ class Tlsa:
                 configuration=config_or_modules,
                 output=args.output,
                 output_type=self.__to_report_type(args.output_type),
+                type_of_analysis=Core.Analysis.HOST
             )
         elif args.apk:
             Core(
@@ -93,7 +95,16 @@ class Tlsa:
                 configuration=config_or_modules,
                 output=args.output,
                 output_type=self.__to_report_type(args.output_type),
-                apk=True,
+                type_of_analysis=Core.Analysis.APK,
             )
+        elif args.domain_file:
+            Core(
+                hostname_or_path=load_list_of_domains(args.domain_file),
+                configuration=config_or_modules,
+                output=args.output,
+                output_type=self.__to_report_type(args.output_type),
+                type_of_analysis=Core.Analysis.DOMAINS,
+            )
+
         else:  # must be args.list, unless argparse throws error.
             self.__print_module(args.list)

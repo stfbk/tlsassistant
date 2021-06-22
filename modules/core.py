@@ -20,13 +20,18 @@ class Core:
         RAW = 2  # todo implement RAW
         ATTACK_TREES = 3  # todo implement attack trees module
 
+    class Analysis(Enum):
+        HOST = 0
+        APK = 1
+        DOMAINS = 2
+
     def __init__(
-        self,
-        hostname_or_path: str,
-        configuration: str or list,
-        output=None,
-        output_type=None,
-        apk=False,
+            self,
+            hostname_or_path: str or list,
+            configuration: str or list,
+            output=None,
+            output_type=None,
+            type_of_analysis=Analysis.HOST
     ):
         self.__logging = Logger("Core")
         self.__input_dict = {}
@@ -40,10 +45,14 @@ class Core:
             hostname_or_path=hostname_or_path,
             output=output,
             output_type=output_type,
-            apk=apk,
+            type_of_analysis=type_of_analysis,
         )
         self.__cache[configuration] = self.__load_configuration(modules)
-        self.__exec()
+        self.__exec(
+            type_of_analysis=self.__input_dict['type_of_analysis'],
+            hostname_or_path=self.__input_dict['hostname_or_path'],
+            configuration=self.__input_dict['configuration']
+        )
 
     def __string_output_type(self, kwargs_type: Report) -> str:
         return f"{str(kwargs_type.name).lower()}"
@@ -51,14 +60,14 @@ class Core:
     def input(self, **kwargs):
         assert "configuration" in kwargs, "Missing configuration."
         assert (
-            "hostname_or_path" in kwargs
+                "hostname_or_path" in kwargs
         ), "Missing hostname."  # todo: facultative hostname, we should use configs sometimes
 
         # validate
         Validator(
             [
                 (kwargs["configuration"], str),
-                (kwargs["hostname_or_path"], str),
+                (kwargs["hostname_or_path"], (str, list)),
                 (
                     self.Report.HTML
                     if "output_type" not in kwargs or not kwargs["output_type"]
@@ -72,7 +81,7 @@ class Core:
                     else kwargs["output"],
                     str,
                 ),  # can be none
-                (kwargs["apk"], bool),
+                (kwargs["type_of_analysis"], self.Analysis),
             ]
         )
 
@@ -119,13 +128,14 @@ class Core:
             testssl_args += module._arguments
         return testssl_args
 
-    def __preanalysis_testssl(self, testssl_args: list):
-        if testssl_args and not self.__input_dict["apk"]:
+    def __preanalysis_testssl(self, testssl_args: list, type_of_analysis: Analysis, hostname: str, port: str):
+        if testssl_args and (type_of_analysis == self.Analysis.HOST
+                             or type_of_analysis == self.Analysis.DOMAINS):
             self.__logging.debug(
                 f"Starting preanalysis testssl with args {testssl_args}..."
             )
             Testssl().run(
-                hostname=f'{self.__input_dict["hostname_or_path"]}:{self.__input_dict["port"]}',
+                hostname=f'{hostname}:{port}',
                 args=testssl_args,
             )
             self.__logging.debug(f"Preanalysis testssl done.")
@@ -137,7 +147,7 @@ class Core:
         for name, module_args in parsed_configuration.items():
             Module, args = module_args
             self.__logging.debug(f"Loading {name}...")
-            if self.__input_dict["apk"]:
+            if self.__input_dict["type_of_analysis"] == self.Analysis.APK:
                 assert is_apk(Module), f"The module {name} isn't APK related!"
             else:
                 assert not is_apk(Module), f"The module {name} isn't Server related!"
@@ -147,21 +157,18 @@ class Core:
             testssl_args = self.__add_testssl_args(loaded_modules[name], testssl_args)
         return loaded_modules, loaded_arguments, testssl_args
 
-    def __run_analysis(self, loaded_modules: dict, loaded_arguments: dict) -> dict:
+    def __run_analysis(self, loaded_modules: dict, type_of_analysis: Analysis, hostname_or_path: str,
+                       loaded_arguments: dict, port=None) -> dict:
         results = {}
-        port = None
-        if not self.__input_dict["apk"]:  # server analysis
-            hostname_or_path = "hostname"
-            port = self.__input_dict["port"]
+        if type_of_analysis != self.Analysis.APK:  # server analysis
+            hostname_or_path_type = "hostname"
         else:  # android analysis
-            hostname_or_path = "path"
+            hostname_or_path_type = "path"
         for name, module in loaded_modules.items():
-            if hostname_or_path not in loaded_arguments[name]:
-                loaded_arguments[name][hostname_or_path] = self.__input_dict[
-                    "hostname_or_path"
-                ]
+            if hostname_or_path_type not in loaded_arguments[name]:
+                loaded_arguments[name][hostname_or_path_type] = hostname_or_path
             args = loaded_arguments[name]
-            if not self.__input_dict["apk"]:  # server analysis
+            if type_of_analysis != self.Analysis.APK:  # server analysis
                 args["port"] = port  # set the port
             self.__logging.info(f"{Color.CBEIGE}Running {name} module...")
             results[name] = module.run(**args)
@@ -169,11 +176,11 @@ class Core:
         return results
 
     def __call_output_modules(
-        self, loaded_modules: dict, results: dict, hostname_or_path: str
+            self, loaded_modules: dict, results: dict, hostname_or_path: str
     ):
         if (
-            self.__input_dict["output_type"] == self.Report.HTML
-            or self.__input_dict["output_type"] == self.Report.PDF
+                self.__input_dict["output_type"] == self.Report.HTML
+                or self.__input_dict["output_type"] == self.Report.PDF
         ):
             Report_module().run(
                 path=self.__input_dict["output"],
@@ -183,15 +190,34 @@ class Core:
             )
         self.__logging.debug("Output generated.")
 
-    def __exec(self):
-        self.__logging.info(
-            f"Started analysis on {self.__input_dict['hostname_or_path']}."
-        )
-        if not self.__input_dict["apk"]:
-            self.__input_dict["hostname_or_path"], self.__input_dict["port"] = link_sep(
-                self.__input_dict["hostname_or_path"]
+    def __exec(self, type_of_analysis: Analysis, hostname_or_path: str or list, configuration: str, port: str = None):
+        if type_of_analysis == self.Analysis.DOMAINS:
+            res = {}
+            self.__logging.info("Executing multiple domain analysis.")
+            for domain in hostname_or_path:
+                if domain not in res:
+                    res[domain] = {}
+                res[domain]['loaded_modules'], res[domain]['results'] = self.__exec_anaylsis(type_of_analysis, domain,
+                                                                                             configuration)
+                # todo add scoreboard call
+        else:
+            loaded_modules, results = self.__exec_anaylsis(type_of_analysis, hostname_or_path, configuration)
+
+            self.__call_output_modules(
+                loaded_modules,
+                results,
+                hostname_or_path=hostname_or_path,
             )
-        configuration_name = self.__input_dict["configuration"]
+
+    def __exec_anaylsis(self, type_of_analysis: Analysis, hostname_or_path: str, configuration: str, port: str = None):
+        self.__logging.info(
+            f"Started analysis on {hostname_or_path}."
+        )
+        if type_of_analysis != self.Analysis.APK:
+            hostname_or_path, port = link_sep(
+                hostname_or_path
+            )
+        configuration_name = configuration
         self.__logging.info(f"Loading configuration {configuration_name} ..")
         parsed_configuration = self.__cache[configuration_name]
 
@@ -203,13 +229,10 @@ class Core:
 
         # preanalysis if needed
         self.__logging.info(f"Running analysis..")
-        self.__preanalysis_testssl(testssl_args)
+        self.__preanalysis_testssl(testssl_args, type_of_analysis, hostname_or_path, port)
 
-        results = self.__run_analysis(loaded_modules, loaded_arguments)
+        results = self.__run_analysis(loaded_modules, type_of_analysis, hostname_or_path, loaded_arguments, port)
         self.__logging.info(f"Generating output..")
-        self.__call_output_modules(
-            loaded_modules,
-            results,
-            hostname_or_path=self.__input_dict["hostname_or_path"],
-        )
+
+        return loaded_modules, results
         # todo add output attack trees
