@@ -13,6 +13,26 @@ H4 = 4
 H5 = 5
 
 
+class Class_table:
+    def wrap(self, wrap):
+        return f"| {wrap} |"
+
+    def heading(self):
+        return self.wrap("-------")
+
+    def bold(self, string):
+        return self.wrap(bold(string))
+
+    def italic(self, string):
+        return self.wrap(italic(string))
+
+    def title(self, string):
+        return self.bold(string)
+
+
+table = Class_table()
+
+
 def recursive_parsing(value, hlevel: int, bold_instead: bool) -> str:
     """
     Parse the output and prepare md for the report recursively.
