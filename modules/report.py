@@ -28,9 +28,12 @@ class Report:
 
         path = self.__input_dict["path"]
         self.__path = Path(path)
-        dt_string = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
         v = Validator([(path, str)])
-        output = [md.title("TLSA Analysis"), md.line()]
+        output = [
+            md.title("TLSA Analysis"),
+            "\n",
+        ]
         for hostname_or_path in self.__input_dict["results"]:
             res = self.__input_dict["results"][hostname_or_path]
             raw_results = res["results"]
@@ -39,6 +42,7 @@ class Report:
             v.string(hostname_or_path)
             v.dict(modules)
             self.__logging.debug("Added headers...")
+            dt_string = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             output += [
                 md.italic(f"{dt_string} - {hostname_or_path}"),
                 md.title("Modules used", level=md.H2),
