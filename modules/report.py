@@ -21,37 +21,37 @@ class Report:
         self.input(**kwargs)
         if "path" not in self.__input_dict:
             raise AssertionError("Missing output path")
-        if "modules" not in self.__input_dict:
-            raise AssertionError("Missing modules list")
         if "results" not in self.__input_dict:
             raise AssertionError("Missing results list")
-        if "hostname_or_path" not in self.__input_dict:
-            raise AssertionError("Missing hostname of the server or path of apk")
+        # if "hostname_or_path" not in self.__input_dict:
+        #    raise AssertionError("Missing hostname of the server or path of apk")
 
         path = self.__input_dict["path"]
-        modules = self.__input_dict["modules"]
-        raw_results = self.__input_dict["results"]
-        hostname_or_path = self.__input_dict["hostname_or_path"]
-        Validator(
-            [(path, str), (modules, dict), (raw_results, dict), (hostname_or_path, str)]
-        )
-
         self.__path = Path(path)
         dt_string = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        v = Validator([(path, str)])
+        output = [md.title("TLSA Analysis"), md.line()]
+        for hostname_or_path in self.__input_dict["results"]:
+            res = self.__input_dict["results"][hostname_or_path]
+            raw_results = res["results"]
+            modules = res["loaded_modules"]
+            v.dict(raw_results)
+            v.string(hostname_or_path)
+            v.dict(modules)
+            self.__logging.debug("Added headers...")
+            output += [
+                md.italic(f"{dt_string} - {hostname_or_path}"),
+                md.title("Modules used", level=md.H2),
+                ", ".join([md.italic(module) for module in modules]),
+                md.title("Vulnerabilities found", level=md.H2),
+            ]
 
-        self.__logging.debug("Added headers...")
-        output = [
-            md.title("TLSA Analysis"),
-            md.line(),
-            md.italic(f"{dt_string} - {hostname_or_path}"),
-            md.title("Modules used", level=md.H2),
-            ", ".join([md.italic(module) for module in modules]),
-            md.title("Vulnerabilities found", level=md.H2),
-        ]
-        self.__logging.debug("Recursive parsing...")
-        output.append(md.recursive_parsing(raw_results, md.H1, bold_instead=True))
+            self.__logging.debug("Recursive parsing...")
+            output.append(md.recursive_parsing(raw_results, md.H1, bold_instead=True))
 
-        self.__logging.debug("Recursive parsing done.")
+            self.__logging.debug("Recursive parsing done.")
+            output.append("\n")
+            output.append(md.line())
         if not Path("results").exists():
             self.__logging.debug("Adding result folder...")
             mkdir("results")
@@ -68,7 +68,7 @@ class Report:
                 "cuddled-lists",
             ],
             "\n".join(output),
-            output_file=output_file.absolute(),
+            output_file=str(output_file.absolute()),
             css_file=f"dependencies{sep}typora-mo-theme{sep}mo.css",
         )
 

@@ -87,7 +87,7 @@ class Tlsa:
                 configuration=config_or_modules,
                 output=args.output,
                 output_type=self.__to_report_type(args.output_type),
-                type_of_analysis=Core.Analysis.HOST
+                type_of_analysis=Core.Analysis.HOST,
             )
         elif args.apk:
             Core(

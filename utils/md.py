@@ -90,7 +90,7 @@ def html_to_pdf(source_path: str, output_filename: str, delete_html=True):
 
 
 def md_to_html(
-    extras: list, results: dict, output_file: str or Path = "output.html", css_file=None
+    extras: list, results: str, output_file: str or Path = "output.html", css_file=None
 ):
     """
     Convert an md string to HTML file.
