@@ -123,6 +123,9 @@ class Testssl:
         :rtype: dict
         :raise AssertionError: If hostname parameter is not found.
         """
+        if "hostname" in kwargs:
+            kwargs["hostname"] = link_sep(kwargs["hostname"])[0]
+
         if "hostname" not in kwargs:
             raise AssertionError("Missing parameter hostname.")
         elif kwargs["hostname"] not in self.__cache:
