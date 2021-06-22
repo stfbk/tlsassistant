@@ -10,7 +10,7 @@ if __name__ == "__main__":
         epilog="https://st.fbk.eu -  Security and Trust, FBK Research Unit",
     )
     parser.add_argument(
-        "--version", action="version", version="%(prog)s v2.1.0 alpha, closed release"
+        "--version", action="version", version="%(prog)s v2.1.2 alpha, closed release"
     )
     parser.add_argument(
         "-v",

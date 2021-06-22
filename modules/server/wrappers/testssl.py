@@ -326,4 +326,3 @@ class Testssl:
                     link_sep(hostname)[0] not in self.__ip_cache
                 ):  # if it's an ip, check for it in reverse proxy
                     self.__scan_hostname(hostname, args=args, force=True, one=one)
-            print(self.__cache)
