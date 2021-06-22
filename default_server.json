@@ -1,9 +1,29 @@
 {
-   "name":"analysis_test",
-   "description":"Template for other configuration",
-   "modules":[
-      "beast",
-      "breach",
-     "certificate_transparency"
-   ]
+  "name": "server_default_configuration",
+  "description": "Default server configuration",
+  "modules": [
+    "3shake",
+    "beast",
+    "breach",
+    "ccs_injection",
+    "certificate_transparency",
+    "crime",
+    "drown",
+    "freak",
+    "heartbleed",
+    "hsts_preloading",
+    "hsts_set",
+    "https_enforced",
+    "logjam",
+    "lucky13",
+    "mitzvah",
+    "nomore",
+    "pfs",
+    "poodle",
+    "renegotiation",
+    "robot",
+    "sloth",
+    "sweet32",
+    "ticketbleed"
+  ]
 }

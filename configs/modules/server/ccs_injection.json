@@ -9,7 +9,7 @@
    ],
    "description":"This modules runs the vulnerability check for CCS Injection.",
    "path":"modules/server/ccs_injection.py",
-   "class_name":"Ccs",
+   "class_name":"Ccs_injection",
    "output":[
       {
          "name":"results",

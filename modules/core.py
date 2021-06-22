@@ -141,6 +141,7 @@ class Core:
             Testssl().run(
                 hostname=f"{hostname}:{port}",
                 args=testssl_args,
+                force=True,  # this should solve for multiple scans on the same IP with different ports
             )
             self.__logging.debug(f"Preanalysis testssl done.")
 
