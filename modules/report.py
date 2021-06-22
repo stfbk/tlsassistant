@@ -56,6 +56,7 @@ class Report:
         once = False
         dt_string = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         output.append(md.italic(f"{dt_string}"))
+        output.append("\n")
         for hostname_or_path in self.__input_dict["results"]:
             res = self.__input_dict["results"][hostname_or_path]
             raw_results = res["results"]
