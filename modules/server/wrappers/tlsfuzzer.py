@@ -30,6 +30,7 @@ class Tlsfuzzer:
             for script in kwargs["scripts"]:
                 if script in self.__cache[kwargs["hostname"]]:
                     output[script] = self.__cache[kwargs["hostname"]][script]
+            logging.debug(output)
             return output
 
     def run(self, **kwargs):

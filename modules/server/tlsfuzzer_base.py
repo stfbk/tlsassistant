@@ -41,37 +41,26 @@ class Tlsfuzzer_base:
         for script, list_of_checks in keys.items():
             assert script in results, f"Script {script} missing in results!"
             if grep("sanity", results[script]) == 2:
-                if (
-                    grep(
-                        "AssertionError: Unexpected message from peer:", results[script]
+                # self.__logging.debug(results[script])
+                set_mitigations = False
+                for check, safe_value in list_of_checks.items():
+                    if check != "MITIGATION":
+                        out[check] = {}
+                        string_to_grep = check
+                        occurrencies = grep(string_to_grep, results[script])
+                        if occurrencies > safe_value:
+                            self.__logging.debug(
+                                f"Found {occurrencies} occurrencies of {check}"
+                                f" with script {script} (safe value is <={safe_value})"
+                            )
+                            set_mitigations = True
+                if set_mitigations:
+                    out[script] = {}
+                    split = results[script].split("Test end", 1)
+                    out[script]["code"] = (
+                        split[1] if len(split) > 1 else results[script]
                     )
-                    != 0
-                ):
-                    # self.__logging.debug(results[script])
-                    set_mitigations = False
-                    for check, safe_value in list_of_checks.items():
-                        if check != "MITIGATION":
-                            out[check] = {}
-                            string_to_grep = check
-                            occurrencies = grep(string_to_grep, results[script])
-                            if occurrencies > safe_value:
-                                self.__logging.debug(
-                                    f"Found {occurrencies} occurrencies of {check}"
-                                    f" with script {script} (safe value is <={safe_value})"
-                                )
-                                set_mitigations = True
-                    if set_mitigations:
-                        out = self._set_mitigations(
-                            out, list_of_checks["MITIGATION"], True
-                        )
-                else:
-                    self.__logging.warning(
-                        f"The script {script} received a strange response from the server."
-                    )
-                    self.__logging.info(
-                        "Handshake failed, the server probably isn't using a mutual authentication.\n"
-                        f"Ignoring {script} analysis.\n"
-                    )
+                    out = self._set_mitigations(out, list_of_checks["MITIGATION"], True)
             else:
                 self.__logging.warning(
                     f"Results won't make sense for script {script}, sanity check failed."
