@@ -1,5 +1,6 @@
 import logging
 
+from utils.logger import Logger
 from utils.validation import Validator
 from utils.urls import url_domain, port_parse
 import requests
@@ -77,6 +78,7 @@ class Https:
 
     def __init__(self):
         self.__input_dict = {}
+        self.__logging = Logger("HTTPS_HSTS")
 
     def input(self, **kwargs):
         self.__input_dict = kwargs
@@ -131,7 +133,7 @@ class Https:
         return self.output(hostname=link)
 
     def __chose_results(self, type: int, response: requests.Response):
-        logging.debug(response.headers)
+        self.__logging.debug(response.headers)
         if type == self.HTTPS:
             return (
                 response.is_redirect or response.is_permanent_redirect
@@ -142,14 +144,14 @@ class Https:
             return "strict-transport-security" in response.headers
         else:
             if not self.__preloaded_moz:
-                logging.debug("Preloading mozilla hsts..")
+                self.__logging.debug("Preloading mozilla hsts..")
                 self.__preloaded_moz = Parse().output()
             if not self.__preloaded_gog:
-                logging.debug("Preloading google hsts..")
+                self.__logging.debug("Preloading google hsts..")
                 self.__preloaded_gog = Parse(moz=False).output()
             if response.request:
                 parsed_url = url_domain(response.request.url)
-                logging.debug(f"url : {parsed_url} parsed")
+                self.__logging.debug(f"url : {parsed_url} parsed")
             else:
                 parsed_url = None
             return (
@@ -165,16 +167,16 @@ class Https:
                     link, headers=self.__headers, timeout=5
                 )
             except requests.exceptions.SSLError as ex:
-                logging.error(f"I can't connect to SSL/TLS:\n{ex}")
-                logging.warning(
+                self.__logging.error(f"I can't connect to SSL/TLS:\n{ex}")
+                self.__logging.warning(
                     "The HTTPS_HSTS analysis cannot proceed and result will be set as vulnerable."
                 )
                 return self.__chose_results(
                     type, requests.Response()
                 )  # default response
             except requests.exceptions.ConnectTimeout as ex:
-                logging.error(f"I can't connect to host:\n{ex}")
-                logging.warning(
+                self.__logging.error(f"I can't connect to host:\n{ex}")
+                self.__logging.warning(
                     "The HTTPS_HSTS analysis cannot proceed and result will be set as vulnerable."
                 )
                 return self.__chose_results(
@@ -187,4 +189,7 @@ class Https:
         if response.ok:
             return self.__chose_results(type, response)
         else:
-            raise Exception(f"Received Status Code {response.status_code}, abort.")
+            self.__logging.warning(
+                f"Received Status Code {response.status_code}, result could not make sense."
+            )
+            return self.__chose_results(type, response)
