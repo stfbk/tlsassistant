@@ -26,7 +26,7 @@ def link_sep(input_url: str) -> [str, str]:
     :return: stripped url and the port.
     :rtype: list of str
     """
-    splitted = input_url.rsplit(":", 1)
+    splitted = url_strip(input_url).rsplit(":", 1)
     if len(splitted) != 2:
         splitted.append("443")
     splitted[1] = splitted[1].split("/", 1)[0].split("?", 1)[0]
