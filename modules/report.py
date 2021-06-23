@@ -103,7 +103,7 @@ class Report:
         output = (
             self.__get_scoreboard(output)
             if "mode" in self.__input_dict
-               and self.__input_dict["mode"] == self.Mode.SCOREBOARD
+            and self.__input_dict["mode"] == self.Mode.SCOREBOARD
             else self.__get_default(output)
         )
         if not Path("results").exists():
@@ -120,16 +120,28 @@ class Report:
             "cuddled-lists",
         ]
         if (
-                "mode" in self.__input_dict
-                and self.__input_dict["mode"] == self.Mode.SCOREBOARD
+            "mode" in self.__input_dict
+            and self.__input_dict["mode"] == self.Mode.SCOREBOARD
         ):
             options.append("wiki-tables")
-        md.md_to_html(
-            options,
-            "\n".join(output),
-            output_file=str(output_file.absolute()),
-            css_file=f"dependencies{sep}typora-mo-theme{sep}mo.css",
-        )
+        try:
+            md.md_to_html(
+                options,
+                "\n".join(output),
+                output_file=str(output_file.absolute()),
+                css_file=f"dependencies{sep}typora-mo-theme{sep}mo.css",
+            )
+        except AssertionError as a:
+            self.__logging.warning(
+                f"Error in report generation: {a}. Removing cuddled-lists addon..."
+            )
+            options.remove("cuddled-lists")
+            md.md_to_html(
+                options,
+                "\n".join(output),
+                output_file=str(output_file.absolute()),
+                css_file=f"dependencies{sep}typora-mo-theme{sep}mo.css",
+            )
 
         self.__logging.debug("Checking if needs pdf...")
 
