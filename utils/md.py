@@ -138,7 +138,7 @@ def md_to_html(
 
                 for s in style:
                     file.write(s)
-                file.write("</style></head><body>")
+                file.write("</style></head><body style ='overflow-x: scroll'>")
                 file.write(markdown(results, extras=extras))
                 file.write("</body></html>")
         else:
@@ -218,4 +218,4 @@ def multiline_code(string: str, language=None) -> str:
     :return: Formatted String.
     :rtype: str
     """
-    return f"```{language if language else ''} {string} ```"
+    return f"```{language if language else ''}\n {string} \n```"
