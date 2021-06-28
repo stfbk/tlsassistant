@@ -15,10 +15,7 @@ class Configuration:
         NGINX = 2
 
     def __init__(self, path: str, type_: Type = Type.AUTO):
-        Validator([
-            (path, str),
-            (type_, self.Type)
-        ])
+        Validator([(path, str), (type_, self.Type)])
         self.__path = path
         self.__type = type_
         self.__logging = Logger("Configuration APACHE/NGINX")
@@ -26,12 +23,16 @@ class Configuration:
 
     def __load_conf(self, path) -> dict:
         file = Path(path)
-        assert file.exists(), f"Can't find the APACHE/NGINX file to parse at {file.absolute()}"
+        assert (
+            file.exists()
+        ), f"Can't find the APACHE/NGINX file to parse at {file.absolute()}"
         if self.__type == self.Type.AUTO:
             try:
                 results = self.__load_apache_conf(file)
             except Exception as e:
-                self.__logging.debug(f"Couldn't parse config as apache: {e}\ntrying with nginx...")
+                self.__logging.debug(
+                    f"Couldn't parse config as apache: {e}\ntrying with nginx..."
+                )
                 results = self.__load_nginx_conf(file)
         elif self.__type == self.Type.APACHE:
             results = self.__load_apache_conf(file)
@@ -52,11 +53,16 @@ class Configuration:
     def is_vuln(self, modules: dict):
         boolean_results = {}
         for name, module in modules.items():
-            for vhost_name, vhost in self.__loaded_conf.items():  # todo: check if true, it's pseudocode
+            for (
+                vhost_name,
+                vhost,
+            ) in self.__loaded_conf.items():  # todo: check if true, it's pseudocode
                 if self.__is_config_enabled(module):
                     if vhost_name not in boolean_results:
                         boolean_results[vhost_name] = {}
                     boolean_results[vhost_name][name] = module.conf.condition(vhost)
                 else:
-                    self.__logging.warning(f"The module {name} isn't compatible. Skipping...")
+                    self.__logging.warning(
+                        f"The module {name} isn't compatible. Skipping..."
+                    )
         return boolean_results

@@ -1,6 +1,25 @@
 import logging
 
 
+def rec_search_key(key, var, wildcard=False, return_keys=False, case_sensitive=True):
+    if hasattr(var, "items"):
+        for k, v in var.items():
+            condition = (
+                (key in k if case_sensitive else key.lower() in k.lower())
+                if wildcard
+                else (k == key if case_sensitive else k.lower() == key.lower())
+            )
+            if condition:
+                yield (k, v) if return_keys else v
+            if isinstance(v, dict):
+                for result in rec_search_key(key, v, wildcard, return_keys, case_sensitive):
+                    yield result
+            elif isinstance(v, list):
+                for d in v:
+                    for result in rec_search_key(key, d, wildcard, return_keys, case_sensitive):
+                        yield result
+
+
 def is_apk(module):
     return hasattr(module, "is_android")
 
