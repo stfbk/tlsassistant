@@ -24,9 +24,9 @@ class Configuration:
     def __obtain_vhost(self):
         assert self.__type != self.Type.AUTO, "Can't use this method with AUTO type."
         if self.__type == self.Type.APACHE:
-            if 'VirtualHost' not in self.__loaded_conf:
-                self.__loaded_conf['VirtualHost'] = []
-            for vhost in self.__loaded_conf['VirtualHost']:
+            if "VirtualHost" not in self.__loaded_conf:
+                self.__loaded_conf["VirtualHost"] = []
+            for vhost in self.__loaded_conf["VirtualHost"]:
                 yield vhost
         elif self.__type == self.Type.NGINX:
             raise NotImplementedError
@@ -62,20 +62,31 @@ class Configuration:
     def __is_config_enabled(self, module) -> bool:
         return hasattr(module, "conf") and isinstance(module.conf, Config_base)
 
-    def __wrapper(self, modules: dict, fix=False, openssl: str = None, ignore_openssl: bool = False):
+    def __wrapper(
+        self,
+        modules: dict,
+        fix=False,
+        openssl: str = None,
+        ignore_openssl: bool = False,
+    ):
         boolean_results = {}
         for name, module in modules.items():
             for virtualhost in self.__obtain_vhost():
                 for vhost_name, vhost in virtualhost.items():
                     if self.__is_config_enabled(module):
-                        self.__logging.debug(f"Analyzing vulnerability {name} in vhost {vhost_name}..")
+                        self.__logging.debug(
+                            f"Analyzing vulnerability {name} in vhost {vhost_name}.."
+                        )
                         if vhost_name not in boolean_results:
                             boolean_results[vhost_name] = {}
-                        boolean_results[vhost_name][name] = module.conf.condition(vhost, openssl=openssl,
-                                                                                  ignore_openssl=ignore_openssl)
+                        boolean_results[vhost_name][name] = module.conf.condition(
+                            vhost, openssl=openssl, ignore_openssl=ignore_openssl
+                        )
                         if fix:
                             if boolean_results[vhost_name][name]:
-                                self.__logging.debug(f"Fixing vulnerability {name} in vhost {vhost_name}..")
+                                self.__logging.debug(
+                                    f"Fixing vulnerability {name} in vhost {vhost_name}.."
+                                )
                                 module.conf.fix(vhost)
                     else:
                         self.__logging.warning(
@@ -89,4 +100,6 @@ class Configuration:
 
     def fix(self, modules: dict, openssl=None, ignore_openssl=False):
         self.__logging.info("Fixing vulnerabilities...")
-        return self.__wrapper(modules, fix=True, openssl=openssl, ignore_openssl=ignore_openssl)
+        return self.__wrapper(
+            modules, fix=True, openssl=openssl, ignore_openssl=ignore_openssl
+        )

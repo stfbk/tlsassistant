@@ -14,8 +14,12 @@ class OpenSSL:
         return self.less_than(ver1, ver2)
 
     def __compare(self, ver1, ver2, reverse=False):
-        assert len(ver1) == 6 or len(ver1) == 5, "OpenSSL version must be 5 or 6 char long.\nFor example '1.1.1f'"
-        assert len(ver2) == 6 or len(ver2) == 5, "OpenSSL version must be 5 or 6 char long.\nFor example '1.1.1f'"
+        assert (
+            len(ver1) == 6 or len(ver1) == 5
+        ), "OpenSSL version must be 5 or 6 char long.\nFor example '1.1.1f'"
+        assert (
+            len(ver2) == 6 or len(ver2) == 5
+        ), "OpenSSL version must be 5 or 6 char long.\nFor example '1.1.1f'"
         # even the versions
         if len(ver1) == 6 and len(ver2) == 5:
             ver1 = ver1[:-1]

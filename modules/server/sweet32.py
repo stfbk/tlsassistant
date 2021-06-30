@@ -5,16 +5,15 @@ from utils.validation import Validator
 
 class Sweet32(Testssl_base):
     class Parse_configuration(Config_base):
-
         def fix(self, vhost):
-            key = 'SSLCipherSuite'
+            key = "SSLCipherSuite"
             if key not in vhost:
                 vhost[key] = ""
             vhost[key] = f"{vhost[key]}{':' if vhost[key] else ''}!3DES"
 
         def condition(self, vhost, openssl: str = None, ignore_openssl=False):
-            key = 'SSLCipherSuite'
-            openssl_greater_than = '1.1.0'
+            key = "SSLCipherSuite"
+            openssl_greater_than = "1.1.0"
 
             if openssl is None:
                 openssl = ""
@@ -23,10 +22,14 @@ class Sweet32(Testssl_base):
                 vhost[key] = ""
             if not ignore_openssl:
                 if openssl:
-                    is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
+                    is_safe = self.openSSL.is_safe(
+                        ver1=openssl_greater_than, ver2=openssl
+                    )
                 else:
                     is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
-                return not is_safe and "!3des" not in vhost[key].lower()  # is vulnerable if True
+                return (
+                    not is_safe and "!3des" not in vhost[key].lower()
+                )  # is vulnerable if True
             else:
                 return "!3des" not in vhost[key].lower()  # is vulnerable if True
 

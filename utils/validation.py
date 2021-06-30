@@ -12,11 +12,15 @@ def rec_search_key(key, var, wildcard=False, return_keys=False, case_sensitive=T
             if condition:
                 yield (k, v) if return_keys else v
             if isinstance(v, dict):
-                for result in rec_search_key(key, v, wildcard, return_keys, case_sensitive):
+                for result in rec_search_key(
+                    key, v, wildcard, return_keys, case_sensitive
+                ):
                     yield result
             elif isinstance(v, list):
                 for d in v:
-                    for result in rec_search_key(key, d, wildcard, return_keys, case_sensitive):
+                    for result in rec_search_key(
+                        key, d, wildcard, return_keys, case_sensitive
+                    ):
                         yield result
 
 
