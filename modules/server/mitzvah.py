@@ -1,7 +1,13 @@
 from modules.server.testssl_base import Testssl_base
+from utils.mitigations import load_mitigation
 
 
 class Mitzvah(Testssl_base):
+
+    def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
+        if condition:
+            result["mitigation"] = load_mitigation("MITZVAH")
+        return result if condition else {}
 
     # to override
     def _set_arguments(self):
