@@ -29,7 +29,7 @@ if __name__ == "__main__":
         choices=["pdf", "html"],
         default=None,
         help="The type of the report output.\nOutput type can be omitted and can be obtained"
-        " by --output extension.",
+             " by --output extension.",
     )
     parser.add_argument(
         "-o",
@@ -53,6 +53,13 @@ if __name__ == "__main__":
         help="The hostname, target of the analysis.",
     )
     hostname_or_apk.add_argument(
+        "-f",
+        "--file",
+        type=str,
+        action="store",
+        help="The configuration to analyze.",
+    )
+    hostname_or_apk.add_argument(
         "-d",
         "--domain_file",
         type=str,
@@ -73,9 +80,17 @@ if __name__ == "__main__":
         action="store",
         help="The apk path, target of the analysis.",
     )
+    parser.add_argument(
+        "--apply-fix",
+        destination = 'apply_fix',
+        action="store",
+        type=str,
+        help="Apply fix in the current configuration.\n Give a path if using -s.\ni.e."
+             "\n\tpython3 run.py -s fbk.eu --apply-fix myconf.conf",
+    )
     configurations = parser.add_mutually_exclusive_group()
     configurations.add_argument(
-        "-c" "--conf",
+        "-c", "--conf",
         "--configuration",
         action="store",
         dest="configuration",

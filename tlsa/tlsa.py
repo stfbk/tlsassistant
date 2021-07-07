@@ -44,26 +44,26 @@ class Tlsa:
                 )
             else:
                 android_modules = (
-                    f"{Color.CGREEN}Android:{Color.ENDC}\n\t"
-                    + "\n\t".join(
-                        [
-                            f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
-                            for f in listdir(f"configs{sep}modules{sep}android{sep}")
-                            if f.endswith(".json")
-                            and isfile(join(f"configs{sep}modules{sep}android{sep}", f))
-                        ]
-                    )
+                        f"{Color.CGREEN}Android:{Color.ENDC}\n\t"
+                        + "\n\t".join(
+                    [
+                        f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
+                        for f in listdir(f"configs{sep}modules{sep}android{sep}")
+                        if f.endswith(".json")
+                           and isfile(join(f"configs{sep}modules{sep}android{sep}", f))
+                    ]
+                )
                 )
                 server_modules = (
-                    f"{Color.CYELLOW}Server:{Color.ENDC}\n\t"
-                    + "\n\t".join(
-                        [
-                            f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
-                            for f in listdir(f"configs{sep}modules{sep}server{sep}")
-                            if f.endswith(".json")
-                            and isfile(join(f"configs{sep}modules{sep}server{sep}", f))
-                        ]
-                    )
+                        f"{Color.CYELLOW}Server:{Color.ENDC}\n\t"
+                        + "\n\t".join(
+                    [
+                        f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
+                        for f in listdir(f"configs{sep}modules{sep}server{sep}")
+                        if f.endswith(".json")
+                           and isfile(join(f"configs{sep}modules{sep}server{sep}", f))
+                    ]
+                )
                 )
                 all_modules = f"{android_modules}\n{server_modules}"
 
