@@ -1,8 +1,11 @@
+from modules.configuration.configuration_base import Parse_configuration_protocols
 from modules.server.testssl_base import Testssl_base
 from utils.mitigations import load_mitigation
 
 
 class Drown(Testssl_base):
+    conf = Parse_configuration_protocols(openssl="1.0.2g", protocols={"SSLv2": "-"})
+
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         condition = condition and (key == "DROWN" or key == "DROWN_hint")
         if condition:

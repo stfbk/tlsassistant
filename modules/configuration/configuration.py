@@ -62,44 +62,110 @@ class Configuration:
     def __is_config_enabled(self, module) -> bool:
         return hasattr(module, "conf") and isinstance(module.conf, Config_base)
 
-    def __wrapper(
-        self,
-        modules: dict,
-        fix=False,
-        openssl: str = None,
-        ignore_openssl: bool = False,
+    def __check_global(self, modules: dict, openssl: str, ignore_openssl: bool):
+        br = {}
+        for name, module in modules.items():
+            self.__offline(
+                module,
+                name,
+                fix=False,
+                vhost=self.__loaded_conf,
+                vhost_name="global",
+                openssl=openssl,
+                ignore_openssl=ignore_openssl,
+                boolean_results=br,
+                global_value=None,
+            )
+        return True in (value for value in br['global'].values())
+
+    def __vhost_wrapper(
+            self,
+            modules: dict,
+            online=False,
+            fix=False,
+            openssl: str = None,
+            ignore_openssl: bool = False,
     ):
         boolean_results = {}
-        for name, module in modules.items():
-            for virtualhost in self.__obtain_vhost():
-                for vhost_name, vhost in virtualhost.items():
+        boolean_results_global = self.__check_global(modules, openssl, ignore_openssl)
+        print(boolean_results_global)
+        for virtualhost in self.__obtain_vhost():
+            for vhost_name, vhost in virtualhost.items():
+                for name, module in modules.items():
                     if self.__is_config_enabled(module):
-                        self.__logging.debug(
-                            f"Analyzing vulnerability {name} in vhost {vhost_name}.."
-                        )
-                        if vhost_name not in boolean_results:
-                            boolean_results[vhost_name] = {}
-                        boolean_results[vhost_name][name] = module.conf.condition(
-                            vhost, openssl=openssl, ignore_openssl=ignore_openssl
-                        )
-                        if fix:
-                            if boolean_results[vhost_name][name]:
-                                self.__logging.debug(
-                                    f"Fixing vulnerability {name} in vhost {vhost_name}.."
-                                )
-                                module.conf.fix(vhost)
+                        if not online:
+                            self.__offline(
+                                module,
+                                name,
+                                fix,
+                                vhost,
+                                vhost_name,
+                                openssl,
+                                ignore_openssl,
+                                boolean_results,
+                                global_value=boolean_results_global,
+                            )
+                        else:
+                            self.__online(module, name, vhost, vhost_name)
                     else:
                         self.__logging.warning(
                             f"The module {name} isn't compatible. Skipping..."
                         )
         return boolean_results
 
+    def __online(self, module, name, vhost, vhost_name):
+        self.__logging.debug(f"Fixing vulnerability {name} in vhost {vhost_name}..")
+        module.conf.fix(vhost)
+
+    def __offline(
+            self,
+            module,
+            name,
+            fix,
+            vhost,
+            vhost_name,
+            openssl,
+            ignore_openssl,
+            boolean_results,
+            global_value,
+    ):
+
+        self.__logging.debug(f"Analyzing vulnerability {name} in vhost {vhost_name}..")
+        if vhost_name not in boolean_results:
+            boolean_results[vhost_name] = {}
+        is_empty = module.conf.is_empty(vhost)
+
+        module_result = module.conf.condition(
+            vhost, openssl=openssl, ignore_openssl=ignore_openssl
+        )
+        boolean_results[vhost_name][name] = (
+            global_value if is_empty and global_value is not None else module_result
+        )
+        print(f"{vhost_name} {name} = {is_empty} -> {boolean_results[vhost_name][name]}")
+        if fix:
+            if boolean_results[vhost_name][name]:
+                self.__online(module, name, vhost, vhost_name)
+
     def is_vuln(self, modules: dict, openssl=None, ignore_openssl=False):
         self.__logging.info("Checking for vulnerabilities...")
-        return self.__wrapper(modules, openssl=openssl, ignore_openssl=ignore_openssl)
+        return self.__vhost_wrapper(
+            modules, openssl=openssl, ignore_openssl=ignore_openssl
+        )
 
     def fix(self, modules: dict, openssl=None, ignore_openssl=False):
         self.__logging.info("Fixing vulnerabilities...")
-        return self.__wrapper(
+        return self.__vhost_wrapper(
             modules, fix=True, openssl=openssl, ignore_openssl=ignore_openssl
         )
+
+    def save(self, file_name: str = None):
+        self.__logging.info("Saving config file...")
+        if not file_name:
+            path = self.__path
+        else:
+            path = file_name
+        file = Path(path)
+        file.touch()
+        with make_loader() as loader:
+            loader.dump(filepath=str(file.absolute()), dct=self.__loaded_conf)
+        self.__logging.info(f"Saved configuration in file {file.absolute()}")

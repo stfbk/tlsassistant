@@ -139,5 +139,7 @@ cython_debug/
 
 #ide
 .idea
+.vscode
 
 *.freezed
+pyproject.toml

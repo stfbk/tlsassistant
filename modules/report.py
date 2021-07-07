@@ -1,6 +1,7 @@
 from enum import Enum
 from os import mkdir
 from pathlib import Path
+from utils.booleanize import boolean_results
 
 from utils.validation import Validator
 from utils import md
@@ -74,10 +75,9 @@ class Report:
                 output.append(f"|{''.join(partial)}|")
 
             partial = [md.table.bold(f"{hostname_or_path}")]
+            bres = boolean_results(modules, raw_results)
             for module in modules:
-                partial.append(
-                    md.table.wrap("❌" if module in raw_results and raw_results else "✅")
-                )
+                partial.append(md.table.wrap("❌" if not bres[module] else "✅"))
             output.append(f"|{''.join(partial)}|")
         output.append("\n")
         output.append(md.line())
