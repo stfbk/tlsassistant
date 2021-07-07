@@ -19,7 +19,20 @@ if __name__ == "__main__":
         help="increase output verbosity",
         default=False,
     )
-
+    openssl = parser.add_mutually_exclusive_group()
+    openssl.add_argument(
+        "--openssl",
+        "--openssl-version",
+        action="store",
+        type=str,
+        help="Add openSSL version to consider if configuration analysis is asked.",
+    )
+    openssl.add_argument(
+        "--ignore-openssl",
+        action="store_true",
+        dest="ignore_openssl",
+        help="During configuration analysis, ignore openssl version completely.",
+    )
     hostname_or_apk = parser.add_mutually_exclusive_group(required=True)
     parser.add_argument(
         "-ot",
@@ -29,7 +42,7 @@ if __name__ == "__main__":
         choices=["pdf", "html"],
         default=None,
         help="The type of the report output.\nOutput type can be omitted and can be obtained"
-             " by --output extension.",
+        " by --output extension.",
     )
     parser.add_argument(
         "-o",
@@ -82,15 +95,18 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--apply-fix",
-        destination = 'apply_fix',
+        dest="apply_fix",
         action="store",
         type=str,
+        nargs="?",
+        default="",
         help="Apply fix in the current configuration.\n Give a path if using -s.\ni.e."
-             "\n\tpython3 run.py -s fbk.eu --apply-fix myconf.conf",
+        "\n\tpython3 run.py -s fbk.eu --apply-fix myconf.conf",
     )
     configurations = parser.add_mutually_exclusive_group()
     configurations.add_argument(
-        "-c", "--conf",
+        "-c",
+        "--conf",
         "--configuration",
         action="store",
         dest="configuration",
