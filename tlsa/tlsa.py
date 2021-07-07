@@ -44,26 +44,26 @@ class Tlsa:
                 )
             else:
                 android_modules = (
-                        f"{Color.CGREEN}Android:{Color.ENDC}\n\t"
-                        + "\n\t".join(
-                    [
-                        f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
-                        for f in listdir(f"configs{sep}modules{sep}android{sep}")
-                        if f.endswith(".json")
-                           and isfile(join(f"configs{sep}modules{sep}android{sep}", f))
-                    ]
-                )
+                    f"{Color.CGREEN}Android:{Color.ENDC}\n\t"
+                    + "\n\t".join(
+                        [
+                            f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
+                            for f in listdir(f"configs{sep}modules{sep}android{sep}")
+                            if f.endswith(".json")
+                            and isfile(join(f"configs{sep}modules{sep}android{sep}", f))
+                        ]
+                    )
                 )
                 server_modules = (
-                        f"{Color.CYELLOW}Server:{Color.ENDC}\n\t"
-                        + "\n\t".join(
-                    [
-                        f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
-                        for f in listdir(f"configs{sep}modules{sep}server{sep}")
-                        if f.endswith(".json")
-                           and isfile(join(f"configs{sep}modules{sep}server{sep}", f))
-                    ]
-                )
+                    f"{Color.CYELLOW}Server:{Color.ENDC}\n\t"
+                    + "\n\t".join(
+                        [
+                            f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
+                            for f in listdir(f"configs{sep}modules{sep}server{sep}")
+                            if f.endswith(".json")
+                            and isfile(join(f"configs{sep}modules{sep}server{sep}", f))
+                        ]
+                    )
                 )
                 all_modules = f"{android_modules}\n{server_modules}"
 
@@ -89,6 +89,7 @@ class Tlsa:
                 output_type=self.__to_report_type(args.output_type),
                 type_of_analysis=Core.Analysis.HOST,
                 scoreboard=args.scoreboard,
+                apply_fix=args.apply_fix,
             )
         elif args.apk:
             Core(
@@ -107,6 +108,18 @@ class Tlsa:
                 output_type=self.__to_report_type(args.output_type),
                 type_of_analysis=Core.Analysis.DOMAINS,
                 scoreboard=args.scoreboard,
+            )
+        elif args.file:
+            Core(
+                hostname_or_path=args.file,
+                configuration=config_or_modules,
+                output=args.output,
+                output_type=self.__to_report_type(args.output_type),
+                type_of_analysis=Core.Analysis.CONFIGURATION,
+                scoreboard=args.scoreboard,
+                apply_fix=args.apply_fix,
+                openssl_version=args.openssl,
+                ignore_openssl=args.ignore_openssl,
             )
 
         else:  # must be args.list, unless argparse throws error.

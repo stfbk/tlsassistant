@@ -1,8 +1,10 @@
 from os.path import sep
 from pathlib import Path
 
+from modules.configuration.configuration import Configuration
 from modules.server.testssl_base import Testssl_base
 from modules.server.wrappers.testssl import Testssl
+from utils.booleanize import boolean_results
 from utils.logger import Logger
 from utils.colors import Color
 from utils.validation import Validator, is_apk
@@ -24,6 +26,7 @@ class Core:
         HOST = 0
         APK = 1
         DOMAINS = 2
+        CONFIGURATION = 3
 
     def __init__(
         self,
@@ -33,6 +36,9 @@ class Core:
         output_type=None,
         type_of_analysis=Analysis.HOST,
         scoreboard=False,
+        apply_fix="",
+        openssl_version=None,
+        ignore_openssl=False,
     ):
         self.__logging = Logger("Core")
         self.__input_dict = {}
@@ -48,6 +54,9 @@ class Core:
             output_type=output_type,
             type_of_analysis=type_of_analysis,
             scoreboard=scoreboard,
+            apply_fix=apply_fix,
+            openssl_version=openssl_version,
+            ignore_openssl=ignore_openssl,
         )
         self.__cache[configuration] = self.__load_configuration(modules)
         self.__exec(
@@ -84,6 +93,12 @@ class Core:
                     str,
                 ),  # can be none
                 (kwargs["type_of_analysis"], self.Analysis),
+                (
+                    ""
+                    if "apply_fix" not in kwargs or not kwargs["apply_fix"]
+                    else kwargs["apply_fix"],
+                    str,
+                ),
             ]
         )
 
@@ -129,6 +144,32 @@ class Core:
         if self.__is_testssl(module):
             testssl_args += module._arguments
         return testssl_args
+
+    def __conf_analysis(
+        self,
+        path,
+        loaded_modules,
+        openssl_version=None,
+        ignore_openssl=False,
+        online=False,
+    ) -> dict:
+        conf = Configuration(path)
+        if self.__input_dict["apply_fix"] != "":
+            results = conf.fix(
+                loaded_modules,
+                online=online,
+                openssl=openssl_version,
+                ignore_openssl=ignore_openssl,
+            )
+            if self.__input_dict["apply_fix"] is None:  # differentiate None and ''
+                conf.save()
+            else:
+                conf.save(self.__input_dict["apply_fix"])
+        else:
+            results = conf.is_vuln(
+                loaded_modules, openssl=openssl_version, ignore_openssl=ignore_openssl
+            )
+        return results
 
     def __preanalysis_testssl(
         self, testssl_args: list, type_of_analysis: Analysis, hostname: str, port: str
@@ -242,7 +283,7 @@ class Core:
         port: str = None,
     ):
         self.__logging.info(f"Started analysis on {hostname_or_path}.")
-        if type_of_analysis != self.Analysis.APK:
+        if type_of_analysis not in [self.Analysis.APK, self.Analysis.CONFIGURATION]:
             hostname_or_path, port = link_sep(hostname_or_path)
         configuration_name = configuration
         self.__logging.info(f"Loading configuration {configuration_name} ..")
@@ -255,13 +296,44 @@ class Core:
         )
         # preanalysis if needed
         self.__logging.info(f"Running analysis..")
-        self.__preanalysis_testssl(
-            testssl_args, type_of_analysis, hostname_or_path, port
-        )
+        if type_of_analysis == self.Analysis.CONFIGURATION:
+            results = self.__conf_analysis(
+                hostname_or_path,
+                loaded_modules=loaded_modules,
+                openssl_version=self.__input_dict["openssl_version"],
+                ignore_openssl=self.__input_dict["ignore_openssl"],
+            )  # todo better output report
+        else:
+            self.__preanalysis_testssl(
+                testssl_args, type_of_analysis, hostname_or_path, port
+            )
 
-        results = self.__run_analysis(
-            loaded_modules, type_of_analysis, hostname_or_path, loaded_arguments, port
-        )
+            results = self.__run_analysis(
+                loaded_modules,
+                type_of_analysis,
+                hostname_or_path,
+                loaded_arguments,
+                port,
+            )
+
+            if self.__input_dict["apply_fix"]:
+                self.__conf_analysis(
+                    self.__input_dict["apply_fix"],
+                    loaded_modules=self.__remove_useless_modules(
+                        raw_results=results, loaded_modules=loaded_modules
+                    ),
+                    online=True,
+                    openssl_version=self.__input_dict["openssl_version"],
+                    ignore_openssl=self.__input_dict["ignore_openssl"],
+                )
         self.__logging.info(f"Analysis of {hostname_or_path} done.")
         return loaded_modules, results
         # todo add output attack trees
+
+    def __remove_useless_modules(self, raw_results: dict, loaded_modules: dict) -> dict:
+        b_res = boolean_results(modules=loaded_modules, raw_results=raw_results)
+        out = {}
+        for module, value in loaded_modules.items():
+            if module in b_res and b_res[module]:
+                out[module] = value
+        return out
