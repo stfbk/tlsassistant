@@ -56,7 +56,7 @@ class Parse_configuration_protocols(Config_base):
     def fix(self, vhost):
         key = self.__key
         v = Validator()
-        if key not in vhost:
+        if key not in vhost:  # todo remove and fix
             vhost[key] = "ALL"
         for cipher, operation in self.__protocols.items():
             v.string(cipher)
@@ -68,7 +68,7 @@ class Parse_configuration_protocols(Config_base):
         if openssl is None:
             openssl = ""
         Validator([(openssl, str)])
-        if key not in vhost:
+        if key not in vhost:  # todo remove and fix
             vhost[key] = ""
         if not ignore_openssl:
             if openssl:
@@ -100,7 +100,7 @@ class Parse_configuration_ciphers(Config_base):
     def fix(self, vhost):
         key = self.__key
         v = Validator()
-        if key not in vhost:
+        if key not in vhost:  # todo remove and fix
             vhost[key] = ""
         for cipher in self.__ciphers:
             v.string(cipher)
@@ -112,7 +112,7 @@ class Parse_configuration_ciphers(Config_base):
         if openssl is None:
             openssl = ""
         Validator([(openssl, str)])
-        if key not in vhost:
+        if key not in vhost:  # todo remove and fix
             vhost[key] = ""
         if not ignore_openssl:
             if openssl:
