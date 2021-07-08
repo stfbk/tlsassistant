@@ -56,11 +56,12 @@ class Parse_configuration_protocols(Config_base):
     def fix(self, vhost):
         key = self.__key
         v = Validator()
-        if key not in vhost:  # todo remove and fix
-            vhost[key] = "ALL"
         for cipher, operation in self.__protocols.items():
             v.string(cipher)
-            vhost[key] = f"{vhost[key]}{' ' if vhost[key] else ''}{operation}{cipher}"
+            vhost[key] = (
+                f"{(vhost[key] if key in vhost and vhost[key] else 'ALL ')}"
+                f"{' ' if key in vhost and vhost[key] else ''}{operation}{cipher}"
+            )
 
     def condition(self, vhost, openssl: str = None, ignore_openssl=False):
         key = self.__key
@@ -68,8 +69,6 @@ class Parse_configuration_protocols(Config_base):
         if openssl is None:
             openssl = ""
         Validator([(openssl, str)])
-        if key not in vhost:  # todo remove and fix
-            vhost[key] = ""
         if not ignore_openssl:
             if openssl:
                 is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
@@ -77,12 +76,14 @@ class Parse_configuration_protocols(Config_base):
                 is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
 
             return not is_safe and True in (
-                operation + cipher.lower() not in vhost[key].lower()
+                operation + cipher.lower()
+                not in (vhost[key].lower() if key in vhost else "")
                 for cipher, operation in self.__protocols.items()
             )
         else:
             return True in (
-                operation + cipher.lower() not in vhost[key].lower()
+                operation + cipher.lower()
+                not in (vhost[key].lower() if key in vhost else "")
                 for cipher, operation in self.__protocols.items()
             )  # is vulnerable if True
 
@@ -100,11 +101,12 @@ class Parse_configuration_ciphers(Config_base):
     def fix(self, vhost):
         key = self.__key
         v = Validator()
-        if key not in vhost:  # todo remove and fix
-            vhost[key] = ""
         for cipher in self.__ciphers:
             v.string(cipher)
-            vhost[key] = f"{vhost[key]}{':' if vhost[key] else ''}!{cipher.upper()}"
+            vhost[key] = (
+                f"{vhost[key] if key in vhost and vhost[key] else ''}"
+                f"{':' if key in vhost and vhost[key] else ''}!{cipher.upper()}"
+            )
 
     def condition(self, vhost, openssl: str = None, ignore_openssl=False):
         key = self.__key
@@ -112,8 +114,6 @@ class Parse_configuration_ciphers(Config_base):
         if openssl is None:
             openssl = ""
         Validator([(openssl, str)])
-        if key not in vhost:  # todo remove and fix
-            vhost[key] = ""
         if not ignore_openssl:
             if openssl:
                 is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
@@ -121,11 +121,11 @@ class Parse_configuration_ciphers(Config_base):
                 is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
 
             return not is_safe and True in (
-                "!" + cipher.lower() not in vhost[key].lower()
+                "!" + cipher.lower() not in (vhost[key].lower() if key in vhost else "")
                 for cipher in self.__ciphers
             )
         else:
             return True in (
-                "!" + cipher.lower() not in vhost[key].lower()
+                "!" + cipher.lower() not in (vhost[key].lower() if key in vhost else "")
                 for cipher in self.__ciphers
             )  # is vulnerable if True
