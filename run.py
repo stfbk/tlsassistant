@@ -42,7 +42,7 @@ if __name__ == "__main__":
         choices=["pdf", "html"],
         default=None,
         help="The type of the report output.\nOutput type can be omitted and can be obtained"
-        " by --output extension.",
+             " by --output extension.",
     )
     parser.add_argument(
         "-o",
@@ -101,7 +101,7 @@ if __name__ == "__main__":
         nargs="?",
         default="",
         help="Apply fix in the current configuration.\n Give a path if using -s.\ni.e."
-        "\n\tpython3 run.py -s fbk.eu --apply-fix myconf.conf",
+             "\n\tpython3 run.py -s fbk.eu --apply-fix myconf.conf",
     )
     configurations = parser.add_mutually_exclusive_group()
     configurations.add_argument(
@@ -120,6 +120,14 @@ if __name__ == "__main__":
         dest="configuration",
         nargs="+",
         help="List of modules to run" "\nFor example\n\t-m breach crime freak",
+    )
+    parser.add_argument(
+        "-e",
+        "--exclude",
+        action="store",
+        dest="exclude",
+        nargs="+",
+        help="List of modules to exclude" "\nFor example\n\t-e breach crime",
     )
     # todo add default aliases configurations for analysis
     # configurations.add_argument()

@@ -8,6 +8,14 @@ from utils.urls import link_sep, url_domain
 from utils.validation import Validator
 
 
+def difference(modules: list, modules_to_exclude: list) -> list:
+    diff = list(
+        set(map(str.lower, modules))
+        - set(map(str.lower, modules_to_exclude))
+    )
+    return diff
+
+
 def load_module(module_path: str, module_name: str) -> object:
     """
     Load the module given. Do not use this. Use :func `load_class`: instead.
@@ -65,6 +73,7 @@ def load_configuration(module: str, configs_path=None) -> dict:
     :raise FileNotFoundError: If configuration file not found
     """
     Validator().string(module)
+    module = module.lower()
     if configs_path:
         module_path = Path(f"{configs_path}{module}.json")  # search for config file
         if not module_path.exists():
