@@ -1,3 +1,4 @@
+from enum import Enum
 from ssl import OPENSSL_VERSION
 
 from utils.validation import Validator
@@ -28,10 +29,15 @@ class OpenSSL:
         elif len(ver2) == 6 and len(ver1) == 5:
             ver2 = ver2[:-1]
         return (ver1 < ver2) if not reverse else (ver1 > ver2)
-
+class Type:
+        NONE = 0
+        HTTP = 80
+        SSL = 443
 
 class Config_base:
+    
     openSSL = OpenSSL()
+    VHOST_USE = Type.NONE
 
     def condition(self, vhost):
         raise NotImplementedError
@@ -129,3 +135,49 @@ class Parse_configuration_ciphers(Config_base):
                 "!" + cipher.lower() not in (vhost[key].lower() if key in vhost else "")
                 for cipher in self.__ciphers
             )  # is vulnerable if True
+
+
+class Parse_configuration_strict_security(Config_base):
+    VHOST_USE= Type.SSL
+    def __init__(self):
+        self.__key = "Header"
+
+    def is_empty(self, vhost):
+        return self.__key not in vhost or not vhost[self.__key]
+
+    def fix(self, vhost):
+        key = self.__key
+        to_add = 'always set Strict-Transport-Security "max-age=63072000"'
+        if key in vhost:
+            vhost[key] += f";{to_add}"
+        else:
+            vhost[key] = to_add
+
+    def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+        return (
+            self.__key not in vhost
+            or "Strict-Transport-Security" not in vhost[self.__key]
+        )  # vulnerable if True
+
+
+class Parse_configuration_checks_redirect(Config_base):
+    VHOST_USE = Type.HTTP
+    def __init__(self):
+        self.__keys = ["RewriteEngine", "RewriteRule"]
+
+    def is_empty(self, vhost):
+        return True in (key not in vhost for key in self.__keys)
+
+    def fix(self, vhost):
+        RewriteEngine, RewriteRule = self.__keys
+        vhost[RewriteEngine] = "on"
+        vhost[RewriteRule] = "^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]"
+
+    def condition(self, vhost,openssl=None, ignore_openssl=False):
+        RewriteEngine, RewriteRule = self.__keys
+        return (
+            RewriteEngine not in vhost
+            or RewriteRule not in vhost
+            or vhost[RewriteEngine] != "on"
+            or vhost[RewriteRule] != "^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]"
+        ) # vulnerable if True

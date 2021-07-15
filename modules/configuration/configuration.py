@@ -81,6 +81,12 @@ class Configuration:
                 )
         return True in (value for value in br["global"].values())
 
+    def __check_usage(self,module,vhost_name)->bool:
+        if module.conf.VHOST_USE:
+            return str(module.conf.VHOST_USE) in vhost_name
+        else:
+            return True
+
     def __vhost_wrapper(
         self,
         modules: dict,
@@ -94,7 +100,7 @@ class Configuration:
         for virtualhost in self.__obtain_vhost(port = self.__port):
             for vhost_name, vhost in virtualhost.items():
                 for name, module in modules.items():
-                    if self.__is_config_enabled(module):
+                    if self.__is_config_enabled(module) and self.__check_usage(module,vhost_name):
                         if not online:
                             self.__offline(
                                 module,
