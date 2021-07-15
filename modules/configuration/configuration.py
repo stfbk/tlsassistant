@@ -14,20 +14,22 @@ class Configuration:
         APACHE = 1
         NGINX = 2
 
-    def __init__(self, path: str, type_: Type = Type.AUTO):
-        Validator([(path, str), (type_, self.Type)])
+    def __init__(self, path: str, type_: Type = Type.AUTO, port=None):
+        Validator([(path, str), (type_, self.Type), (port if port else "", str)])
         self.__path = path
         self.__type = type_
+        self.__port = port
         self.__logging = Logger("Configuration APACHE/NGINX")
         self.__loaded_conf = self.__load_conf(path)
 
-    def __obtain_vhost(self):
+    def __obtain_vhost(self, port=None):
         assert self.__type != self.Type.AUTO, "Can't use this method with AUTO type."
         if self.__type == self.Type.APACHE:
             if "VirtualHost" not in self.__loaded_conf:
                 self.__loaded_conf["VirtualHost"] = []
             for vhost in self.__loaded_conf["VirtualHost"]:
-                yield vhost
+                if not port or port in list(vhost.keys())[0]:
+                    yield vhost
         elif self.__type == self.Type.NGINX:
             raise NotImplementedError
 
@@ -89,7 +91,7 @@ class Configuration:
     ):
         boolean_results = {}
         boolean_results_global = self.__check_global(modules, openssl, ignore_openssl)
-        for virtualhost in self.__obtain_vhost():
+        for virtualhost in self.__obtain_vhost(port = self.__port):
             for vhost_name, vhost in virtualhost.items():
                 for name, module in modules.items():
                     if self.__is_config_enabled(module):

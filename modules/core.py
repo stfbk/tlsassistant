@@ -29,17 +29,17 @@ class Core:
         CONFIGURATION = 3
 
     def __init__(
-            self,
-            hostname_or_path: str or list,
-            configuration: str or list,
-            output=None,
-            output_type=None,
-            type_of_analysis=Analysis.HOST,
-            to_exclude=None,
-            scoreboard=False,
-            apply_fix="",
-            openssl_version=None,
-            ignore_openssl=False,
+        self,
+        hostname_or_path: str or list,
+        configuration: str or list,
+        output=None,
+        output_type=None,
+        type_of_analysis=Analysis.HOST,
+        to_exclude=None,
+        scoreboard=False,
+        apply_fix="",
+        openssl_version=None,
+        ignore_openssl=False,
     ):
         if to_exclude is None:
             to_exclude = []
@@ -75,7 +75,7 @@ class Core:
     def input(self, **kwargs):
         assert "configuration" in kwargs, "Missing configuration."
         assert (
-                "hostname_or_path" in kwargs
+            "hostname_or_path" in kwargs
         ), "Missing hostname."  # todo: facultative hostname, we should use configs sometimes
 
         # validate
@@ -106,7 +106,7 @@ class Core:
                 ),
             ]
         )
-        kwargs['to_exclude'] = list(map(str.lower, kwargs['to_exclude']))
+        kwargs["to_exclude"] = list(map(str.lower, kwargs["to_exclude"]))
         # set outputfilename if not already set
         if "output" not in kwargs or not kwargs["output"]:  # if not output
             file_name = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
@@ -151,14 +151,15 @@ class Core:
         return testssl_args
 
     def __conf_analysis(
-            self,
-            path,
-            loaded_modules,
-            openssl_version=None,
-            ignore_openssl=False,
-            online=False,
+        self,
+        path,
+        loaded_modules,
+        openssl_version=None,
+        ignore_openssl=False,
+        online=False,
+        port = None
     ) -> dict:
-        conf = Configuration(path)
+        conf = Configuration(path, port=port)
         if self.__input_dict["apply_fix"] != "":
             results = conf.fix(
                 loaded_modules,
@@ -177,11 +178,11 @@ class Core:
         return results
 
     def __preanalysis_testssl(
-            self, testssl_args: list, type_of_analysis: Analysis, hostname: str, port: str
+        self, testssl_args: list, type_of_analysis: Analysis, hostname: str, port: str
     ):
         if testssl_args and (
-                type_of_analysis == self.Analysis.HOST
-                or type_of_analysis == self.Analysis.DOMAINS
+            type_of_analysis == self.Analysis.HOST
+            or type_of_analysis == self.Analysis.DOMAINS
         ):
             self.__logging.debug(
                 f"Starting preanalysis testssl with args {testssl_args}..."
@@ -198,28 +199,32 @@ class Core:
         loaded_arguments = {}
         testssl_args = []
         for name, module_args in parsed_configuration.items():
-            if name not in self.__input_dict['to_exclude']:
+            if name not in self.__input_dict["to_exclude"]:
                 Module, args = module_args
                 self.__logging.debug(f"Loading {name}...")
                 if self.__input_dict["type_of_analysis"] == self.Analysis.APK:
                     assert is_apk(Module), f"The module {name} isn't APK related!"
                 else:
-                    assert not is_apk(Module), f"The module {name} isn't Server related!"
+                    assert not is_apk(
+                        Module
+                    ), f"The module {name} isn't Server related!"
 
                 loaded_modules[name] = Module()
                 loaded_arguments[name] = args.copy()
-                testssl_args = self.__add_testssl_args(loaded_modules[name], testssl_args)
+                testssl_args = self.__add_testssl_args(
+                    loaded_modules[name], testssl_args
+                )
             else:
                 self.__logging.debug(f"Module {name} excluded, skipping..")
         return loaded_modules, loaded_arguments, testssl_args
 
     def __run_analysis(
-            self,
-            loaded_modules: dict,
-            type_of_analysis: Analysis,
-            hostname_or_path: str,
-            loaded_arguments: dict,
-            port=None,
+        self,
+        loaded_modules: dict,
+        type_of_analysis: Analysis,
+        hostname_or_path: str,
+        loaded_arguments: dict,
+        port=None,
     ) -> dict:
         results = {}
         if type_of_analysis != self.Analysis.APK:  # server analysis
@@ -238,8 +243,8 @@ class Core:
 
     def __call_output_modules(self, res: dict, hostname_or_path: str):
         if (
-                self.__input_dict["output_type"] == self.Report.HTML
-                or self.__input_dict["output_type"] == self.Report.PDF
+            self.__input_dict["output_type"] == self.Report.HTML
+            or self.__input_dict["output_type"] == self.Report.PDF
         ):
             Report_module().run(
                 path=self.__input_dict["output"],
@@ -252,11 +257,11 @@ class Core:
         self.__logging.debug("Output generated.")
 
     def __exec(
-            self,
-            type_of_analysis: Analysis,
-            hostname_or_path: str or list,
-            configuration: str,
-            port: str = None,
+        self,
+        type_of_analysis: Analysis,
+        hostname_or_path: str or list,
+        configuration: str,
+        port: str = None,
     ):
         res = {}
         if type_of_analysis == self.Analysis.DOMAINS:
@@ -284,11 +289,11 @@ class Core:
         )
 
     def __exec_anaylsis(
-            self,
-            type_of_analysis: Analysis,
-            hostname_or_path: str,
-            configuration: str,
-            port: str = None,
+        self,
+        type_of_analysis: Analysis,
+        hostname_or_path: str,
+        configuration: str,
+        port: str = None,
     ):
         self.__logging.info(f"Started analysis on {hostname_or_path}.")
         if type_of_analysis not in [self.Analysis.APK, self.Analysis.CONFIGURATION]:
@@ -333,6 +338,7 @@ class Core:
                     online=True,
                     openssl_version=self.__input_dict["openssl_version"],
                     ignore_openssl=self.__input_dict["ignore_openssl"],
+                    port = port
                 )
         self.__logging.info(f"Analysis of {hostname_or_path} done.")
         return loaded_modules, results

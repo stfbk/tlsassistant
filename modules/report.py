@@ -75,9 +75,11 @@ class Report:
                 output.append(f"|{''.join(partial)}|")
 
             partial = [md.table.bold(f"{hostname_or_path}")]
+
             bres = boolean_results(modules, raw_results)
+
             for module in modules:
-                partial.append(md.table.wrap("❌" if not bres[module] else "✅"))
+                partial.append(md.table.wrap("❌" if bres[module] else "✅"))
             output.append(f"|{''.join(partial)}|")
         output.append("\n")
         output.append(md.line())
