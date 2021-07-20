@@ -1,4 +1,6 @@
-from modules.configuration.configuration_base import Parse_configuration_checks_compression
+from modules.configuration.configuration_base import (
+    Parse_configuration_checks_compression,
+)
 from modules.server.testssl_base import Testssl_base
 import logging
 

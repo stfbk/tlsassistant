@@ -200,7 +200,6 @@ class Core:
         testssl_args = []
         for name, module_args in parsed_configuration.items():
             if name not in self.__input_dict["to_exclude"]:
-                print(f"DEBUG : {name}")
                 Module, args = module_args
                 self.__logging.debug(f"Loading {name}...")
                 if self.__input_dict["type_of_analysis"] == self.Analysis.APK:

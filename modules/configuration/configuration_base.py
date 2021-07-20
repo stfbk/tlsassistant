@@ -1,6 +1,6 @@
 from enum import Enum
 from ssl import OPENSSL_VERSION
-
+import logging
 from utils.validation import Validator
 
 
@@ -56,6 +56,12 @@ class Parse_configuration_protocols(Config_base):
     def is_empty(self, vhost):
         return self.__key not in vhost or not vhost[self.__key]
 
+    def is_tls(self, vhost, version=3):
+        return (
+            "SSLProtocol" in vhost
+            and vhost["SSLProtocol"].lower() == f"tlsv1.{version}"
+        )
+
     def __init__(self, openssl: str, protocols: dict):
         self.__openssl = openssl
         self.__protocols = protocols
@@ -73,6 +79,9 @@ class Parse_configuration_protocols(Config_base):
             )
 
     def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+        if self.is_tls(vhost, version=3):
+            logging.debug("TLSv1.3 Detected as mutually allowed.")
+            return False
         key = self.__key
         openssl_greater_than = self.__openssl
         if openssl is None:
@@ -104,6 +113,12 @@ class Parse_configuration_ciphers(Config_base):
         self.__key = "SSLCipherSuite"
         Validator([(openssl, str), (ciphers, list)])
 
+    def is_tls(self, vhost, version=3):
+        return (
+            "SSLProtocol" in vhost
+            and vhost["SSLProtocol"].lower() == f"tlsv1.{version}"
+        )
+
     def is_empty(self, vhost):
         return self.__key not in vhost or not vhost[self.__key]
 
@@ -118,6 +133,9 @@ class Parse_configuration_ciphers(Config_base):
             )
 
     def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+        if self.is_tls(vhost, version=3):
+            logging.debug("TLSv1.3 Detected as mutually allowed.")
+            return False
         key = self.__key
         openssl_greater_than = self.__openssl
         if openssl is None:
@@ -173,6 +191,12 @@ class Parse_configuration_checks_compression(Config_base):
         self.__value = "Off"
         Validator([(openssl, str)])
 
+    def is_tls(self, vhost, version=3):
+        return (
+            "SSLProtocol" in vhost
+            and vhost["SSLProtocol"].lower() == f"tlsv1.{version}"
+        )
+
     def is_empty(self, vhost):
         return self.__key not in vhost or not vhost[self.__key]
 
@@ -181,6 +205,9 @@ class Parse_configuration_checks_compression(Config_base):
         vhost[key] = self.__value
 
     def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+        if self.is_tls(vhost, version=3):
+            logging.debug("TLSv1.3 Detected as mutually allowed.")
+            return False
         key = self.__key
         openssl_greater_than = self.__openssl
         if openssl is None:
@@ -191,7 +218,7 @@ class Parse_configuration_checks_compression(Config_base):
                 is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
             else:
                 is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
-            
+
             return not is_safe and (key not in vhost or vhost[key] != self.__value)
 
         else:
