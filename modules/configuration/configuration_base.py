@@ -164,6 +164,42 @@ class Parse_configuration_strict_security(Config_base):
         )  # vulnerable if True
 
 
+class Parse_configuration_checks_compression(Config_base):
+    VHOST_USE = Type.NONE
+
+    def __init__(self, openssl: str):
+        self.__openssl = openssl
+        self.__key = "SSLCompression"
+        self.__value = "Off"
+        Validator([(openssl, str)])
+
+    def is_empty(self, vhost):
+        return self.__key not in vhost or not vhost[self.__key]
+
+    def fix(self, vhost):
+        key = self.__key
+        vhost[key] = self.__value
+
+    def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+        key = self.__key
+        openssl_greater_than = self.__openssl
+        if openssl is None:
+            openssl = ""
+        Validator([(openssl, str)])
+        if not ignore_openssl:
+            if openssl:
+                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
+            else:
+                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
+            
+            return not is_safe and (key not in vhost or vhost[key] != self.__value)
+
+        else:
+            return (
+                key not in vhost or vhost[key] != self.__value
+            )  # is vulnerable if True
+
+
 class Parse_configuration_checks_redirect(Config_base):
     VHOST_USE = Type.HTTP
 

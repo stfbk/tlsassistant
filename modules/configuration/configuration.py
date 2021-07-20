@@ -79,7 +79,7 @@ class Configuration:
                     boolean_results=br,
                     global_value=None,
                 )
-        return True in (value for value in br["global"].values())
+        return br["global"]
 
     def __check_usage(self, module, vhost_name) -> bool:
         if module.conf.VHOST_USE:
@@ -149,12 +149,12 @@ class Configuration:
             vhost, openssl=openssl, ignore_openssl=ignore_openssl
         )
         boolean_results[vhost_name][name] = (
-            global_value if is_empty and global_value is not None else module_result
+            global_value[name] if is_empty and global_value is not None else module_result
         )
         if fix:
             if boolean_results[vhost_name][name]:
                 self.__online(module, name, vhost, vhost_name)
-
+        print(boolean_results)
     def is_vuln(self, modules: dict, openssl=None, ignore_openssl=False):
         self.__logging.info("Checking for vulnerabilities...")
         return self.__vhost_wrapper(
