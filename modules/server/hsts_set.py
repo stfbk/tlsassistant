@@ -3,8 +3,11 @@ from modules.server.hsts_base import Hsts_base
 from utils.logger import Logger
 
 
-class Hsts_not_set(Hsts_base):
-    conf = Parse_configuration_strict_security() #TODO: Check for port 443 or apply it everywhere?
+class Hsts_set(Hsts_base):
+    conf = (
+        Parse_configuration_strict_security()
+    )  # TODO: Check for port 443 or apply it everywhere?
+
     def _get_logger(self):
         return Logger("Hsts Not Set")
 

@@ -8,8 +8,8 @@
       }
    ],
    "description":"This modules checks if the hostname HSTS is preloaded.",
-   "path":"modules/server/hsts_not_preloaded.py",
-   "class_name":"Hsts_not_preloaded",
+   "path":"modules/server/hsts_preloading.py",
+   "class_name":"Hsts_preloading",
    "output":[
       {
          "name":"results",

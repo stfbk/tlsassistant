@@ -2,7 +2,7 @@ from modules.server.hsts_base import Hsts_base
 from utils.logger import Logger
 
 
-class Hsts_not_preloaded(Hsts_base):
+class Hsts_preloading(Hsts_base):
     def _get_logger(self):
         return Logger("Hsts Not Preloaded")
 

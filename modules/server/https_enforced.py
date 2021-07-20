@@ -3,8 +3,9 @@ from modules.server.hsts_base import Hsts_base
 from utils.logger import Logger
 
 
-class Https_not_enforced(Hsts_base):
+class Https_enforced(Hsts_base):
     conf = Parse_configuration_checks_redirect()
+
     def _get_logger(self):
         return Logger("Https Not Enforced")
 

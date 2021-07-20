@@ -8,8 +8,8 @@
       }
    ],
    "description":"This modules checks if the hostname HSTS is set.",
-   "path":"modules/server/hsts_not_set.py",
-   "class_name":"Hsts_not_set",
+   "path":"modules/server/hsts_set.py",
+   "class_name":"Hsts_set",
    "output":[
       {
          "name":"results",

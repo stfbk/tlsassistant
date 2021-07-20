@@ -29,13 +29,16 @@ class OpenSSL:
         elif len(ver2) == 6 and len(ver1) == 5:
             ver2 = ver2[:-1]
         return (ver1 < ver2) if not reverse else (ver1 > ver2)
+
+
 class Type:
-        NONE = 0
-        HTTP = 80
-        SSL = 443
+    NONE = 0
+    HTTP = 80
+    SSL = 443
+
 
 class Config_base:
-    
+
     openSSL = OpenSSL()
     VHOST_USE = Type.NONE
 
@@ -138,7 +141,8 @@ class Parse_configuration_ciphers(Config_base):
 
 
 class Parse_configuration_strict_security(Config_base):
-    VHOST_USE= Type.SSL
+    VHOST_USE = Type.SSL
+
     def __init__(self):
         self.__key = "Header"
 
@@ -162,6 +166,7 @@ class Parse_configuration_strict_security(Config_base):
 
 class Parse_configuration_checks_redirect(Config_base):
     VHOST_USE = Type.HTTP
+
     def __init__(self):
         self.__keys = ["RewriteEngine", "RewriteRule"]
 
@@ -173,11 +178,11 @@ class Parse_configuration_checks_redirect(Config_base):
         vhost[RewriteEngine] = "on"
         vhost[RewriteRule] = "^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]"
 
-    def condition(self, vhost,openssl=None, ignore_openssl=False):
+    def condition(self, vhost, openssl=None, ignore_openssl=False):
         RewriteEngine, RewriteRule = self.__keys
         return (
             RewriteEngine not in vhost
             or RewriteRule not in vhost
             or vhost[RewriteEngine] != "on"
             or vhost[RewriteRule] != "^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]"
-        ) # vulnerable if True
+        )  # vulnerable if True

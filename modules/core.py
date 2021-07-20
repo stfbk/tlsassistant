@@ -157,7 +157,7 @@ class Core:
         openssl_version=None,
         ignore_openssl=False,
         online=False,
-        port = None
+        port=None,
     ) -> dict:
         conf = Configuration(path, port=port)
         if self.__input_dict["apply_fix"] != "":
@@ -200,6 +200,7 @@ class Core:
         testssl_args = []
         for name, module_args in parsed_configuration.items():
             if name not in self.__input_dict["to_exclude"]:
+                print(f"DEBUG : {name}")
                 Module, args = module_args
                 self.__logging.debug(f"Loading {name}...")
                 if self.__input_dict["type_of_analysis"] == self.Analysis.APK:
@@ -315,7 +316,7 @@ class Core:
                 loaded_modules=loaded_modules,
                 openssl_version=self.__input_dict["openssl_version"],
                 ignore_openssl=self.__input_dict["ignore_openssl"],
-            )  # todo better output report
+            )  # TODO: better output report
         else:
             self.__preanalysis_testssl(
                 testssl_args, type_of_analysis, hostname_or_path, port
@@ -338,7 +339,7 @@ class Core:
                     online=True,
                     openssl_version=self.__input_dict["openssl_version"],
                     ignore_openssl=self.__input_dict["ignore_openssl"],
-                    port = port
+                    port=port,
                 )
         self.__logging.info(f"Analysis of {hostname_or_path} done.")
         return loaded_modules, results

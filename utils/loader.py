@@ -9,10 +9,7 @@ from utils.validation import Validator
 
 
 def difference(modules: list, modules_to_exclude: list) -> list:
-    diff = list(
-        set(map(str.lower, modules))
-        - set(map(str.lower, modules_to_exclude))
-    )
+    diff = list(set(map(str.lower, modules)) - set(map(str.lower, modules_to_exclude)))
     return diff
 
 

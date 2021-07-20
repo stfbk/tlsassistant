@@ -81,7 +81,7 @@ class Configuration:
                 )
         return True in (value for value in br["global"].values())
 
-    def __check_usage(self,module,vhost_name)->bool:
+    def __check_usage(self, module, vhost_name) -> bool:
         if module.conf.VHOST_USE:
             return str(module.conf.VHOST_USE) in vhost_name
         else:
@@ -97,10 +97,12 @@ class Configuration:
     ):
         boolean_results = {}
         boolean_results_global = self.__check_global(modules, openssl, ignore_openssl)
-        for virtualhost in self.__obtain_vhost(port = self.__port):
+        for virtualhost in self.__obtain_vhost(port=self.__port):
             for vhost_name, vhost in virtualhost.items():
                 for name, module in modules.items():
-                    if self.__is_config_enabled(module) and self.__check_usage(module,vhost_name):
+                    if self.__is_config_enabled(module) and self.__check_usage(
+                        module, vhost_name
+                    ):
                         if not online:
                             self.__offline(
                                 module,

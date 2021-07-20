@@ -87,7 +87,7 @@ class Tlsa:
                 configuration=config_or_modules,
                 output=args.output,
                 output_type=self.__to_report_type(args.output_type),
-                to_exclude = args.exclude,
+                to_exclude=args.exclude,
                 type_of_analysis=Core.Analysis.HOST,
                 scoreboard=args.scoreboard,
                 apply_fix=args.apply_fix,
@@ -98,7 +98,7 @@ class Tlsa:
                 configuration=config_or_modules,
                 output=args.output,
                 output_type=self.__to_report_type(args.output_type),
-                to_exclude = args.exclude,
+                to_exclude=args.exclude,
                 type_of_analysis=Core.Analysis.APK,
                 scoreboard=args.scoreboard,
             )
@@ -108,20 +108,22 @@ class Tlsa:
                 configuration=config_or_modules,
                 output=args.output,
                 output_type=self.__to_report_type(args.output_type),
-                to_exclude = args.exclude,
+                to_exclude=args.exclude,
                 type_of_analysis=Core.Analysis.DOMAINS,
                 scoreboard=args.scoreboard,
             )
         elif args.file:
-            if isinstance(args.configuration,list):
-                self.__logging.warning("Ignoring module list. Try to exclude the modules with -e module1 module2")
+            if isinstance(args.configuration, list):
+                self.__logging.warning(
+                    "Ignoring module list. Try to exclude the modules with -e module1 module2"
+                )
             Core(
                 hostname_or_path=args.file,
                 configuration="default_file.json",
                 output=args.output,
                 output_type=self.__to_report_type(args.output_type),
                 type_of_analysis=Core.Analysis.CONFIGURATION,
-                to_exclude = args.exclude,
+                to_exclude=args.exclude,
                 scoreboard=args.scoreboard,
                 apply_fix=args.apply_fix,
                 openssl_version=args.openssl,
