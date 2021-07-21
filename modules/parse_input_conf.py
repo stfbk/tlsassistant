@@ -7,9 +7,38 @@ from utils.configuration import merge
 
 
 class Parser:
+    """
+    Parse input conf file and return a dict with the following structure:
+    {
+        "name": "name of the project",
+        "modules": [
+            "module1",
+            "module2",
+            ...
+        ],
+        "args": {
+            "module1": {
+                "arg1": "value",
+                "arg2": "value",
+                ...
+            },
+            "module2": {
+                "arg1": "value",
+                "arg2": "value",
+                ...
+            },
+            ...
+        }
+    }
+    """
+
     __cache = {}
 
     def __init__(self, to_parse: str or list):
+        """
+        :param to_parse: path to the configuration file or list of paths
+        :type to_parse: str or list
+        """
         self.__input_dict = {}
         self.__output = []
         # self.__configs_path = f"configs{sep}modules{sep}"
@@ -21,6 +50,13 @@ class Parser:
             raise NotImplementedError("Not yet implemented parsing method")
 
     def remove(self, data, key, value):
+        """
+        Removes a configuration from the input dict
+        :param data: input dict
+        :param key: key to remove
+        :param value: value to recusively remove
+
+        """
         if key in data:
             if not value:  # value is empty or false, just remove it
                 data.pop(key, None)  # delete
@@ -40,6 +76,13 @@ class Parser:
         return data[key]
 
     def validate_include(self, included):
+        """
+        Validates the included configuration file
+        :param included: list of included file
+        :type included: list
+        :return: dict with the validated configuration
+        :rtype: dict
+        """
         if "file" not in included:
             raise AssertionError("Missing file in include statement")
         else:
@@ -64,6 +107,13 @@ class Parser:
                 raise FileNotFoundError(f"File {path.absolute()} doesn't exists.")
 
     def __parse(self, to_parse):
+        """
+        Parse the input file
+
+        :param to_parse: path to the input file
+        :type to_parse: str
+        :raise: AssertionError if the input file is not valid
+        """
         path = Path(to_parse)
         if not path.exists():
             raise FileNotFoundError(f"Configuration file {path.absolute()} not found.")
@@ -93,6 +143,14 @@ class Parser:
         self.__get_modules(data)
 
     def __get_modules(self, data: dict):
+        """
+        Get the modules from the input dict
+
+        :param data: input dict
+        :type data: dict
+
+        """
+
         v = Validator([(data["modules"], list)])
         for module in data["modules"]:
             mod_data = load_configuration(module)
@@ -114,4 +172,9 @@ class Parser:
                     self.__cache[mod_path.stem][0].is_android = True
 
     def output(self):
+        """
+        Return the parsed configuration
+        :return: parsed configuration
+        :rtype: dict
+        """
         return self.__cache

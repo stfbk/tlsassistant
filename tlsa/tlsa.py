@@ -21,6 +21,14 @@ class Tlsa:
         self.__start_analysis(args)
 
     def __to_report_type(self, string):
+        """
+        Converts the string to the corresponding report type.
+
+        :param string: the string to convert
+        :type string: str
+        :return: the converted string
+        :rtype: str
+        """
         if string == "pdf":
             return Core.Report.PDF
         elif string == "html":
@@ -31,6 +39,14 @@ class Tlsa:
             raise NotImplementedError("Report type not yet implemented.")
 
     def __print_module(self, module=None, configs_path=None):
+        """
+        Prints the module name and the configuration file path.
+
+        :param module: the module name
+        :type module: str
+        :param configs_path: the path to the configuration file
+        :type configs_path: str
+        """
         if module:
             pretty(load_configuration(module))
         else:
@@ -73,6 +89,12 @@ class Tlsa:
             )
 
     def __start_analysis(self, args):
+        """
+        Starts the analysis of the TLSA module.
+
+        :param args: the arguments provided to the module
+        :type args: argparse.Namespace
+        """
         logging.basicConfig(level=logging.DEBUG if args.verbosity else logging.INFO)
         self.__logging.debug("Started anaylsis with verbosity on.")
         self.__logging.debug("Initializing Core element.")

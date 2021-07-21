@@ -47,6 +47,9 @@ def pretty(d, indent: int = 0, is_list: bool = False):
 
 
 def __print_pretty_value(value, indent):
+    """
+    Print a list of dicts in pretty mode.
+    """
     if isinstance(value, dict):
         pretty(value, indent + 1)
     elif isinstance(value, list):

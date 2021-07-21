@@ -1,3 +1,8 @@
+"""
+Color class for easy color manipulation
+"""
+
+
 class Color:
     HEADER = "\33[95m"
     OKBLUE = "\33[94m"

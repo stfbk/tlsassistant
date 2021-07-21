@@ -9,6 +9,15 @@ from utils.validation import Validator
 
 
 def difference(modules: list, modules_to_exclude: list) -> list:
+    """
+    Return the difference between two lists.
+    :param modules: modules to check
+    :type modules: list
+    :param modules_to_exclude: modules to exclude
+    :type modules_to_exclude: list
+    :return: list of modules
+    :rtype: list
+    """
     diff = list(set(map(str.lower, modules)) - set(map(str.lower, modules_to_exclude)))
     return diff
 
@@ -101,6 +110,13 @@ def load_configuration(module: str, configs_path=None) -> dict:
 
 
 def load_list_of_domains(path: str) -> [str]:
+    """
+    Load a list of domains from a file.
+    :param path: path of the file.
+    :type path: str
+    :return: list of domains.
+    :rtype: list
+    """
     file = Path(path)
     urls = []
     assert file.exists(), f"Path {file.absolute()} not found."

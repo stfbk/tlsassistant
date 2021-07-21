@@ -9,12 +9,28 @@ from apacheconfig import make_loader
 
 
 class Configuration:
+    """
+    Apache/Nginx configuration file parser
+    """
+
     class Type(Enum):
+        """
+        Enum for configuration file types
+        """
+
         AUTO = 0
         APACHE = 1
         NGINX = 2
 
     def __init__(self, path: str, type_: Type = Type.AUTO, port=None):
+        """
+        :param path: path to the configuration file
+        :type path: str
+        :param type_: Type of the configuration file.
+        :type type_: Type
+        :param port: port to use for the check.
+        :type port: str
+        """
         Validator([(path, str), (type_, self.Type), (port if port else "", str)])
         self.__path = path
         self.__type = type_
@@ -23,6 +39,14 @@ class Configuration:
         self.__loaded_conf = self.__load_conf(path)
 
     def __obtain_vhost(self, port=None):
+        """
+        Obtain the virtualhosts from the configuration file.
+
+        :param port: port to use for the check.
+        :type port: str
+        :return: list of virtualhosts
+        :rtype: list
+        """
         assert self.__type != self.Type.AUTO, "Can't use this method with AUTO type."
         if self.__type == self.Type.APACHE:
             if "VirtualHost" not in self.__loaded_conf:
@@ -34,6 +58,15 @@ class Configuration:
             raise NotImplementedError
 
     def __load_conf(self, path) -> dict:
+        """
+        Load the configuration file.
+
+        :param path: path to the configuration file
+        :type path: str
+        :return: loaded configuration
+        :rtype: dict
+        """
+
         file = Path(path)
         assert (
             file.exists()
@@ -55,16 +88,52 @@ class Configuration:
         return results
 
     def __load_apache_conf(self, file: Path) -> dict:
+        """
+        Internal method to load the apache configuration file.
+
+        :param file: path to the configuration file
+        :type file: str
+        :return: loaded configuration
+        :rtype: dict
+        """
         with make_loader() as loader:
             return loader.load(str(file.absolute()))
 
     def __load_nginx_conf(self, file: Path) -> dict:
+        """
+        Internal method to load the nginx configuration file.
+
+        :param file: path to the configuration file
+        :type file: str
+        :return: loaded configuration
+        :rtype: dict
+        """
         return nginx_parse(str(file.absolute()))
 
     def __is_config_enabled(self, module) -> bool:
+        """
+        Checks if the module is enabled for the configuration analysis.
+
+        :param module: module to check
+        :type module: Module
+        :return: True if the module is enabled
+        :rtype: bool
+        """
         return hasattr(module, "conf") and isinstance(module.conf, Config_base)
 
     def __check_global(self, modules: dict, openssl: str, ignore_openssl: bool):
+        """
+        Checks if the global configuration is vulnerable.
+
+        :param modules: modules to check
+        :type modules: dict
+        :param openssl: openssl version to use
+        :type openssl: str
+        :param ignore_openssl: ignore openssl version
+        :type ignore_openssl: bool
+        :return: True if the configuration is vulnerable
+        :rtype: dict
+        """
         br = {"global": {}}
         for name, module in modules.items():
             if self.__is_config_enabled(module):
@@ -82,6 +151,16 @@ class Configuration:
         return br["global"]
 
     def __check_usage(self, module, vhost_name) -> bool:
+        """
+        Checks if the module is enabled for the configuration analysis.
+
+        :param module: module to check
+        :type module: Module
+        :param vhost_name: name of the vhost
+        :type vhost_name: str
+        :return: True if the module is enabled
+        :rtype: bool
+        """
         if module.conf.VHOST_USE:
             return str(module.conf.VHOST_USE) in vhost_name
         else:
@@ -95,6 +174,22 @@ class Configuration:
         openssl: str = None,
         ignore_openssl: bool = False,
     ):
+        """
+        Wrapper for the vhosts.
+
+        :param modules: modules to check
+        :type modules: dict
+        :param online: check online
+        :type online: bool
+        :param fix: fix the configuration
+        :type fix: bool
+        :param openssl: openssl version to use
+        :type openssl: str
+        :param ignore_openssl: ignore openssl version
+        :type ignore_openssl: bool
+        :return: True if the configuration is vulnerable
+        :rtype: dict
+        """
         boolean_results = {}
         boolean_results_global = self.__check_global(modules, openssl, ignore_openssl)
         for virtualhost in self.__obtain_vhost(port=self.__port):
@@ -124,6 +219,18 @@ class Configuration:
         return boolean_results
 
     def __online(self, module, name, vhost, vhost_name):
+        """
+        Internal method to check the configuration online.
+
+        :param module: module to check
+        :type module: Module
+        :param name: name of the module
+        :type name: str
+        :param vhost: virtualhost to check
+        :type vhost: dict
+        :param vhost_name: name of the vhost
+        :type vhost_name: str
+        """
         self.__logging.debug(f"Fixing vulnerability {name} in vhost {vhost_name}..")
         module.conf.fix(vhost)
 
@@ -139,7 +246,30 @@ class Configuration:
         boolean_results,
         global_value,
     ):
+        """
+        Internal method to check the configuration offline.
 
+        :param module: module to check
+        :type module: Module
+        :param name: name of the module
+        :type name: str
+        :param fix: fix the configuration
+        :type fix: bool
+        :param vhost: virtualhost to check
+        :type vhost: dict
+        :param vhost_name: name of the vhost
+        :type vhost_name: str
+        :param openssl: openssl version to use
+        :type openssl: str
+        :param ignore_openssl: ignore openssl version
+        :type ignore_openssl: bool
+        :param boolean_results: boolean results
+        :type boolean_results: dict
+        :param global_value: global boolean results
+        :type global_value: dict
+        :return: dict of boolean results
+        :rtype: dict
+        """
         self.__logging.debug(f"Analyzing vulnerability {name} in vhost {vhost_name}..")
         if vhost_name not in boolean_results:
             boolean_results[vhost_name] = {}
@@ -158,12 +288,37 @@ class Configuration:
                 self.__online(module, name, vhost, vhost_name)
 
     def is_vuln(self, modules: dict, openssl=None, ignore_openssl=False):
+        """
+        Checks if the configuration is vulnerable.
+
+        :param modules: modules to check
+        :type modules: dict
+        :param openssl: openssl version to use
+        :type openssl: str
+        :param ignore_openssl: ignore openssl version
+        :type ignore_openssl: bool
+        :return: True if the configuration is vulnerable
+        :rtype: bool
+        """
         self.__logging.info("Checking for vulnerabilities...")
         return self.__vhost_wrapper(
             modules, openssl=openssl, ignore_openssl=ignore_openssl
         )
 
     def fix(self, modules: dict, openssl=None, ignore_openssl=False, online=False):
+        """
+        Fixes the configuration.
+
+        :param modules: modules to check
+        :type modules: dict
+        :param openssl: openssl version to use
+        :type openssl: str
+        :param ignore_openssl: ignore openssl version
+        :type ignore_openssl: bool
+        :param online: check online
+        :type online: bool
+
+        """
         self.__logging.info("Fixing vulnerabilities...")
         return self.__vhost_wrapper(
             modules,
@@ -174,6 +329,13 @@ class Configuration:
         )
 
     def save(self, file_name: str = None):
+        """
+        Saves the configuration.
+
+        :param file_name: file name to save, if None, the input file name is used
+        :type file_name: str
+        :default file_name: None
+        """
         self.__logging.info("Saving config file...")
         if not file_name:
             path = self.__path

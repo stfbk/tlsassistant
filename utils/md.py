@@ -14,19 +14,61 @@ H5 = 5
 
 
 class Class_table:
+    """
+    Class to create table in markdown
+    """
+
     def wrap(self, wrap):
+        """
+        Wrap text in table
+
+        :param wrap: String to wrap
+        :type wrap: str
+        :return: Wrapped string
+        :rtype: str
+        """
         return f"| {wrap} |"
 
     def heading(self):
+        """
+        Create a table header
+
+        :return: Table header
+        :rtype: str
+        """
         return self.wrap("-------")
 
     def bold(self, string):
+        """
+        Create bold text in table
+
+        :param string: String to bold
+        :type string: str
+        :return: Bolded string
+        :rtype: str
+        """
         return self.wrap(bold(string))
 
     def italic(self, string):
+        """
+        Create italic text in table
+
+        :param string: String to italic
+        :type string: str
+        :return: Italicized string
+        :rtype: str
+        """
         return self.wrap(italic(string))
 
     def title(self, string):
+        """
+        Create title text in table
+
+        :param string: String to title
+        :type string: str
+        :return: Titled string
+        :rtype: str
+        """
         return self.bold(string)
 
 
@@ -49,12 +91,38 @@ def recursive_parsing(value, hlevel: int, bold_instead: bool) -> str:
 
 
 def __repeat_to_length(string_to_expand: str, length: int) -> str:
+    """
+    Repeat a string to a given times.
+
+    :param string_to_expand: The string to repeat.
+    :type string_to_expand: str
+    :param length: The times to repeat.
+    :type length: int
+    :return: Formatted String.
+    :rtype: str
+    """
     return (string_to_expand * (int(length / len(string_to_expand)) + 1))[:length]
 
 
 def __recursive_parsing_runner(
     value, hlevel: int, initial_hlevel: int, bold_instead: bool, is_code=False
 ):
+    """
+    Internal function to recursively parse the output and prepare md for the report.
+
+    :param value: The object to prepare as output
+    :type value: Any
+    :param hlevel: The height level
+    :type hlevel: int
+    :param initial_hlevel: The initial height level
+    :type initial_hlevel: int
+    :param bold_instead: Instead of using H1, H2, H3, ... use a simple bold in markdown.
+    :type bold_instead: bool
+    :param is_code: If the value is a code (e.g. a function).
+    :type is_code: bool
+    :return: String to insert into the md file.
+    :rtype: str
+    """
     results = []
 
     if isinstance(value, list):

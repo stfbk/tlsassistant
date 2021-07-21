@@ -12,7 +12,16 @@ from utils.prune import pruner
 
 
 class Report:
+    """
+    Output Module that generates the report.
+
+    """
+
     class Mode(Enum):
+        """
+        Enum for the report mode.
+        """
+
         DEFAULT = 0
         SCOREBOARD = 1
 
@@ -22,9 +31,30 @@ class Report:
         self.__logging = Logger("Report")
 
     def input(self, **kwargs):
+        """
+        Input function for the Report module.
+        :param kwargs: Arguments for the Report module. See below.
+        :type kwargs: dict
+
+        :Keyword Arguments:
+        * *results* (dict) -- Dictionary containing the results of the scan.
+        * *path* (string) -- Path to the report.
+        * *mode* (Mode) -- Report mode.
+        * *scoreboard* (bool) -- If true, generates a scoreboard.
+        """
         self.__input_dict = kwargs
 
     def __get_default(self, output):
+        """
+        Generates the default report.
+
+        :param output: Output list.
+        :type output: list
+        :return: Output list.
+        :rtype: list
+
+        """
+
         v = Validator()
         for hostname_or_path in self.__input_dict["results"]:
             res = self.__input_dict["results"][hostname_or_path]
@@ -52,6 +82,14 @@ class Report:
         return output
 
     def __get_scoreboard(self, output):
+        """
+        Generates the scoreboard report.
+
+        :param output: Output list.
+        :type output: list
+        :return: Output list.
+        :rtype: list
+        """
         self.__logging.info(f"Generating Scoreboard..")
         v = Validator()
         once = False
@@ -86,6 +124,19 @@ class Report:
         return output
 
     def run(self, **kwargs):
+        """
+        Runs the report.
+
+        :param kwargs: Arguments for the Report module. See below.
+        :type kwargs: dict
+
+        :Keyword Arguments:
+        * *results* (dict) -- Dictionary containing the results of the scan.
+        * *path* (string) -- Path to the report.
+        * *mode* (Mode) -- Report mode.
+        * *scoreboard* (bool) -- If true, generates a scoreboard.
+        """
+
         self.input(**kwargs)
         if "path" not in self.__input_dict:
             raise AssertionError("Missing output path")

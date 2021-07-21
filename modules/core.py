@@ -16,13 +16,25 @@ from utils.urls import link_sep
 
 
 class Core:
+    """
+    Core module
+    """
+
     class Report(Enum):
+        """
+        Enum class for different report types
+        """
+
         HTML = 0
         PDF = 1
         RAW = 2  # todo implement RAW
         ATTACK_TREES = 3  # todo implement attack trees module
 
     class Analysis(Enum):
+        """
+        Enum class for different analysis types
+        """
+
         HOST = 0
         APK = 1
         DOMAINS = 2
@@ -41,6 +53,28 @@ class Core:
         openssl_version=None,
         ignore_openssl=False,
     ):
+        """
+        :param hostname_or_path: hostname or path to scan
+        :type hostname_or_path: str or list
+        :param configuration: path to configuration file
+        :type configuration: str or list
+        :param output: path to output file
+        :type output: str or list
+        :param output_type: type of output
+        :type output_type: str or list
+        :param type_of_analysis: type of analysis
+        :type type_of_analysis: str or list
+        :param to_exclude: list of domains to exclude
+        :type to_exclude: str or list
+        :param scoreboard: show a scoreboard at the end of the scan
+        :type scoreboard: bool
+        :param apply_fix: apply a fix to the scan
+        :type apply_fix: str
+        :param openssl_version: version of openssl to use
+        :type openssl_version: str
+        :param ignore_openssl: ignore openssl version
+        :type ignore_openssl: bool
+        """
         if to_exclude is None:
             to_exclude = []
         self.__logging = Logger("Core")
@@ -70,6 +104,14 @@ class Core:
         )
 
     def __string_output_type(self, kwargs_type: Report) -> str:
+        """
+        Returns a string for the output type
+
+        :param kwargs_type: type of output
+        :type kwargs_type: str
+        :return: string for the output type
+        :rtype: str
+        """
         return f"{str(kwargs_type.name).lower()}"
 
     def input(self, **kwargs):
@@ -134,6 +176,14 @@ class Core:
         self.__input_dict = kwargs
 
     def __load_configuration(self, modules):
+        """
+        Loads the configuration file
+
+        :param modules: list of modules
+        :type modules: list
+        :return: configuration
+        :rtype: dict
+        """
         assert "configuration" in self.__input_dict, "Missing configuration."
         self.__logging.debug(
             f"Loading configuration {self.__input_dict['configuration']}"
@@ -143,9 +193,28 @@ class Core:
         ).output()
 
     def __is_testssl(self, module: object) -> bool:
+        """
+        Checks if the module is a testssl module
+
+        :param module: module to check
+        :type module: object
+        :return: True if the module is a testssl module
+        :rtype: bool
+        """
         return isinstance(module, Testssl_base)
 
     def __add_testssl_args(self, module: Testssl_base, testssl_args: list) -> list:
+        """
+        Adds testssl arguments from the module
+
+        :param module: module to add arguments from
+        :type module: Testssl_base
+        :param testssl_args: list of arguments
+        :type testssl_args: list
+        :return: list of arguments
+        :rtype: list
+
+        """
         if self.__is_testssl(module):
             testssl_args += module._arguments
         return testssl_args
@@ -159,6 +228,24 @@ class Core:
         online=False,
         port=None,
     ) -> dict:
+        """
+        Analize the configuration file
+
+        :param path: path to the file
+        :type path: str
+        :param loaded_modules: loaded modules
+        :type loaded_modules: dict
+        :param openssl_version: version of OpenSSL
+        :type openssl_version: str
+        :param ignore_openssl: ignore OpenSSL version
+        :type ignore_openssl: bool
+        :param online: True if the analysis is done on the internet
+        :type online: bool
+        :param port: port to use for the connection
+        :type port: int
+        :return: configuration
+        :rtype: dict
+        """
         conf = Configuration(path, port=port)
         if self.__input_dict["apply_fix"] != "":
             results = conf.fix(
@@ -180,6 +267,20 @@ class Core:
     def __preanalysis_testssl(
         self, testssl_args: list, type_of_analysis: Analysis, hostname: str, port: str
     ):
+        """
+        Preanalysis of testssl
+
+        :param testssl_args: arguments for testssl
+        :type testssl_args: list
+        :param type_of_analysis: type of analysis
+        :type type_of_analysis: Analysis
+        :param hostname: hostname
+        :type hostname: str
+        :param port: port to use
+        :type port: str
+        :return: preanalysis
+        :rtype: dict
+        """
         if testssl_args and (
             type_of_analysis == self.Analysis.HOST
             or type_of_analysis == self.Analysis.DOMAINS
@@ -195,6 +296,15 @@ class Core:
             self.__logging.debug(f"Preanalysis testssl done.")
 
     def __load_modules(self, parsed_configuration: dict) -> (dict, dict, list):
+        """
+        Loads the modules
+
+        :param parsed_configuration: configuration
+        :type parsed_configuration: dict
+        :return: loaded modules
+        :rtype: tuple
+        """
+
         loaded_modules = {}
         loaded_arguments = {}
         testssl_args = []
@@ -226,6 +336,22 @@ class Core:
         loaded_arguments: dict,
         port=None,
     ) -> dict:
+        """
+        Run the analysis
+
+        :param loaded_modules: loaded modules
+        :type loaded_modules: dict
+        :param type_of_analysis: type of analysis
+        :type type_of_analysis: Analysis
+        :param hostname_or_path: hostname or path to the file
+        :type hostname_or_path: str
+        :param loaded_arguments: arguments for the modules
+        :type loaded_arguments: dict
+        :param port: port to use
+        :type port: str
+        :return: results
+        :rtype: dict
+        """
         results = {}
         if type_of_analysis != self.Analysis.APK:  # server analysis
             hostname_or_path_type = "hostname"
@@ -242,6 +368,16 @@ class Core:
         return results
 
     def __call_output_modules(self, res: dict, hostname_or_path: str):
+
+        """
+        Call output modules
+
+        :param res: results
+        :type res: dict
+        :param hostname_or_path: hostname or path to the file
+        :type hostname_or_path: str
+        """
+
         if (
             self.__input_dict["output_type"] == self.Report.HTML
             or self.__input_dict["output_type"] == self.Report.PDF
@@ -263,6 +399,19 @@ class Core:
         configuration: str,
         port: str = None,
     ):
+        """
+        Execute the analysis
+
+        :param type_of_analysis: type of analysis
+        :type type_of_analysis: Analysis
+        :param hostname_or_path: hostname or path to the file
+        :type hostname_or_path: str
+        :param configuration: configuration
+        :type configuration: str
+        :param port: port to use
+        :type port: str
+        """
+
         res = {}
         if type_of_analysis == self.Analysis.DOMAINS:
             self.__logging.info("Executing multiple domain analysis.")
@@ -295,6 +444,20 @@ class Core:
         configuration: str,
         port: str = None,
     ):
+        """
+        Internal method to execute the analysis
+
+        :param type_of_analysis: type of analysis
+        :type type_of_analysis: Analysis
+        :param hostname_or_path: hostname or path to the file
+        :type hostname_or_path: str
+        :param configuration: configuration
+        :type configuration: str
+        :param port: port to use
+        :type port: str
+        :return: loaded modules and results
+        :rtype: tuple
+        """
         self.__logging.info(f"Started analysis on {hostname_or_path}.")
         if type_of_analysis not in [self.Analysis.APK, self.Analysis.CONFIGURATION]:
             hostname_or_path, port = link_sep(hostname_or_path)
@@ -345,6 +508,17 @@ class Core:
         # todo add output attack trees
 
     def __remove_useless_modules(self, raw_results: dict, loaded_modules: dict) -> dict:
+        """
+        Remove useless modules from the results
+
+        :param raw_results: raw results
+        :type raw_results: dict
+        :param loaded_modules: loaded modules
+        :type loaded_modules: dict
+        :return: results without useless modules
+        :rtype: dict
+        """
+
         b_res = boolean_results(modules=loaded_modules, raw_results=raw_results)
         out = {}
         for module, value in loaded_modules.items():
