@@ -7,6 +7,10 @@ import logging
 
 
 class Tlsfuzzer_base:
+    """
+    Interface for TLSFuzzer Vulnerability Analysis
+    """
+
     def __init__(self):
         self._input_dict = {}
         self._arguments = []
@@ -17,25 +21,79 @@ class Tlsfuzzer_base:
         self.__logging = self._get_logger()
 
     def _get_logger(self):
+        """
+        Logger for the class
+
+        :raise NotImplementedError:
+        """
         raise NotImplementedError("This method should be reimplemented!")
 
     def input(self, **kwargs):
+        """
+        Set input arguments for the analysis
+
+        :param kwargs:
+        :type kwargs: dict
+
+        :Keyword Arguments:
+            * *hostname* (``str``) -- Hostname to be tested
+            * *port* (``str``) -- Port to be tested
+            * *scripts* (``list``) -- List of scripts to be executed
+        """
         self._input_dict = kwargs
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
+        """
+        Set mitigations for the analysis
+
+        :param result: results to be mitigated
+        :type result: dict
+        :param key: key to be mitigated
+        :type key: str
+        :param condition: condition to be mitigated
+        :type condition: bool
+        :return: mitigated results
+        :rtype: dict
+        """
         if condition:
             result["mitigation"] = load_mitigation(key, raise_error=False)
         return result if condition else {}
 
     # to override
     def _set_arguments(self):
+        """
+        Dummy method to be overridden
+
+        :raise  NotImplementedError:
+        """
         raise NotImplementedError("This method should be reimplemented!")
 
     # to override
     def _worker(self, results):
+        """
+        Dummy method to be overridden
+
+        :param results: results to be processed
+        :type results: dict
+
+        :return: processed results
+        :rtype: dict
+
+        :raise  NotImplementedError:
+        """
         raise NotImplementedError("This method should be reimplemented!")
 
     def _obtain_results(self, results: dict, keys: dict):
+        """
+        Obtain results from the analysis
+
+        :param results: results to be processed
+        :type results: dict
+        :param keys: keys to be obtained
+        :type keys: dict
+        :return: processed results
+        :rtype: dict
+        """
         val = Validator([(results, dict), (keys, dict)])
         out = {}
         for script, list_of_checks in keys.items():
@@ -69,6 +127,21 @@ class Tlsfuzzer_base:
         return out
 
     def run(self, **kwargs):
+        """
+        Run the analysis
+
+        :param kwargs:
+        :type kwargs: dict
+
+        :Keyword Arguments:
+            * *hostname* (``str``) -- Hostname to be tested
+            * *port* (``str``) -- Port to be tested
+            * *scripts* (``list``) -- List of scripts to be executed
+
+        :return: results of the analysis
+        :rtype: dict
+
+        """
         self.input(**kwargs)
 
         if "hostname" not in kwargs:
@@ -97,4 +170,10 @@ class Tlsfuzzer_base:
         return self.output()
 
     def output(self):
+        """
+        Obtain results of the analysis
+
+        :return: results of the analysis
+        :rtype: dict
+        """
         return self._output_dict

@@ -6,6 +6,12 @@ import logging
 
 
 class Testssl_base:
+    """
+    Testssl.sh is a tool to test the SSL configuration of a server.
+
+    This is a base class for the different vulnerabilities found by testssl.sh.
+    """
+
     def __init__(self):
         self._input_dict = {}
         self._arguments = []
@@ -15,9 +21,32 @@ class Testssl_base:
         self._set_arguments()
 
     def input(self, **kwargs):
+        """
+        This method is used to set the input parameters for the analysis.
+
+        :param kwargs:
+        :type kwargs: dict
+
+        :Keyword Arguments:
+            * *hostname* (``str``) -- Hostname to be analyzed.
+            * *port* (``str``) -- Port to be analyzed.
+            * *keys* (``list``) -- List of keys to be analyzed.
+        """
         self._input_dict = kwargs
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
+        """
+        This method is used to set the mitigations for the different vulnerabilities.
+
+        :param result: The result of the analysis.
+        :type result: dict
+        :param key: The key of the result.
+        :type key: str
+        :param condition: If the condition is met.
+        :type condition: bool
+        :return: The result with mitigation.
+        :rtype: dict
+        """
         if condition:
             result["mitigation"] = load_mitigation(
                 key, raise_error=False
@@ -26,13 +55,38 @@ class Testssl_base:
 
     # to override
     def _set_arguments(self):
+        """
+        Dummy method to be overridden
+
+        :raise  NotImplementedError:
+        """
         raise NotImplementedError("This method should be reimplemented!")
 
     # to override
     def _worker(self, results):
+        """
+        Dummy method to be overridden
+
+        :raise  NotImplementedError:
+        :param results: results of the analysis.
+        :type results: dict
+
+        :return: The results of the analysis.
+        :rtype: dict
+        """
         raise NotImplementedError("This method should be reimplemented!")
 
     def _obtain_results(self, results: dict, keys: list):
+        """
+        This method is used to obtain the results of the analysis.
+
+        :param results: The results of the analysis.
+        :type results: dict
+        :param keys: The keys of the results.
+        :type keys: list
+        :return: The results of the analysis.
+        :rtype: dict
+        """
         val = Validator([(results, dict), (keys, list)])
         out = {}
         for ip in results:
@@ -56,6 +110,20 @@ class Testssl_base:
         return out
 
     def run(self, **kwargs):
+        """
+        This method is used to run the analysis.
+
+        :param kwargs:
+        :type kwargs: dict
+
+        :Keyword Arguments:
+            * *hostname* (``str``) -- Hostname to be analyzed.
+            * *port* (``str``) -- Port to be analyzed.
+            * *keys* (``list``) -- List of keys to be analyzed.
+
+        :return: The results of the analysis.
+        :rtype: dict
+        """
         self.input(**kwargs)
 
         if "hostname" not in kwargs:
@@ -78,4 +146,10 @@ class Testssl_base:
         return self.output()
 
     def output(self):
+        """
+        This method is used to output the results of the analysis.
+
+        :return: The results of the analysis.
+        :rtype: dict
+        """
         return self._output_dict

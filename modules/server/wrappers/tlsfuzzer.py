@@ -10,6 +10,12 @@ from shutil import copyfile
 
 
 class Tlsfuzzer:
+    """
+    Tlsfuzzer is a tool for testing TLS connections.
+
+    this is a wrapper around tlslite and tlsfuzzer.
+    """
+
     __cache = {}
 
     def __init__(self):
@@ -17,9 +23,32 @@ class Tlsfuzzer:
         self.__output = {}
 
     def input(self, **kwargs):
+        """
+        Input arguments for tlsfuzzer.
+
+        :param kwargs:
+        :type kwargs: dict
+
+        :Keyword Arguments:
+            * *hostname* (``str``) -- Hostname to analyze.
+            * *scripts* (``list``) -- Scripts to run.
+            * *port* (``str``) -- Port to connect to.
+            * *force* (``bool``) -- Force to run the script by ignoring cache.
+        """
         self.__input_dict = kwargs
 
     def output(self, **kwargs) -> dict:
+        """
+        Output of tlsfuzzer.
+
+        :param kwargs:
+        :type kwargs: dict
+
+        :Keyword Arguments:
+            * *hostname* (``str``) -- Hostname to analyze.
+            * *scripts* (``list``) -- Scripts to run.
+
+        """
         if "hostname" not in kwargs or kwargs["hostname"] not in self.__cache:
             return {}
         elif "scripts" not in kwargs:
@@ -34,6 +63,23 @@ class Tlsfuzzer:
             return output
 
     def run(self, **kwargs):
+
+        """
+        Run tlsfuzzer.
+
+        :param kwargs:
+        :type kwargs: dict
+
+        :Keyword Arguments:
+            * *hostname* (``str``) -- Hostname to analyze.
+            * *scripts* (``list``) -- Scripts to run.
+            * *port* (``str``) -- Port to connect to.
+            * *force* (``bool``) -- Force to run the script by ignoring cache.
+
+        :return: dict -- Output of tlsfuzzer.
+        :rtype: dict
+
+        """
         self.input(**kwargs)
         if "hostname" not in self.__input_dict:
             raise AssertionError("IP or hostname args not found.")
@@ -88,6 +134,18 @@ class Tlsfuzzer:
         return self.output(hostname=self.__input_dict["hostname"], scripts=script_names)
 
     def __worker(self, hostname: str, scripts: list, force: bool, port="443"):
+        """
+        Internal worker for run.
+
+        :param hostname: Hostname to analyze.
+        :type hostname: str
+        :param scripts: Scripts to run.
+        :type scripts: list
+        :param force: Force to run the script by ignoring cache.
+        :type force: bool
+        :param port: Port to connect to.
+        :type port: str
+        """
         if force:
             for script in scripts:
 

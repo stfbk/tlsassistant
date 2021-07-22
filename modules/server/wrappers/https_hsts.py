@@ -11,10 +11,18 @@ from json import loads
 
 
 class Parse:
+    """
+    Parse the results of the HSTS file
+    """
+
     __path_moz = f"dependencies{sep}nsSTSPreloadList.inc"
     __path_gog = f"dependencies{sep}transport_security_state_static.json"
 
     def __init__(self, moz=True):
+        """
+        :param moz: True if the mozilla file is to be parsed, False if the google file is to be parsed
+        :type moz: bool
+        """
         self.__cache = {}
         if moz:
             self.__parse_moz(self.__path_moz)
@@ -22,6 +30,12 @@ class Parse:
             self.__parse_gog(self.__path_gog)
 
     def __parse_moz(self, path):
+        """
+        Parse the Mozilla file
+
+        :param path: path to the Mozilla file
+        :type path: str
+        """
         if os.path.exists(path):
             with open(path, "r") as file:
                 start_parsing = False
@@ -37,6 +51,12 @@ class Parse:
             raise FileNotFoundError("The file provided for mozilla HSTS doesn't exist.")
 
     def __parse_gog(self, path):
+        """
+        Parse the Google file
+
+        :param path: path to the Google file
+        :type path: str
+        """
         if os.path.exists(path):
             with open(path, "r") as file:
                 raw_results = b64decode(file.read()).decode().split("\n")
@@ -57,10 +77,19 @@ class Parse:
             raise FileNotFoundError("The file provided for google HSTS doesn't exist.")
 
     def output(self):
+        """
+        Return the results of the parsing
+        :return: dict results
+        :rtype: dict
+        """
         return self.__cache
 
 
 class Https:
+    """
+    Analyze the results of the request and return the results by choosing the right method asked
+    """
+
     HTTPS = 0
     HSTSSET = 1
     HSTSPRELOAD = 2
@@ -81,9 +110,33 @@ class Https:
         self.__logging = Logger("HTTPS_HSTS")
 
     def input(self, **kwargs):
+        """
+        Set the input parameters
+
+        :param kwargs: input parameters
+        :type kwargs: dict
+
+        :Keyword Arguments:
+            * *hostname* (``str``) -- Hostname to analyze
+            * *type* (``int``) -- Type of HSTS to analyze
+            * *port* (``int``) -- Port to analyze
+            * *force* (``bool``) -- Force the analysis ignoring cache
+        """
         self.__input_dict = kwargs
 
     def output(self, **kwargs):
+        """
+        Return the results of the analysis
+
+        :param kwargs: output parameters
+        :type kwargs: dict
+
+        :Keyword Arguments:
+            * *hostname* (``str``) -- Hostname to analyze
+
+        :return: dict results
+        :rtype: dict
+        """
         return (
             self.__output[kwargs["hostname"]]
             if "hostname" in kwargs and kwargs["hostname"] in self.__cache
@@ -91,6 +144,20 @@ class Https:
         )
 
     def run(self, **kwargs):
+        """
+        Run the analysis
+
+        :param kwargs: input parameters
+        :type kwargs: dict
+
+        :Keyword Arguments:
+            * *hostname* (``str``) -- Hostname to analyze
+            * *type* (``int``) -- Type of HSTS to analyze
+            * *port* (``int``) -- Port to analyze
+            * *force* (``bool``) -- Force the analysis ignoring cache
+        :return: dict results
+        :rtype: dict
+        """
         self.input(**kwargs)
         if "hostname" not in self.__input_dict:
             raise AssertionError("IP or hostname args not found.")
@@ -133,6 +200,17 @@ class Https:
         return self.output(hostname=link)
 
     def __chose_results(self, type: int, response: requests.Response):
+        """
+        Internal method to choose the right results
+
+        :param type: type of HSTS
+        :type type: int
+        :param response: response of the request
+        :type response: requests.Response
+
+        :return: dict results if not hsts analysis, else a boolean if hsts is preloaded
+        :rtype: dict or bool
+        """
         self.__logging.debug(response.headers)
         if type == self.HTTPS:
             return (
@@ -159,7 +237,18 @@ class Https:
             )
 
     def __worker(self, link: str, type: int, force: bool):
+        """
+        Internal method to run the analysis
 
+        :param link: link to analyze
+        :type link: str
+        :param type: type of HSTS
+        :type type: int
+        :param force: force the analysis ignoring cache
+        :type force: bool
+        :return: dict results
+        :rtype: dict
+        """
         if force:
             try:
 
