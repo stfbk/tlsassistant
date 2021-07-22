@@ -4,6 +4,10 @@ from utils.mitigations import load_mitigation
 
 
 class Super_base:
+    """
+    Interface for SUPERAndroidAnalyzer vulnerability detection.
+    """
+
     def __init__(self):
         self._input_dict = {}
         self._arguments = []
@@ -14,12 +18,37 @@ class Super_base:
         self.__logging = self._get_logger()
 
     def _get_logger(self):
+        """
+        Returns a logger instance.
+        Dummy method to be overridden.
+
+        :return: logger instance
+        :rtype: Logger
+        :raise: NotImplementedError
+        """
         raise NotImplementedError("This method should be reimplemented!")
 
     def input(self, **kwargs):
+        """
+        Receives the input arguments from the user.
+
+        :param kwargs: input arguments
+        :Keyword Arguments:
+            * *path* (``str``) -- path to the file
+            * *args* (``list``) -- list of arguments
+        """
         self._input_dict = kwargs
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
+        """
+        Sets the mitigations for the given result.
+
+        :param result: result to be mitigated
+        :param key: name of the result
+        :param condition: condition to be mitigated
+        :return: the result with mitigation
+        :rtype: dict
+        """
         if condition:
             result["mitigation"] = load_mitigation(
                 key, raise_error=False
@@ -28,13 +57,32 @@ class Super_base:
 
     # to override
     def _set_arguments(self):
+        """
+        Dummy method to be overridden.
+
+        :raise: NotImplementedError
+        """
         raise NotImplementedError("This method should be reimplemented!")
 
     # to override
     def _worker(self, results):
+        """
+        Dummy method to be overridden.
+
+        :raise: NotImplementedError
+        """
         raise NotImplementedError("This method should be reimplemented!")
 
     def _obtain_results(self, results: dict, keys: list, types: list):
+        """
+        Versatile method to obtain the results from the results dictionary.
+
+        :param results: results dictionary
+        :param keys: keys to be obtained
+        :param types: types of the keys
+        :return: the obtained results
+        :rtype: dict
+        """
         val = Validator([(results, dict), (keys, list), (types, list)])
         out = {}
 
@@ -52,6 +100,17 @@ class Super_base:
         return out
 
     def run(self, **kwargs):
+        """
+        Runs the analysis.
+
+        :param kwargs: input arguments
+        :Keyword Arguments:
+            * *path* (``str``) -- path to the file
+            * *args* (``list``) -- list of arguments
+        :return: results
+        :rtype: dict
+        :raise AssertionError: if the input arguments are not valid
+        """
         self.input(**kwargs)
 
         if "path" not in kwargs:

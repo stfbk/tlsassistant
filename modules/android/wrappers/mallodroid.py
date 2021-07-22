@@ -8,6 +8,11 @@ from utils.loader import load_module
 
 
 class Mallodroid:
+    """
+    Mallodroid is a tool to perform static analysis of Android applications.
+    This wrapper is a python wrapper to mallodroid.py.
+    """
+
     __cache = {}
     __instance = None
 
@@ -24,9 +29,28 @@ class Mallodroid:
         self.__correct_path = None
 
     def input(self, **kwargs):
+        """
+        This method is used to set the input
+
+        :param kwargs:
+        :Keyword Arguments:
+            path: path to the file to be analyzed
+            args: list of arguments to be passed to mallodroid
+            force: force the analysis of the file (default: False)
+        """
         self.__input_dict = kwargs
 
     def output(self, **kwargs) -> dict:
+        """
+        This method is used to get the output of the analysis
+
+        :param kwargs:
+        :Keyword Arguments:
+            path: path to the file to be analyzed
+
+        :return: a dictionary result
+        :rtype: dict
+        """
         return (
             self.__cache[kwargs["path"]]
             if "path" in kwargs and kwargs["path"] in self.__cache
@@ -34,6 +58,15 @@ class Mallodroid:
         )
 
     def run(self, **kwargs) -> dict:
+        """
+        This method is used to run the analysis
+
+        :param kwargs:
+        :Keyword Arguments:
+            path: path to the file to be analyzed
+            args: list of arguments to be passed to mallodroid
+            force: force the analysis of the file ignoring cache (default: False)
+        """
         self.input(**kwargs)
         if "path" in self.__input_dict:
             self.__correct_path = Path(self.__input_dict["path"])
@@ -52,6 +85,14 @@ class Mallodroid:
         return self.output(path=str(self.__correct_path.absolute()))
 
     def __worker(self, path: Path, args: list, force: bool):
+        """
+        This method is the worker method to be executed by run()
+
+        :param path: path to the file to be analyzed
+        :param args: list of arguments to be passed to mallodroid
+        :param force: force the analysis of the file ignoring cache (default: False)
+
+        """
         file_id = str(path.absolute())
         self.__logging.debug(f"Starting analysis of {file_id} ...")
         args.append("-f")
@@ -70,5 +111,5 @@ class Mallodroid:
                 else True,
             )  # calls main
         else:
-            if file_id not in self.__cache:
+            if file_id not in self.__cache:  # if not in cache, force analysis
                 self.__worker(path, args, force=True)

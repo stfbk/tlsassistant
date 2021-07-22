@@ -4,7 +4,17 @@ from utils.mitigations import load_mitigation
 
 
 class Trustmanager(Mallodroid_base):
+    """
+    Check if the app uses a custom TrustManager.
+    """
+
     def _get_logger(self):
+        """
+        Logger for this module.
+
+        :return: Logger
+        :rtype: Logger
+        """
         return Logger("TrustManager")
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
@@ -14,8 +24,19 @@ class Trustmanager(Mallodroid_base):
 
     # to override
     def _set_arguments(self):
+        """
+        Set arguments for the module.
+        """
         self._arguments = []
 
     # to override
     def _worker(self, results):
+        """
+        Run the module.
+
+        :param results: Results from analysis.
+        :type results: dict
+        :return: Results from analysis of the module.
+        :rtype: dict
+        """
         return self._obtain_results(results, ["trustmanager", "insecuresocketfactory"])
