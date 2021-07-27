@@ -59,7 +59,7 @@ function mallodroid_enumerator {
 function testssl_enumerator {
 
     #3SHAKE
-    if ! grep -q "extended master secret/#23" $toolReports/testssl_report.txt ; then
+    if ! grep -Pzq "e\s*x\s*t\s*e\s*n\s*d\s*e\s*d\s*m\s*a\s*s\s*t\s*e\s*r\s*s\s*e\s*c\s*r\s*e\s*t\s*/\s*#\s*2\s*3" $toolReports/testssl_report.txt ; then
         echo "3SHAKE">> $root_folder/vulnerabilityList.txt
         echo "- detected: 3SHAKE"
     fi
