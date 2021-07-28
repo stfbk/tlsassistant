@@ -2,6 +2,8 @@
 
 **TLSAssistant** is a fully-featured tool that combines state-of-the-art TLS analyzers with a report system that suggests appropriate mitigations and shows the full set of viable attacks. The companion page can be found [here](https://stfbk.github.io/tools/TLSAssistant).
 
+⚠`Disclaimer`⚠ TLSAssistant's v1.\* branch is currently on *maintenance mode*. It is stable but it will only receive hotfixes as the project is being rewritten from scratch to enrich and upgrade its capabilities. TLSAssistant's v2 will be released by the end of 2021.
+
 ## Features
 
 ### Mitigations
