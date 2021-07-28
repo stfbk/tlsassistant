@@ -8,26 +8,24 @@ categories:
 description:
   it:
     features:
-      - analisi webserver Apache e nginx
+      - analisi di webserver Apache e nginx
+      - analisi di apk Android
       - |-
         report contenenti l'elenco delle vulnerabilità rilevate, una spiegazione
-
-         del loro funzionamento
+        del loro funzionamento
       - |-
         report contenenti frammenti di codice da copia-incollare per mitigare le
-
-         vulnerabilità
+        vulnerabilità
       - |-
         generazione di attack tree in grado di rappresentare graficamente le
-
-         vulnerabilità presenti
+        vulnerabilità presenti
       - |-
         output opzionale in STIX per un'integrazione diretta con sistemi
-
-         compatibili
+        compatibili
     genericName: tool d'analisi TLS
     longDescription: |
       TLSAssistant è un tool di ricerca sviluppato per facilitare il lavoro
+
 
 
       degli amministratori di sistema alle prese con server TLS.
@@ -35,13 +33,17 @@ description:
 
 
 
+
       Il suo utilizzo permette di analizzare i webserver (in locale o da remoto)
+
 
 
       per valutarne lo stato di sicurezza e la totalità delle vulnerabilità TLS
 
 
+
       che potrebbero essere sfruttate per mettere in pericolo la sicurezza delle
+
 
 
       trasmissioni.
@@ -49,13 +51,17 @@ description:
 
 
 
+
       Il punto di forza di TLSAssistant è la generazione di un report in grado
+
 
 
       di elencare le vulnerabilità presenti, spiegare il loro impatto e guidare
 
 
+
       \*passo passo\* verso la loro risoluzione.
+
 
 
 
@@ -65,7 +71,9 @@ description:
 
 
 
+
       Le mitigazioni sono state collezionate estraendo informazioni dalla
+
 
 
       letteratura scientifica e dai manuali tecnici forniti da ogni produttore.
