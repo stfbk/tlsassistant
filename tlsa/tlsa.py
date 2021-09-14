@@ -103,6 +103,16 @@ class Tlsa:
                 f"default{'_android.json' if args.apk else '_server.json'}"
             )
         config_or_modules = args.configuration
+
+        if args.apply_fix or args.file:
+            # checks for openssl and ignore-openssl flag
+            if not args.ignore_openssl and not args.openssl:
+                raise AssertionError(
+                    f"\n{Color.WARNING}OpenSSL is required to fix the TLSA records.{Color.ENDC}"
+                    f"\nIgnore the checks with \n\t{Color.CBEIGE}--ignore-openssl{Color.ENDC}\n"
+                    f"or insert an openssl version with\n\t{Color.CBEIGE}--openssl [VERSION]{Color.ENDC}"
+                )
+
         if args.server:
             Core(
                 hostname_or_path=args.server,
