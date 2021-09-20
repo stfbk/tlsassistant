@@ -91,6 +91,7 @@ class Certificate:
         :Keyword Arguments:
             * *hostname* (``str``) -- The hostname to lookup
             * *force* (``bool``) -- Force the lookup
+            * *expired* (``bool``) -- Include or exclude expired certificates, default is False (excluded)
 
         :return: The cached results
         :rtype: dict
@@ -99,15 +100,20 @@ class Certificate:
         if "hostname" not in self.__input_dict:
             raise AssertionError("IP or hostname args not found.")
         force = self.__input_dict["force"] if "force" in self.__input_dict else False
-        Validator([(self.__input_dict["hostname"], str), (force, bool)])
+        expired = (
+            self.__input_dict["expired"] if "expired" in self.__input_dict else False
+        )
+        Validator(
+            [(self.__input_dict["hostname"], str), (force, bool), (expired, bool)]
+        )
 
         self.__input_dict["hostname"] = url_strip(
             self.__input_dict["hostname"], strip_www=True
         )
-        self.__worker(self.__input_dict["hostname"], force)
+        self.__worker(self.__input_dict["hostname"], force, expired)
         return self.output(hostname=self.__input_dict["hostname"])
 
-    def __worker(self, url: str, force: bool):
+    def __worker(self, url: str, force: bool, expired: bool):
         """
         The worker method that does the actual work
 
@@ -117,12 +123,12 @@ class Certificate:
         :type force: bool
         """
         if force:
-            self.__cache[url] = Parser(self.__requester(url)).output()
+            self.__cache[url] = Parser(self.__requester(url, expired=expired)).output()
         else:
             if url not in self.__cache:
-                self.__worker(url, force=True)
+                self.__worker(url, force=True,expired=expired)
 
-    def __requester(self, url) -> dict:
+    def __requester(self, url, expired=True) -> dict:
         """
         Requests the crt.sh API
 
@@ -132,7 +138,9 @@ class Certificate:
         :rtype: dict
         :raise Exception: If the hostname is not found or could not return any results
         """
-        req = requests.get(f"https://crt.sh/?q=%.{url}&output=json")
+        req = requests.get(
+            f"https://crt.sh/?q=%.{url}&output=json{'&exclude=expired' if not expired else ''}"
+        )
 
         if not req.ok or req.status_code != 200:
             raise Exception("Couldn't retrieve any result.")

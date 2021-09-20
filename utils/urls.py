@@ -73,3 +73,16 @@ def url_domain(url, keep_subdomain=True) -> str:
     )
     Logger("URL_Domain").debug(f"parsed {url} into {output}")
     return output
+
+
+def has_wildcard(url) -> bool:
+    """
+    Check if the url contains a wildcard in last subdomain.
+
+    :param url: The url to check
+    :type url: str
+    :return: True if the url contains a wildcard in the last subdomain, False otherwise
+    :rtype: bool
+    """
+    subdomain = extract(url).subdomain
+    return subdomain.split(".")[0] == "*"  # check if last subdomain is a wildcard
