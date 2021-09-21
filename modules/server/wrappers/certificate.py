@@ -8,13 +8,12 @@ class Parser:
     Parser for the crt.sh API
     """
 
-    __cache = {}
-
     def __init__(self, results):
         """
         :param results: The results from the crt.sh API
         :type results: list
         """
+        self.__cache = {}
         self.__parse(results)
 
     def __parse(self, results):
@@ -124,9 +123,10 @@ class Certificate:
         """
         if force:
             self.__cache[url] = Parser(self.__requester(url, expired=expired)).output()
+
         else:
             if url not in self.__cache:
-                self.__worker(url, force=True,expired=expired)
+                self.__worker(url, force=True, expired=expired)
 
     def __requester(self, url, expired=True) -> dict:
         """
