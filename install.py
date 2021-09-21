@@ -251,7 +251,11 @@ def main():  # exec main
 
 if __name__ == "__main__":
     if geteuid() == 0:  # check if sudo
-        logger.warning("Do not call the installer with SUDO, only some subprocess need SUDO.")
-        logger.warning("By doing this you will install the entire dependencies on root.")
+        logger.warning(
+            "Do not call the installer with SUDO, only some subprocess need SUDO."
+        )
+        logger.warning(
+            "By doing this you will install the entire dependencies on root."
+        )
         input("If you want to continue, press Enter. Press CTRL+C to abort.")
     main()
