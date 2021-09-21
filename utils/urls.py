@@ -86,3 +86,15 @@ def has_wildcard(url) -> bool:
     """
     subdomain = extract(url).subdomain
     return subdomain.split(".")[0] == "*"  # check if last subdomain is a wildcard
+
+
+def remove_wildcard(url) -> str:
+    """
+    Remove the wildcard from the last subdomain.
+
+    :param url: The url to remove the wildcard from
+    :type url: str
+    :return: The url without the wildcard
+    :rtype: str
+    """
+    return url_domain(url)[2:]

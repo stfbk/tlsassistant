@@ -1,3 +1,4 @@
+from os import remove
 from os.path import sep
 from pathlib import Path
 
@@ -12,7 +13,9 @@ from modules.parse_input_conf import Parser
 import datetime
 from enum import Enum
 from modules.report import Report as Report_module
-from utils.urls import link_sep
+from utils.urls import link_sep, url_domain
+from utils.urls import has_wildcard, remove_wildcard
+from utils.subdomain_enumeration import enumerate
 
 
 class Core:
@@ -392,6 +395,42 @@ class Core:
             )
         self.__logging.debug("Output generated.")
 
+    def __enumerate_hosts(
+        self, hostname_or_path: str, type_of_analysis: Analysis
+    ) -> str:
+        if type_of_analysis in [
+            self.Analysis.HOST,
+            self.Analysis.DOMAINS,
+        ] and has_wildcard(
+            hostname_or_path
+        ):  # checks if it's a host or a domain list analysis
+            # perform enumeration if needed
+            self.__logging.info(
+                f"Performing subdomain enumeration on {hostname_or_path}.."
+            )
+            for host in enumerate(remove_wildcard(hostname_or_path)):
+                if has_wildcard(host):  # escape wildcard
+                    host = remove_wildcard(host)
+                yield host
+        else:
+            yield hostname_or_path
+
+    def __wrap_execution(
+        self,
+        res: dict,
+        domain: str,
+        type_of_analysis: Analysis,
+        configuration: dict,
+        port=None,
+    ):  # used to wrap the execution so we don't have repeated code
+        for host in self.__enumerate_hosts(domain, type_of_analysis):
+            if host not in res:
+                res[host] = {}
+            (
+                res[host]["loaded_modules"],
+                res[host]["results"],
+            ) = self.__exec_anaylsis(type_of_analysis, host, configuration, port)
+
     def __exec(
         self,
         type_of_analysis: Analysis,
@@ -416,20 +455,12 @@ class Core:
         if type_of_analysis == self.Analysis.DOMAINS:
             self.__logging.info("Executing multiple domain analysis.")
             for domain in hostname_or_path:
-                if domain not in res:
-                    res[domain] = {}
-                (
-                    res[domain]["loaded_modules"],
-                    res[domain]["results"],
-                ) = self.__exec_anaylsis(type_of_analysis, domain, configuration)
+                self.__wrap_execution(
+                    res, domain, type_of_analysis, configuration, port
+                )
         else:
-            if hostname_or_path not in res:
-                res[hostname_or_path] = {}
-            (
-                res[hostname_or_path]["loaded_modules"],
-                res[hostname_or_path]["results"],
-            ) = self.__exec_anaylsis(
-                type_of_analysis, hostname_or_path, configuration, port
+            self.__wrap_execution(
+                res, hostname_or_path, type_of_analysis, configuration, port
             )
         self.__logging.info(f"Generating output..")
         self.__call_output_modules(
