@@ -167,7 +167,7 @@ class Tlsfuzzer_base:
                 hostname=self._input_dict["hostname"],
                 port=self._input_dict["port"],
                 scripts=self._arguments,
-                force = self._input_dict.get("force", False),
+                force=self._input_dict.get("force", False),
             )
         )
         return self.output()

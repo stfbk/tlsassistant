@@ -120,7 +120,11 @@ class Super_base:
         Validator([(self._input_dict["path"], str)])
         self._input_dict["path"] = self._input_dict["path"]
         self._output_dict = self._worker(
-            self._instance.run(path=self._input_dict["path"], args=self._arguments,force=self._input_dict.get("force",False))
+            self._instance.run(
+                path=self._input_dict["path"],
+                args=self._arguments,
+                force=self._input_dict.get("force", False),
+            )
         )
         return self.output()
 
