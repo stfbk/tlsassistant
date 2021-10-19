@@ -123,5 +123,5 @@ def load_list_of_domains(path: str) -> [str]:
     with file.open() as f:
         for line in f:
             url, port = link_sep(line)
-            urls.append(url_domain(url))
+            urls.append(f"{url_domain(url)}:{port}")
     return urls
