@@ -29,6 +29,7 @@ class Testssl_base:
 
         :Keyword Arguments:
             * *hostname* (``str``) -- Hostname to be analyzed.
+            * *force* (``bool``) -- Force the analysis.
             * *port* (``str``) -- Port to be analyzed.
             * *keys* (``list``) -- List of keys to be analyzed.
         """
@@ -119,6 +120,7 @@ class Testssl_base:
         :Keyword Arguments:
             * *hostname* (``str``) -- Hostname to be analyzed.
             * *port* (``str``) -- Port to be analyzed.
+            * *force* (``bool``) -- Force the analysis.
             * *keys* (``list``) -- List of keys to be analyzed.
 
         :return: The results of the analysis.
@@ -140,7 +142,7 @@ class Testssl_base:
         )
         self._output_dict = self._worker(
             self._instance.run(
-                hostname=self._input_dict["hostname"], args=self._arguments
+                hostname=self._input_dict["hostname"], args=self._arguments, force = self._input_dict.get("force", False)
             )
         )
         return self.output()

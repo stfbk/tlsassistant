@@ -32,6 +32,7 @@ class Mallodroid_base:
         :Keyword Arguments:
             - path (str): Path to the apk file.
             - args (list): List of arguments to be passed to the Mallodroid instance.
+            - force (bool): Force the execution of the Mallodroid instance.
         """
         self._input_dict = kwargs
 
@@ -106,6 +107,7 @@ class Mallodroid_base:
         :Keyword Arguments:
             - path (str): Path to the apk file.
             - args (list): List of arguments to be passed to the Mallodroid instance.
+            - force (bool): Force the execution of the Mallodroid instance.
         """
         self.input(**kwargs)
 
@@ -114,7 +116,7 @@ class Mallodroid_base:
         Validator([(self._input_dict["path"], str)])
         self._input_dict["path"] = self._input_dict["path"]
         self._output_dict = self._worker(
-            self._instance.run(path=self._input_dict["path"], args=self._arguments)
+            self._instance.run(path=self._input_dict["path"], args=self._arguments, force = self._input_dict.get("force", False))
         )
         return self.output()
 

@@ -36,6 +36,7 @@ class Super_base:
         :Keyword Arguments:
             * *path* (``str``) -- path to the file
             * *args* (``list``) -- list of arguments
+            * *force* (``bool``) -- force the analysis
         """
         self._input_dict = kwargs
 
@@ -107,6 +108,7 @@ class Super_base:
         :Keyword Arguments:
             * *path* (``str``) -- path to the file
             * *args* (``list``) -- list of arguments
+            * *force* (``bool``) -- force the analysis
         :return: results
         :rtype: dict
         :raise AssertionError: if the input arguments are not valid
@@ -118,7 +120,7 @@ class Super_base:
         Validator([(self._input_dict["path"], str)])
         self._input_dict["path"] = self._input_dict["path"]
         self._output_dict = self._worker(
-            self._instance.run(path=self._input_dict["path"], args=self._arguments)
+            self._instance.run(path=self._input_dict["path"], args=self._arguments,force=self._input_dict.get("force",False))
         )
         return self.output()
 

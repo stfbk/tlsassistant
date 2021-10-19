@@ -39,6 +39,7 @@ class Hsts_base:
 
         :Keyword Arguments:
             * **hostname** (*str*) -- the hostname to be used for the analysis
+            * **force** (*bool*) -- force the analysis to be run, default is True
             * **port** (*str*) -- the port to be used for the analysis
             * **type** (*str*) -- the type of analysis to be done
         """
@@ -135,6 +136,7 @@ class Hsts_base:
 
         :Keyword Arguments:
             * **hostname** (*str*) -- the hostname to be used for the analysis
+            * **force** (*bool*) -- force the analysis to be run, default is True
             * **port** (*str*) -- the port to be used for the analysis
             * **type** (*str*) -- the type of analysis to be done
 
@@ -157,7 +159,7 @@ class Hsts_base:
                 hostname=self._input_dict["hostname"],
                 port=self._input_dict["port"],
                 type=self._arguments,
-                force=True,
+                force=self._input_dict.get("force", True),
             )
         )
         return self.output()

@@ -37,6 +37,7 @@ class Tlsfuzzer_base:
 
         :Keyword Arguments:
             * *hostname* (``str``) -- Hostname to be tested
+            * *force* (``bool``) -- Force the analysis
             * *port* (``str``) -- Port to be tested
             * *scripts* (``list``) -- List of scripts to be executed
         """
@@ -136,6 +137,7 @@ class Tlsfuzzer_base:
         :Keyword Arguments:
             * *hostname* (``str``) -- Hostname to be tested
             * *port* (``str``) -- Port to be tested
+            * *force* (``bool``) -- Force the analysis
             * *scripts* (``list``) -- List of scripts to be executed
 
         :return: results of the analysis
@@ -165,6 +167,7 @@ class Tlsfuzzer_base:
                 hostname=self._input_dict["hostname"],
                 port=self._input_dict["port"],
                 scripts=self._arguments,
+                force = self._input_dict.get("force", False),
             )
         )
         return self.output()
