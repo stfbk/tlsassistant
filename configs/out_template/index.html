@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>TLSAv2</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Condensed&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700&amp;display=swap">
+    <link rel="stylesheet" href="assets/css/styles.min.css">
+</head>
+
+<body>
+    <div class="card"></div>
+    <header class="header-blue" style="color: var(--bs-blue);background: #0068b4;">
+        <nav class="navbar navbar-dark navbar-expand-md navigavtion-clean-search">
+            <div class="container-fluid">
+                <div class="card" style="background: rgba(255,255,255,0);border-style: none;"><a class="navbar-brand"
+                        href="#" style="font-family: roboto;text-align: left;"><img class="img-fluid"
+                            src="assets/img/FBK_Cybersecurity_white.png" style="width: 150px;">&nbsp;
+                        &nbsp;TLSAssistant</a></div><label class="form-label"
+                    style="color: #a5a5a5;font-family: Roboto, sans-serif;">Version {{version}}</label>
+            </div>
+        </nav>
+        <div class="container" style="background: #ffffff;border-radius: 10px;max-width: 90%;">
+            <div class="card" style="padding: 8px;margin-top: 8;">
+                <h2
+                    style="color: #0068b4;font-family: Roboto, sans-serif;margin-top: 0px;padding-top: 8px;padding-right: 8px;padding-bottom: 0px;padding-left: 7px;">
+                    Recap</h2>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;">
+                                    Hostname/<br>Modules</th>
+                                {% for module in modules %}
+                                <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;">{{module}}
+                                </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for host in results %}
+                                <tr>
+                                    <td
+                                        style="font-family: Roboto, sans-serif;background: rgba(255,175,175,0);font-style: italic;">
+                                        {{host}}</td>
+                                    {% for module in modules %}
+                                        {% if results[host][module] %}
+                                            <td
+                                                style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(255,175,175,0.59);">
+                                                Potentially Vulnerable</td>
+                                        {% else %}
+                                            <td
+                                                style="font-family: Roboto, sans-serif;font-style: italic;color: rgb(33, 37, 41);background: rgba(235,235,235,0.59);">
+                                                Not Vulnerable</td>
+                                        {% endif %}
+                                    {% endfor %}
+
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <h2
+                style="color: #0068b4;font-family: Roboto, sans-serif;padding-top: 8px;padding-bottom: 0px;padding-left: 7px;padding-right: 8px;">
+                Detailed Results</h2>
+            <h6
+                style="color: #6c757d;font-family: Roboto, sans-serif;padding: 0px;padding-left: 9px;padding-top: 0px;padding-bottom: 4px;">
+                {{date}}</h6>
+            <h6
+                style="color: #6c757d;font-family: Roboto, sans-serif;padding: 0px;padding-left: 9px;padding-top: 0px;padding-bottom: 4px;">
+                Modules: {% for module in modules%} {{module}} {%endfor%} </h6>
+            {% for host in results %}
+            <div class="card" style="background: rgba(235,235,235,0.59);">
+                <h5 class="text-center"
+                    style="font-family: 'Roboto Condensed', sans-serif;color: #a5a5a5;background: rgba(235,235,235,0);">
+                    {{host}}</h5>
+                {% for module in modules %}
+                {% if results[host][module] %}
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">{{results[host][module]['name']}}</h3>
+                        <h6 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">
+                            CVE:&nbsp;{{results[host][module]['CVE']}} -&nbsp;CVSS Score:&nbsp;{{results[host][module]['CVSS']}}</h6>
+                        <h6 class="text-muted card-subtitle mb-2"
+                            style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[host][module]['extendedname']}}
+                        </h6>
+                        <p class="card-text"
+                            style="font-family: 'Roboto Condensed', sans-serif;color: #6c757d;font-style: italic;">
+                            {{results[host][module]['description']}}
+                        </p>
+                        {% if 'mitigation' in results[host][module] %}
+                        <div class="card" style="border-style: none;padding: 2px;margin: 0px;">
+                            <h5 style="color: #000000;font-family: Roboto, sans-serif;">Mitigation</h5>
+                            <ul class="list-group list-group-flush" style="border-style: solid;border-color: #8db53d;">
+                                
+                                {% for key,mitigation in results[host][module]['mitigation'].items() %}
+                                <li class="list-group-item" style="border-radius: 4px;border-style: none;">
+                                    <h5 class="mb-0"
+                                        style="border-style: none;border-bottom-style: none;font-family: Roboto, sans-serif;">
+                                        <strong>{{key}}</strong>
+                                    </h5>
+                                    <p style="font-family: Roboto, sans-serif;text-align: justify;margin: 3px;">{{mitigation}}</p>
+                                    </p>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                        {% if 'references' in results[host][module] %}
+                        <a class="card-link" href="{{results[host][module]['references']}}">Link to the
+                            webpage</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        <footer class="text-center footer-basic"
+            style="background: rgba(255,255,255,0);padding-bottom: 5px;padding-top: 72px;"><img class="img-fluid"
+                src="assets/img/ST.png" style="width: 150px;">
+            <p class="copyright" style="color: #a5a5a5;font-family: Roboto, sans-serif;font-size: 14px;">FBK - Security
+                And Trust Unit © 2021</p>
+        </footer><label class="form-label"></label>
+    </header>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+</body>
+
+</html>
