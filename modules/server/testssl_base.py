@@ -160,4 +160,4 @@ class Testssl_base:
         :return: The results of the analysis.
         :rtype: dict
         """
-        return self._output_dict
+        return self._output_dict.copy()
