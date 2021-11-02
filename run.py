@@ -1,6 +1,7 @@
 import argparse
 from argparse import RawTextHelpFormatter
 from tlsa.tlsa import Tlsa
+from utils.globals import version
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -9,9 +10,7 @@ if __name__ == "__main__":
         formatter_class=RawTextHelpFormatter,  # todo: change the desc
         epilog="https://st.fbk.eu -  Security and Trust, FBK Research Unit",
     )
-    parser.add_argument(
-        "--version", action="version", version="%(prog)s v2.3.0 alpha, closed release"
-    )
+    parser.add_argument("--version", action="version", version=f"%(prog)s v{version}")
     parser.add_argument(
         "-v",
         "--verbosity",

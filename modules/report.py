@@ -3,11 +3,16 @@ from os import mkdir
 from pathlib import Path
 from utils.booleanize import boolean_results
 
-from utils.validation import Validator
-from utils import md
+from utils.validation import Validator, rec_search_key
+from utils import output
 from datetime import datetime
 from os.path import sep
 from utils.logger import Logger
+from requests.structures import CaseInsensitiveDict
+from jinja2 import Environment, FileSystemLoader
+from pathlib import Path
+from utils.globals import version
+from distutils.dir_util import copy_tree as cp
 from utils.prune import pruner
 
 
@@ -22,12 +27,13 @@ class Report:
         Enum for the report mode.
         """
 
-        DEFAULT = 0
-        SCOREBOARD = 1
+        HOSTS = 0
+        MODULES = 1
 
     def __init__(self):
         self.__input_dict = {}
         self.__path = ""
+        self.__template_dir = Path(f"configs{sep}out_template")
         self.__logging = Logger("Report")
 
     def input(self, **kwargs):
@@ -40,88 +46,67 @@ class Report:
         * *results* (dict) -- Dictionary containing the results of the scan.
         * *path* (string) -- Path to the report.
         * *mode* (Mode) -- Report mode.
-        * *scoreboard* (bool) -- If true, generates a scoreboard.
+        * *modules* (list) -- List of modules to include in the report.
         """
         self.__input_dict = kwargs
 
-    def __get_default(self, output):
-        """
-        Generates the default report.
+    def __modules_report_formatter(self, results: dict, modules: list):
+        self.__logging.info(f"Generating modules report..")
+        out = {}
+        for module in modules:
+            vuln_hosts = []
+            if module not in out:
+                out[module] = {}
+            for hostname in results:
+                self.__logging.debug(f"Generating report for {hostname}")
+                if module in results[hostname]:
+                    if "Entry" in results[hostname][module]:
+                        out[module] = CaseInsensitiveDict(
+                            results[hostname][module]["Entry"]
+                        )
+                    if hostname not in vuln_hosts:
+                        vuln_hosts.append(hostname)
+            out[module]["hosts"] = vuln_hosts.copy()
+        return out
 
-        :param output: Output list.
-        :type output: list
-        :return: Output list.
-        :rtype: list
+    def __hosts_report_formatter(self, results: dict):
+        self.__logging.info(f"Generating hosts report..")
+        for hostname in results:
+            # the results are good, we need to remove the "Entry" key but preserve the rest with the CaseInsensitiveDict
+            for module in results[hostname]:
+                if "Entry" in results[hostname][module]:
+                    results[hostname][module] = CaseInsensitiveDict(
+                        results[hostname][module]["Entry"]
+                    )
+        return results
 
-        """
+    def __jinja2__report(
+        self, mode: Mode, results: dict, modules: list, date: datetime.date
+    ):
+        self.__logging.debug(f"Generating report in jinja2..")
+        fsl = FileSystemLoader(searchpath=self.__template_dir)
+        env = Environment(loader=fsl)
+        to_process = {"version": version, "date": date, "modules": modules}
+        if mode == self.Mode.MODULES:
+            template = env.get_template(f"modules_report.html")
+            to_process["results"] = self.__modules_report_formatter(results, modules)
+        elif mode == self.Mode.HOSTS:
+            template = env.get_template(f"hosts_report.html")
+            to_process["results"] = self.__hosts_report_formatter(results)
+        else:
+            raise ValueError(f"Unknown mode: {mode}")
+        return template.render(**to_process)
 
-        v = Validator()
-        for hostname_or_path in self.__input_dict["results"]:
-            res = self.__input_dict["results"][hostname_or_path]
-            raw_results = res["results"]
-            modules = res["loaded_modules"]
-            v.dict(raw_results)
-            v.string(hostname_or_path)
-            v.dict(modules)
-            self.__logging.debug("Added headers...")
-            raw_results = pruner(raw_results)
-            dt_string = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-            output += [
-                md.italic(f"{dt_string} - {hostname_or_path}"),
-                md.title("Modules used", level=md.H2),
-                ", ".join([md.italic(module) for module in modules]),
-                md.title("Vulnerabilities found", level=md.H2),
-            ]
-
-            self.__logging.debug("Recursive parsing...")
-            output.append(md.recursive_parsing(raw_results, md.H1, bold_instead=True))
-
-            self.__logging.debug("Recursive parsing done.")
-            output.append("\n")
-            output.append(md.line())
-        return output
-
-    def __get_scoreboard(self, output):
-        """
-        Generates the scoreboard report.
-
-        :param output: Output list.
-        :type output: list
-        :return: Output list.
-        :rtype: list
-        """
-        self.__logging.info(f"Generating Scoreboard..")
-        v = Validator()
-        once = False
-        dt_string = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        output.append(md.italic(f"{dt_string}"))
-        output.append("\n")
-        for hostname_or_path in self.__input_dict["results"]:
-            res = self.__input_dict["results"][hostname_or_path]
-            raw_results = res["results"]
-            modules = res["loaded_modules"]
-            v.dict(raw_results)
-            v.string(hostname_or_path)
-            v.dict(modules)
-            raw_results = pruner(raw_results)  # remove useless data
-            self.__logging.debug("Added headers...")
-            if not once:
-                partial = [md.table.wrap("  ")]
-                for module in modules:
-                    partial.append(md.table.title(module.replace("_", " ")))
-                once = True
-                output.append(f"|{''.join(partial)}|")
-
-            partial = [md.table.bold(f"{hostname_or_path}")]
-
-            bres = boolean_results(modules, raw_results)
-
-            for module in modules:
-                partial.append(md.table.wrap("❌" if bres[module] else "✅"))
-            output.append(f"|{''.join(partial)}|")
-        output.append("\n")
-        output.append(md.line())
-        return output
+    def __extract_results(self, res: dict) -> tuple:
+        # due to the fact that the results are in a dict with the loaded_modules, we have to extract the results
+        # by removing the loaded_modules
+        modules = {}
+        for hostname in res:
+            if "loaded_modules" in res[hostname]:
+                modules.update(res[hostname]["loaded_modules"].copy())
+                del res[hostname]["loaded_modules"]
+                res[hostname] = res[hostname]["results"]
+        return res, modules
 
     def run(self, **kwargs):
         """
@@ -134,73 +119,72 @@ class Report:
         * *results* (dict) -- Dictionary containing the results of the scan.
         * *path* (string) -- Path to the report.
         * *mode* (Mode) -- Report mode.
-        * *scoreboard* (bool) -- If true, generates a scoreboard.
+        * *modules* (list) -- List of modules to include in the report.
         """
 
         self.input(**kwargs)
-        if "path" not in self.__input_dict:
-            raise AssertionError("Missing output path")
-        if "results" not in self.__input_dict:
-            raise AssertionError("Missing results list")
-        # if "hostname_or_path" not in self.__input_dict:
-        #    raise AssertionError("Missing hostname of the server or path of apk")
+        assert "path" in self.__input_dict, "Missing output path"
+        assert "results" in self.__input_dict, "Missing results list"
+        assert "mode" in self.__input_dict, "Missing mode"
 
         path = self.__input_dict["path"]
         self.__path = Path(path)
 
-        Validator([(path, str)])
-        output = [
-            md.title("TLSA Analysis"),
-            "\n",
-        ]
-        output = (
-            self.__get_scoreboard(output)
-            if "mode" in self.__input_dict
-            and self.__input_dict["mode"] == self.Mode.SCOREBOARD
-            else self.__get_default(output)
+        Validator(
+            [
+                (path, str),
+                (self.__input_dict["results"], dict),
+                (self.__input_dict["mode"], self.Mode),
+            ]
         )
+
         if not Path("results").exists():
             self.__logging.debug("Adding result folder...")
             mkdir("results")
+            self.__logging.debug("Copying assets folder...")
+            cp(
+                str(Path(f"configs{sep}out_template{sep}assets").absolute()),
+                str(Path(f"results{sep}assets").absolute()),
+            )
 
         output_file = Path(f"results{sep}{self.__path.stem}.html")
-        self.__logging.debug("Starting MD to HTML...")
         output_path = output_file.absolute()
-        options = [
-            "break-on-newline",
-            "fenced-code-blocks",
-            "code-friendly",
-            "cuddled-lists",
-        ]
-        if (
-            "mode" in self.__input_dict
-            and self.__input_dict["mode"] == self.Mode.SCOREBOARD
-        ):
-            options.append("wiki-tables")
-        try:
-            md.md_to_html(
-                options,
-                "\n".join(output),
-                output_file=str(output_file.absolute()),
-                css_file=f"dependencies{sep}typora-mo-theme{sep}mo.css",
+        results, modules = self.__extract_results(
+            self.__input_dict["results"]
+        )  # obtain results removing loaded_modules
+        results = pruner(results)  # prune empty results
+        # now, we want to divide raw from mitigations
+        for hostname in results:
+            for module in results[hostname]:
+                raw = results[hostname][module].copy()
+                for mitigation in rec_search_key(
+                    "mitigation", raw
+                ):  # remove mitigation in raw results
+                    mitigation = "check below"
+                for mitigation in rec_search_key(
+                    "mitigation", results[hostname][module]
+                ):
+                    if mitigation is not None:
+                        results[hostname][
+                            module
+                        ] = (
+                            mitigation.copy()
+                        )  # i'm expecting only one mitigation per module, is it ok?
+                results[hostname][module]["raw"] = raw
+        with open(output_path, "w") as f:
+            f.write(
+                self.__jinja2__report(
+                    mode=self.__input_dict["mode"],
+                    modules=list(modules.keys()),
+                    results=results,
+                    date=datetime.now(),
+                )
             )
-        except AssertionError as a:
-            self.__logging.warning(
-                f"Error in report generation: {a}. Removing cuddled-lists addon..."
-            )
-            options.remove("cuddled-lists")
-            md.md_to_html(
-                options,
-                "\n".join(output),
-                output_file=str(output_file.absolute()),
-                css_file=f"dependencies{sep}typora-mo-theme{sep}mo.css",
-            )
-
         self.__logging.debug("Checking if needs pdf...")
 
         if self.__path.suffix.lower() == ".pdf":
             output_path = f"{output_file.absolute().parent}{sep}{output_file.stem}.pdf"
             self.__logging.debug("Starting HTML to PDF...")
-            md.html_to_pdf(str(output_file.absolute()), output_path)
+            output.html_to_pdf(str(output_file.absolute()), output_path)
         self.__logging.info(f"Report generated at {output_path}")
         # todo: add PDF library

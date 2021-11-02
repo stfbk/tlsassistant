@@ -263,7 +263,11 @@ class Https:
                 return self.__chose_results(
                     type, requests.Response()
                 )  # default response
-            except requests.exceptions.ConnectTimeout as ex:
+            except (
+                requests.exceptions.ConnectTimeout,
+                requests.exceptions.ConnectTimeout,
+                requests.exceptions.ConnectionError,
+            ) as ex:
                 self.__logging.error(f"I can't connect to host:\n{ex}")
                 self.__logging.warning(
                     "The HTTPS_HSTS analysis cannot proceed and result will be set as vulnerable."
