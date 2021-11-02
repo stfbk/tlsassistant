@@ -66,7 +66,8 @@ class Report:
                         )
                     if hostname not in vuln_hosts:
                         vuln_hosts.append(hostname)
-            out[module]["hosts"] = vuln_hosts.copy()
+            if vuln_hosts:
+                out[module]["hosts"] = vuln_hosts.copy()
         return out
 
     def __hosts_report_formatter(self, results: dict):
