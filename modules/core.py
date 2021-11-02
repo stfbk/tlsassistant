@@ -370,15 +370,15 @@ class Core:
             results[name] = module.run(**args)
         return results
 
-    def __call_output_modules(self, res: dict, hostname_or_path: str):
+    def __call_output_modules(self, res: dict):
 
         """
         Call output modules
 
         :param res: results
         :type res: dict
-        :param hostname_or_path: hostname or path to the file
-        :type hostname_or_path: str
+        :loaded_modules: loaded modules
+        :type loaded_modules: dict
         """
 
         if (
@@ -388,10 +388,9 @@ class Core:
             Report_module().run(
                 path=self.__input_dict["output"],
                 results=res,
-                hostname_or_path=hostname_or_path,
-                mode=Report_module.Mode.SCOREBOARD
+                mode=Report_module.Mode.MODULES
                 if "scoreboard" in self.__input_dict and self.__input_dict["scoreboard"]
-                else Report_module.Mode.DEFAULT,
+                else Report_module.Mode.HOSTS,
             )
         self.__logging.debug("Output generated.")
 
@@ -420,7 +419,7 @@ class Core:
         res: dict,
         domain: str,
         type_of_analysis: Analysis,
-        configuration: dict,
+        configuration: str,
         port=None,
     ):  # used to wrap the execution so we don't have repeated code
         for host in self.__enumerate_hosts(domain, type_of_analysis):
@@ -463,10 +462,7 @@ class Core:
                 res, hostname_or_path, type_of_analysis, configuration, port
             )
         self.__logging.info(f"Generating output..")
-        self.__call_output_modules(
-            res,
-            hostname_or_path=hostname_or_path,
-        )
+        self.__call_output_modules(res)
 
     def __exec_anaylsis(
         self,

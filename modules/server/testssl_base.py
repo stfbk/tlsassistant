@@ -95,8 +95,6 @@ class Testssl_base:
                 val.string(key)
                 if key not in results[ip]:
                     results[ip][key] = {"finding": "ERROR_NOT_FOUND"}
-                if ip not in out:
-                    out[ip] = {}
                 # check for severity != OK or info or warn
                 condition = "severity" in results[ip][key] and (
                     results[ip][key]["severity"] != "OK"
@@ -107,7 +105,13 @@ class Testssl_base:
                     results[ip][key], key, condition
                 )
                 if conditioned_result:
-                    out[ip][key] = conditioned_result
+                    out = conditioned_result
+                    if "ip" not in out:
+                        out["ip"] = []
+                    out["ip"].append(ip)
+                    if "key" not in out:
+                        out["key"] = []
+                    out["key"].append(key)
         return out
 
     def run(self, **kwargs):
