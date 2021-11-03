@@ -108,10 +108,12 @@ class Testssl_base:
                     out = conditioned_result
                     if "ip" not in out:
                         out["ip"] = []
-                    out["ip"].append(ip)
+                    if ip not in out["ip"]:
+                        out["ip"].append(ip)
                     if "key" not in out:
                         out["key"] = []
-                    out["key"].append(key)
+                    if key not in out["key"]:
+                        out["key"].append(key)
         return out
 
     def run(self, **kwargs):
