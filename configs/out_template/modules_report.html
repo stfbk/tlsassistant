@@ -41,9 +41,9 @@
                 <div class="card">
                     <div class="card-body">
                         <h3 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">{{results[module]['name']}}</h3>
-                        {% if 'CVE' in results[module] or 'CVSS' in results[module] %}
+                        {% if 'CVE' in results[module] or 'CVSS2' in results[module] %}
                         <h6 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">
-                            {% if 'CVE' in results[module] %}CVE:&nbsp;{{results[module]['CVE']}} {% endif %}{% if 'CVSS' in results[module] %}-&nbsp;CVSS Score:&nbsp;{{results[module]['CVSS']}}{% endif %}</h6>
+                            {% if 'CVE' in results[module] %}CVE:&nbsp;{{results[module]['CVE']}} {% endif %}{% if 'CVSS2' in results[module] %}-&nbsp;CVSS Score:&nbsp;{{results[module]['CVSS']}}{% endif %}</h6>
                         {% endif %}
                         <h6 class="text-muted card-subtitle mb-2"
                             style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[module]['extendedname']}}
@@ -69,6 +69,27 @@
                                 {% endfor %}
                             </ul>
                             
+                        </div>
+                        {% endif %}
+                        {% if 'raw' in results[module] %}
+                        <div class="card" style="border-style: none;padding: 2px;margin: 0px;">
+                            <div class="accordion" role="tablist" id="accordion-1"
+                                style="border-width: 3px;border-radius: 0px,0px,3px,3px;">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" role="tab"><button class="accordion-button collapsed"
+                                            data-bs-toggle="collapse" data-bs-target="#accordion-1 .item-1"
+                                            aria-expanded="false" aria-controls="accordion-1 .item-1"
+                                            style="border-style: solid;border-color: #8db53d;font-weight: bold;font-family: Roboto, sans-serif;color: #000000;">RAW
+                                            Output</button></h2>
+                                    <div class="accordion-collapse collapse item-1" role="tabpanel"
+                                        data-bs-parent="#accordion-1"
+                                        style="border-style: solid;border-color: #0068b4;border-top-style: none;border-bottom-style: none;height: 200px;">
+                                        <div class="accordion-body"><textarea onclick="this.focus();this.select()"
+                                                style="max-width: 100%;min-width: 100%;width: 100%;height: 150px;min-height: 0px;max-height: none;border-radius: 3px;font-family: 'Roboto Mono', monospace;background: #f5faff;color: #0068b4;border-width: 3px;border-color: #0068b4;border-top-style: none;border-right-color: #acd5fe;border-bottom-style: none;border-left-color: #acd5fe;padding: 12px;margin: 0px;font-size: 13px;margin-top: 10px;"
+                                                readonly="" name="raw_code">{{results[module]['raw']}}</textarea></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         {% endif %}
                         {% if 'hosts' in results[module] and results[module]['hosts']%}

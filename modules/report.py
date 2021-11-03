@@ -14,6 +14,7 @@ from pathlib import Path
 from utils.globals import version
 from distutils.dir_util import copy_tree as cp
 from utils.prune import pruner
+from pprint import pformat
 
 
 class Report:
@@ -55,17 +56,22 @@ class Report:
         out = {}
         for module in modules:
             vuln_hosts = []
+            raw_results = {}
             if module not in out:
                 out[module] = {}
             for hostname in results:
                 self.__logging.debug(f"Generating report for {hostname}")
                 if module in results[hostname]:
+                    if 'raw' in results[hostname][module]:
+                        raw_results[hostname] = results[hostname][module]['raw'].copy()
                     if "Entry" in results[hostname][module]:
                         out[module] = CaseInsensitiveDict(
                             results[hostname][module]["Entry"]
                         )
                     if hostname not in vuln_hosts:
                         vuln_hosts.append(hostname)
+            if raw_results:
+                out[module]["raw"] = pformat(raw_results.copy(), indent=2)
             if vuln_hosts:
                 out[module]["hosts"] = vuln_hosts.copy()
         return out
@@ -75,10 +81,15 @@ class Report:
         for hostname in results:
             # the results are good, we need to remove the "Entry" key but preserve the rest with the CaseInsensitiveDict
             for module in results[hostname]:
+                raw_results = {}
+                if 'raw' in results[hostname][module]:
+                    raw_results = results[hostname][module]['raw'].copy()
                 if "Entry" in results[hostname][module]:
                     results[hostname][module] = CaseInsensitiveDict(
                         results[hostname][module]["Entry"]
                     )
+                    if raw_results:
+                        results[hostname][module]["raw"] = pformat(raw_results.copy(), indent=2)
         return results
 
     def __jinja2__report(
@@ -158,10 +169,8 @@ class Report:
         for hostname in results:
             for module in results[hostname]:
                 raw = results[hostname][module].copy()
-                for mitigation in rec_search_key(
-                    "mitigation", raw
-                ):  # remove mitigation in raw results
-                    mitigation = "check below"
+                if 'mitigation' in raw:
+                    del raw['mitigation']
                 for mitigation in rec_search_key(
                     "mitigation", results[hostname][module]
                 ):
@@ -172,13 +181,14 @@ class Report:
                             mitigation.copy()
                         )  # i'm expecting only one mitigation per module, is it ok?
                 results[hostname][module]["raw"] = raw
+
         with open(output_path, "w") as f:
             f.write(
                 self.__jinja2__report(
                     mode=self.__input_dict["mode"],
                     modules=list(modules.keys()),
                     results=results,
-                    date=datetime.now(),
+                    date=datetime.now().replace(microsecond=0),
                 )
             )
         self.__logging.debug("Checking if needs pdf...")
