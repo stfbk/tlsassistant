@@ -5,17 +5,14 @@
     "CVE": "2016-2183",
     "CVSS3": "7.5 (High)",
     "#comment": " AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N ",
-    "Description": "By exploiting the block size of the 3DES CBC ciphers, an attacker is able to mount a birthday attack. Once the victim has (forcefully) generated the needed amount of data (approximately 2^32 blocks of data) its confidentiality can be affected due to the information leakage caused by the collisions in the cipher.\n",
+    "Description": "By exploiting the block size of the 3DES CBC ciphers, an attacker is able to mount a birthday attack. Once the victim has (forcefully) generated the needed amount of data (approximately 2^32 blocks of data) its confidentiality can be affected due to the information leakage caused by the collisions in the cipher.<br/>",
     "Mitigation": {
       "Textual": "Disable support for 3DES cipher suites.",
-      "Snippet": {
-        "apache": "1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);\n2. find the line starting with: **SSLCipherSuite**;\n3. add the string `:!3DES` at the end.\n\nN.B. restart the server by typing: `sudo service apache2 restart`.",
-        "nginx": {
-          "#text": "1. In a default situation, you can edit your website configuration */etc/nginx/sites-enabled/default*\n\t(if you changed your site conf name */etc/nginx/sites-enabled/YOURSITECONFIGURATION*);\n2. Inside `server {...}` brackets configuration, find `ssl_ciphers`;\n3. Remove **3DES** (if any) and add **:!3DES** at the end. \n4. Re run this tool. If it appears again,  Remove **IDEA** (if any) and add **:!IDEA** at the end. \n5. Re run this tool. If it appears again,  Remove **RSA** (if any) and add **:!RSA** at the end.",
-          "#comment": "Because it contains IDEA and DES",
-          "#text1": "\n\n\nN.B. restart the server by typing: `sudo service nginx restart`.\n"
-        }
-      }
+
+        "Apache": "1. open your Apache configuration file (default: <i>/etc/apache2/sites-available/default-ssl.conf</i>);<br/>2. find the line starting with: <strong>SSLCipherSuite</strong>;<br/>3. add the string <code>:!3DES</code> at the end.<br/><br/>N.B. restart the server by typing: <code>sudo service apache2 restart</code>.",
+        "Nginx": "1. In a default situation, you can edit your website configuration <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>);<br/>2. Inside <code>server {...}</code> brackets configuration, find <code>ssl_ciphers</code>;<br/>3. Remove <strong>3DES</strong> (if any) and add <strong>:!3DES</strong> at the end. <br/>4. Re run this tool. If it appears again,  Remove <strong>IDEA</strong> (if any) and add <strong>:!IDEA</strong> at the end. <br/>5. Re run this tool. If it appears again,  Remove <strong>RSA</strong> (if any) and add <strong>:!RSA</strong> at the end.<br/><br/><br/>N.B. restart the server by typing: <code>sudo service nginx restart</code>.<br/>"
+
+
     }
   },
   "#comment": " https://sweet32.info ",

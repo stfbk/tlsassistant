@@ -37,12 +37,14 @@
                 Modules: {% for module in modules%} {{module}} {%endfor%} </h6>
             <div class="card" style="background: rgba(235,235,235,0.59);">
                 {% for module in modules %}
-                {% if module in results %}
+                {% if module in results and results[module]%}
                 <div class="card">
                     <div class="card-body">
                         <h3 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">{{results[module]['name']}}</h3>
+                        {% if 'CVE' in results[module] or 'CVSS' in results[module] %}
                         <h6 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">
-                            CVE:&nbsp;{{results[module]['CVE']}} -&nbsp;CVSS Score:&nbsp;{{results[module]['CVSS']}}</h6>
+                            {% if 'CVE' in results[module] %}CVE:&nbsp;{{results[module]['CVE']}} {% endif %}{% if 'CVSS' in results[module] %}-&nbsp;CVSS Score:&nbsp;{{results[module]['CVSS']}}{% endif %}</h6>
+                        {% endif %}
                         <h6 class="text-muted card-subtitle mb-2"
                             style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[module]['extendedname']}}
                         </h6>
@@ -69,6 +71,7 @@
                             
                         </div>
                         {% endif %}
+                        {% if 'hosts' in results[module] and results[module]['hosts']%}
                         <div class="card">
                             <div class="card-body"
                                 style="border-right-style: solid;border-right-color: var(--bs-red);border-left-style: solid;border-left-color: var(--bs-red);">
@@ -80,6 +83,7 @@
                                     {%for host in results[module]['hosts']%}{{host}}<br>{%endfor%}</h6>
                             </div>
                         </div>
+                        {% endif %}
                         {% if 'references' in results[module] %}
                         <a class="card-link" href="{{results[module]['references']}}">Link to the
                             webpage</a>

@@ -85,8 +85,10 @@
                 <div class="card">
                     <div class="card-body">
                         <h3 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">{{results[host][module]['name']}}</h3>
+                        {% if 'CVE' in results[module] or 'CVSS' in results[module] %}
                         <h6 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">
-                            CVE:&nbsp;{{results[host][module]['CVE']}} -&nbsp;CVSS Score:&nbsp;{{results[host][module]['CVSS']}}</h6>
+                            {% if 'CVE' in results[module] %}CVE:&nbsp;{{results[module]['CVE']}} {% endif %}{% if 'CVSS' in results[module] %}-&nbsp;CVSS Score:&nbsp;{{results[module]['CVSS']}}{% endif %}</h6>
+                        {% endif %}
                         <h6 class="text-muted card-subtitle mb-2"
                             style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[host][module]['extendedname']}}
                         </h6>

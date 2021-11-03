@@ -1,16 +1,14 @@
 {
   "Entry": {
     "Name": "ROBOT",
-    "ExtendedName": "**R**eturn **O**f **B**leichenbacher's **O**racle **T**hreat",
+    "ExtendedName": "<strong>R</strong>eturn <strong>O</strong>f <strong>B</strong>leichenbacher's <strong>O</strong>racle <strong>T</strong>hreat",
     "CVE": "Library dependent",
     "CVSS3": "Library dependent",
     "Description": "Due to the availability of the PKCS#1v1.5 padding algorithm within RSA, an attacker is able to extract the private key of the session and breaking the message confidentiality. By using a adaptive chosen-ciphertext attack, the victim is forced to leak information that help the attacker to guess the key. The key can then be used to decrypt HTTPS traffic sent between the TLS server and the user\u2019s browser.",
     "Mitigation": {
       "Textual": "Disable support to RSA key exchange.",
-      "Snippet": {
-        "apache": "1. open your Apache configuration file (default: */etc/apache2/sites-available/default-ssl.conf*);\n2. find the line starting with: **SSLCipherSuite**;\n3. add the string `:!RSA` at the end.\n\nN.B. restart the server by typing: `sudo service apache2 restart`.",
-        "nginx": "1. In a default situation, you can edit your website configuration */etc/nginx/sites-enabled/default*\n\t(if you changed your site conf name */etc/nginx/sites-enabled/YOURSITECONFIGURATION*);\n2. Inside `server {...}` brackets configuration, find `ssl_ciphers`;\n3. Remove `RSA` (if any) and add `:!RSA` at the end. \n\n\nN.B. restart the server by typing: `sudo service nginx restart`.\n"
-      }
+      "Apache": "1. open your Apache configuration file (default: <i>/etc/apache2/sites-available/default-ssl.conf</i>);<br/>2. find the line starting with: <strong>SSLCipherSuite</strong>;<br/>3. add the string <code>:!RSA</code> at the end.<br/><br/>N.B. restart the server by typing: <code>sudo service apache2 restart</code>.",
+      "Nginx": "1. In a default situation, you can edit your website configuration <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>);<br/>2. Inside <code>server {...}</code> brackets configuration, find <code>ssl_ciphers</code>;<br/>3. Remove <code>RSA</code> (if any) and add <code>:!RSA</code> at the end. <br/><br/><br/>N.B. restart the server by typing: <code>sudo service nginx restart</code>.<br/>"
     }
   },
   "#comment": " https://robotattack.org ",

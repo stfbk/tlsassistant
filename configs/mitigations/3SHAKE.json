@@ -4,12 +4,11 @@
     "ExtendedName": "Triple Handshake Attack",
     "CVE": "Library dependent",
     "CVSS3": "Library dependent",
-    "Description": "Due to the incorrect handling of the session identifier, an attacker is able to force two sessions to have the same `Master Secret` and ID. The attacker performs 3SHAKE by providing a server to which the victim deliberately connects. Once connected, the malicious server exploits the renegotiation mechanism to manipulate the session.\nThe attack leads to a client impersonation that, by breaking both confidentiality and authentication, has a serious impact on the transmission.",
+    "Description": "Due to the incorrect handling of the session identifier, an attacker is able to force two sessions to have the same <code>Master Secret</code> and ID. The attacker performs 3SHAKE by providing a server to which the victim deliberately connects. Once connected, the malicious server exploits the renegotiation mechanism to manipulate the session.<br/>The attack leads to a client impersonation that, by breaking both confidentiality and authentication, has a serious impact on the transmission.",
     "Mitigation": {
-      "Textual": "The only acceptable mitigation is to use the `extended_master_secret` TLS extension. For this reason it is recommended to update the TLS library to a version that supports the aforementioned extension (e.g. OpenSSL v1.1.0+).",
-      "Snippet": {
-        "apache": "No snippet available",
-        "nginx": "No snippet available"
+      "Textual": "The only acceptable mitigation is to use the <code>extended_master_secret</code> TLS extension. For this reason it is recommended to update the TLS library to a version that supports the aforementioned extension (e.g. OpenSSL v1.1.0+).",
+      "Apache": "No snippet available",
+      "Nginx": "No snippet available"
       }
     }
   },

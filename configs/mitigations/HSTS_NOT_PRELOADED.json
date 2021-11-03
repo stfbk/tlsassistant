@@ -4,11 +4,10 @@
     "ExtendedName": "HSTS not preloaded",
     "Description": "If the HSTS header is not preloaded, a client may be tricked into visiting the unsecure (HTTP) version of a website. This would allow an attacker to read and manipulate his messages.",
     "Mitigation": {
-      "Textual": "Submit the request to [HSTSPreload.org](https://hstspreload.org).",
-      "Snippet": {
-        "apache": "No snippet available",
-        "nginx": "No snippet available"
-      }
+      "Textual": "Submit the request to <a href='https://hstspreload.org'>HSTSPreload.org</a>.",
+      "Apache": "No snippet available",
+      "Nginx": "No snippet available"
+
     }
   },
   "#omit-xml-declaration": "yes"

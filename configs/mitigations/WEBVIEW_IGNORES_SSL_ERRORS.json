@@ -4,8 +4,7 @@
     "ExtendedName": "Web View Ignores SSL Errors",
     "Description": "This error leads to security issues, accepting also self certificates",
     "Mitigation": {
-      "Textual": "If some SSL Error appears, you should remove this line and set them properly, interrupting the TLS connection if\n            an exception arise.\n            ",
-      "Snippet": "\n\t\t"
+      "Textual": "If some SSL Error appears, you should remove this line and set them properly, interrupting the TLS connection if<br/>            an exception arise.<br/>            "
     }
   },
   "#omit-xml-declaration": "yes"
