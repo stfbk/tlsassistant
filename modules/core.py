@@ -51,7 +51,7 @@ class Core:
         output_type=None,
         type_of_analysis=Analysis.HOST,
         to_exclude=None,
-        scoreboard=False,
+        group_by='host',
         apply_fix="",
         openssl_version=None,
         ignore_openssl=False,
@@ -69,8 +69,8 @@ class Core:
         :type type_of_analysis: str or list
         :param to_exclude: list of domains to exclude
         :type to_exclude: str or list
-        :param scoreboard: show a scoreboard at the end of the scan
-        :type scoreboard: bool
+        :param group_by: choose what to group by in the output
+        :type group_by: str
         :param apply_fix: apply a fix to the scan
         :type apply_fix: str
         :param openssl_version: version of openssl to use
@@ -94,7 +94,7 @@ class Core:
             output_type=output_type,
             type_of_analysis=type_of_analysis,
             to_exclude=to_exclude,
-            scoreboard=scoreboard,
+            group_by=group_by,
             apply_fix=apply_fix,
             openssl_version=openssl_version,
             ignore_openssl=ignore_openssl,
@@ -389,7 +389,7 @@ class Core:
                 path=self.__input_dict["output"],
                 results=res,
                 mode=Report_module.Mode.MODULES
-                if "scoreboard" in self.__input_dict and self.__input_dict["scoreboard"]
+                if "group_by" in self.__input_dict and self.__input_dict["group_by"] =='module'
                 else Report_module.Mode.HOSTS,
             )
         self.__logging.debug("Output generated.")

@@ -121,7 +121,7 @@ class Tlsa:
                 output_type=self.__to_report_type(args.output_type),
                 to_exclude=args.exclude,
                 type_of_analysis=Core.Analysis.HOST,
-                scoreboard=args.scoreboard,
+                group_by=args.group_by,
                 apply_fix=args.apply_fix,
             )
         elif args.apk:
@@ -132,7 +132,7 @@ class Tlsa:
                 output_type=self.__to_report_type(args.output_type),
                 to_exclude=args.exclude,
                 type_of_analysis=Core.Analysis.APK,
-                scoreboard=args.scoreboard,
+                group_by=args.group_by,
             )
         elif args.domain_file:
             Core(
@@ -142,7 +142,7 @@ class Tlsa:
                 output_type=self.__to_report_type(args.output_type),
                 to_exclude=args.exclude,
                 type_of_analysis=Core.Analysis.DOMAINS,
-                scoreboard=args.scoreboard,
+                group_by=args.group_by,
             )
         elif args.file:
             if isinstance(args.configuration, list):
@@ -156,7 +156,7 @@ class Tlsa:
                 output_type=self.__to_report_type(args.output_type),
                 type_of_analysis=Core.Analysis.CONFIGURATION,
                 to_exclude=args.exclude,
-                scoreboard=args.scoreboard,
+                group_by=args.group_by,
                 apply_fix=args.apply_fix,
                 openssl_version=args.openssl,
                 ignore_openssl=args.ignore_openssl,

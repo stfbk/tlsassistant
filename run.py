@@ -52,10 +52,11 @@ if __name__ == "__main__":
         default=None,
     )
     parser.add_argument(
-        "--scoreboard",
-        action="store_true",
-        help="Show Scoreboard instead of normal report.",
-        default=False,
+        "--group-by",
+        action="store",
+        help="Choose how to group results by.",
+        choices=["host", "module"],
+        default='host'
     )
     hostname_or_apk.add_argument(
         "-s",
