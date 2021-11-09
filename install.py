@@ -81,6 +81,7 @@ class Install:
             logger.info(f"{file_name} done.")
 
         logger.info("Installing dependencies...")
+        logger.warning("This may take a while... Rerun the tool with -v to see the detailed installation.")
         self.apt_update()
         self.install_dependencies("pkgs", results_pkgs)  # install the dependencies pkg
         self.install_dependencies("apts", results_apts)  # install the dependencies pkg
@@ -144,6 +145,7 @@ class Install:
     def install_dependencies(self, type, results):
 
         for file in results:
+            logger.info(f"Installing {file}...")
             if type == "pkgs" or type == "apts":
                 logger.debug(f"Installing dependencies{sep}{file}")
                 f_path = f"./dependencies{sep}{file}"
