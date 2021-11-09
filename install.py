@@ -81,7 +81,9 @@ class Install:
             logger.info(f"{file_name} done.")
 
         logger.info("Installing dependencies...")
-        logger.warning("This may take a while... Rerun the tool with -v to see the detailed installation.")
+        logger.warning(
+            "This may take a while... Rerun the tool with -v to see the detailed installation."
+        )
         self.apt_update()
         self.install_dependencies("pkgs", results_pkgs)  # install the dependencies pkg
         self.install_dependencies("apts", results_apts)  # install the dependencies pkg

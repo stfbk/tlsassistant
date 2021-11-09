@@ -56,7 +56,7 @@ if __name__ == "__main__":
         action="store",
         help="Choose how to group results by.",
         choices=["host", "module"],
-        default='host'
+        default="host",
     )
     hostname_or_apk.add_argument(
         "-s",

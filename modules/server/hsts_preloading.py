@@ -26,20 +26,20 @@ class Hsts_preloading(Hsts_base):
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         """
-                Sets the mitigations for the analysis.
+        Sets the mitigations for the analysis.
 
-                :param result: the result dict
-                :type result: dict
-                :param key: the key to be used for the mitigations
-                :type key: str
-                :param condition: the condition to be used for the mitigations
-                :type condition: bool
-                :return: the result dict with the mitigations
-                :rtype: dict
-                """
+        :param result: the result dict
+        :type result: dict
+        :param key: the key to be used for the mitigations
+        :type key: str
+        :param condition: the condition to be used for the mitigations
+        :type condition: bool
+        :return: the result dict with the mitigations
+        :rtype: dict
+        """
         if condition:
             result["mitigation"] = load_mitigation(
-                'HSTS_NOT_PRELOADED', raise_error=False
+                "HSTS_NOT_PRELOADED", raise_error=False
             )  # todo: remove, debug until we have all mitigations
         return result if condition else {}
 

@@ -170,12 +170,12 @@ class Configuration:
             return True
 
     def __vhost_wrapper(
-            self,
-            modules: dict,
-            online=False,
-            fix=False,
-            openssl: str = None,
-            ignore_openssl: bool = False,
+        self,
+        modules: dict,
+        online=False,
+        fix=False,
+        openssl: str = None,
+        ignore_openssl: bool = False,
     ):
         """
         Wrapper for the vhosts.
@@ -199,7 +199,7 @@ class Configuration:
             for vhost_name, vhost in virtualhost.items():
                 for name, module in modules.items():
                     if self.__is_config_enabled(module) and self.__check_usage(
-                            module, vhost_name
+                        module, vhost_name
                     ):
                         if not online:
                             self.__blackbox(
@@ -240,16 +240,16 @@ class Configuration:
         return module.conf.fix(vhost)
 
     def __blackbox(
-            self,
-            module,
-            name,
-            fix,
-            vhost,
-            vhost_name,
-            openssl,
-            ignore_openssl,
-            boolean_results,
-            global_value,
+        self,
+        module,
+        name,
+        fix,
+        vhost,
+        vhost_name,
+        openssl,
+        ignore_openssl,
+        boolean_results,
+        global_value,
     ):
         """
         Internal method to check the configuration blackbox.
@@ -289,13 +289,16 @@ class Configuration:
             else module_result
         )
         mitigation_and_raw = {}
-        module._set_mitigations(mitigation_and_raw, name,
-                                boolean_results[vhost_name][name])  # add mitigation
+        module._set_mitigations(
+            mitigation_and_raw, name, boolean_results[vhost_name][name]
+        )  # add mitigation
         # todo: add what we edited
 
         if fix:
             if boolean_results[vhost_name][name]:
-                mitigation_and_raw['difference'] = self.__hybrid(module, name, vhost, vhost_name)
+                mitigation_and_raw["difference"] = self.__hybrid(
+                    module, name, vhost, vhost_name
+                )
         boolean_results[vhost_name][name] = mitigation_and_raw.copy()
 
     def is_vuln(self, modules: dict, openssl=None, ignore_openssl=False):

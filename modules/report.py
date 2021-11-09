@@ -49,7 +49,7 @@ class Report:
         """
         self.__input_dict = kwargs
 
-    def __modules_report_formatter(self, results: dict, modules: list)->dict:
+    def __modules_report_formatter(self, results: dict, modules: list) -> dict:
         """
         Formats the results of the modules.
 
@@ -70,8 +70,8 @@ class Report:
             for hostname in results:
                 self.__logging.debug(f"Generating report for {hostname}")
                 if module in results[hostname]:
-                    if 'raw' in results[hostname][module]:
-                        raw_results[hostname] = results[hostname][module]['raw'].copy()
+                    if "raw" in results[hostname][module]:
+                        raw_results[hostname] = results[hostname][module]["raw"].copy()
                     if "Entry" in results[hostname][module]:
                         out[module] = CaseInsensitiveDict(
                             results[hostname][module]["Entry"]
@@ -84,7 +84,7 @@ class Report:
                 out[module]["hosts"] = vuln_hosts.copy()
         return out
 
-    def __hosts_report_formatter(self, results: dict)-> dict:
+    def __hosts_report_formatter(self, results: dict) -> dict:
         """
         Formats the results of the hosts.
 
@@ -98,18 +98,20 @@ class Report:
             # the results are good, we need to remove the "Entry" key but preserve the rest with the CaseInsensitiveDict
             for module in results[hostname]:
                 raw_results = {}
-                if 'raw' in results[hostname][module]:
-                    raw_results = results[hostname][module]['raw'].copy()
+                if "raw" in results[hostname][module]:
+                    raw_results = results[hostname][module]["raw"].copy()
                 if "Entry" in results[hostname][module]:
                     results[hostname][module] = CaseInsensitiveDict(
                         results[hostname][module]["Entry"]
                     )
                     if raw_results:
-                        results[hostname][module]["raw"] = pformat(raw_results.copy(), indent=2)
+                        results[hostname][module]["raw"] = pformat(
+                            raw_results.copy(), indent=2
+                        )
         return results
 
     def __jinja2__report(
-            self, mode: Mode, results: dict, modules: list, date: datetime.date
+        self, mode: Mode, results: dict, modules: list, date: datetime.date
     ):
         """
         Generates the report using jinja2.
@@ -205,10 +207,10 @@ class Report:
         for hostname in results:
             for module in results[hostname]:
                 raw = results[hostname][module].copy()
-                if 'mitigation' in raw:
-                    del raw['mitigation']
+                if "mitigation" in raw:
+                    del raw["mitigation"]
                 for mitigation in rec_search_key(
-                        "mitigation", results[hostname][module]
+                    "mitigation", results[hostname][module]
                 ):
                     if mitigation is not None:
                         results[hostname][

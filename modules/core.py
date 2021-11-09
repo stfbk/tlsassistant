@@ -43,17 +43,17 @@ class Core:
         CONFIGURATION = 3
 
     def __init__(
-            self,
-            hostname_or_path: str or list,
-            configuration: str or list,
-            output=None,
-            output_type=None,
-            type_of_analysis=Analysis.HOST,
-            to_exclude=None,
-            group_by='host',
-            apply_fix="",
-            openssl_version=None,
-            ignore_openssl=False,
+        self,
+        hostname_or_path: str or list,
+        configuration: str or list,
+        output=None,
+        output_type=None,
+        type_of_analysis=Analysis.HOST,
+        to_exclude=None,
+        group_by="host",
+        apply_fix="",
+        openssl_version=None,
+        ignore_openssl=False,
     ):
         """
         :param hostname_or_path: hostname or path to scan
@@ -119,7 +119,7 @@ class Core:
     def input(self, **kwargs):
         assert "configuration" in kwargs, "Missing configuration."
         assert (
-                "hostname_or_path" in kwargs
+            "hostname_or_path" in kwargs
         ), "Missing hostname."  # todo: facultative hostname, we should use configs sometimes
 
         # validate
@@ -222,13 +222,13 @@ class Core:
         return testssl_args
 
     def __conf_analysis(
-            self,
-            path,
-            loaded_modules,
-            openssl_version=None,
-            ignore_openssl=False,
-            online=False,
-            port=None,
+        self,
+        path,
+        loaded_modules,
+        openssl_version=None,
+        ignore_openssl=False,
+        online=False,
+        port=None,
     ) -> dict:
         """
         Analize the configuration file
@@ -267,7 +267,7 @@ class Core:
         return results
 
     def __preanalysis_testssl(
-            self, testssl_args: list, type_of_analysis: Analysis, hostname: str, port: str
+        self, testssl_args: list, type_of_analysis: Analysis, hostname: str, port: str
     ):
         """
         Preanalysis of testssl
@@ -284,8 +284,8 @@ class Core:
         :rtype: dict
         """
         if testssl_args and (
-                type_of_analysis == self.Analysis.HOST
-                or type_of_analysis == self.Analysis.DOMAINS
+            type_of_analysis == self.Analysis.HOST
+            or type_of_analysis == self.Analysis.DOMAINS
         ):
             self.__logging.debug(
                 f"Starting preanalysis testssl with args {testssl_args}..."
@@ -331,12 +331,12 @@ class Core:
         return loaded_modules, loaded_arguments, testssl_args
 
     def __run_analysis(
-            self,
-            loaded_modules: dict,
-            type_of_analysis: Analysis,
-            hostname_or_path: str,
-            loaded_arguments: dict,
-            port=None,
+        self,
+        loaded_modules: dict,
+        type_of_analysis: Analysis,
+        hostname_or_path: str,
+        loaded_arguments: dict,
+        port=None,
     ) -> dict:
         """
         Run the analysis
@@ -381,20 +381,21 @@ class Core:
         """
 
         if (
-                self.__input_dict["output_type"] == self.Report.HTML
-                or self.__input_dict["output_type"] == self.Report.PDF
+            self.__input_dict["output_type"] == self.Report.HTML
+            or self.__input_dict["output_type"] == self.Report.PDF
         ):
             Report_module().run(
                 path=self.__input_dict["output"],
                 results=res,
                 mode=Report_module.Mode.MODULES
-                if "group_by" in self.__input_dict and self.__input_dict["group_by"] == 'module'
+                if "group_by" in self.__input_dict
+                and self.__input_dict["group_by"] == "module"
                 else Report_module.Mode.HOSTS,
             )
         self.__logging.debug("Output generated.")
 
     def __enumerate_hosts(
-            self, hostname_or_path: str, type_of_analysis: Analysis
+        self, hostname_or_path: str, type_of_analysis: Analysis
     ) -> str:
         if type_of_analysis in [
             self.Analysis.HOST,
@@ -414,24 +415,30 @@ class Core:
             yield hostname_or_path
 
     def __wrap_execution(
-            self,
-            res: dict,
-            domain: str,
-            type_of_analysis: Analysis,
-            configuration: str,
-            port=None,
+        self,
+        res: dict,
+        domain: str,
+        type_of_analysis: Analysis,
+        configuration: str,
+        port=None,
     ):  # used to wrap the execution so we don't have repeated code
         for host in self.__enumerate_hosts(domain, type_of_analysis):
-            if type_of_analysis == self.Analysis.CONFIGURATION:  # we assume there's only one configuration
+            if (
+                type_of_analysis == self.Analysis.CONFIGURATION
+            ):  # we assume there's only one configuration
                 # if configuration type. The for loop will only run once.
                 # due to the configuration analysis, we need to remove the configuration name and iter in it.
                 # i know there's probably a better solution, but today i'm too tired to think about it.
-                loaded_modules, raw_res = self.__exec_anaylsis(type_of_analysis, host, configuration, port)
+                loaded_modules, raw_res = self.__exec_anaylsis(
+                    type_of_analysis, host, configuration, port
+                )
                 for vhost, value in raw_res.items():  # unpack the results
                     if vhost not in res:
                         res[vhost] = {}
                     res[vhost]["results"] = value.copy()
-                    res[vhost]["loaded_modules"] = loaded_modules  # to make it work report-wise
+                    res[vhost][
+                        "loaded_modules"
+                    ] = loaded_modules  # to make it work report-wise
                     # we need a dict of loaded modules for each vhost
             else:
                 if host not in res:
@@ -442,11 +449,11 @@ class Core:
                 ) = self.__exec_anaylsis(type_of_analysis, host, configuration, port)
 
     def __exec(
-            self,
-            type_of_analysis: Analysis,
-            hostname_or_path: str or list,
-            configuration: str,
-            port: str = None,
+        self,
+        type_of_analysis: Analysis,
+        hostname_or_path: str or list,
+        configuration: str,
+        port: str = None,
     ):
         """
         Execute the analysis
@@ -476,11 +483,11 @@ class Core:
         self.__call_output_modules(res)
 
     def __exec_anaylsis(
-            self,
-            type_of_analysis: Analysis,
-            hostname_or_path: str,
-            configuration: str,
-            port: str = None,
+        self,
+        type_of_analysis: Analysis,
+        hostname_or_path: str,
+        configuration: str,
+        port: str = None,
     ):
         """
         Internal method to execute the analysis
