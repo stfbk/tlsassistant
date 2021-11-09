@@ -288,9 +288,15 @@ class Configuration:
             if is_empty and global_value is not None
             else module_result
         )
+        mitigation_and_raw = {}
+        module._set_mitigations(mitigation_and_raw, name,
+                                boolean_results[vhost_name][name])  # add mitigation
+        # todo: add what we edited
+
         if fix:
             if boolean_results[vhost_name][name]:
-                return self.__hybrid(module, name, vhost, vhost_name)
+                mitigation_and_raw['difference'] = self.__hybrid(module, name, vhost, vhost_name)
+        boolean_results[vhost_name][name] = mitigation_and_raw.copy()
 
     def is_vuln(self, modules: dict, openssl=None, ignore_openssl=False):
         """

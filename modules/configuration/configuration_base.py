@@ -70,10 +70,10 @@ class OpenSSL:
         """
 
         assert (
-            len(ver1) == 6 or len(ver1) == 5
+                len(ver1) == 6 or len(ver1) == 5
         ), "OpenSSL version must be 5 or 6 char long.\nFor example '1.1.1f'\nFor version 3.0 use 3.0.0."
         assert (
-            len(ver2) == 6 or len(ver2) == 5
+                len(ver2) == 6 or len(ver2) == 5
         ), "OpenSSL version must be 5 or 6 char long.\nFor example '1.1.1f''\nFor version 3.0 use 3.0.0."
         # even the versions
         if len(ver1) == 6 and len(ver2) == 5:
@@ -164,8 +164,8 @@ class Parse_configuration_protocols(Config_base):
         :rtype: bool
         """
         return (
-            "SSLProtocol" in vhost
-            and vhost["SSLProtocol"].lower() == f"tlsv1.{version}"
+                "SSLProtocol" in vhost
+                and vhost["SSLProtocol"].lower() == f"tlsv1.{version}"
         )
 
     def __init__(self, openssl: str, protocols: dict):
@@ -188,6 +188,7 @@ class Parse_configuration_protocols(Config_base):
         :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
         """
         key = self.__key
+        backup = vhost[key] if key in vhost else ""
         v = Validator()
         for cipher, operation in self.__protocols.items():
             v.string(cipher)
@@ -195,6 +196,7 @@ class Parse_configuration_protocols(Config_base):
                 f"{(vhost[key] if key in vhost and vhost[key] else 'ALL ')}"
                 f"{' ' if key in vhost and vhost[key] else ''}{operation}{cipher}"
             )
+        return {'before': f"{key} {backup}" if backup else "", 'after': f"{key} {vhost[key]}"}
 
     def condition(self, vhost, openssl: str = None, ignore_openssl=False):
         """
@@ -260,8 +262,8 @@ class Parse_configuration_ciphers(Config_base):
         :rtype: bool
         """
         return (
-            "SSLProtocol" in vhost
-            and vhost["SSLProtocol"].lower() == f"tlsv1.{version}"
+                "SSLProtocol" in vhost
+                and vhost["SSLProtocol"].lower() == f"tlsv1.{version}"
         )
 
     def is_empty(self, vhost):
@@ -284,12 +286,14 @@ class Parse_configuration_ciphers(Config_base):
         """
         key = self.__key
         v = Validator()
+        backup = vhost[key] if key in vhost else ""
         for cipher in self.__ciphers:
             v.string(cipher)
             vhost[key] = (
                 f"{vhost[key] if key in vhost and vhost[key] else ''}"
                 f"{':' if key in vhost and vhost[key] else ''}!{cipher.upper()}"
             )
+        return {'before': f"{key} {backup}" if backup else "", 'after': f"{key} {vhost[key]}"}
 
     def condition(self, vhost, openssl: str = None, ignore_openssl=False):
         """
@@ -359,11 +363,13 @@ class Parse_configuration_strict_security(Config_base):
         :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
         """
         key = self.__key
+        backup = vhost[key] if key in vhost else ""
         to_add = 'always set Strict-Transport-Security "max-age=63072000"'
         if key in vhost:
             vhost[key] += f";{to_add}"
         else:
             vhost[key] = to_add
+        return {'before': f"{key} {backup}" if backup else "", 'after': f"{key} {vhost[key]}"}
 
     def condition(self, vhost, openssl: str = None, ignore_openssl=False):
         """
@@ -380,8 +386,8 @@ class Parse_configuration_strict_security(Config_base):
         """
 
         return (
-            self.__key not in vhost
-            or "Strict-Transport-Security" not in vhost[self.__key]
+                self.__key not in vhost
+                or "Strict-Transport-Security" not in vhost[self.__key]
         )  # vulnerable if True
 
 
@@ -413,8 +419,8 @@ class Parse_configuration_checks_compression(Config_base):
         :rtype: bool
         """
         return (
-            "SSLProtocol" in vhost
-            and vhost["SSLProtocol"].lower() == f"tlsv1.{version}"
+                "SSLProtocol" in vhost
+                and vhost["SSLProtocol"].lower() == f"tlsv1.{version}"
         )
 
     def is_empty(self, vhost):
@@ -436,7 +442,9 @@ class Parse_configuration_checks_compression(Config_base):
         :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
         """
         key = self.__key
+        backup = vhost[key] if key in vhost else ""
         vhost[key] = self.__value
+        return {'before': f"{key} {backup}" if backup else "", 'after': f"{key} {vhost[key]}"}
 
     def condition(self, vhost, openssl: str = None, ignore_openssl=False):
         """
@@ -469,7 +477,7 @@ class Parse_configuration_checks_compression(Config_base):
 
         else:
             return (
-                key not in vhost or vhost[key] != self.__value
+                    key not in vhost or vhost[key] != self.__value
             )  # is vulnerable if True
 
 
@@ -502,8 +510,20 @@ class Parse_configuration_checks_redirect(Config_base):
         :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
         """
         RewriteEngine, RewriteRule = self.__keys
+        backup_rewrite_engine = vhost[RewriteEngine] if RewriteEngine in vhost else ""
+        backup_rewrite_rule = vhost[RewriteRule] if RewriteRule in vhost else ""
         vhost[RewriteEngine] = "on"
         vhost[RewriteRule] = "^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]"
+        return {
+            'before': {
+                'RewriteEngine': backup_rewrite_engine,
+                'RewriteRule': backup_rewrite_rule
+            },
+            'after': {
+                'RewriteEngine': vhost[RewriteEngine],
+                'RewriteRule': vhost[RewriteRule]
+            }
+        }
 
     def condition(self, vhost, openssl=None, ignore_openssl=False):
         """
@@ -520,8 +540,8 @@ class Parse_configuration_checks_redirect(Config_base):
         """
         RewriteEngine, RewriteRule = self.__keys
         return (
-            RewriteEngine not in vhost
-            or RewriteRule not in vhost
-            or vhost[RewriteEngine] != "on"
-            or vhost[RewriteRule] != "^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]"
+                RewriteEngine not in vhost
+                or RewriteRule not in vhost
+                or vhost[RewriteEngine] != "on"
+                or vhost[RewriteRule] != "^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]"
         )  # vulnerable if True
