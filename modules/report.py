@@ -51,7 +51,17 @@ class Report:
         """
         self.__input_dict = kwargs
 
-    def __modules_report_formatter(self, results: dict, modules: list):
+    def __modules_report_formatter(self, results: dict, modules: list)->dict:
+        """
+        Formats the results of the modules.
+
+        :param results: Dictionary containing the results of the scan.
+        :type results: dict
+        :param modules: List of modules to include in the report.
+        :type modules: list
+        :return: Dictionary containing the results of the scan.
+        :rtype: dict
+        """
         self.__logging.info(f"Generating modules report..")
         out = {}
         for module in modules:
@@ -76,7 +86,15 @@ class Report:
                 out[module]["hosts"] = vuln_hosts.copy()
         return out
 
-    def __hosts_report_formatter(self, results: dict):
+    def __hosts_report_formatter(self, results: dict)-> dict:
+        """
+        Formats the results of the hosts.
+
+        :param results: Dictionary containing the results of the scan.
+        :type results: dict
+        :return: Dictionary containing the results of the scan.
+        :rtype: dict
+        """
         self.__logging.info(f"Generating hosts report..")
         for hostname in results:
             # the results are good, we need to remove the "Entry" key but preserve the rest with the CaseInsensitiveDict
@@ -93,8 +111,20 @@ class Report:
         return results
 
     def __jinja2__report(
-        self, mode: Mode, results: dict, modules: list, date: datetime.date
+            self, mode: Mode, results: dict, modules: list, date: datetime.date
     ):
+        """
+        Generates the report using jinja2.
+
+        :param mode: Report mode.
+        :type mode: Mode
+        :param results: Dictionary containing the results of the scan.
+        :type results: dict
+        :param modules: List of modules to include in the report.
+        :type modules: list
+        :param date: Date of the scan.
+        :type date: datetime.date
+        """
         self.__logging.debug(f"Generating report in jinja2..")
         fsl = FileSystemLoader(searchpath=self.__template_dir)
         env = Environment(loader=fsl)
@@ -110,6 +140,14 @@ class Report:
         return template.render(**to_process)
 
     def __extract_results(self, res: dict) -> tuple:
+        """
+        Extracts the results from the input dictionary.
+
+        :param res: Input dictionary.
+        :type res: dict
+        :return: Tuple containing the results and the modules.
+        :rtype: tuple
+        """
         # due to the fact that the results are in a dict with the loaded_modules, we have to extract the results
         # by removing the loaded_modules
         modules = {}
@@ -172,7 +210,7 @@ class Report:
                 if 'mitigation' in raw:
                     del raw['mitigation']
                 for mitigation in rec_search_key(
-                    "mitigation", results[hostname][module]
+                        "mitigation", results[hostname][module]
                 ):
                     if mitigation is not None:
                         results[hostname][
