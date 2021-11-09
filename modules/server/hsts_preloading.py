@@ -1,5 +1,6 @@
 from modules.server.hsts_base import Hsts_base
 from utils.logger import Logger
+from utils.mitigations import load_mitigation
 
 
 class Hsts_preloading(Hsts_base):
@@ -22,6 +23,25 @@ class Hsts_preloading(Hsts_base):
         Sets the module arguments.
         """
         self._arguments = self._instance.HSTSPRELOAD
+
+    def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
+        """
+                Sets the mitigations for the analysis.
+
+                :param result: the result dict
+                :type result: dict
+                :param key: the key to be used for the mitigations
+                :type key: str
+                :param condition: the condition to be used for the mitigations
+                :type condition: bool
+                :return: the result dict with the mitigations
+                :rtype: dict
+                """
+        if condition:
+            result["mitigation"] = load_mitigation(
+                'HSTS_NOT_PRELOADED', raise_error=False
+            )  # todo: remove, debug until we have all mitigations
+        return result if condition else {}
 
     # to override
     def _worker(self, results):
