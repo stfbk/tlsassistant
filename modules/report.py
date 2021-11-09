@@ -1,7 +1,5 @@
 from enum import Enum
 from os import mkdir
-from pathlib import Path
-from utils.booleanize import boolean_results
 
 from utils.validation import Validator, rec_search_key
 from utils import output
