@@ -1,4 +1,4 @@
-from os import remove
+
 from os.path import sep
 from pathlib import Path
 
@@ -13,7 +13,7 @@ from modules.parse_input_conf import Parser
 import datetime
 from enum import Enum
 from modules.report import Report as Report_module
-from utils.urls import link_sep, url_domain
+from utils.urls import link_sep
 from utils.urls import has_wildcard, remove_wildcard
 from utils.subdomain_enumeration import enumerate
 
