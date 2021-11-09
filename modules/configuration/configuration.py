@@ -38,6 +38,9 @@ class Configuration:
         self.__logging = Logger("Configuration APACHE/NGINX")
         self.__loaded_conf = self.__load_conf(path)
 
+    def get_path(self):
+        return self.__path
+
     def __obtain_vhost(self, port=None):
         """
         Obtain the virtualhosts from the configuration file.
@@ -137,7 +140,7 @@ class Configuration:
         br = {"global": {}}
         for name, module in modules.items():
             if self.__is_config_enabled(module):
-                self.__offline(
+                self.__blackbox(
                     module,
                     name,
                     fix=False,
@@ -167,12 +170,12 @@ class Configuration:
             return True
 
     def __vhost_wrapper(
-        self,
-        modules: dict,
-        online=False,
-        fix=False,
-        openssl: str = None,
-        ignore_openssl: bool = False,
+            self,
+            modules: dict,
+            online=False,
+            fix=False,
+            openssl: str = None,
+            ignore_openssl: bool = False,
     ):
         """
         Wrapper for the vhosts.
@@ -196,10 +199,10 @@ class Configuration:
             for vhost_name, vhost in virtualhost.items():
                 for name, module in modules.items():
                     if self.__is_config_enabled(module) and self.__check_usage(
-                        module, vhost_name
+                            module, vhost_name
                     ):
                         if not online:
-                            self.__offline(
+                            self.__blackbox(
                                 module,
                                 name,
                                 fix,
@@ -211,16 +214,16 @@ class Configuration:
                                 global_value=boolean_results_global,
                             )
                         else:
-                            self.__online(module, name, vhost, vhost_name)
+                            self.__hybrid(module, name, vhost, vhost_name)
                     else:
                         self.__logging.debug(
                             f"The module {name} isn't compatible. Skipping..."
                         )
         return boolean_results
 
-    def __online(self, module, name, vhost, vhost_name):
+    def __hybrid(self, module, name, vhost, vhost_name) -> dict:
         """
-        Internal method to check the configuration online.
+        Internal method to check the configuration hybrid.
 
         :param module: module to check
         :type module: Module
@@ -230,24 +233,26 @@ class Configuration:
         :type vhost: dict
         :param vhost_name: name of the vhost
         :type vhost_name: str
+        :return: dict with the changes
+        :rtype: dict
         """
         self.__logging.debug(f"Fixing vulnerability {name} in vhost {vhost_name}..")
-        module.conf.fix(vhost)
+        return module.conf.fix(vhost)
 
-    def __offline(
-        self,
-        module,
-        name,
-        fix,
-        vhost,
-        vhost_name,
-        openssl,
-        ignore_openssl,
-        boolean_results,
-        global_value,
+    def __blackbox(
+            self,
+            module,
+            name,
+            fix,
+            vhost,
+            vhost_name,
+            openssl,
+            ignore_openssl,
+            boolean_results,
+            global_value,
     ):
         """
-        Internal method to check the configuration offline.
+        Internal method to check the configuration blackbox.
 
         :param module: module to check
         :type module: Module
@@ -267,7 +272,7 @@ class Configuration:
         :type boolean_results: dict
         :param global_value: global boolean results
         :type global_value: dict
-        :return: dict of boolean results
+        :return: dict changes made and edit boolean results as pointer.
         :rtype: dict
         """
         self.__logging.debug(f"Analyzing vulnerability {name} in vhost {vhost_name}..")
@@ -285,7 +290,7 @@ class Configuration:
         )
         if fix:
             if boolean_results[vhost_name][name]:
-                self.__online(module, name, vhost, vhost_name)
+                return self.__hybrid(module, name, vhost, vhost_name)
 
     def is_vuln(self, modules: dict, openssl=None, ignore_openssl=False):
         """
