@@ -1,8 +1,8 @@
 # TLSAssistant v2
 
-**TLSAssistant v2** is the (soon-to-be-released) latest version of TLSAssistant tool, a complete Python redesign performed to convert the standalone analyzer in a modular framework, extensible with new features and thus capable of streamlining the mitigation process of known and newly discovered TLS attacks even for non-expert users.
+**TLSAssistant v2** is the (soon-to-be-released) latest version of TLSAssistant, a complete Python redesign performed to convert the standalone analyzer in a modular framework, extensible with new features and thus capable of streamlining the mitigation process of known and newly discovered TLS attacks even for non-expert users.
 
-⚠`Disclaimer`⚠ TLSAssistant's v1.\* branch is currently on *maintenance mode*. It is stable but it will only receive hotfixes as the project is being rewritten from scratch to enrich and upgrade its capabilities.
+⚠`Disclaimer`⚠ TLSAssistant v2 is currently under development, it can be used to preview the newest features but, for everyday use, we suggest to download the latest [stable](https://github.com/stfbk/tlsassistant/releases) release.
 
 ## Download
 You can either download the *in-development* or the *stable* version of the tool.
@@ -27,7 +27,7 @@ You can download the latest stable release by
 
 ## Roadmap
 
-- [ ] Match TLSAssistant v1.x set of features
+- [ ] Match TLSAssistant v1.x's remaining set of features
   - [ ] Attack Trees output
   - [ ] STIX output
 - [ ] Create new *Analysis* Modules
@@ -63,7 +63,7 @@ If a configuration file is provided, a WhiteBox analysis is performed by loading
 ## License
 
 ```
-Copyright 2019-2021, Fondazione Bruno Kessler
+Copyright 2019, Fondazione Bruno Kessler
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
