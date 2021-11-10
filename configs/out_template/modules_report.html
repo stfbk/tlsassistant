@@ -41,10 +41,13 @@
                 <div class="card">
                     <div class="card-body">
                         <h3 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">{{results[module]['name']}}</h3>
-                        {% if 'CVE' in results[module] or 'CVSS2' in results[module] %}
                         <h6 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">
-                            {% if 'CVE' in results[module] %}CVE:&nbsp;{{results[module]['CVE']}} {% endif %}{% if 'CVSS2' in results[module] %}-&nbsp;CVSS Score:&nbsp;{{results[module]['CVSS']}}{% endif %}</h6>
-                        {% endif %}
+                            {%set i = 0%}
+                            {%for cvss in ['CVE', 'CVSS2','CVSS3']%}
+                                {% if cvss in results[module] %}{%if i != 0%}-{%endif%}{{cvss}}:&nbsp;{{results[module][cvss]}} {% endif %}
+                                {% set i = i+1 %}
+                            {% endfor %}
+                        </h6>
                         <h6 class="text-muted card-subtitle mb-2"
                             style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[module]['extendedname']}}
                         </h6>

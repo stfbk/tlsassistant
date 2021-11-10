@@ -1,0 +1,14 @@
+{
+  "Entry": {
+    "Name": "CSS Injection",
+    "ExtendedName": "<strong>C</strong>hange <strong>C</strong>ipher <strong>S</strong>pec Injection",
+    "CVE": "2014-0224",
+    "CVSS3": "7.4 (HIGH)",
+    "#comment": " AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+    "Description": "OpenSSL before 0.9.8za, 1.0.0 before 1.0.0m, and 1.0.1 before 1.0.1h does not properly restrict processing of <strong>ChangeCipherSpec</strong> messages, which allows man-in-the-middle attackers to trigger use of a <strong>zero-length master key</strong> in certain OpenSSL-to-OpenSSL communications, and consequently hijack sessions or obtain sensitive information, via a crafted TLS handshake, aka the \"CCS Injection\" vulnerability.",
+    "Mitigation": {
+      "Textual": "Update the TLS library to a version that implements RFC 5746 (e.g. OpenSSL v1.0.1h+)."
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}
