@@ -1,6 +1,6 @@
 # TLSAssistant v2
 
-**TLSAssistant v2** is the (soon-to-be-released) latest version of TLSAssistant, a complete Python redesign performed to convert the standalone analyzer in a modular framework, extensible with new features and thus capable of streamlining the mitigation process of known and newly discovered TLS attacks even for non-expert users.
+**TLSAssistant v2** is the (soon-to-be-released) latest version of TLSAssistant. A complete Python redesign performed to convert the standalone analyzer in a modular framework, extensible with new features and thus capable of streamlining the mitigation process of known and newly discovered TLS attacks even for non-expert users.
 
 ⚠`Disclaimer`⚠ TLSAssistant v2 is currently under development, it can be used to preview the newest features but, for everyday use, we suggest to download the latest [stable](https://github.com/stfbk/tlsassistant/releases) release.
 
@@ -15,7 +15,6 @@ You can download the tool by running
 git clone https://github.com/stfbk/tlsassistant.git
 ```
 
-
 ### Stable version (v1.\*)
 You can download the latest stable release by
 - clicking [here](https://github.com/stfbk/tlsassistant/releases);
@@ -27,23 +26,24 @@ You can download the latest stable release by
 
 ## Roadmap
 
-- [ ] Match TLSAssistant v1.x's remaining set of features
-  - [ ] Attack Trees output
-  - [ ] STIX output
-- [ ] Create new *Analysis* Modules
+- [x] Design of a **standard** for 
+  - [x] module *creation* (to allow the creation of additional modules)
+  - [x] module *configuration* (to create new analysis flows using existing modules)
+- [x] Refine modules' output
+- [x] Design a new report template
+- [ ] Documentation writing (ongoing)
+- [ ] Creation of new *Output* modules
+  - [ ] Configuration analysis
+  - [ ] Attack Tree `matching TLSAssistant v1.x output`
+  - [ ] STIX `matching TLSAssistant v1.x output`
+  - [ ] Scoreboard
+- [ ] Creation of new *Analysis* modules
   - [ ] [ALPACA Attack](https://alpaca-attack.com/) 
   - [ ] [Raccoon Attack](https://raccoon-attack.com/)
-  - [ ] [Zombie POODLE and GOLDENDOODLE](https://github.com/tls-attacker/TLS-Padding-Oracles)
+  - [ ] [Zombie POODLE and GOLDENDOODLE](https://blog.qualys.com/product-tech/2019/04/22/zombie-poodle-and-goldendoodle-vulnerabilities)
   - [ ] [Certificate chain validation](https://medium.com/@sleevi_/path-building-vs-path-verifying-the-chain-of-pain-9fbab861d7d6)
 - [ ] Improve webserver coverage
 - [ ] Create a toy module to streamline the creation of third-party modules
-
-## Architecture
-
-![architecture](assets/architecture.png)
-
-The architecture is composed of three types of modules: *Analysis* modules to perform vulnerability checks, *Core* modules to act as a junction between modules by exchanging information in appropriate formats, and *Output* modules to provide properly formatted output to the user. The tool has two main users: the third-party developer who will create new modules, and the end-user who will use the tool to analyze TLS-related vulnerabilities.
-
 
 ## Analysis types
 The various types of analysis that can (currently) be requested are:
@@ -59,6 +59,10 @@ We perform a Single Host analysis on each one of the domains specified in an inp
 
 ### TLS Configuration and Fixes
 If a configuration file is provided, a WhiteBox analysis is performed by loading the TLS configuration into memory and performing a complete check of all available modules (Step 3b). Otherwise, if a configuration file is provided along with a valid hostname, a singlehost analysis is performed and then the fixes are integrated in the provided TLS configuration. We refer to this analysis as Hybrid: we perform a BlackBox analysis on the hostname and then we apply the fixes on the configuration file.
+
+## Screenshots
+
+![architecture](assets/report.png)
 
 ## License
 
