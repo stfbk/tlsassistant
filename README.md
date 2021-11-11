@@ -37,13 +37,7 @@ You can download the latest stable release by
   - [ ] Attack Tree `matching TLSAssistant v1.x output`
   - [ ] STIX `matching TLSAssistant v1.x output`
   - [ ] Scoreboard
-- [ ] Creation of new *Analysis* modules
-  - [ ] [ALPACA Attack](https://alpaca-attack.com/) 
-  - [ ] [Raccoon Attack](https://raccoon-attack.com/)
-  - [ ] [Zombie POODLE and GOLDENDOODLE](https://blog.qualys.com/product-tech/2019/04/22/zombie-poodle-and-goldendoodle-vulnerabilities)
-  - [ ] [Certificate chain validation](https://medium.com/@sleevi_/path-building-vs-path-verifying-the-chain-of-pain-9fbab861d7d6)
 - [ ] Improve webserver coverage
-- [ ] Create a toy module to streamline the creation of third-party modules
 
 ## Analysis types
 The various types of analysis that can (currently) be requested are:
