@@ -82,6 +82,8 @@ class Report:
                 out[module]["raw"] = pformat(raw_results.copy(), indent=2)
             if vuln_hosts:
                 out[module]["hosts"] = vuln_hosts.copy()
+            if not out[module]:
+                del out[module]
         return out
 
     def __hosts_report_formatter(self, results: dict) -> dict:
@@ -219,7 +221,6 @@ class Report:
                             mitigation.copy()
                         )  # i'm expecting only one mitigation per module, is it ok?
                 results[hostname][module]["raw"] = raw
-
         with open(output_path, "w") as f:
             f.write(
                 self.__jinja2__report(

@@ -25,6 +25,7 @@
             </div>
         </nav>
         <div class="container" style="background: #ffffff;border-radius: 10px;max-width: 90%;">
+            {%if results%}
             <div class="card" style="padding: 8px;margin-top: 8;">
                 <h2
                     style="color: #0068b4;font-family: Roboto, sans-serif;margin-top: 0px;padding-top: 8px;padding-right: 8px;padding-bottom: 0px;padding-left: 7px;">
@@ -66,6 +67,7 @@
                     </table>
                 </div>
             </div>
+            {%endif%}
             <h2
                 style="color: #0068b4;font-family: Roboto, sans-serif;padding-top: 8px;padding-bottom: 0px;padding-left: 7px;padding-right: 8px;">
                 Detailed Results</h2>
@@ -75,6 +77,7 @@
             <h6
                 style="color: #6c757d;font-family: Roboto, sans-serif;padding: 0px;padding-left: 9px;padding-top: 0px;padding-bottom: 4px;">
                 Modules: {% for module in modules%} {{module}} {%endfor%} </h6>
+            {%if results%}
             {% for host in results %}
             <div class="card" style="background: rgba(235,235,235,0.59);">
                 <h5 class="text-center"
@@ -149,6 +152,18 @@
                 {% endfor %}
             </div>
             {% endfor %}
+            {%else%}
+            <div class="card">
+                    <div class="card-body">
+                        <h3 class="text-center card-title"
+                            style="color: #000000;font-family: Roboto, sans-serif;font-weight: bold;">Hooray!</h3>
+                        <div class="alert alert-success text-center" role="alert"
+                            style="font-family: Roboto, sans-serif;font-size: 20px;background: #e3eece;"><span
+                                class="text-center" style="color: #4c6617;"><strong>No vulnerability was
+                                    found.</strong></span></div>
+                    </div>
+                </div>
+            {%endif%}
         </div>
         <footer class="text-center footer-basic"
             style="background: rgba(255,255,255,0);padding-bottom: 5px;padding-top: 72px;"><img class="img-fluid"
