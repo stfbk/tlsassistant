@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>utils.output API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>utils.output</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from pathlib import Path
+
+from markdown2 import markdown
+from pdfkit import from_file  # import python module
+from os.path import exists
+from os import remove
+import codecs
+
+H1 = 1
+H2 = 2
+H3 = 3
+H4 = 4
+H5 = 5
+
+
+class Class_table:
+    &#34;&#34;&#34;
+    Class to create table in markdown
+    &#34;&#34;&#34;
+
+    def wrap(self, wrap):
+        &#34;&#34;&#34;
+        Wrap text in table
+
+        :param wrap: String to wrap
+        :type wrap: str
+        :return: Wrapped string
+        :rtype: str
+        &#34;&#34;&#34;
+        return f&#34;| {wrap} |&#34;
+
+    def heading(self):
+        &#34;&#34;&#34;
+        Create a table header
+
+        :return: Table header
+        :rtype: str
+        &#34;&#34;&#34;
+        return self.wrap(&#34;-------&#34;)
+
+    def bold(self, string):
+        &#34;&#34;&#34;
+        Create bold text in table
+
+        :param string: String to bold
+        :type string: str
+        :return: Bolded string
+        :rtype: str
+        &#34;&#34;&#34;
+        return self.wrap(bold(string))
+
+    def italic(self, string):
+        &#34;&#34;&#34;
+        Create italic text in table
+
+        :param string: String to italic
+        :type string: str
+        :return: Italicized string
+        :rtype: str
+        &#34;&#34;&#34;
+        return self.wrap(italic(string))
+
+    def title(self, string):
+        &#34;&#34;&#34;
+        Create title text in table
+
+        :param string: String to title
+        :type string: str
+        :return: Titled string
+        :rtype: str
+        &#34;&#34;&#34;
+        return self.bold(string)
+
+
+table = Class_table()
+
+
+def recursive_parsing(value, hlevel: int, bold_instead: bool) -&gt; str:
+    &#34;&#34;&#34;
+    Parse the output and prepare md for the report recursively.
+
+    :param value: The object to prepare as output
+    :param hlevel: The height level
+    :type hlevel: int
+    :param bold_instead: Instead of using H1, H2, H3, ... use a simple bold in markdown.
+    :type bold_instead: bool
+    :return: String to insert into the md file.
+    :rtype: str
+    &#34;&#34;&#34;
+    return __recursive_parsing_runner(value, hlevel, hlevel, bold_instead)
+
+
+def __repeat_to_length(string_to_expand: str, length: int) -&gt; str:
+    &#34;&#34;&#34;
+    Repeat a string to a given times.
+
+    :param string_to_expand: The string to repeat.
+    :type string_to_expand: str
+    :param length: The times to repeat.
+    :type length: int
+    :return: Formatted String.
+    :rtype: str
+    &#34;&#34;&#34;
+    return (string_to_expand * (int(length / len(string_to_expand)) + 1))[:length]
+
+
+def __recursive_parsing_runner(
+    value, hlevel: int, initial_hlevel: int, bold_instead: bool, is_code=False
+):
+    &#34;&#34;&#34;
+    Internal function to recursively parse the output and prepare md for the report.
+
+    :param value: The object to prepare as output
+    :type value: Any
+    :param hlevel: The height level
+    :type hlevel: int
+    :param initial_hlevel: The initial height level
+    :type initial_hlevel: int
+    :param bold_instead: Instead of using H1, H2, H3, ... use a simple bold in markdown.
+    :type bold_instead: bool
+    :param is_code: If the value is a code (e.g. a function).
+    :type is_code: bool
+    :return: String to insert into the md file.
+    :rtype: str
+    &#34;&#34;&#34;
+    results = []
+
+    if isinstance(value, list):
+        for v in value:
+            results.append(
+                __recursive_parsing_runner(
+                    v, hlevel + 1, initial_hlevel, bold_instead, is_code
+                )
+            )
+    elif isinstance(value, dict):
+        for k, v in value.items():
+            if hlevel &gt; 6:
+                hlevel = 6
+            if hlevel &lt; 1:
+                hlevel = 1
+
+            rec_result = __recursive_parsing_runner(
+                v, hlevel + 1, initial_hlevel, bold_instead, is_code=(&#34;code&#34; in k)
+            )
+            if (v or v is False) and (rec_result or rec_result is False):
+                prepend = &#34;- &#34;
+                results.append(
+                    f&#34;{prepend}{title(k, hlevel) if not bold_instead else bold(k)}&#34;
+                )
+
+                results.append(rec_result)
+    else:
+        results.append(
+            f&#34;{__repeat_to_length(&#39;    &#39;, hlevel - initial_hlevel + 1)}- {value}&#34;
+            if not is_code
+            else multiline_code(value)
+        )
+    return &#34;\n&#34;.join(results)
+
+
+def html_to_pdf(source_path: str, output_filename: str, delete_html=True):
+    &#34;&#34;&#34;
+    Convert an HTML file to PDF.
+
+    :param source_path: The input HTML file path
+    :type source_path: str
+    :param output_filename: The output PDF file path
+    :type source_path: str
+    :param delete_html: Delete HTML file after doing the conversion. Default: True
+    :type delete_html: bool
+    &#34;&#34;&#34;
+    # open output file for writing (truncated binary)
+    assert exists(source_path), &#34;The input file MUST exists!&#34;
+    from_file(source_path, output_filename)
+    if delete_html:
+        remove(source_path)
+        # return False on success and True on errors
+
+
+def md_to_html(
+    extras: list, results: str, output_file: str or Path = &#34;output.html&#34;, css_file=None
+):
+    &#34;&#34;&#34;
+    Convert an md string to HTML file.
+
+    :param results: The results from the computation.
+    :type results:dict
+    :param extras: Extras of Markdown2 (check wiki)
+    :type extras: list of str
+    :param output_file: output file path
+    :type output_file: str
+    :param css_file: CSS file path to beautify the HTML output.
+    :type css_file: str
+    &#34;&#34;&#34;
+    with open(output_file, &#34;w&#34;) as file:
+        if css_file:
+            with open(css_file, &#34;r&#34;) as style:
+                out = &#34;&#34;&#34;&lt;!DOCTYPE html&gt;
+                                &lt;html lang=&#34;en&#34;&gt;
+    
+                                &lt;head&gt;
+                                    &lt;meta charset=&#34;utf-8&#34;&gt;
+                                    &lt;style type=&#34;text/css&#34;&gt;
+                      &#34;&#34;&#34;
+                file.write(out)
+
+                for s in style:
+                    file.write(s)
+                file.write(&#34;&lt;/style&gt;&lt;/head&gt;&lt;body style =&#39;overflow-x: scroll&#39;&gt;&#34;)
+                file.write(markdown(results, extras=extras))
+                file.write(&#34;&lt;/body&gt;&lt;/html&gt;&#34;)
+        else:
+            file.write(markdown(results, extras=extras))
+
+
+def title(string: str, level=H1) -&gt; str:
+    &#34;&#34;&#34;
+    Add title md style.
+
+    :param string: The string to process.
+    :type string:str
+    :param level: depth level for the header (h1,h2,h3..)
+    :type level: int
+    :return: Formatted String.
+    :rtype: str
+    &#34;&#34;&#34;
+    appended = []
+    for lvl in range(0, level):
+        appended.append(&#34;#&#34;)
+    return f&#34;{&#39;&#39;.join(appended)} {string}&#34;
+
+
+def bold(string: str) -&gt; str:
+    &#34;&#34;&#34;
+    Add bold md style.
+
+    :param string: The string to process.
+    :type string:str
+    :return: Formatted String.
+    :rtype: str
+    &#34;&#34;&#34;
+    return f&#34;**{string}**&#34;
+
+
+def line() -&gt; str:
+    &#34;&#34;&#34;
+    Add line md style.
+
+    :return: Formatted line in md style.
+    :rtype: str
+    &#34;&#34;&#34;
+    return f&#34;---&#34;
+
+
+def italic(string: str) -&gt; str:
+    &#34;&#34;&#34;
+    Add italic md style.
+
+    :param string: The string to process.
+    :type string:str
+    :return: Formatted String.
+    :rtype: str
+    &#34;&#34;&#34;
+    return f&#34;*{string}*&#34;
+
+
+def code(string: str) -&gt; str:
+    &#34;&#34;&#34;
+    Add code md style.
+
+    :param string: The string to process.
+    :type string:str
+    :return: Formatted String.
+    :rtype: str
+    &#34;&#34;&#34;
+    return f&#34;`{string}`&#34;
+
+
+def multiline_code(string: str, language=None) -&gt; str:
+    &#34;&#34;&#34;
+    Add multiline code md style.
+
+    :param language: Language of the code (default NONE)
+    :param string: The string to process.
+    :type string:str
+    :return: Formatted String.
+    :rtype: str
+    &#34;&#34;&#34;
+    return f&#34;```{language if language else &#39;&#39;}\n {string} \n```&#34;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="utils.output.bold"><code class="name flex">
+<span>def <span class="ident">bold</span></span>(<span>string: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add bold md style.</p>
+<p>:param string: The string to process.
+:type string:str
+:return: Formatted String.
+:rtype: str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bold(string: str) -&gt; str:
+    &#34;&#34;&#34;
+    Add bold md style.
+
+    :param string: The string to process.
+    :type string:str
+    :return: Formatted String.
+    :rtype: str
+    &#34;&#34;&#34;
+    return f&#34;**{string}**&#34;</code></pre>
+</details>
+</dd>
+<dt id="utils.output.code"><code class="name flex">
+<span>def <span class="ident">code</span></span>(<span>string: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add code md style.</p>
+<p>:param string: The string to process.
+:type string:str
+:return: Formatted String.
+:rtype: str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def code(string: str) -&gt; str:
+    &#34;&#34;&#34;
+    Add code md style.
+
+    :param string: The string to process.
+    :type string:str
+    :return: Formatted String.
+    :rtype: str
+    &#34;&#34;&#34;
+    return f&#34;`{string}`&#34;</code></pre>
+</details>
+</dd>
+<dt id="utils.output.html_to_pdf"><code class="name flex">
+<span>def <span class="ident">html_to_pdf</span></span>(<span>source_path: str, output_filename: str, delete_html=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert an HTML file to PDF.</p>
+<p>:param source_path: The input HTML file path
+:type source_path: str
+:param output_filename: The output PDF file path
+:type source_path: str
+:param delete_html: Delete HTML file after doing the conversion. Default: True
+:type delete_html: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def html_to_pdf(source_path: str, output_filename: str, delete_html=True):
+    &#34;&#34;&#34;
+    Convert an HTML file to PDF.
+
+    :param source_path: The input HTML file path
+    :type source_path: str
+    :param output_filename: The output PDF file path
+    :type source_path: str
+    :param delete_html: Delete HTML file after doing the conversion. Default: True
+    :type delete_html: bool
+    &#34;&#34;&#34;
+    # open output file for writing (truncated binary)
+    assert exists(source_path), &#34;The input file MUST exists!&#34;
+    from_file(source_path, output_filename)
+    if delete_html:
+        remove(source_path)
+        # return False on success and True on errors</code></pre>
+</details>
+</dd>
+<dt id="utils.output.italic"><code class="name flex">
+<span>def <span class="ident">italic</span></span>(<span>string: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add italic md style.</p>
+<p>:param string: The string to process.
+:type string:str
+:return: Formatted String.
+:rtype: str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def italic(string: str) -&gt; str:
+    &#34;&#34;&#34;
+    Add italic md style.
+
+    :param string: The string to process.
+    :type string:str
+    :return: Formatted String.
+    :rtype: str
+    &#34;&#34;&#34;
+    return f&#34;*{string}*&#34;</code></pre>
+</details>
+</dd>
+<dt id="utils.output.line"><code class="name flex">
+<span>def <span class="ident">line</span></span>(<span>) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add line md style.</p>
+<p>:return: Formatted line in md style.
+:rtype: str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def line() -&gt; str:
+    &#34;&#34;&#34;
+    Add line md style.
+
+    :return: Formatted line in md style.
+    :rtype: str
+    &#34;&#34;&#34;
+    return f&#34;---&#34;</code></pre>
+</details>
+</dd>
+<dt id="utils.output.md_to_html"><code class="name flex">
+<span>def <span class="ident">md_to_html</span></span>(<span>extras: list, results: str, output_file: str = 'output.html', css_file=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert an md string to HTML file.</p>
+<p>:param results: The results from the computation.
+:type results:dict
+:param extras: Extras of Markdown2 (check wiki)
+:type extras: list of str
+:param output_file: output file path
+:type output_file: str
+:param css_file: CSS file path to beautify the HTML output.
+:type css_file: str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def md_to_html(
+    extras: list, results: str, output_file: str or Path = &#34;output.html&#34;, css_file=None
+):
+    &#34;&#34;&#34;
+    Convert an md string to HTML file.
+
+    :param results: The results from the computation.
+    :type results:dict
+    :param extras: Extras of Markdown2 (check wiki)
+    :type extras: list of str
+    :param output_file: output file path
+    :type output_file: str
+    :param css_file: CSS file path to beautify the HTML output.
+    :type css_file: str
+    &#34;&#34;&#34;
+    with open(output_file, &#34;w&#34;) as file:
+        if css_file:
+            with open(css_file, &#34;r&#34;) as style:
+                out = &#34;&#34;&#34;&lt;!DOCTYPE html&gt;
+                                &lt;html lang=&#34;en&#34;&gt;
+    
+                                &lt;head&gt;
+                                    &lt;meta charset=&#34;utf-8&#34;&gt;
+                                    &lt;style type=&#34;text/css&#34;&gt;
+                      &#34;&#34;&#34;
+                file.write(out)
+
+                for s in style:
+                    file.write(s)
+                file.write(&#34;&lt;/style&gt;&lt;/head&gt;&lt;body style =&#39;overflow-x: scroll&#39;&gt;&#34;)
+                file.write(markdown(results, extras=extras))
+                file.write(&#34;&lt;/body&gt;&lt;/html&gt;&#34;)
+        else:
+            file.write(markdown(results, extras=extras))</code></pre>
+</details>
+</dd>
+<dt id="utils.output.multiline_code"><code class="name flex">
+<span>def <span class="ident">multiline_code</span></span>(<span>string: str, language=None) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add multiline code md style.</p>
+<p>:param language: Language of the code (default NONE)
+:param string: The string to process.
+:type string:str
+:return: Formatted String.
+:rtype: str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def multiline_code(string: str, language=None) -&gt; str:
+    &#34;&#34;&#34;
+    Add multiline code md style.
+
+    :param language: Language of the code (default NONE)
+    :param string: The string to process.
+    :type string:str
+    :return: Formatted String.
+    :rtype: str
+    &#34;&#34;&#34;
+    return f&#34;```{language if language else &#39;&#39;}\n {string} \n```&#34;</code></pre>
+</details>
+</dd>
+<dt id="utils.output.recursive_parsing"><code class="name flex">
+<span>def <span class="ident">recursive_parsing</span></span>(<span>value, hlevel: int, bold_instead: bool) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Parse the output and prepare md for the report recursively.</p>
+<p>:param value: The object to prepare as output
+:param hlevel: The height level
+:type hlevel: int
+:param bold_instead: Instead of using H1, H2, H3, &hellip; use a simple bold in markdown.
+:type bold_instead: bool
+:return: String to insert into the md file.
+:rtype: str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def recursive_parsing(value, hlevel: int, bold_instead: bool) -&gt; str:
+    &#34;&#34;&#34;
+    Parse the output and prepare md for the report recursively.
+
+    :param value: The object to prepare as output
+    :param hlevel: The height level
+    :type hlevel: int
+    :param bold_instead: Instead of using H1, H2, H3, ... use a simple bold in markdown.
+    :type bold_instead: bool
+    :return: String to insert into the md file.
+    :rtype: str
+    &#34;&#34;&#34;
+    return __recursive_parsing_runner(value, hlevel, hlevel, bold_instead)</code></pre>
+</details>
+</dd>
+<dt id="utils.output.title"><code class="name flex">
+<span>def <span class="ident">title</span></span>(<span>string: str, level=1) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add title md style.</p>
+<p>:param string: The string to process.
+:type string:str
+:param level: depth level for the header (h1,h2,h3..)
+:type level: int
+:return: Formatted String.
+:rtype: str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def title(string: str, level=H1) -&gt; str:
+    &#34;&#34;&#34;
+    Add title md style.
+
+    :param string: The string to process.
+    :type string:str
+    :param level: depth level for the header (h1,h2,h3..)
+    :type level: int
+    :return: Formatted String.
+    :rtype: str
+    &#34;&#34;&#34;
+    appended = []
+    for lvl in range(0, level):
+        appended.append(&#34;#&#34;)
+    return f&#34;{&#39;&#39;.join(appended)} {string}&#34;</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="utils.output.Class_table"><code class="flex name class">
+<span>class <span class="ident">Class_table</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class to create table in markdown</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Class_table:
+    &#34;&#34;&#34;
+    Class to create table in markdown
+    &#34;&#34;&#34;
+
+    def wrap(self, wrap):
+        &#34;&#34;&#34;
+        Wrap text in table
+
+        :param wrap: String to wrap
+        :type wrap: str
+        :return: Wrapped string
+        :rtype: str
+        &#34;&#34;&#34;
+        return f&#34;| {wrap} |&#34;
+
+    def heading(self):
+        &#34;&#34;&#34;
+        Create a table header
+
+        :return: Table header
+        :rtype: str
+        &#34;&#34;&#34;
+        return self.wrap(&#34;-------&#34;)
+
+    def bold(self, string):
+        &#34;&#34;&#34;
+        Create bold text in table
+
+        :param string: String to bold
+        :type string: str
+        :return: Bolded string
+        :rtype: str
+        &#34;&#34;&#34;
+        return self.wrap(bold(string))
+
+    def italic(self, string):
+        &#34;&#34;&#34;
+        Create italic text in table
+
+        :param string: String to italic
+        :type string: str
+        :return: Italicized string
+        :rtype: str
+        &#34;&#34;&#34;
+        return self.wrap(italic(string))
+
+    def title(self, string):
+        &#34;&#34;&#34;
+        Create title text in table
+
+        :param string: String to title
+        :type string: str
+        :return: Titled string
+        :rtype: str
+        &#34;&#34;&#34;
+        return self.bold(string)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="utils.output.Class_table.bold"><code class="name flex">
+<span>def <span class="ident">bold</span></span>(<span>self, string)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create bold text in table</p>
+<p>:param string: String to bold
+:type string: str
+:return: Bolded string
+:rtype: str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bold(self, string):
+    &#34;&#34;&#34;
+    Create bold text in table
+
+    :param string: String to bold
+    :type string: str
+    :return: Bolded string
+    :rtype: str
+    &#34;&#34;&#34;
+    return self.wrap(bold(string))</code></pre>
+</details>
+</dd>
+<dt id="utils.output.Class_table.heading"><code class="name flex">
+<span>def <span class="ident">heading</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a table header</p>
+<p>:return: Table header
+:rtype: str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def heading(self):
+    &#34;&#34;&#34;
+    Create a table header
+
+    :return: Table header
+    :rtype: str
+    &#34;&#34;&#34;
+    return self.wrap(&#34;-------&#34;)</code></pre>
+</details>
+</dd>
+<dt id="utils.output.Class_table.italic"><code class="name flex">
+<span>def <span class="ident">italic</span></span>(<span>self, string)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create italic text in table</p>
+<p>:param string: String to italic
+:type string: str
+:return: Italicized string
+:rtype: str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def italic(self, string):
+    &#34;&#34;&#34;
+    Create italic text in table
+
+    :param string: String to italic
+    :type string: str
+    :return: Italicized string
+    :rtype: str
+    &#34;&#34;&#34;
+    return self.wrap(italic(string))</code></pre>
+</details>
+</dd>
+<dt id="utils.output.Class_table.title"><code class="name flex">
+<span>def <span class="ident">title</span></span>(<span>self, string)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create title text in table</p>
+<p>:param string: String to title
+:type string: str
+:return: Titled string
+:rtype: str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def title(self, string):
+    &#34;&#34;&#34;
+    Create title text in table
+
+    :param string: String to title
+    :type string: str
+    :return: Titled string
+    :rtype: str
+    &#34;&#34;&#34;
+    return self.bold(string)</code></pre>
+</details>
+</dd>
+<dt id="utils.output.Class_table.wrap"><code class="name flex">
+<span>def <span class="ident">wrap</span></span>(<span>self, wrap)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Wrap text in table</p>
+<p>:param wrap: String to wrap
+:type wrap: str
+:return: Wrapped string
+:rtype: str</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def wrap(self, wrap):
+    &#34;&#34;&#34;
+    Wrap text in table
+
+    :param wrap: String to wrap
+    :type wrap: str
+    :return: Wrapped string
+    :rtype: str
+    &#34;&#34;&#34;
+    return f&#34;| {wrap} |&#34;</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="utils" href="index.html">utils</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="utils.output.bold" href="#utils.output.bold">bold</a></code></li>
+<li><code><a title="utils.output.code" href="#utils.output.code">code</a></code></li>
+<li><code><a title="utils.output.html_to_pdf" href="#utils.output.html_to_pdf">html_to_pdf</a></code></li>
+<li><code><a title="utils.output.italic" href="#utils.output.italic">italic</a></code></li>
+<li><code><a title="utils.output.line" href="#utils.output.line">line</a></code></li>
+<li><code><a title="utils.output.md_to_html" href="#utils.output.md_to_html">md_to_html</a></code></li>
+<li><code><a title="utils.output.multiline_code" href="#utils.output.multiline_code">multiline_code</a></code></li>
+<li><code><a title="utils.output.recursive_parsing" href="#utils.output.recursive_parsing">recursive_parsing</a></code></li>
+<li><code><a title="utils.output.title" href="#utils.output.title">title</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="utils.output.Class_table" href="#utils.output.Class_table">Class_table</a></code></h4>
+<ul class="">
+<li><code><a title="utils.output.Class_table.bold" href="#utils.output.Class_table.bold">bold</a></code></li>
+<li><code><a title="utils.output.Class_table.heading" href="#utils.output.Class_table.heading">heading</a></code></li>
+<li><code><a title="utils.output.Class_table.italic" href="#utils.output.Class_table.italic">italic</a></code></li>
+<li><code><a title="utils.output.Class_table.title" href="#utils.output.Class_table.title">title</a></code></li>
+<li><code><a title="utils.output.Class_table.wrap" href="#utils.output.Class_table.wrap">wrap</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
