@@ -52,6 +52,146 @@ git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant
 To see precisely what the installer is doing, run the command with `-v`.
 </details>
 
+#### Execution
+```bash
+python3 run.py -h
+```
+
+<details>
+
+```
+usage: TLSAssistant [-h] [--version] [-v] [--openssl OPENSSL | --ignore-openssl] [-ot {pdf,html}] [-o OUTPUT] [--group-by {host,module}] (-s SERVER | -f FILE | -d DOMAIN_FILE | -l [LIST] | -a APK)
+                    [--apply-fix [APPLY_FIX]] [-c CONFIGURATION | -m CONFIGURATION [CONFIGURATION ...]] [-e EXCLUDE [EXCLUDE ...]]
+
+TLSAssistant Help
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  -v, --verbosity       increase output verbosity
+  --openssl OPENSSL, --openssl-version OPENSSL
+                        Add openSSL version to consider if configuration analysis is asked.
+  --ignore-openssl      During configuration analysis, ignore openssl version completely.
+  -ot {pdf,html}, --output-type {pdf,html}
+                        The type of the report output.
+                        Output type can be omitted and can be obtained by --output extension.
+  -o OUTPUT, --output OUTPUT
+                        Set report path.
+  --group-by {host,module}
+                        Choose how to group results by.
+  -s SERVER, --server SERVER
+                        The hostname, target of the analysis.
+  -f FILE, --file FILE  The configuration to analyze.
+  -d DOMAIN_FILE, --domain_file DOMAIN_FILE
+                        The file path which has the hostname to analyze.
+  -l [LIST], --list [LIST]
+                        List all modules or print an help of a module.
+                        For Example
+                        -l freak
+  -a APK, --apk APK     The apk path, target of the analysis.
+  --apply-fix [APPLY_FIX]
+                        Apply fix in the current configuration.
+                         Give a path if using -s.
+                        i.e.
+                                python3 run.py -s fbk.eu --apply-fix myconf.conf
+  -c CONFIGURATION, --conf CONFIGURATION, --configuration CONFIGURATION
+                        Configuration path.
+  -m CONFIGURATION [CONFIGURATION ...], --modules CONFIGURATION [CONFIGURATION ...]
+                        List of modules to run
+                        For example
+                                -m breach crime freak
+  -e EXCLUDE [EXCLUDE ...], --exclude EXCLUDE [EXCLUDE ...]
+                        List of modules to exclude
+                        For example
+                                -e breach crime
+
+https://st.fbk.eu -  Security and Trust, FBK Research Unit
+
+```
+</details>
+
+- Perform a **server** analysis
+
+```bash
+python3 run.py -s fbk.eu
+```
+<sub>If no configuration or module list provided, `default_server.json` is loaded.</sub>
+
+- Perform a **configuration file** analysis
+
+Here we specify the openssl version of the system which runs the web server.
+```bash
+python3 run.py -f my_apache_conf.conf --openssl 1.1.1
+```
+
+We can also **ignore the openssl version**, assuming the weakest version:
+```bash
+python3 run.py -f my_apache_conf.conf --ignore-openssl
+```
+
+- Perform a **TLS configuration file** analysis and **apply fixes**
+
+By default, the configuration analyzed is changed in place.
+```bash
+python3 run.py -f my_apache_conf.conf --apply-fix
+```
+
+We can specify an **output** path of the fixed configuration:
+
+```bash
+python3 run.py -f my_apache_conf.conf --apply-fix my_output_conf.conf
+```
+- Perform an analysis by **selecting modules**
+
+```bash
+python3 run.py -s fbk.eu -m breach crime freak poodle hsts_preloading
+```
+
+Or by selecting a **TLSAssistant configuration file**:
+
+```bash
+python3 run.py -s fbk.eu -c default_server.json 
+```
+
+We can also **exclude some modules** without editing the configuration file:
+
+```bash
+python3 run.py -s fbk.eu -c default_server.json -e hsts_preloading
+```
+
+get the **full module list** with:
+```bash
+python3 run.py -l
+```
+
+- Perform an analysis with **subdomain enumeration**
+
+```bash
+python3 run.py -s *.fbk.eu
+```
+
+- Perform an analysis on an **apk file**
+
+```bash
+python3 run.py -a my_apk.apk
+```
+
+<sub>If no configuration or module list provided, `default_android.json` is loaded.</sub>
+
+- Analyze **all domains in a file** (one per line, including subdomains enumeration)
+
+Assuming the file `domains_list.log` looks like this:
+```
+music.amazon.it
+facebook.com
+*.fbk.eu
+```
+we execute:
+
+```bash
+python3 run.py -d domains_list.log
+```
+
 ### Stable version (v1.\*)
 You can download the latest stable release by
 - clicking [here](https://github.com/stfbk/tlsassistant/releases);

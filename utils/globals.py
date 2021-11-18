@@ -1,1 +1,1 @@
-version = "2.3.0 closed beta"
+version = "2.3.0 beta"
