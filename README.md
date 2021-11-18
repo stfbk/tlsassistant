@@ -7,13 +7,50 @@
 ## Download
 You can either download the *in-development* or the *stable* version of the tool.
 
-### Bleeding-edge (v2)
+### Bleeding-edge (v2.3.0 beta)
 
-You can download the tool by running
+#### One Liner (TL;DR)
+To install the tool, execute the following command:
+```bash
+  sudo apt update && sudo apt install git python3-dev python3-pip python3-venv -y && git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant && python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt && python3 install.py -v
+```
+---
+#### Step by Step
+If you want to execute step by step instead of a one liner:
+<details>
+
+0. Install git
+```bash
+sudo apt update && sudo apt-get install git -y
+```
+1. Download the tool by running
 
 ```bash
-git clone https://github.com/stfbk/tlsassistant.git
+git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant
 ```
+2. Install python
+  ```bash
+  sudo apt update && sudo apt-get install python3-dev python3-pip python3-venv -y
+  ```
+3. Optional but recommended: Create a virtual environment
+  ```bash
+  python3 -m venv venv
+  ```
+  and activate the virtual environment
+  ```bash
+  source venv/bin/activate
+  ```
+4. Install the requirements
+  ```bash
+  pip3 install -r requirements.txt
+  ```
+5. Run the installer
+  ```bash
+  python3 install.py
+  ```
+⚠ Note that the installation of `wkhtmltopdf` is slow. 
+To see precisely what the installer is doing, run the command with `-v`.
+</details>
 
 ### Stable version (v1.\*)
 You can download the latest stable release by
