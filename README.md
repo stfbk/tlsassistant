@@ -4,20 +4,24 @@
 
 ⚠`Disclaimer`⚠ TLSAssistant v2 is currently under development, it can be used to preview the newest features but, for everyday use, we suggest to download the latest [stable](https://github.com/stfbk/tlsassistant/releases) release.
 
+![report](assets/report.png)
+
 ## Download
-You can either download the *in-development* or the *stable* version of the tool.
+You can either download the (new) *in-development* version or the (old) *stable* version of the tool.
 
-### Bleeding-edge (v2.3.0 beta)
+## New version (v2.3.0 beta)
 
-#### One Liner (TL;DR)
+### One Liner (TL;DR)
 To install the tool, execute the following command:
 ```bash
   sudo apt update && sudo apt install git python3-dev python3-pip python3-venv -y && git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant && python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt && python3 install.py -v
 ```
 ---
-#### Step by Step
+### Step by Step
 If you want to execute step by step instead of a one liner:
 <details>
+
+<summary>Show single steps</summary>
 
 0. Install git
 ```bash
@@ -52,12 +56,13 @@ git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant
 To see precisely what the installer is doing, run the command with `-v`.
 </details>
 
-#### Execution
+### Usage
 ```bash
 python3 run.py -h
 ```
-
 <details>
+
+<summary>Show raw output</summary>
 
 ```
 usage: TLSAssistant [-h] [--version] [-v] [--openssl OPENSSL | --ignore-openssl] [-ot {pdf,html}] [-o OUTPUT] [--group-by {host,module}] (-s SERVER | -f FILE | -d DOMAIN_FILE | -l [LIST] | -a APK)
@@ -109,6 +114,10 @@ https://st.fbk.eu -  Security and Trust, FBK Research Unit
 
 ```
 </details>
+
+#### Examples 
+<details>
+<summary>Show advanced examples</summary>
 
 - Perform a **server** analysis
 
@@ -192,7 +201,11 @@ we execute:
 python3 run.py -d domains_list.log
 ```
 
-### Stable version (v1.\*)
+</details>
+
+---
+
+## Old version (v1.\*)
 You can download the latest stable release by
 - clicking [here](https://github.com/stfbk/tlsassistant/releases);
 - cloning from the stable branch by running
@@ -231,9 +244,6 @@ We perform a Single Host analysis on each one of the domains specified in an inp
 ### TLS Configuration and Fixes
 If a configuration file is provided, a WhiteBox analysis is performed by loading the TLS configuration into memory and performing a complete check of all available modules (Step 3b). Otherwise, if a configuration file is provided along with a valid hostname, a singlehost analysis is performed and then the fixes are integrated in the provided TLS configuration. We refer to this analysis as Hybrid: we perform a BlackBox analysis on the hostname and then we apply the fixes on the configuration file.
 
-## Screenshots
-
-![architecture](assets/report.png)
 
 ## License
 
