@@ -1,0 +1,15 @@
+{
+  "Entry": {
+    "Name": "Heartbleed",
+    "ExtendedName": "Heartbleed",
+    "CVE": "2014-0160",
+    "CVSS3": "7.5 (HIGH)",
+    "CVSS2": "5.0 (MEDIUM)",
+    "#comment": " AV:N/AC:L/Au:N/C:P/I:N/A:N",
+    "Description": "The TLS and DTLS implementations in <strong>OpenSSL 1.0.1 before 1.0.1g</strong> do not properly handle Heartbeat Extension packets, which allows remote attackers to obtain sensitive information from process memory via crafted packets that trigger a buffer over-read, as demonstrated by reading private keys, related to <code>d1_both.c</code> and <code>t1_lib.c</code>, aka the Heartbleed bug.",
+    "Mitigation": {
+      "Textual": "Update the TLS library to a safe version (e.g. OpenSSL v1.0.1g+)."
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}

@@ -1,0 +1,19 @@
+{
+  "Entry": {
+    "Name": "CRIME",
+    "ExtendedName": "<strong>C</strong>ompression <strong>R</strong>atio <strong>I</strong>nfo-leak <strong>M</strong>ass <strong>E</strong>xploitation",
+    "CVE": "2012-4929",
+    "CVSS3": "2.6 (Low)",
+    "#comment": " AV:N/AC:H/Au:N/C:P/I:N/A:N ",
+    "Description": "By exploiting the information leakage provided by DEFLATE (compression algorithm), an attacker is able to retrieve the session cookie. In particular, the attacker guesses parts of the cookie, injects them in a valid client packet and analyzes the server's response. Thanks to the properties of a DEFLATE output, if the server's response is bigger than an untouched packet, then the guess is wrong.",
+    "Mitigation": {
+      "Textual": "Disable the TLS compression mechanism.",
+      "Apache": "1. open your Apache configuration file (default: <i>/etc/apache2/sites-available/default-ssl.conf</i>);<br/>2. search for the line starting with: <strong>SSLCompression</strong><br/>   - if found, change the value to <strong>off</strong>;<br/>   - if not, add the line <code>SSLCompression off</code> within the file.<br/><br/>N.B. restart the server by typing: <code>sudo service apache2 restart</code>.",
+      "Nginx": "SSL compression is turned off by default in nginx 1.1.6+/1.0.9+ (if OpenSSL 1.0.0+ used) and nginx 1.3.2+/1.2.2+ (if older versions of OpenSSL are used).<br/><br/>- If you are using al earlier version of nginx or OpenSSL and your distro has not backported this option then you need to <br/> 1. <strong>update to the last version</strong> or<br/> 2. recompile OpenSSL without ZLIB support."
+
+    }
+  },
+  "#comment": " https://www.acunetix.com/vulnerabilities/web/crime-ssl-tls-attack/ ",
+  "#comment1": " https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2012/september/details-on-the-crime-attack/ ",
+  "#omit-xml-declaration": "yes"
+}

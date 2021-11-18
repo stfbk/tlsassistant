@@ -1,0 +1,11 @@
+{
+  "Entry": {
+    "Name": "Weak Algorithms",
+    "ExtendedName": "Weak Algorithms",
+    "Description": "This algorithms are deprecated, broken and/or not used anymore for security reasons. ",
+    "Mitigation": {
+      "Textual": "You should check if they are used to encrypt something very important and eventually change them.<br/>            If the algorithms are used to HASH something, you should check if the entropy is strong enough: for example, 128<br/>            bit MD5 is too weak and someone could be using a <a href='https://en.wikipedia.org/wiki/Birthday_attack'>Birthday Attack</a>.<br/><br/>            If in doubt, change them with a stronger algorithm (like sha256).<br/>            "
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}
