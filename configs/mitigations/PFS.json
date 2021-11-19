@@ -10,7 +10,7 @@
   
       }
     },
-    "#comment": " hhttps://github.com/ssllabs/research/wiki/SSL-and-TLS-Deployment-Best-Practices#25-use-forward-secrecy",
+    "#comment": " https://github.com/ssllabs/research/wiki/SSL-and-TLS-Deployment-Best-Practices#25-use-forward-secrecy",
     "#comment1": " https://scotthelme.co.uk/perfect-forward-secrecy/ ",
     "#comment2": " https://www.openssl.org/docs/man1.1.1/man1/ciphers.html",
     "#omit-xml-declaration": "yes"
