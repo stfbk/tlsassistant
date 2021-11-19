@@ -265,7 +265,7 @@ You can download the latest stable release by
 - clicking [here](https://github.com/stfbk/tlsassistant/releases);
 - cloning from the stable branch by running
     ```bash
-    git clone -b 1.x https://github.com/stfbk/tlsassistant.git
+    git clone -b v1.x https://github.com/stfbk/tlsassistant.git
     ```
     and then running the `INSTALL.sh` script to install all the dependencies.
 
