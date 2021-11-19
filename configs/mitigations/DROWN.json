@@ -1,0 +1,19 @@
+{
+  "Entry": {
+    "Name": "DROWN",
+    "ExtendedName": "<strong>D</strong>ecrypting <strong>R</strong>SA with <strong>O</strong>bsolete and <strong>W</strong>eakened e<strong>N</strong>cryption",
+    "CVE": "2016-0800",
+    "CVSS3": "5.9 (Medium)",
+    "#comment": " AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N ",
+    "Description": "By exploiting export-grade symmetric ciphers supported by SSLv2, an attacker is able to retrieve the <code>MasterSecret</code> that identifies the TLS session. The attack is performed by sniffing the network (or intentionally making requests to the server) looking for a vulnerable connection. Once found, the attacker repeatedly connects to the server using SSLv2 with export-grade RSA and a <code>ClientMasterKey</code> derived from the transmission he wants to decrypt. The <code>MasterSecret</code> can be used to decrypt the content of the transmission.",
+    "Mitigation": {
+      "Textual": "Disable SSLv2 protocol support.",
+      "Apache": "1. open your Apache configuration file (default: <i>/etc/apache2/sites-available/default-ssl.conf</i>);<br/>2. search for the line starting with: <strong>SSLProtocol</strong><br/>   - if it contains the substring <code>+SSLv2</code>, remove it;<br/>   - otherwise, add <code>-SSLv2</code> at the end of the line.<br/><br/>N.B. restart the server by typing: <code>sudo service apache2 restart</code>.",
+      "Nginx": "1. In a default situation, you can edit your website configuration <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>);<br/>2. Inside <code>server {...}</code> brackets configuration, find <code>ssl_protocols</code>;<br/>3. Remove <code>SSLv2</code> (if any). Make sure you have atleast another TLS protocol. If you can't find <code>ssl_protocols</code> you should be fine if your NGINX is updated.<br/><br/><br/>N.B. restart the server by typing: <code>sudo service nginx restart</code>.<br/>"
+
+    }
+  },
+  "#comment": " www.drownattack.com/ ",
+  "#comment1": " https://www.acunetix.com/vulnerabilities/web/the-drown-attack-sslv2-supported/ ",
+  "#omit-xml-declaration": "yes"
+}

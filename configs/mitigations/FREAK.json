@@ -1,0 +1,17 @@
+{
+  "Entry": {
+    "Name": "Freak",
+    "ExtendedName": "<strong>F</strong>actoring <strong>R</strong>SA <strong>E</strong>xport <strong>K</strong>eys",
+    "CVE": "2015-0204",
+    "CVSS2": "4.3 (MEDIUM)",
+    "#comment": " (AV:N/AC:M/Au:N/C:N/I:P/A:N)",
+    "Description": "The <code>ssl3_get_key_exchange</code> function in <code>s3_clnt.c</code> in <strong>OpenSSL before 0.9.8zd, 1.0.0 before 1.0.0p, and 1.0.1 before 1.0.1k</strong> allows remote SSL servers to conduct RSA-to-EXPORT_RSA downgrade attacks and facilitate brute-force decryption by offering a weak ephemeral RSA key in a noncompliant role, related to the \"FREAK\" issue.<br/>NOTE: the scope of this CVE is only client code based on OpenSSL, not EXPORT_RSA issues associated with servers or other TLS implementations.",
+    "Mitigation": {
+      "Textual": "Even if the client are probably fixed, you should disable all TLS Export ciphers server-side.<br/>You can either apply a configuration FIX or update OpenSSL.",
+      "Apache": "1. open your Apache configuration file (default: <i>/etc/apache2/sites-available/default-ssl.conf</i>);<br/>2. find the line starting with: <strong>SSLCipherSuite</strong>;<br/>3. add the string <code>:!EXPORT</code> at the end.<br/><br/>N.B. restart the server by typing: <code>sudo service apache2 restart</code>.",
+        "Nginx": "1. In a default situation, you can edit your website configuration <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>);<br/>2. Inside <code>server {...}</code> brackets configuration, find <code>ssl_ciphers</code>;<br/>3. Remove <code>EXPORT</code> (if any) and add <code>:!EXPORT</code> at the end.<br/><br/><br/>N.B. restart the server by typing: <code>sudo service nginx restart</code>.<br/>"
+
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}

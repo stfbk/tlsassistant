@@ -1,128 +1,309 @@
-# TLSAssistant
+# TLSAssistant v2
 
-**TLSAssistant** is a fully-featured tool that combines state-of-the-art TLS analyzers with a report system that suggests appropriate mitigations and shows the full set of viable attacks. The companion page can be found [here](https://stfbk.github.io/tools/TLSAssistant).
+**TLSAssistant v2** is the (soon-to-be-released) latest version of TLSAssistant. A complete Python redesign performed to convert the standalone analyzer in a modular framework, extensible with new features and thus capable of streamlining the mitigation process of known and newly discovered TLS attacks even for non-expert users.
 
-⚠`Disclaimer`⚠ TLSAssistant's v1.\* branch is currently on *maintenance mode*. It is stable but it will only receive hotfixes as the project is being rewritten from scratch to enrich and upgrade its capabilities. TLSAssistant's v2 will be released by the end of 2021.
+⚠`Disclaimer`⚠ TLSAssistant v2 is currently under development, it can be used to preview the newest features but, for everyday use, we suggest to download the latest [stable](https://github.com/stfbk/tlsassistant/releases) release.
 
-## Features
-
-### Mitigations
-Thanks to the integrated analyzers, TLSAssistant is currently able to detect the following set of vulnerabilities: 
-  - [3SHAKE](https://mitls.org/pages/attacks/3SHAKE)
-  - [Bar Mitzvah](https://www.imperva.com/docs/HII_Attacking_SSL_when_using_RC4.pdf)
-  - [BREACH](http://breachattack.com)
-  - [Client-Initiated Renegotiation DoS](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-1473)
-  - [CRIME](https://docs.google.com/presentation/d/11eBmGiHbYcHR9gL5nDyZChu_-lCa2GizeuOfaLU2HOU/edit#slide=id.g1d134dff_1_222)
-  - [DROWN](https://drownattack.com)
-  - [HSTS not preloaded](https://hstspreload.org)
-  - [HSTS not set](https://tools.ietf.org/html/rfc6797)
-  - [HTTPS not enforced](https://tools.ietf.org/html/rfc6797#section-7.2)
-  - [Lucky13](http://www.isg.rhul.ac.uk/tls/Lucky13.html)
-  - [Missing Certificate Transparency](http://www.certificate-transparency.org)
-  - [POODLE](https://www.openssl.org/~bodo/ssl-poodle.pdf)
-  - [RC4NOMORE](https://www.rc4nomore.com)
-  - [ROBOT](https://robotattack.org)
-  - [SLOTH](https://www.mitls.org/pages/attacks/SLOTH)
-  - [Sweet32](https://sweet32.info)
-  - [Unsecure Android TrustManagers](https://dl.acm.org/citation.cfm?id=2382205)
-  - [Weak Algorithms](https://developer.mozilla.org/en-US/docs/Web/Security/Weak_Signature_Algorithm)
-  - Certificate or KeyStore Disclosure
-  - WebViews Ignoring SSL Errors
-  - Accepting ALL SSL Certificates
-
-For each one of them, TLSAssistant is able to suggest an appropriate mitigation to easily fix the misconfiguration. These mitigations have been collected by fetching information from both scientific literature and each vendor's technical documentation.
-
-### Attack trees
-TLSAssistant is able to graphically represent the analysis result using a set of custom [attack trees](https://www.schneier.com/academic/archives/1999/12/attack_trees.html). Each tree consists of:
-- **A goal (root).** indicating which security property would be broken;
-- **Protocol/infrastructure subgoals.** displaying which protocol or infrastructure can be exploited in order to achieve the root goal;
-- **Technique subgoals.** showing the technique an attacker has to use in order
-to exploit the aforementioned protocol;
-- **Attacks (leaves).** is divided into boxes. The first one lists the
-prerequisites an attacker needs, the second one describes the steps needed to
-exploit the vulnerability and, if needed, a third one shows how the attack is
-concluded.
-
-The following image shows a simplified version of the output
-![stix_output](assets/atree_output.png)
-
-### STIX output
-TLSAssistant is able to export the analysis result in [STIX](https://oasis-open.github.io/cti-documentation/stix/intro), a language used to share cyber threat intelligence (CTI) that can be represented with objects and their descriptive relationships. 
-After every scan and for each discovered vulnerability, TLSAssistant generates a STIX bundle (JSON file) containing the following objects:
-1. vulnerability;
-2. course of action;
-3. relationship;
-4. observed data;
-5. sighting.
-
-The following image shows an example for the Bar Mitzvah attack
-![stix_output](assets/stix_output.jpg)
-
-## Dependencies
-
-To be able to run TLSAssistant you will need a set of dependencies that can be automatically downloaded by running `INSTALL.sh`.
-
-It will download (and place in the correct folders) the following:
-
-- packages: `aha`, `androguard`, `curl`, `git`, `graphviz`, `html2text`, `libxml2-utils`, `python3`, `wget`, `aria2c`, `openjdk`;
-- analyzers: `mallodroid`, `testssl.sh`, `tlsfuzzer`, `SUPERAnalyzer`.
-
-**Note**: TLSAssistant is not compatible with **W**indows **S**ubsystem for **L**inux v1.
+![report](assets/report.png)
 
 ## Download
+You can either download the (new) *in-development* version or the (old) *stable* version of the tool.
 
-You can install TLSAssistant by cloning this git repository:
+### New version (v2.3.0 beta)
+
+#### One Liner (TL;DR)
+To install the tool, execute the following command:
+```bash
+  sudo apt update && sudo apt install git python3-dev python3-pip python3-venv -y && git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant && python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt && python3 install.py -v
+```
+---
+#### Step by Step
+If you want to execute step by step instead of a one liner:
+<details>
+
+<summary>Show single steps</summary>
+
+0. Install git
+```bash
+sudo apt update && sudo apt-get install git -y
+```
+1. Download the tool by running
 
 ```bash
-git clone https://github.com/stfbk/tlsassistant.git
+git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant
 ```
+2. Install python
+  ```bash
+  sudo apt update && sudo apt-get install python3-dev python3-pip python3-venv -y
+  ```
+3. Optional but recommended: Create a virtual environment
+  ```bash
+  python3 -m venv venv
+  ```
+  and activate the virtual environment
+  ```bash
+  source venv/bin/activate
+  ```
+4. Install the requirements
+  ```bash
+  pip3 install -r requirements.txt
+  ```
+5. Run the installer
+  ```bash
+  python3 install.py
+  ```
+⚠ Note that the installation of `wkhtmltopdf` is slow. 
+To see precisely what the installer is doing, run the command with `-v`.
+</details>
 
-and running the `INSTALL.sh` script to install all the dependencies.
-
-
-## Usage
-
-Once in the right directory, run 
+#### Usage
 ```bash
-bash TLSAssistant.sh <parameters>
+python3 run.py -h
+```
+<details>
+
+<summary>Show raw output</summary>
+
+```
+usage: TLSAssistant [-h] [--version] [-v] [--openssl OPENSSL | --ignore-openssl] [-ot {pdf,html}] [-o OUTPUT] [--group-by {host,module}] (-s SERVER | -f FILE | -d DOMAIN_FILE | -l [LIST] | -a APK)
+                    [--apply-fix [APPLY_FIX]] [-c CONFIGURATION | -m CONFIGURATION [CONFIGURATION ...]] [-e EXCLUDE [EXCLUDE ...]]
+
+TLSAssistant Help
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  -v, --verbosity       increase output verbosity
+  --openssl OPENSSL, --openssl-version OPENSSL
+                        Add openSSL version to consider if configuration analysis is asked.
+  --ignore-openssl      During configuration analysis, ignore openssl version completely.
+  -ot {pdf,html}, --output-type {pdf,html}
+                        The type of the report output.
+                        Output type can be omitted and can be obtained by --output extension.
+  -o OUTPUT, --output OUTPUT
+                        Set report path.
+  --group-by {host,module}
+                        Choose how to group results by.
+  -s SERVER, --server SERVER
+                        The hostname, target of the analysis.
+  -f FILE, --file FILE  The configuration to analyze.
+  -d DOMAIN_FILE, --domain_file DOMAIN_FILE
+                        The file path which has the hostname to analyze.
+  -l [LIST], --list [LIST]
+                        List all modules or print an help of a module.
+                        For Example
+                        -l freak
+  -a APK, --apk APK     The apk path, target of the analysis.
+  --apply-fix [APPLY_FIX]
+                        Apply fix in the current configuration.
+                         Give a path if using -s.
+                        i.e.
+                                python3 run.py -s fbk.eu --apply-fix myconf.conf
+  -c CONFIGURATION, --conf CONFIGURATION, --configuration CONFIGURATION
+                        Configuration path.
+  -m CONFIGURATION [CONFIGURATION ...], --modules CONFIGURATION [CONFIGURATION ...]
+                        List of modules to run
+                        For example
+                                -m breach crime freak
+  -e EXCLUDE [EXCLUDE ...], --exclude EXCLUDE [EXCLUDE ...]
+                        List of modules to exclude
+                        For example
+                                -e breach crime
+
+https://st.fbk.eu -  Security and Trust, FBK Research Unit
+
+```
+</details>
+
+##### Examples 
+<details>
+<summary>Show advanced examples</summary>
+
+- Perform a **server** analysis
+
+```bash
+python3 run.py -s fbk.eu
+```
+<sub>If no configuration or module list provided, `default_server.json` is loaded.</sub>
+
+- Perform a **configuration file** analysis
+
+Here we specify the openssl version of the system which runs the web server.
+```bash
+python3 run.py -f my_apache_conf.conf --openssl 1.1.1
 ```
 
-where
+We can also **ignore the openssl version**, assuming the weakest version:
+```bash
+python3 run.py -f my_apache_conf.conf --ignore-openssl
+```
 
-### Parameters
+- Perform a **TLS configuration file** analysis and **apply fixes**
 
-- `-h|--help` show the help
-- `-s|--server [URL|IP] {port}` analyze a server, default port: *443*
-- `-d|--domain <URL>` analyze the subdomains of a given website
-- `-l|--list <file>` analyze the provided hosts list (one per line) 
-- `-a|--apk <file>` check an apk installer
-- `-x|--stix` STIX output format
-- `-v [0|1|2|3]` verbosity level
+By default, the configuration analyzed is changed in place.
+```bash
+python3 run.py -f my_apache_conf.conf --apply-fix
+```
 
-### Verbosity level
+We can specify an **output** path of the fixed configuration:
 
-- 0: mitigations' description
-- 1: previous + code snippets [default]
-- 2: previous + tools' individual reports
-- 3: previous + highlighted attack trees
+```bash
+python3 run.py -f my_apache_conf.conf --apply-fix my_output_conf.conf
+```
+- Perform an analysis by **selecting modules**
 
-example: `bash TLSAssistant.sh -s github.com`
+```bash
+python3 run.py -s fbk.eu -m breach crime freak poodle hsts_preloading
+```
 
-## Credits
+Or by selecting a **TLSAssistant configuration file**:
 
-TLSAssistant exists thanks to the following open-source projects (from a to z):
+```bash
+python3 run.py -s fbk.eu -c default_server.json 
+```
 
-- [Androguard](https://github.com/androguard/androguard)
-- [ctfr](https://github.com/UnaPibaGeek/ctfr)
-- [mallodroid](https://github.com/stfbk/mallodroid)
-- [markdown.bash](https://github.com/chadbraunduin/markdown.bash)
-- [python-stix2](https://github.com/oasis-open/cti-python-stix2)
-- [SUPERAnalyzer](https://github.com/SUPERAndroidAnalyzer/super)
-- [testssl.sh](https://github.com/drwetter/testssl.sh)
-- [tlsfuzzer](https://github.com/tomato42/tlsfuzzer)
+We can also **exclude some modules** without editing the configuration file:
+
+```bash
+python3 run.py -s fbk.eu -c default_server.json -e hsts_preloading
+```
+
+get the **full module list** with:
+```bash
+python3 run.py -l
+```
+
+- Perform an analysis with **subdomain enumeration**
+
+```bash
+python3 run.py -s *.fbk.eu
+```
+
+- Perform an analysis on an **apk file**
+
+```bash
+python3 run.py -a my_apk.apk
+```
+
+<sub>If no configuration or module list provided, `default_android.json` is loaded.</sub>
+
+- Analyze **all domains in a file** (one per line, including subdomains enumeration)
+
+Assuming the file `domains_list.log` looks like this:
+```
+music.amazon.it
+facebook.com
+*.fbk.eu
+```
+we execute:
+
+```bash
+python3 run.py -d domains_list.log
+```
+
+</details>
+
+
+##### Avaliable analysis modules
+
+<details>
+<summary>Show modules list</summary>
+
+```bash
+python3 run.py -l
+```
+
+Results:
+
+```
+Here's a list of all the modules available:
+Android:
+        accepting_all_certificates
+        certificate_keystore_disclosure
+        hostnameverifier
+        obfuscated_code
+        ssl_error
+        ssl_getinsecure_method
+        trustmanager
+        weak_algorithms
+        webview_ssl_errors
+Server:
+        3shake
+        beast
+        breach
+        ccs_injection
+        certificate_transparency
+        crime
+        drown
+        freak
+        heartbleed
+        hsts_preloading
+        hsts_set
+        https_enforced
+        logjam
+        lucky13
+        mitzvah
+        nomore
+        pfs
+        poodle
+        renegotiation
+        robot
+        sloth
+        sweet32
+        ticketbleed
+Use 
+        -l module_name
+ to read the details.
+```
+
+</details>
+
+---
+
+### Old version (v1.\*)
+You can download the latest stable release by
+- clicking [here](https://github.com/stfbk/tlsassistant/releases);
+- cloning from the stable branch by running
+    ```bash
+    git clone -b v1.x https://github.com/stfbk/tlsassistant.git
+    ```
+    and then running the `INSTALL.sh` script to install all the dependencies.
+
+## Roadmap
+
+- [x] Design of a **standard** for 
+  - [x] module *creation* (to allow the creation of additional modules)
+  - [x] module *configuration* (to create new analysis flows using existing modules)
+- [x] Refine modules' output
+- [x] Design a new report template
+- [ ] Documentation writing (ongoing)
+- [ ] Creation of new *Output* modules
+  - [ ] Configuration analysis
+  - [ ] Attack Tree `matching TLSAssistant v1.x output`
+  - [ ] STIX `matching TLSAssistant v1.x output`
+  - [ ] Scoreboard
+- [ ] Improve webserver coverage
+
+## Analysis types
+The various types of analysis that can (currently) be requested are:
+
+### Single Host
+Since most of the vulnerabilities analyzed by the tool are covered by testssl.sh tool, we decided to make the analysis more efficient by performing a pre-analysis to populate a cache with its result. These will be used by the corresponding testssl.sh modules such as POODLE (an attack that exploits the availability of SSLv3 to downgrade the strength of the connection), during current and future analysis. Thus, in Step 3a the arguments of each individual module related to testssl.sh are obtained. These arguments will be provided to the method in order to perform the testssl.sh pre-analysis and populate the cache with the results. Once this is done, the individual modules are executed (Step 3b) and mitigations added if vulnerable.
+
+### Single APK
+Each Android-related module, such as Unsecure TrustManager (which evaluates if a custom implementation may be exploited to break certificate validation), runs the analysis (Step 3b) on the provided APK.
+
+### Multiple Hosts
+We perform a Single Host analysis on each one of the domains specified in an input list. Each result is concatenated and provided to the Output module as a single output.	
+
+### TLS Configuration and Fixes
+If a configuration file is provided, a WhiteBox analysis is performed by loading the TLS configuration into memory and performing a complete check of all available modules (Step 3b). Otherwise, if a configuration file is provided along with a valid hostname, a singlehost analysis is performed and then the fixes are integrated in the provided TLS configuration. We refer to this analysis as Hybrid: we perform a BlackBox analysis on the hostname and then we apply the fixes on the configuration file.
+
 
 ## License
-Copyright 2019-2021, Fondazione Bruno Kessler
+
+```
+Copyright 2019, Fondazione Bruno Kessler
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -135,5 +316,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+```
 
-Developed within [Security & Trust](https://stfbk.github.io/) Research Unit at [Fondazione Bruno Kessler](https://www.fbk.eu/en/) (Italy)
+Developed within [Security & Trust](https://st.fbk.eu/) Research Unit at [Fondazione Bruno Kessler](https://www.fbk.eu/en/) (Italy)
+

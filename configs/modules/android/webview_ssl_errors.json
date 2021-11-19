@@ -1,0 +1,20 @@
+{
+   "input":[
+      {
+         "name":"path",
+         "type":"str",
+         "description":"Path of the APK to analyze",
+         "required":"True"
+      }
+   ],
+   "description":"This modules checks if the APK WebView is ignoring SSL errors and it accepts any SSL certificate.",
+   "path":"modules/android/webview_ssl_errors.py",
+   "class_name":"Webview_ssl_errors",
+   "output":[
+      {
+         "name":"results",
+         "type":"dict",
+         "description":"results of the scan"
+      }
+   ]
+}

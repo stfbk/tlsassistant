@@ -1,0 +1,17 @@
+{
+    "Entry": {
+      "Name": "PFS",
+      "ExtendedName": "Perfect Forward Secrecy",
+      "Description": "By exploiting the key derivation performed by RSA during the handshake, an attacker that gained access to the server's private key can calculate the Master Secret for each session ever created. By doing so, it will be able to decrypt all the information exchanged between the server and any client within the key' interval of use (i.e current, past and even future captured transmissions).",
+      "Mitigation": {
+        "Textual": "Remove, from the list of the available cipher suites, the ones that use RSA as a key exchange algorithm",
+        "Apache": "1. open your Apache configuration file (default: <i>/etc/apache2/sites-available/default-ssl.conf</i>);<br/>2. find the line starting with: <strong>SSLCipherSuite</strong>;<br/>3. add the string <code>:!RSA</code> at the end.<br/><br/>N.B. restart the server by typing: <code>sudo service apache2 restart</code>.",
+        "Nginx": "1. In a default situation, you can edit your website configuration <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>);<br/>2. Inside <code>server {...}</code> brackets configuration, find <code>ssl_ciphers</code>;<br/>3. Remove <code>RC4</code> (if any) and add <code>:!RSA</code> at the end. <br/><br/><br/>N.B. restart the server by typing: <code>sudo service nginx restart</code>.<br/>"
+  
+      }
+    },
+    "#comment": " https://github.com/ssllabs/research/wiki/SSL-and-TLS-Deployment-Best-Practices#25-use-forward-secrecy",
+    "#comment1": " https://scotthelme.co.uk/perfect-forward-secrecy/ ",
+    "#comment2": " https://www.openssl.org/docs/man1.1.1/man1/ciphers.html",
+    "#omit-xml-declaration": "yes"
+  }

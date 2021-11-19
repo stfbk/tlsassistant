@@ -1,0 +1,11 @@
+{
+  "Entry": {
+    "Name": "SSL Get insecure Method",
+    "ExtendedName": "SSL getInsecure method",
+    "Description": "<br/>                Insecure application of SSL implementation, this applications in using the getInsecure Method which returns a new instance of a socketFactory with all SSL security checks disabled.<br/>           ",
+    "Mitigation": {
+      "Textual": "<br/>                    You should change it with getDefault method and configure it properly.<br/>            "
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}

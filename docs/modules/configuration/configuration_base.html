@@ -1,0 +1,2274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>modules.configuration.configuration_base API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>modules.configuration.configuration_base</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from enum import Enum
+from ssl import OPENSSL_VERSION
+import logging
+from utils.validation import Validator
+
+
+class OpenSSL:
+    &#34;&#34;&#34;
+    OpenSSL version comparison class.
+    &#34;&#34;&#34;
+
+    VERSION = OPENSSL_VERSION.split()[1]
+
+    def less_than(self, ver1, ver2=VERSION):
+        &#34;&#34;&#34;
+        Compare two OpenSSL versions, return True if ver1 &lt; ver2.
+
+        :param ver1: OpenSSL version string.
+        :type ver1: str
+        :param ver2: OpenSSL version string.
+        :type ver2: str
+        :default ver2: OpenSSL system version.
+        :return: True if ver1 &lt; ver2, else False.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return self.__compare(ver1, ver2)
+
+    def greater_than(self, ver1, ver2=VERSION):
+        &#34;&#34;&#34;
+        Compare two OpenSSL versions, return True if ver1 &gt;= ver2.
+
+        :param ver1: OpenSSL version string.
+        :type ver1: str
+        :param ver2: OpenSSL version string.
+        :type ver2: str
+        :default ver2: OpenSSL system version.
+        :return: True if ver1 &lt; ver2, else False.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return self.__compare(ver1, ver2, reverse=True)
+
+    def is_safe(self, ver1, ver2=VERSION):
+        &#34;&#34;&#34;
+        Compare two OpenSSL versions, alias for less_than.
+
+        :param ver1: OpenSSL version string.
+        :type ver1: str
+        :param ver2: OpenSSL version string.
+        :type ver2: str
+        :default ver2: OpenSSL system version.
+        :return: True if ver1 &lt; ver2, else False.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return self.less_than(ver1, ver2)
+
+    def __compare(self, ver1, ver2, reverse=False):
+        &#34;&#34;&#34;
+        Internal method to compare two OpenSSL versions.
+
+        :param ver1: OpenSSL version string.
+        :type ver1: str
+        :param ver2: OpenSSL version string.
+        :type ver2: str
+        :param reverse: Reverse the order of ver1 and ver2.
+        :type reverse: bool
+        :return: ver1 &lt; ver2 if reverse is False else ver1 &gt; ver2.
+        :rtype: bool
+        :raise: AssertionError if length of ver1 and ver2 is different than 5 or 6 chars.
+
+        &#34;&#34;&#34;
+
+        assert (
+            len(ver1) == 6 or len(ver1) == 5
+        ), &#34;OpenSSL version must be 5 or 6 char long.\nFor example &#39;1.1.1f&#39;\nFor version 3.0 use 3.0.0.&#34;
+        assert (
+            len(ver2) == 6 or len(ver2) == 5
+        ), &#34;OpenSSL version must be 5 or 6 char long.\nFor example &#39;1.1.1f&#39;&#39;\nFor version 3.0 use 3.0.0.&#34;
+        # even the versions
+        if len(ver1) == 6 and len(ver2) == 5:
+            ver1 = ver1[:-1]
+        elif len(ver2) == 6 and len(ver1) == 5:
+            ver2 = ver2[:-1]
+        return (ver1 &lt; ver2) if not reverse else (ver1 &gt; ver2)
+
+
+class Type:
+    &#34;&#34;&#34;
+    Type of configuration.
+    &#34;&#34;&#34;
+
+    NONE = 0
+    HTTP = 80
+    SSL = 443
+
+
+class Config_base:
+    &#34;&#34;&#34;
+    Interface for configuration base.
+    &#34;&#34;&#34;
+
+    openSSL = OpenSSL()
+    VHOST_USE = Type.NONE
+
+    def condition(self, vhost):
+        &#34;&#34;&#34;
+        Dummy condition method.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :returns: True if vhost is vulnerable.
+        :rtype: bool
+        :raise: NotImplementedError if method is not implemented.
+        &#34;&#34;&#34;
+        raise NotImplementedError
+
+    def fix(self, vhost):
+        &#34;&#34;&#34;
+        Dummy fix method.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :raise: NotImplementedError if method is not implemented.
+        &#34;&#34;&#34;
+        raise NotImplementedError
+
+    def is_empty(self, vhost):
+        &#34;&#34;&#34;
+        Dummy empty method.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :returns: True if vhost doesn&#39;t have the contextual VirtualHost directive.
+        :rtype: bool
+        :raise: NotImplementedError if method is not implemented.
+        &#34;&#34;&#34;
+        raise NotImplementedError
+
+
+class Parse_configuration_protocols(Config_base):
+    &#34;&#34;&#34;
+    Check if vhost is vulnerable to TLS SSLProtocol bad configuration.
+    &#34;&#34;&#34;
+
+    def is_empty(self, vhost):
+        &#34;&#34;&#34;
+        Check if vhost doesn&#39;t have the contextual directive.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :returns: True if vhost doesn&#39;t have the contextual directive.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return self.__key not in vhost or not vhost[self.__key]
+
+    def is_tls(self, vhost, version=3):
+        &#34;&#34;&#34;
+        Check if vhost is using only the TLS version x.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param version: TLS version to check.
+        :type version: int
+        :returns: True if vhost is using ONLY the TLS version x.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return (
+            &#34;SSLProtocol&#34; in vhost
+            and vhost[&#34;SSLProtocol&#34;].lower() == f&#34;tlsv1.{version}&#34;
+        )
+
+    def __init__(self, openssl: str, protocols: dict):
+        &#34;&#34;&#34;
+        :param openssl: OpenSSL version.
+        :type openssl: str
+        :param protocols: TLS/SSL protocols to check.
+        :type protocols: dict
+        &#34;&#34;&#34;
+        self.__openssl = openssl
+        self.__protocols = protocols
+        self.__key = &#34;SSLProtocol&#34;
+        Validator([(openssl, str), (protocols, dict)])
+
+    def fix(self, vhost):
+        &#34;&#34;&#34;
+        Fix TLS/SSL protocol bad configuration.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        &#34;&#34;&#34;
+        key = self.__key
+        backup = vhost[key] if key in vhost else &#34;&#34;
+        v = Validator()
+        for cipher, operation in self.__protocols.items():
+            v.string(cipher)
+            vhost[key] = (
+                f&#34;{(vhost[key] if key in vhost and vhost[key] else &#39;ALL &#39;)}&#34;
+                f&#34;{&#39; &#39; if key in vhost and vhost[key] else &#39;&#39;}{operation}{cipher}&#34;
+            )
+        return {
+            &#34;before&#34;: f&#34;{key} {backup}&#34; if backup else &#34;&#34;,
+            &#34;after&#34;: f&#34;{key} {vhost[key]}&#34;,
+        }
+
+    def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+        &#34;&#34;&#34;
+        Check if vhost is vulnerable to TLS SSLProtocol bad configuration.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param openssl: OpenSSL version.
+        :type openssl: str
+        :param ignore_openssl: Ignore OpenSSL version.
+        :type ignore_openssl: bool
+        :returns: True if vhost is vulnerable to TLS SSLProtocol bad configuration.
+        :rtype: bool
+        &#34;&#34;&#34;
+
+        if self.is_tls(vhost, version=3):
+            logging.debug(&#34;TLSv1.3 Detected as mutually allowed.&#34;)
+            return False
+        key = self.__key
+        openssl_greater_than = self.__openssl
+        if openssl is None:
+            openssl = &#34;&#34;
+        Validator([(openssl, str)])
+        if not ignore_openssl:
+            if openssl:
+                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
+            else:
+                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
+
+            return not is_safe and True in (
+                operation + cipher.lower()
+                not in (vhost[key].lower() if key in vhost else &#34;&#34;)
+                for cipher, operation in self.__protocols.items()
+            )
+        else:
+            return True in (
+                operation + cipher.lower()
+                not in (vhost[key].lower() if key in vhost else &#34;&#34;)
+                for cipher, operation in self.__protocols.items()
+            )  # is vulnerable if True
+
+
+class Parse_configuration_ciphers(Config_base):
+    &#34;&#34;&#34;
+    Check if vhost is vulnerable to misconfigured TLS cipher.
+    &#34;&#34;&#34;
+
+    def __init__(self, openssl: str, ciphers: list):
+        self.__openssl = openssl
+        self.__ciphers = ciphers
+        self.__key = &#34;SSLCipherSuite&#34;
+        Validator([(openssl, str), (ciphers, list)])
+
+    def is_tls(self, vhost, version=3):
+        &#34;&#34;&#34;
+        Check if vhost is using ONLY the TLS version x.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param version: TLS version to check.
+        :type version: int
+        :returns: True if vhost is using ONLY the TLS version x.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return (
+            &#34;SSLProtocol&#34; in vhost
+            and vhost[&#34;SSLProtocol&#34;].lower() == f&#34;tlsv1.{version}&#34;
+        )
+
+    def is_empty(self, vhost):
+        &#34;&#34;&#34;
+        Check if vhost doesn&#39;t have the contextual directive.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :returns: True if vhost doesn&#39;t have the contextual directive.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return self.__key not in vhost or not vhost[self.__key]
+
+    def fix(self, vhost):
+        &#34;&#34;&#34;
+        Fix misconfigured TLS cipher in vhost.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        &#34;&#34;&#34;
+        key = self.__key
+        v = Validator()
+        backup = vhost[key] if key in vhost else &#34;&#34;
+        for cipher in self.__ciphers:
+            v.string(cipher)
+            vhost[key] = (
+                f&#34;{vhost[key] if key in vhost and vhost[key] else &#39;&#39;}&#34;
+                f&#34;{&#39;:&#39; if key in vhost and vhost[key] else &#39;&#39;}!{cipher.upper()}&#34;
+            )
+        return {
+            &#34;before&#34;: f&#34;{key} {backup}&#34; if backup else &#34;&#34;,
+            &#34;after&#34;: f&#34;{key} {vhost[key]}&#34;,
+        }
+
+    def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+        &#34;&#34;&#34;
+        Check if vhost is vulnerable to misconfigured TLS cipher.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param openssl: OpenSSL version.
+        :type openssl: str
+        :param ignore_openssl: Ignore OpenSSL version.
+        :type ignore_openssl: bool
+        :returns: True if vhost is vulnerable to misconfigured TLS cipher.
+        :rtype: bool
+
+        &#34;&#34;&#34;
+        if self.is_tls(vhost, version=3):
+            logging.debug(&#34;TLSv1.3 Detected as mutually allowed.&#34;)
+            return False
+        key = self.__key
+        openssl_greater_than = self.__openssl
+        if openssl is None:
+            openssl = &#34;&#34;
+        Validator([(openssl, str)])
+        if not ignore_openssl:
+            if openssl:
+                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
+            else:
+                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
+
+            return not is_safe and True in (
+                &#34;!&#34; + cipher.lower() not in (vhost[key].lower() if key in vhost else &#34;&#34;)
+                for cipher in self.__ciphers
+            )
+        else:
+            return True in (
+                &#34;!&#34; + cipher.lower() not in (vhost[key].lower() if key in vhost else &#34;&#34;)
+                for cipher in self.__ciphers
+            )  # is vulnerable if True
+
+
+class Parse_configuration_strict_security(Config_base):
+    &#34;&#34;&#34;
+    Check if vhost is vulnerable to misconfigured TLS strict security.
+    &#34;&#34;&#34;
+
+    VHOST_USE = Type.SSL
+
+    def __init__(self):
+        self.__key = &#34;Header&#34;
+
+    def is_empty(self, vhost):
+        &#34;&#34;&#34;
+        Check if vhost doesn&#39;t have the header directive.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :returns: True if vhost doesn&#39;t have the header directive.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return self.__key not in vhost or not vhost[self.__key]
+
+    def fix(self, vhost):
+        &#34;&#34;&#34;
+        Fix misconfigured TLS strict security in vhost.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        &#34;&#34;&#34;
+        key = self.__key
+        backup = vhost[key] if key in vhost else &#34;&#34;
+        to_add = &#39;always set Strict-Transport-Security &#34;max-age=63072000&#34;&#39;
+        if key in vhost:
+            vhost[key] += f&#34;;{to_add}&#34;
+        else:
+            vhost[key] = to_add
+        return {
+            &#34;before&#34;: f&#34;{key} {backup}&#34; if backup else &#34;&#34;,
+            &#34;after&#34;: f&#34;{key} {vhost[key]}&#34;,
+        }
+
+    def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+        &#34;&#34;&#34;
+        Check if vhost is vulnerable to misconfigured TLS strict security.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param openssl: OpenSSL version.
+        :type openssl: str
+        :param ignore_openssl: Ignore OpenSSL version.
+        :type ignore_openssl: bool
+        :returns: True if vhost is vulnerable to misconfigured TLS strict security.
+        :rtype: bool
+        &#34;&#34;&#34;
+
+        return (
+            self.__key not in vhost
+            or &#34;Strict-Transport-Security&#34; not in vhost[self.__key]
+        )  # vulnerable if True
+
+
+class Parse_configuration_checks_compression(Config_base):
+    &#34;&#34;&#34;
+    Check if vhost is vulnerable to misconfigured TLS compression.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    &#34;&#34;&#34;
+
+    VHOST_USE = Type.NONE
+
+    def __init__(self, openssl: str):
+        self.__openssl = openssl
+        self.__key = &#34;SSLCompression&#34;
+        self.__value = &#34;Off&#34;
+        Validator([(openssl, str)])
+
+    def is_tls(self, vhost, version=3):
+        &#34;&#34;&#34;
+        Check if vhost is using only a specific version of TLS.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param version: TLS version.
+        :type version: int
+        :returns: True if vhost is using only a specific version of TLS.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return (
+            &#34;SSLProtocol&#34; in vhost
+            and vhost[&#34;SSLProtocol&#34;].lower() == f&#34;tlsv1.{version}&#34;
+        )
+
+    def is_empty(self, vhost):
+        &#34;&#34;&#34;
+        Check if vhost doesn&#39;t have the SSLCompression directive.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :returns: True if vhost doesn&#39;t have the SSLCompression directive.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return self.__key not in vhost or not vhost[self.__key]
+
+    def fix(self, vhost):
+        &#34;&#34;&#34;
+        Fix misconfigured TLS compression in vhost.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        &#34;&#34;&#34;
+        key = self.__key
+        backup = vhost[key] if key in vhost else &#34;&#34;
+        vhost[key] = self.__value
+        return {
+            &#34;before&#34;: f&#34;{key} {backup}&#34; if backup else &#34;&#34;,
+            &#34;after&#34;: f&#34;{key} {vhost[key]}&#34;,
+        }
+
+    def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+        &#34;&#34;&#34;
+        Check if vhost is vulnerable to misconfigured TLS compression.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param openssl: OpenSSL version.
+        :type openssl: str
+        :param ignore_openssl: Ignore OpenSSL version.
+        :type ignore_openssl: bool
+        :returns: True if vhost is vulnerable to misconfigured TLS compression.
+        :rtype: bool
+        &#34;&#34;&#34;
+        if self.is_tls(vhost, version=3):
+            logging.debug(&#34;TLSv1.3 Detected as mutually allowed.&#34;)
+            return False
+        key = self.__key
+        openssl_greater_than = self.__openssl
+        if openssl is None:
+            openssl = &#34;&#34;
+        Validator([(openssl, str)])
+        if not ignore_openssl:
+            if openssl:
+                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
+            else:
+                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
+
+            return not is_safe and (key not in vhost or vhost[key] != self.__value)
+
+        else:
+            return (
+                key not in vhost or vhost[key] != self.__value
+            )  # is vulnerable if True
+
+
+class Parse_configuration_checks_redirect(Config_base):
+    &#34;&#34;&#34;
+    Check if vhost is vulnerable to misconfigured TLS redirect.
+    &#34;&#34;&#34;
+
+    VHOST_USE = Type.HTTP
+
+    def __init__(self):
+        self.__keys = [&#34;RewriteEngine&#34;, &#34;RewriteRule&#34;]
+
+    def is_empty(self, vhost):
+        &#34;&#34;&#34;
+        Check if vhost doesn&#39;t have the RewriteEngine and RewriteRule directives.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :returns: True if vhost doesn&#39;t have the RewriteEngine and RewriteRule directives.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return True in (key not in vhost for key in self.__keys)
+
+    def fix(self, vhost):
+        &#34;&#34;&#34;
+        Fix misconfigured TLS redirect in vhost.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        &#34;&#34;&#34;
+        RewriteEngine, RewriteRule = self.__keys
+        backup_rewrite_engine = vhost[RewriteEngine] if RewriteEngine in vhost else &#34;&#34;
+        backup_rewrite_rule = vhost[RewriteRule] if RewriteRule in vhost else &#34;&#34;
+        vhost[RewriteEngine] = &#34;on&#34;
+        vhost[RewriteRule] = &#34;^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]&#34;
+        return {
+            &#34;before&#34;: {
+                &#34;RewriteEngine&#34;: backup_rewrite_engine,
+                &#34;RewriteRule&#34;: backup_rewrite_rule,
+            },
+            &#34;after&#34;: {
+                &#34;RewriteEngine&#34;: vhost[RewriteEngine],
+                &#34;RewriteRule&#34;: vhost[RewriteRule],
+            },
+        }
+
+    def condition(self, vhost, openssl=None, ignore_openssl=False):
+        &#34;&#34;&#34;
+        Check if vhost is vulnerable to misconfigured TLS redirect.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param openssl: OpenSSL version.
+        :type openssl: str
+        :param ignore_openssl: Ignore OpenSSL version.
+        :type ignore_openssl: bool
+        :returns: True if vhost is vulnerable to misconfigured TLS redirect.
+        :rtype: bool
+        &#34;&#34;&#34;
+        RewriteEngine, RewriteRule = self.__keys
+        return (
+            RewriteEngine not in vhost
+            or RewriteRule not in vhost
+            or vhost[RewriteEngine] != &#34;on&#34;
+            or vhost[RewriteRule] != &#34;^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]&#34;
+        )  # vulnerable if True</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="modules.configuration.configuration_base.Config_base"><code class="flex name class">
+<span>class <span class="ident">Config_base</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Interface for configuration base.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Config_base:
+    &#34;&#34;&#34;
+    Interface for configuration base.
+    &#34;&#34;&#34;
+
+    openSSL = OpenSSL()
+    VHOST_USE = Type.NONE
+
+    def condition(self, vhost):
+        &#34;&#34;&#34;
+        Dummy condition method.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :returns: True if vhost is vulnerable.
+        :rtype: bool
+        :raise: NotImplementedError if method is not implemented.
+        &#34;&#34;&#34;
+        raise NotImplementedError
+
+    def fix(self, vhost):
+        &#34;&#34;&#34;
+        Dummy fix method.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :raise: NotImplementedError if method is not implemented.
+        &#34;&#34;&#34;
+        raise NotImplementedError
+
+    def is_empty(self, vhost):
+        &#34;&#34;&#34;
+        Dummy empty method.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :returns: True if vhost doesn&#39;t have the contextual VirtualHost directive.
+        :rtype: bool
+        :raise: NotImplementedError if method is not implemented.
+        &#34;&#34;&#34;
+        raise NotImplementedError</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="modules.configuration.configuration_base.Parse_configuration_checks_compression" href="#modules.configuration.configuration_base.Parse_configuration_checks_compression">Parse_configuration_checks_compression</a></li>
+<li><a title="modules.configuration.configuration_base.Parse_configuration_checks_redirect" href="#modules.configuration.configuration_base.Parse_configuration_checks_redirect">Parse_configuration_checks_redirect</a></li>
+<li><a title="modules.configuration.configuration_base.Parse_configuration_ciphers" href="#modules.configuration.configuration_base.Parse_configuration_ciphers">Parse_configuration_ciphers</a></li>
+<li><a title="modules.configuration.configuration_base.Parse_configuration_protocols" href="#modules.configuration.configuration_base.Parse_configuration_protocols">Parse_configuration_protocols</a></li>
+<li><a title="modules.configuration.configuration_base.Parse_configuration_strict_security" href="#modules.configuration.configuration_base.Parse_configuration_strict_security">Parse_configuration_strict_security</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.configuration.configuration_base.Config_base.VHOST_USE"><code class="name">var <span class="ident">VHOST_USE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="modules.configuration.configuration_base.Config_base.openSSL"><code class="name">var <span class="ident">openSSL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="modules.configuration.configuration_base.Config_base.condition"><code class="name flex">
+<span>def <span class="ident">condition</span></span>(<span>self, vhost)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Dummy condition method.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:returns: True if vhost is vulnerable.
+:rtype: bool
+:raise: NotImplementedError if method is not implemented.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def condition(self, vhost):
+    &#34;&#34;&#34;
+    Dummy condition method.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :returns: True if vhost is vulnerable.
+    :rtype: bool
+    :raise: NotImplementedError if method is not implemented.
+    &#34;&#34;&#34;
+    raise NotImplementedError</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.Config_base.fix"><code class="name flex">
+<span>def <span class="ident">fix</span></span>(<span>self, vhost)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Dummy fix method.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:raise: NotImplementedError if method is not implemented.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fix(self, vhost):
+    &#34;&#34;&#34;
+    Dummy fix method.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :raise: NotImplementedError if method is not implemented.
+    &#34;&#34;&#34;
+    raise NotImplementedError</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.Config_base.is_empty"><code class="name flex">
+<span>def <span class="ident">is_empty</span></span>(<span>self, vhost)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Dummy empty method.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:returns: True if vhost doesn't have the contextual VirtualHost directive.
+:rtype: bool
+:raise: NotImplementedError if method is not implemented.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_empty(self, vhost):
+    &#34;&#34;&#34;
+    Dummy empty method.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :returns: True if vhost doesn&#39;t have the contextual VirtualHost directive.
+    :rtype: bool
+    :raise: NotImplementedError if method is not implemented.
+    &#34;&#34;&#34;
+    raise NotImplementedError</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="modules.configuration.configuration_base.OpenSSL"><code class="flex name class">
+<span>class <span class="ident">OpenSSL</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>OpenSSL version comparison class.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class OpenSSL:
+    &#34;&#34;&#34;
+    OpenSSL version comparison class.
+    &#34;&#34;&#34;
+
+    VERSION = OPENSSL_VERSION.split()[1]
+
+    def less_than(self, ver1, ver2=VERSION):
+        &#34;&#34;&#34;
+        Compare two OpenSSL versions, return True if ver1 &lt; ver2.
+
+        :param ver1: OpenSSL version string.
+        :type ver1: str
+        :param ver2: OpenSSL version string.
+        :type ver2: str
+        :default ver2: OpenSSL system version.
+        :return: True if ver1 &lt; ver2, else False.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return self.__compare(ver1, ver2)
+
+    def greater_than(self, ver1, ver2=VERSION):
+        &#34;&#34;&#34;
+        Compare two OpenSSL versions, return True if ver1 &gt;= ver2.
+
+        :param ver1: OpenSSL version string.
+        :type ver1: str
+        :param ver2: OpenSSL version string.
+        :type ver2: str
+        :default ver2: OpenSSL system version.
+        :return: True if ver1 &lt; ver2, else False.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return self.__compare(ver1, ver2, reverse=True)
+
+    def is_safe(self, ver1, ver2=VERSION):
+        &#34;&#34;&#34;
+        Compare two OpenSSL versions, alias for less_than.
+
+        :param ver1: OpenSSL version string.
+        :type ver1: str
+        :param ver2: OpenSSL version string.
+        :type ver2: str
+        :default ver2: OpenSSL system version.
+        :return: True if ver1 &lt; ver2, else False.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return self.less_than(ver1, ver2)
+
+    def __compare(self, ver1, ver2, reverse=False):
+        &#34;&#34;&#34;
+        Internal method to compare two OpenSSL versions.
+
+        :param ver1: OpenSSL version string.
+        :type ver1: str
+        :param ver2: OpenSSL version string.
+        :type ver2: str
+        :param reverse: Reverse the order of ver1 and ver2.
+        :type reverse: bool
+        :return: ver1 &lt; ver2 if reverse is False else ver1 &gt; ver2.
+        :rtype: bool
+        :raise: AssertionError if length of ver1 and ver2 is different than 5 or 6 chars.
+
+        &#34;&#34;&#34;
+
+        assert (
+            len(ver1) == 6 or len(ver1) == 5
+        ), &#34;OpenSSL version must be 5 or 6 char long.\nFor example &#39;1.1.1f&#39;\nFor version 3.0 use 3.0.0.&#34;
+        assert (
+            len(ver2) == 6 or len(ver2) == 5
+        ), &#34;OpenSSL version must be 5 or 6 char long.\nFor example &#39;1.1.1f&#39;&#39;\nFor version 3.0 use 3.0.0.&#34;
+        # even the versions
+        if len(ver1) == 6 and len(ver2) == 5:
+            ver1 = ver1[:-1]
+        elif len(ver2) == 6 and len(ver1) == 5:
+            ver2 = ver2[:-1]
+        return (ver1 &lt; ver2) if not reverse else (ver1 &gt; ver2)</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.configuration.configuration_base.OpenSSL.VERSION"><code class="name">var <span class="ident">VERSION</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="modules.configuration.configuration_base.OpenSSL.greater_than"><code class="name flex">
+<span>def <span class="ident">greater_than</span></span>(<span>self, ver1, ver2='1.1.1f')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Compare two OpenSSL versions, return True if ver1 &gt;= ver2.</p>
+<p>:param ver1: OpenSSL version string.
+:type ver1: str
+:param ver2: OpenSSL version string.
+:type ver2: str
+:default ver2: OpenSSL system version.
+:return: True if ver1 &lt; ver2, else False.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def greater_than(self, ver1, ver2=VERSION):
+    &#34;&#34;&#34;
+    Compare two OpenSSL versions, return True if ver1 &gt;= ver2.
+
+    :param ver1: OpenSSL version string.
+    :type ver1: str
+    :param ver2: OpenSSL version string.
+    :type ver2: str
+    :default ver2: OpenSSL system version.
+    :return: True if ver1 &lt; ver2, else False.
+    :rtype: bool
+    &#34;&#34;&#34;
+    return self.__compare(ver1, ver2, reverse=True)</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.OpenSSL.is_safe"><code class="name flex">
+<span>def <span class="ident">is_safe</span></span>(<span>self, ver1, ver2='1.1.1f')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Compare two OpenSSL versions, alias for less_than.</p>
+<p>:param ver1: OpenSSL version string.
+:type ver1: str
+:param ver2: OpenSSL version string.
+:type ver2: str
+:default ver2: OpenSSL system version.
+:return: True if ver1 &lt; ver2, else False.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_safe(self, ver1, ver2=VERSION):
+    &#34;&#34;&#34;
+    Compare two OpenSSL versions, alias for less_than.
+
+    :param ver1: OpenSSL version string.
+    :type ver1: str
+    :param ver2: OpenSSL version string.
+    :type ver2: str
+    :default ver2: OpenSSL system version.
+    :return: True if ver1 &lt; ver2, else False.
+    :rtype: bool
+    &#34;&#34;&#34;
+    return self.less_than(ver1, ver2)</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.OpenSSL.less_than"><code class="name flex">
+<span>def <span class="ident">less_than</span></span>(<span>self, ver1, ver2='1.1.1f')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Compare two OpenSSL versions, return True if ver1 &lt; ver2.</p>
+<p>:param ver1: OpenSSL version string.
+:type ver1: str
+:param ver2: OpenSSL version string.
+:type ver2: str
+:default ver2: OpenSSL system version.
+:return: True if ver1 &lt; ver2, else False.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def less_than(self, ver1, ver2=VERSION):
+    &#34;&#34;&#34;
+    Compare two OpenSSL versions, return True if ver1 &lt; ver2.
+
+    :param ver1: OpenSSL version string.
+    :type ver1: str
+    :param ver2: OpenSSL version string.
+    :type ver2: str
+    :default ver2: OpenSSL system version.
+    :return: True if ver1 &lt; ver2, else False.
+    :rtype: bool
+    &#34;&#34;&#34;
+    return self.__compare(ver1, ver2)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_checks_compression"><code class="flex name class">
+<span>class <span class="ident">Parse_configuration_checks_compression</span></span>
+<span>(</span><span>openssl: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost is vulnerable to misconfigured TLS compression.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Parse_configuration_checks_compression(Config_base):
+    &#34;&#34;&#34;
+    Check if vhost is vulnerable to misconfigured TLS compression.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    &#34;&#34;&#34;
+
+    VHOST_USE = Type.NONE
+
+    def __init__(self, openssl: str):
+        self.__openssl = openssl
+        self.__key = &#34;SSLCompression&#34;
+        self.__value = &#34;Off&#34;
+        Validator([(openssl, str)])
+
+    def is_tls(self, vhost, version=3):
+        &#34;&#34;&#34;
+        Check if vhost is using only a specific version of TLS.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param version: TLS version.
+        :type version: int
+        :returns: True if vhost is using only a specific version of TLS.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return (
+            &#34;SSLProtocol&#34; in vhost
+            and vhost[&#34;SSLProtocol&#34;].lower() == f&#34;tlsv1.{version}&#34;
+        )
+
+    def is_empty(self, vhost):
+        &#34;&#34;&#34;
+        Check if vhost doesn&#39;t have the SSLCompression directive.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :returns: True if vhost doesn&#39;t have the SSLCompression directive.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return self.__key not in vhost or not vhost[self.__key]
+
+    def fix(self, vhost):
+        &#34;&#34;&#34;
+        Fix misconfigured TLS compression in vhost.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        &#34;&#34;&#34;
+        key = self.__key
+        backup = vhost[key] if key in vhost else &#34;&#34;
+        vhost[key] = self.__value
+        return {
+            &#34;before&#34;: f&#34;{key} {backup}&#34; if backup else &#34;&#34;,
+            &#34;after&#34;: f&#34;{key} {vhost[key]}&#34;,
+        }
+
+    def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+        &#34;&#34;&#34;
+        Check if vhost is vulnerable to misconfigured TLS compression.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param openssl: OpenSSL version.
+        :type openssl: str
+        :param ignore_openssl: Ignore OpenSSL version.
+        :type ignore_openssl: bool
+        :returns: True if vhost is vulnerable to misconfigured TLS compression.
+        :rtype: bool
+        &#34;&#34;&#34;
+        if self.is_tls(vhost, version=3):
+            logging.debug(&#34;TLSv1.3 Detected as mutually allowed.&#34;)
+            return False
+        key = self.__key
+        openssl_greater_than = self.__openssl
+        if openssl is None:
+            openssl = &#34;&#34;
+        Validator([(openssl, str)])
+        if not ignore_openssl:
+            if openssl:
+                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
+            else:
+                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
+
+            return not is_safe and (key not in vhost or vhost[key] != self.__value)
+
+        else:
+            return (
+                key not in vhost or vhost[key] != self.__value
+            )  # is vulnerable if True</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="modules.configuration.configuration_base.Config_base" href="#modules.configuration.configuration_base.Config_base">Config_base</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.configuration.configuration_base.Parse_configuration_checks_compression.VHOST_USE"><code class="name">var <span class="ident">VHOST_USE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="modules.configuration.configuration_base.Parse_configuration_checks_compression.condition"><code class="name flex">
+<span>def <span class="ident">condition</span></span>(<span>self, vhost, openssl: str = None, ignore_openssl=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost is vulnerable to misconfigured TLS compression.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:param openssl: OpenSSL version.
+:type openssl: str
+:param ignore_openssl: Ignore OpenSSL version.
+:type ignore_openssl: bool
+:returns: True if vhost is vulnerable to misconfigured TLS compression.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+    &#34;&#34;&#34;
+    Check if vhost is vulnerable to misconfigured TLS compression.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :param openssl: OpenSSL version.
+    :type openssl: str
+    :param ignore_openssl: Ignore OpenSSL version.
+    :type ignore_openssl: bool
+    :returns: True if vhost is vulnerable to misconfigured TLS compression.
+    :rtype: bool
+    &#34;&#34;&#34;
+    if self.is_tls(vhost, version=3):
+        logging.debug(&#34;TLSv1.3 Detected as mutually allowed.&#34;)
+        return False
+    key = self.__key
+    openssl_greater_than = self.__openssl
+    if openssl is None:
+        openssl = &#34;&#34;
+    Validator([(openssl, str)])
+    if not ignore_openssl:
+        if openssl:
+            is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
+        else:
+            is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
+
+        return not is_safe and (key not in vhost or vhost[key] != self.__value)
+
+    else:
+        return (
+            key not in vhost or vhost[key] != self.__value
+        )  # is vulnerable if True</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_checks_compression.fix"><code class="name flex">
+<span>def <span class="ident">fix</span></span>(<span>self, vhost)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fix misconfigured TLS compression in vhost.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fix(self, vhost):
+    &#34;&#34;&#34;
+    Fix misconfigured TLS compression in vhost.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    &#34;&#34;&#34;
+    key = self.__key
+    backup = vhost[key] if key in vhost else &#34;&#34;
+    vhost[key] = self.__value
+    return {
+        &#34;before&#34;: f&#34;{key} {backup}&#34; if backup else &#34;&#34;,
+        &#34;after&#34;: f&#34;{key} {vhost[key]}&#34;,
+    }</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_checks_compression.is_empty"><code class="name flex">
+<span>def <span class="ident">is_empty</span></span>(<span>self, vhost)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost doesn't have the SSLCompression directive.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:returns: True if vhost doesn't have the SSLCompression directive.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_empty(self, vhost):
+    &#34;&#34;&#34;
+    Check if vhost doesn&#39;t have the SSLCompression directive.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :returns: True if vhost doesn&#39;t have the SSLCompression directive.
+    :rtype: bool
+    &#34;&#34;&#34;
+    return self.__key not in vhost or not vhost[self.__key]</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_checks_compression.is_tls"><code class="name flex">
+<span>def <span class="ident">is_tls</span></span>(<span>self, vhost, version=3)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost is using only a specific version of TLS.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:param version: TLS version.
+:type version: int
+:returns: True if vhost is using only a specific version of TLS.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_tls(self, vhost, version=3):
+    &#34;&#34;&#34;
+    Check if vhost is using only a specific version of TLS.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :param version: TLS version.
+    :type version: int
+    :returns: True if vhost is using only a specific version of TLS.
+    :rtype: bool
+    &#34;&#34;&#34;
+    return (
+        &#34;SSLProtocol&#34; in vhost
+        and vhost[&#34;SSLProtocol&#34;].lower() == f&#34;tlsv1.{version}&#34;
+    )</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_checks_redirect"><code class="flex name class">
+<span>class <span class="ident">Parse_configuration_checks_redirect</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost is vulnerable to misconfigured TLS redirect.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Parse_configuration_checks_redirect(Config_base):
+    &#34;&#34;&#34;
+    Check if vhost is vulnerable to misconfigured TLS redirect.
+    &#34;&#34;&#34;
+
+    VHOST_USE = Type.HTTP
+
+    def __init__(self):
+        self.__keys = [&#34;RewriteEngine&#34;, &#34;RewriteRule&#34;]
+
+    def is_empty(self, vhost):
+        &#34;&#34;&#34;
+        Check if vhost doesn&#39;t have the RewriteEngine and RewriteRule directives.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :returns: True if vhost doesn&#39;t have the RewriteEngine and RewriteRule directives.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return True in (key not in vhost for key in self.__keys)
+
+    def fix(self, vhost):
+        &#34;&#34;&#34;
+        Fix misconfigured TLS redirect in vhost.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        &#34;&#34;&#34;
+        RewriteEngine, RewriteRule = self.__keys
+        backup_rewrite_engine = vhost[RewriteEngine] if RewriteEngine in vhost else &#34;&#34;
+        backup_rewrite_rule = vhost[RewriteRule] if RewriteRule in vhost else &#34;&#34;
+        vhost[RewriteEngine] = &#34;on&#34;
+        vhost[RewriteRule] = &#34;^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]&#34;
+        return {
+            &#34;before&#34;: {
+                &#34;RewriteEngine&#34;: backup_rewrite_engine,
+                &#34;RewriteRule&#34;: backup_rewrite_rule,
+            },
+            &#34;after&#34;: {
+                &#34;RewriteEngine&#34;: vhost[RewriteEngine],
+                &#34;RewriteRule&#34;: vhost[RewriteRule],
+            },
+        }
+
+    def condition(self, vhost, openssl=None, ignore_openssl=False):
+        &#34;&#34;&#34;
+        Check if vhost is vulnerable to misconfigured TLS redirect.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param openssl: OpenSSL version.
+        :type openssl: str
+        :param ignore_openssl: Ignore OpenSSL version.
+        :type ignore_openssl: bool
+        :returns: True if vhost is vulnerable to misconfigured TLS redirect.
+        :rtype: bool
+        &#34;&#34;&#34;
+        RewriteEngine, RewriteRule = self.__keys
+        return (
+            RewriteEngine not in vhost
+            or RewriteRule not in vhost
+            or vhost[RewriteEngine] != &#34;on&#34;
+            or vhost[RewriteRule] != &#34;^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]&#34;
+        )  # vulnerable if True</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="modules.configuration.configuration_base.Config_base" href="#modules.configuration.configuration_base.Config_base">Config_base</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.configuration.configuration_base.Parse_configuration_checks_redirect.VHOST_USE"><code class="name">var <span class="ident">VHOST_USE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="modules.configuration.configuration_base.Parse_configuration_checks_redirect.condition"><code class="name flex">
+<span>def <span class="ident">condition</span></span>(<span>self, vhost, openssl=None, ignore_openssl=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost is vulnerable to misconfigured TLS redirect.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:param openssl: OpenSSL version.
+:type openssl: str
+:param ignore_openssl: Ignore OpenSSL version.
+:type ignore_openssl: bool
+:returns: True if vhost is vulnerable to misconfigured TLS redirect.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def condition(self, vhost, openssl=None, ignore_openssl=False):
+    &#34;&#34;&#34;
+    Check if vhost is vulnerable to misconfigured TLS redirect.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :param openssl: OpenSSL version.
+    :type openssl: str
+    :param ignore_openssl: Ignore OpenSSL version.
+    :type ignore_openssl: bool
+    :returns: True if vhost is vulnerable to misconfigured TLS redirect.
+    :rtype: bool
+    &#34;&#34;&#34;
+    RewriteEngine, RewriteRule = self.__keys
+    return (
+        RewriteEngine not in vhost
+        or RewriteRule not in vhost
+        or vhost[RewriteEngine] != &#34;on&#34;
+        or vhost[RewriteRule] != &#34;^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]&#34;
+    )  # vulnerable if True</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_checks_redirect.fix"><code class="name flex">
+<span>def <span class="ident">fix</span></span>(<span>self, vhost)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fix misconfigured TLS redirect in vhost.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fix(self, vhost):
+    &#34;&#34;&#34;
+    Fix misconfigured TLS redirect in vhost.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    &#34;&#34;&#34;
+    RewriteEngine, RewriteRule = self.__keys
+    backup_rewrite_engine = vhost[RewriteEngine] if RewriteEngine in vhost else &#34;&#34;
+    backup_rewrite_rule = vhost[RewriteRule] if RewriteRule in vhost else &#34;&#34;
+    vhost[RewriteEngine] = &#34;on&#34;
+    vhost[RewriteRule] = &#34;^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]&#34;
+    return {
+        &#34;before&#34;: {
+            &#34;RewriteEngine&#34;: backup_rewrite_engine,
+            &#34;RewriteRule&#34;: backup_rewrite_rule,
+        },
+        &#34;after&#34;: {
+            &#34;RewriteEngine&#34;: vhost[RewriteEngine],
+            &#34;RewriteRule&#34;: vhost[RewriteRule],
+        },
+    }</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_checks_redirect.is_empty"><code class="name flex">
+<span>def <span class="ident">is_empty</span></span>(<span>self, vhost)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost doesn't have the RewriteEngine and RewriteRule directives.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:returns: True if vhost doesn't have the RewriteEngine and RewriteRule directives.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_empty(self, vhost):
+    &#34;&#34;&#34;
+    Check if vhost doesn&#39;t have the RewriteEngine and RewriteRule directives.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :returns: True if vhost doesn&#39;t have the RewriteEngine and RewriteRule directives.
+    :rtype: bool
+    &#34;&#34;&#34;
+    return True in (key not in vhost for key in self.__keys)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_ciphers"><code class="flex name class">
+<span>class <span class="ident">Parse_configuration_ciphers</span></span>
+<span>(</span><span>openssl: str, ciphers: list)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost is vulnerable to misconfigured TLS cipher.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Parse_configuration_ciphers(Config_base):
+    &#34;&#34;&#34;
+    Check if vhost is vulnerable to misconfigured TLS cipher.
+    &#34;&#34;&#34;
+
+    def __init__(self, openssl: str, ciphers: list):
+        self.__openssl = openssl
+        self.__ciphers = ciphers
+        self.__key = &#34;SSLCipherSuite&#34;
+        Validator([(openssl, str), (ciphers, list)])
+
+    def is_tls(self, vhost, version=3):
+        &#34;&#34;&#34;
+        Check if vhost is using ONLY the TLS version x.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param version: TLS version to check.
+        :type version: int
+        :returns: True if vhost is using ONLY the TLS version x.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return (
+            &#34;SSLProtocol&#34; in vhost
+            and vhost[&#34;SSLProtocol&#34;].lower() == f&#34;tlsv1.{version}&#34;
+        )
+
+    def is_empty(self, vhost):
+        &#34;&#34;&#34;
+        Check if vhost doesn&#39;t have the contextual directive.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :returns: True if vhost doesn&#39;t have the contextual directive.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return self.__key not in vhost or not vhost[self.__key]
+
+    def fix(self, vhost):
+        &#34;&#34;&#34;
+        Fix misconfigured TLS cipher in vhost.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        &#34;&#34;&#34;
+        key = self.__key
+        v = Validator()
+        backup = vhost[key] if key in vhost else &#34;&#34;
+        for cipher in self.__ciphers:
+            v.string(cipher)
+            vhost[key] = (
+                f&#34;{vhost[key] if key in vhost and vhost[key] else &#39;&#39;}&#34;
+                f&#34;{&#39;:&#39; if key in vhost and vhost[key] else &#39;&#39;}!{cipher.upper()}&#34;
+            )
+        return {
+            &#34;before&#34;: f&#34;{key} {backup}&#34; if backup else &#34;&#34;,
+            &#34;after&#34;: f&#34;{key} {vhost[key]}&#34;,
+        }
+
+    def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+        &#34;&#34;&#34;
+        Check if vhost is vulnerable to misconfigured TLS cipher.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param openssl: OpenSSL version.
+        :type openssl: str
+        :param ignore_openssl: Ignore OpenSSL version.
+        :type ignore_openssl: bool
+        :returns: True if vhost is vulnerable to misconfigured TLS cipher.
+        :rtype: bool
+
+        &#34;&#34;&#34;
+        if self.is_tls(vhost, version=3):
+            logging.debug(&#34;TLSv1.3 Detected as mutually allowed.&#34;)
+            return False
+        key = self.__key
+        openssl_greater_than = self.__openssl
+        if openssl is None:
+            openssl = &#34;&#34;
+        Validator([(openssl, str)])
+        if not ignore_openssl:
+            if openssl:
+                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
+            else:
+                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
+
+            return not is_safe and True in (
+                &#34;!&#34; + cipher.lower() not in (vhost[key].lower() if key in vhost else &#34;&#34;)
+                for cipher in self.__ciphers
+            )
+        else:
+            return True in (
+                &#34;!&#34; + cipher.lower() not in (vhost[key].lower() if key in vhost else &#34;&#34;)
+                for cipher in self.__ciphers
+            )  # is vulnerable if True</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="modules.configuration.configuration_base.Config_base" href="#modules.configuration.configuration_base.Config_base">Config_base</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="modules.configuration.configuration_base.Parse_configuration_ciphers.condition"><code class="name flex">
+<span>def <span class="ident">condition</span></span>(<span>self, vhost, openssl: str = None, ignore_openssl=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost is vulnerable to misconfigured TLS cipher.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:param openssl: OpenSSL version.
+:type openssl: str
+:param ignore_openssl: Ignore OpenSSL version.
+:type ignore_openssl: bool
+:returns: True if vhost is vulnerable to misconfigured TLS cipher.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+    &#34;&#34;&#34;
+    Check if vhost is vulnerable to misconfigured TLS cipher.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :param openssl: OpenSSL version.
+    :type openssl: str
+    :param ignore_openssl: Ignore OpenSSL version.
+    :type ignore_openssl: bool
+    :returns: True if vhost is vulnerable to misconfigured TLS cipher.
+    :rtype: bool
+
+    &#34;&#34;&#34;
+    if self.is_tls(vhost, version=3):
+        logging.debug(&#34;TLSv1.3 Detected as mutually allowed.&#34;)
+        return False
+    key = self.__key
+    openssl_greater_than = self.__openssl
+    if openssl is None:
+        openssl = &#34;&#34;
+    Validator([(openssl, str)])
+    if not ignore_openssl:
+        if openssl:
+            is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
+        else:
+            is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
+
+        return not is_safe and True in (
+            &#34;!&#34; + cipher.lower() not in (vhost[key].lower() if key in vhost else &#34;&#34;)
+            for cipher in self.__ciphers
+        )
+    else:
+        return True in (
+            &#34;!&#34; + cipher.lower() not in (vhost[key].lower() if key in vhost else &#34;&#34;)
+            for cipher in self.__ciphers
+        )  # is vulnerable if True</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_ciphers.fix"><code class="name flex">
+<span>def <span class="ident">fix</span></span>(<span>self, vhost)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fix misconfigured TLS cipher in vhost.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fix(self, vhost):
+    &#34;&#34;&#34;
+    Fix misconfigured TLS cipher in vhost.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    &#34;&#34;&#34;
+    key = self.__key
+    v = Validator()
+    backup = vhost[key] if key in vhost else &#34;&#34;
+    for cipher in self.__ciphers:
+        v.string(cipher)
+        vhost[key] = (
+            f&#34;{vhost[key] if key in vhost and vhost[key] else &#39;&#39;}&#34;
+            f&#34;{&#39;:&#39; if key in vhost and vhost[key] else &#39;&#39;}!{cipher.upper()}&#34;
+        )
+    return {
+        &#34;before&#34;: f&#34;{key} {backup}&#34; if backup else &#34;&#34;,
+        &#34;after&#34;: f&#34;{key} {vhost[key]}&#34;,
+    }</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_ciphers.is_empty"><code class="name flex">
+<span>def <span class="ident">is_empty</span></span>(<span>self, vhost)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost doesn't have the contextual directive.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:returns: True if vhost doesn't have the contextual directive.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_empty(self, vhost):
+    &#34;&#34;&#34;
+    Check if vhost doesn&#39;t have the contextual directive.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :returns: True if vhost doesn&#39;t have the contextual directive.
+    :rtype: bool
+    &#34;&#34;&#34;
+    return self.__key not in vhost or not vhost[self.__key]</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_ciphers.is_tls"><code class="name flex">
+<span>def <span class="ident">is_tls</span></span>(<span>self, vhost, version=3)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost is using ONLY the TLS version x.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:param version: TLS version to check.
+:type version: int
+:returns: True if vhost is using ONLY the TLS version x.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_tls(self, vhost, version=3):
+    &#34;&#34;&#34;
+    Check if vhost is using ONLY the TLS version x.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :param version: TLS version to check.
+    :type version: int
+    :returns: True if vhost is using ONLY the TLS version x.
+    :rtype: bool
+    &#34;&#34;&#34;
+    return (
+        &#34;SSLProtocol&#34; in vhost
+        and vhost[&#34;SSLProtocol&#34;].lower() == f&#34;tlsv1.{version}&#34;
+    )</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_protocols"><code class="flex name class">
+<span>class <span class="ident">Parse_configuration_protocols</span></span>
+<span>(</span><span>openssl: str, protocols: dict)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost is vulnerable to TLS SSLProtocol bad configuration.</p>
+<p>:param openssl: OpenSSL version.
+:type openssl: str
+:param protocols: TLS/SSL protocols to check.
+:type protocols: dict</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Parse_configuration_protocols(Config_base):
+    &#34;&#34;&#34;
+    Check if vhost is vulnerable to TLS SSLProtocol bad configuration.
+    &#34;&#34;&#34;
+
+    def is_empty(self, vhost):
+        &#34;&#34;&#34;
+        Check if vhost doesn&#39;t have the contextual directive.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :returns: True if vhost doesn&#39;t have the contextual directive.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return self.__key not in vhost or not vhost[self.__key]
+
+    def is_tls(self, vhost, version=3):
+        &#34;&#34;&#34;
+        Check if vhost is using only the TLS version x.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param version: TLS version to check.
+        :type version: int
+        :returns: True if vhost is using ONLY the TLS version x.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return (
+            &#34;SSLProtocol&#34; in vhost
+            and vhost[&#34;SSLProtocol&#34;].lower() == f&#34;tlsv1.{version}&#34;
+        )
+
+    def __init__(self, openssl: str, protocols: dict):
+        &#34;&#34;&#34;
+        :param openssl: OpenSSL version.
+        :type openssl: str
+        :param protocols: TLS/SSL protocols to check.
+        :type protocols: dict
+        &#34;&#34;&#34;
+        self.__openssl = openssl
+        self.__protocols = protocols
+        self.__key = &#34;SSLProtocol&#34;
+        Validator([(openssl, str), (protocols, dict)])
+
+    def fix(self, vhost):
+        &#34;&#34;&#34;
+        Fix TLS/SSL protocol bad configuration.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        &#34;&#34;&#34;
+        key = self.__key
+        backup = vhost[key] if key in vhost else &#34;&#34;
+        v = Validator()
+        for cipher, operation in self.__protocols.items():
+            v.string(cipher)
+            vhost[key] = (
+                f&#34;{(vhost[key] if key in vhost and vhost[key] else &#39;ALL &#39;)}&#34;
+                f&#34;{&#39; &#39; if key in vhost and vhost[key] else &#39;&#39;}{operation}{cipher}&#34;
+            )
+        return {
+            &#34;before&#34;: f&#34;{key} {backup}&#34; if backup else &#34;&#34;,
+            &#34;after&#34;: f&#34;{key} {vhost[key]}&#34;,
+        }
+
+    def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+        &#34;&#34;&#34;
+        Check if vhost is vulnerable to TLS SSLProtocol bad configuration.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param openssl: OpenSSL version.
+        :type openssl: str
+        :param ignore_openssl: Ignore OpenSSL version.
+        :type ignore_openssl: bool
+        :returns: True if vhost is vulnerable to TLS SSLProtocol bad configuration.
+        :rtype: bool
+        &#34;&#34;&#34;
+
+        if self.is_tls(vhost, version=3):
+            logging.debug(&#34;TLSv1.3 Detected as mutually allowed.&#34;)
+            return False
+        key = self.__key
+        openssl_greater_than = self.__openssl
+        if openssl is None:
+            openssl = &#34;&#34;
+        Validator([(openssl, str)])
+        if not ignore_openssl:
+            if openssl:
+                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
+            else:
+                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
+
+            return not is_safe and True in (
+                operation + cipher.lower()
+                not in (vhost[key].lower() if key in vhost else &#34;&#34;)
+                for cipher, operation in self.__protocols.items()
+            )
+        else:
+            return True in (
+                operation + cipher.lower()
+                not in (vhost[key].lower() if key in vhost else &#34;&#34;)
+                for cipher, operation in self.__protocols.items()
+            )  # is vulnerable if True</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="modules.configuration.configuration_base.Config_base" href="#modules.configuration.configuration_base.Config_base">Config_base</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="modules.configuration.configuration_base.Parse_configuration_protocols.condition"><code class="name flex">
+<span>def <span class="ident">condition</span></span>(<span>self, vhost, openssl: str = None, ignore_openssl=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost is vulnerable to TLS SSLProtocol bad configuration.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:param openssl: OpenSSL version.
+:type openssl: str
+:param ignore_openssl: Ignore OpenSSL version.
+:type ignore_openssl: bool
+:returns: True if vhost is vulnerable to TLS SSLProtocol bad configuration.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+    &#34;&#34;&#34;
+    Check if vhost is vulnerable to TLS SSLProtocol bad configuration.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :param openssl: OpenSSL version.
+    :type openssl: str
+    :param ignore_openssl: Ignore OpenSSL version.
+    :type ignore_openssl: bool
+    :returns: True if vhost is vulnerable to TLS SSLProtocol bad configuration.
+    :rtype: bool
+    &#34;&#34;&#34;
+
+    if self.is_tls(vhost, version=3):
+        logging.debug(&#34;TLSv1.3 Detected as mutually allowed.&#34;)
+        return False
+    key = self.__key
+    openssl_greater_than = self.__openssl
+    if openssl is None:
+        openssl = &#34;&#34;
+    Validator([(openssl, str)])
+    if not ignore_openssl:
+        if openssl:
+            is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
+        else:
+            is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
+
+        return not is_safe and True in (
+            operation + cipher.lower()
+            not in (vhost[key].lower() if key in vhost else &#34;&#34;)
+            for cipher, operation in self.__protocols.items()
+        )
+    else:
+        return True in (
+            operation + cipher.lower()
+            not in (vhost[key].lower() if key in vhost else &#34;&#34;)
+            for cipher, operation in self.__protocols.items()
+        )  # is vulnerable if True</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_protocols.fix"><code class="name flex">
+<span>def <span class="ident">fix</span></span>(<span>self, vhost)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fix TLS/SSL protocol bad configuration.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fix(self, vhost):
+    &#34;&#34;&#34;
+    Fix TLS/SSL protocol bad configuration.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    &#34;&#34;&#34;
+    key = self.__key
+    backup = vhost[key] if key in vhost else &#34;&#34;
+    v = Validator()
+    for cipher, operation in self.__protocols.items():
+        v.string(cipher)
+        vhost[key] = (
+            f&#34;{(vhost[key] if key in vhost and vhost[key] else &#39;ALL &#39;)}&#34;
+            f&#34;{&#39; &#39; if key in vhost and vhost[key] else &#39;&#39;}{operation}{cipher}&#34;
+        )
+    return {
+        &#34;before&#34;: f&#34;{key} {backup}&#34; if backup else &#34;&#34;,
+        &#34;after&#34;: f&#34;{key} {vhost[key]}&#34;,
+    }</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_protocols.is_empty"><code class="name flex">
+<span>def <span class="ident">is_empty</span></span>(<span>self, vhost)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost doesn't have the contextual directive.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:returns: True if vhost doesn't have the contextual directive.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_empty(self, vhost):
+    &#34;&#34;&#34;
+    Check if vhost doesn&#39;t have the contextual directive.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :returns: True if vhost doesn&#39;t have the contextual directive.
+    :rtype: bool
+    &#34;&#34;&#34;
+    return self.__key not in vhost or not vhost[self.__key]</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_protocols.is_tls"><code class="name flex">
+<span>def <span class="ident">is_tls</span></span>(<span>self, vhost, version=3)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost is using only the TLS version x.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:param version: TLS version to check.
+:type version: int
+:returns: True if vhost is using ONLY the TLS version x.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_tls(self, vhost, version=3):
+    &#34;&#34;&#34;
+    Check if vhost is using only the TLS version x.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :param version: TLS version to check.
+    :type version: int
+    :returns: True if vhost is using ONLY the TLS version x.
+    :rtype: bool
+    &#34;&#34;&#34;
+    return (
+        &#34;SSLProtocol&#34; in vhost
+        and vhost[&#34;SSLProtocol&#34;].lower() == f&#34;tlsv1.{version}&#34;
+    )</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_strict_security"><code class="flex name class">
+<span>class <span class="ident">Parse_configuration_strict_security</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost is vulnerable to misconfigured TLS strict security.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Parse_configuration_strict_security(Config_base):
+    &#34;&#34;&#34;
+    Check if vhost is vulnerable to misconfigured TLS strict security.
+    &#34;&#34;&#34;
+
+    VHOST_USE = Type.SSL
+
+    def __init__(self):
+        self.__key = &#34;Header&#34;
+
+    def is_empty(self, vhost):
+        &#34;&#34;&#34;
+        Check if vhost doesn&#39;t have the header directive.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :returns: True if vhost doesn&#39;t have the header directive.
+        :rtype: bool
+        &#34;&#34;&#34;
+        return self.__key not in vhost or not vhost[self.__key]
+
+    def fix(self, vhost):
+        &#34;&#34;&#34;
+        Fix misconfigured TLS strict security in vhost.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        &#34;&#34;&#34;
+        key = self.__key
+        backup = vhost[key] if key in vhost else &#34;&#34;
+        to_add = &#39;always set Strict-Transport-Security &#34;max-age=63072000&#34;&#39;
+        if key in vhost:
+            vhost[key] += f&#34;;{to_add}&#34;
+        else:
+            vhost[key] = to_add
+        return {
+            &#34;before&#34;: f&#34;{key} {backup}&#34; if backup else &#34;&#34;,
+            &#34;after&#34;: f&#34;{key} {vhost[key]}&#34;,
+        }
+
+    def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+        &#34;&#34;&#34;
+        Check if vhost is vulnerable to misconfigured TLS strict security.
+
+        :param vhost: VirtualHost object.
+        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param openssl: OpenSSL version.
+        :type openssl: str
+        :param ignore_openssl: Ignore OpenSSL version.
+        :type ignore_openssl: bool
+        :returns: True if vhost is vulnerable to misconfigured TLS strict security.
+        :rtype: bool
+        &#34;&#34;&#34;
+
+        return (
+            self.__key not in vhost
+            or &#34;Strict-Transport-Security&#34; not in vhost[self.__key]
+        )  # vulnerable if True</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="modules.configuration.configuration_base.Config_base" href="#modules.configuration.configuration_base.Config_base">Config_base</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.configuration.configuration_base.Parse_configuration_strict_security.VHOST_USE"><code class="name">var <span class="ident">VHOST_USE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="modules.configuration.configuration_base.Parse_configuration_strict_security.condition"><code class="name flex">
+<span>def <span class="ident">condition</span></span>(<span>self, vhost, openssl: str = None, ignore_openssl=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost is vulnerable to misconfigured TLS strict security.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:param openssl: OpenSSL version.
+:type openssl: str
+:param ignore_openssl: Ignore OpenSSL version.
+:type ignore_openssl: bool
+:returns: True if vhost is vulnerable to misconfigured TLS strict security.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def condition(self, vhost, openssl: str = None, ignore_openssl=False):
+    &#34;&#34;&#34;
+    Check if vhost is vulnerable to misconfigured TLS strict security.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :param openssl: OpenSSL version.
+    :type openssl: str
+    :param ignore_openssl: Ignore OpenSSL version.
+    :type ignore_openssl: bool
+    :returns: True if vhost is vulnerable to misconfigured TLS strict security.
+    :rtype: bool
+    &#34;&#34;&#34;
+
+    return (
+        self.__key not in vhost
+        or &#34;Strict-Transport-Security&#34; not in vhost[self.__key]
+    )  # vulnerable if True</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_strict_security.fix"><code class="name flex">
+<span>def <span class="ident">fix</span></span>(<span>self, vhost)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fix misconfigured TLS strict security in vhost.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fix(self, vhost):
+    &#34;&#34;&#34;
+    Fix misconfigured TLS strict security in vhost.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    &#34;&#34;&#34;
+    key = self.__key
+    backup = vhost[key] if key in vhost else &#34;&#34;
+    to_add = &#39;always set Strict-Transport-Security &#34;max-age=63072000&#34;&#39;
+    if key in vhost:
+        vhost[key] += f&#34;;{to_add}&#34;
+    else:
+        vhost[key] = to_add
+    return {
+        &#34;before&#34;: f&#34;{key} {backup}&#34; if backup else &#34;&#34;,
+        &#34;after&#34;: f&#34;{key} {vhost[key]}&#34;,
+    }</code></pre>
+</details>
+</dd>
+<dt id="modules.configuration.configuration_base.Parse_configuration_strict_security.is_empty"><code class="name flex">
+<span>def <span class="ident">is_empty</span></span>(<span>self, vhost)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if vhost doesn't have the header directive.</p>
+<p>:param vhost: VirtualHost object.
+:type vhost: :class:<code>~letsencrypt_apache.obj.VirtualHost</code>
+:returns: True if vhost doesn't have the header directive.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_empty(self, vhost):
+    &#34;&#34;&#34;
+    Check if vhost doesn&#39;t have the header directive.
+
+    :param vhost: VirtualHost object.
+    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :returns: True if vhost doesn&#39;t have the header directive.
+    :rtype: bool
+    &#34;&#34;&#34;
+    return self.__key not in vhost or not vhost[self.__key]</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="modules.configuration.configuration_base.Type"><code class="flex name class">
+<span>class <span class="ident">Type</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Type of configuration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Type:
+    &#34;&#34;&#34;
+    Type of configuration.
+    &#34;&#34;&#34;
+
+    NONE = 0
+    HTTP = 80
+    SSL = 443</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.configuration.configuration_base.Type.HTTP"><code class="name">var <span class="ident">HTTP</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="modules.configuration.configuration_base.Type.NONE"><code class="name">var <span class="ident">NONE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="modules.configuration.configuration_base.Type.SSL"><code class="name">var <span class="ident">SSL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="modules.configuration" href="index.html">modules.configuration</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="modules.configuration.configuration_base.Config_base" href="#modules.configuration.configuration_base.Config_base">Config_base</a></code></h4>
+<ul class="">
+<li><code><a title="modules.configuration.configuration_base.Config_base.VHOST_USE" href="#modules.configuration.configuration_base.Config_base.VHOST_USE">VHOST_USE</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Config_base.condition" href="#modules.configuration.configuration_base.Config_base.condition">condition</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Config_base.fix" href="#modules.configuration.configuration_base.Config_base.fix">fix</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Config_base.is_empty" href="#modules.configuration.configuration_base.Config_base.is_empty">is_empty</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Config_base.openSSL" href="#modules.configuration.configuration_base.Config_base.openSSL">openSSL</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="modules.configuration.configuration_base.OpenSSL" href="#modules.configuration.configuration_base.OpenSSL">OpenSSL</a></code></h4>
+<ul class="">
+<li><code><a title="modules.configuration.configuration_base.OpenSSL.VERSION" href="#modules.configuration.configuration_base.OpenSSL.VERSION">VERSION</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.OpenSSL.greater_than" href="#modules.configuration.configuration_base.OpenSSL.greater_than">greater_than</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.OpenSSL.is_safe" href="#modules.configuration.configuration_base.OpenSSL.is_safe">is_safe</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.OpenSSL.less_than" href="#modules.configuration.configuration_base.OpenSSL.less_than">less_than</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="modules.configuration.configuration_base.Parse_configuration_checks_compression" href="#modules.configuration.configuration_base.Parse_configuration_checks_compression">Parse_configuration_checks_compression</a></code></h4>
+<ul class="">
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_checks_compression.VHOST_USE" href="#modules.configuration.configuration_base.Parse_configuration_checks_compression.VHOST_USE">VHOST_USE</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_checks_compression.condition" href="#modules.configuration.configuration_base.Parse_configuration_checks_compression.condition">condition</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_checks_compression.fix" href="#modules.configuration.configuration_base.Parse_configuration_checks_compression.fix">fix</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_checks_compression.is_empty" href="#modules.configuration.configuration_base.Parse_configuration_checks_compression.is_empty">is_empty</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_checks_compression.is_tls" href="#modules.configuration.configuration_base.Parse_configuration_checks_compression.is_tls">is_tls</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="modules.configuration.configuration_base.Parse_configuration_checks_redirect" href="#modules.configuration.configuration_base.Parse_configuration_checks_redirect">Parse_configuration_checks_redirect</a></code></h4>
+<ul class="">
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_checks_redirect.VHOST_USE" href="#modules.configuration.configuration_base.Parse_configuration_checks_redirect.VHOST_USE">VHOST_USE</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_checks_redirect.condition" href="#modules.configuration.configuration_base.Parse_configuration_checks_redirect.condition">condition</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_checks_redirect.fix" href="#modules.configuration.configuration_base.Parse_configuration_checks_redirect.fix">fix</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_checks_redirect.is_empty" href="#modules.configuration.configuration_base.Parse_configuration_checks_redirect.is_empty">is_empty</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="modules.configuration.configuration_base.Parse_configuration_ciphers" href="#modules.configuration.configuration_base.Parse_configuration_ciphers">Parse_configuration_ciphers</a></code></h4>
+<ul class="">
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_ciphers.condition" href="#modules.configuration.configuration_base.Parse_configuration_ciphers.condition">condition</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_ciphers.fix" href="#modules.configuration.configuration_base.Parse_configuration_ciphers.fix">fix</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_ciphers.is_empty" href="#modules.configuration.configuration_base.Parse_configuration_ciphers.is_empty">is_empty</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_ciphers.is_tls" href="#modules.configuration.configuration_base.Parse_configuration_ciphers.is_tls">is_tls</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="modules.configuration.configuration_base.Parse_configuration_protocols" href="#modules.configuration.configuration_base.Parse_configuration_protocols">Parse_configuration_protocols</a></code></h4>
+<ul class="">
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_protocols.condition" href="#modules.configuration.configuration_base.Parse_configuration_protocols.condition">condition</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_protocols.fix" href="#modules.configuration.configuration_base.Parse_configuration_protocols.fix">fix</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_protocols.is_empty" href="#modules.configuration.configuration_base.Parse_configuration_protocols.is_empty">is_empty</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_protocols.is_tls" href="#modules.configuration.configuration_base.Parse_configuration_protocols.is_tls">is_tls</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="modules.configuration.configuration_base.Parse_configuration_strict_security" href="#modules.configuration.configuration_base.Parse_configuration_strict_security">Parse_configuration_strict_security</a></code></h4>
+<ul class="">
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_strict_security.VHOST_USE" href="#modules.configuration.configuration_base.Parse_configuration_strict_security.VHOST_USE">VHOST_USE</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_strict_security.condition" href="#modules.configuration.configuration_base.Parse_configuration_strict_security.condition">condition</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_strict_security.fix" href="#modules.configuration.configuration_base.Parse_configuration_strict_security.fix">fix</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Parse_configuration_strict_security.is_empty" href="#modules.configuration.configuration_base.Parse_configuration_strict_security.is_empty">is_empty</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="modules.configuration.configuration_base.Type" href="#modules.configuration.configuration_base.Type">Type</a></code></h4>
+<ul class="">
+<li><code><a title="modules.configuration.configuration_base.Type.HTTP" href="#modules.configuration.configuration_base.Type.HTTP">HTTP</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Type.NONE" href="#modules.configuration.configuration_base.Type.NONE">NONE</a></code></li>
+<li><code><a title="modules.configuration.configuration_base.Type.SSL" href="#modules.configuration.configuration_base.Type.SSL">SSL</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
