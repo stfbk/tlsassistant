@@ -205,6 +205,60 @@ python3 run.py -d domains_list.log
 
 ---
 
+#### Avaliable analysis modules
+
+<details>
+<summary>Show modules list</summary>
+
+```bash
+python3 run.py -l
+```
+
+Results:
+
+```
+Here's a list of all the modules available:
+Android:
+        accepting_all_certificates
+        certificate_keystore_disclosure
+        hostnameverifier
+        obfuscated_code
+        ssl_error
+        ssl_getinsecure_method
+        trustmanager
+        weak_algorithms
+        webview_ssl_errors
+Server:
+        3shake
+        beast
+        breach
+        ccs_injection
+        certificate_transparency
+        crime
+        drown
+        freak
+        heartbleed
+        hsts_preloading
+        hsts_set
+        https_enforced
+        logjam
+        lucky13
+        mitzvah
+        nomore
+        pfs
+        poodle
+        renegotiation
+        robot
+        sloth
+        sweet32
+        ticketbleed
+Use 
+        -l module_name
+ to read the details.
+```
+
+</details>
+
 ## Old version (v1.\*)
 You can download the latest stable release by
 - clicking [here](https://github.com/stfbk/tlsassistant/releases);
