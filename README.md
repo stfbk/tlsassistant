@@ -203,7 +203,6 @@ python3 run.py -d domains_list.log
 
 </details>
 
----
 
 #### Avaliable analysis modules
 
@@ -258,6 +257,8 @@ Use
 ```
 
 </details>
+
+---
 
 ## Old version (v1.\*)
 You can download the latest stable release by
