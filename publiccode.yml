@@ -1,0 +1,130 @@
+# This repository adheres to the publiccode.yml standard by including this 
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: '0.2'
+categories:
+  - it-security
+description:
+  it:
+    features:
+      - analisi di webserver Apache e nginx
+      - analisi di apk Android
+      - |-
+        report contenenti l'elenco delle vulnerabilità rilevate, una spiegazione
+        del loro funzionamento
+      - |-
+        report contenenti frammenti di codice da copia-incollare per mitigare le
+        vulnerabilità
+      - |-
+        generazione di attack tree in grado di rappresentare graficamente le
+        vulnerabilità presenti
+      - |-
+        output opzionale in STIX per un'integrazione diretta con sistemi
+        compatibili
+    genericName: tool d'analisi TLS
+    longDescription: |
+      TLSAssistant è un tool di ricerca sviluppato per facilitare il lavoro
+
+
+
+      degli amministratori di sistema alle prese con server TLS.
+
+
+
+
+
+      Il suo utilizzo permette di analizzare i webserver (in locale o da remoto)
+
+
+
+      per valutarne lo stato di sicurezza e la totalità delle vulnerabilità TLS
+
+
+
+      che potrebbero essere sfruttate per mettere in pericolo la sicurezza delle
+
+
+
+      trasmissioni.
+
+
+
+
+
+      Il punto di forza di TLSAssistant è la generazione di un report in grado
+
+
+
+      di elencare le vulnerabilità presenti, spiegare il loro impatto e guidare
+
+
+
+      \*passo passo\* verso la loro risoluzione.
+
+
+
+
+
+      ​
+
+
+
+
+
+      Le mitigazioni sono state collezionate estraendo informazioni dalla
+
+
+
+      letteratura scientifica e dai manuali tecnici forniti da ogni produttore.
+    screenshots:
+      - |-
+        https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report.png
+      - |-
+        https://raw.githubusercontent.com/stfbk/tlsassistant/v1.x/assets/atree_output.png
+      - |-
+        https://github.com/stfbk/tlsassistant/blob/v1.x/assets/stix_output.jpg
+    shortDescription: |-
+      Tool in grado di analizzare i server TLS e le applicazioni Android, scoprirne le vulnerabilità e
+
+       suggerire le mitigazioni necessarie per rendere la trasmissione sicura
+developmentStatus: stable
+it:
+  conforme:
+    gdpr: false
+    lineeGuidaDesign: false
+    misureMinimeSicurezza: false
+    modelloInteroperabilita: false
+  countryExtensionVersion: '0.2'
+  piattaforme:
+    anpr: false
+    cie: false
+    pagopa: false
+    spid: false
+landingURL: 'https://st.fbk.eu/tools/TLSAssistant'
+legal:
+  license: Apache-2.0
+  mainCopyrightOwner: Fondazione Bruno Kessler
+  repoOwner: Security and Trust Research Unit
+localisation:
+  availableLanguages:
+    - en
+  localisationReady: false
+maintenance:
+  contacts:
+    - affiliation: Fondazione Bruno Kessler
+      email: smanfredi@fbk.eu
+      name: Salvatore Manfredi
+    - affiliation: Fondazione Bruno Kessler
+      email: mrizzi@fbk.eu
+      name: Matteo Rizzi
+  type: internal
+name: TLSAssistant
+platforms:
+  - linux
+releaseDate: '2021-11-19'
+softwareType: configurationFiles
+softwareVersion: 1.3.1
+url: 'https://github.com/stfbk/tlsassistant'
+usedBy:
+  - Poligrafico e Zecca dello Stato
