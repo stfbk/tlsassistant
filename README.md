@@ -9,15 +9,15 @@
 ## Download
 You can either download the (new) *in-development* version or the (old) *stable* version of the tool.
 
-## New version (v2.3.0 beta)
+### New version (v2.3.0 beta)
 
-### One Liner (TL;DR)
+#### One Liner (TL;DR)
 To install the tool, execute the following command:
 ```bash
   sudo apt update && sudo apt install git python3-dev python3-pip python3-venv -y && git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant && python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt && python3 install.py -v
 ```
 ---
-### Step by Step
+#### Step by Step
 If you want to execute step by step instead of a one liner:
 <details>
 
@@ -56,7 +56,7 @@ git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant
 To see precisely what the installer is doing, run the command with `-v`.
 </details>
 
-### Usage
+#### Usage
 ```bash
 python3 run.py -h
 ```
@@ -115,7 +115,7 @@ https://st.fbk.eu -  Security and Trust, FBK Research Unit
 ```
 </details>
 
-#### Examples 
+##### Examples 
 <details>
 <summary>Show advanced examples</summary>
 
@@ -204,7 +204,7 @@ python3 run.py -d domains_list.log
 </details>
 
 
-#### Avaliable analysis modules
+##### Avaliable analysis modules
 
 <details>
 <summary>Show modules list</summary>
@@ -260,7 +260,7 @@ Use
 
 ---
 
-## Old version (v1.\*)
+### Old version (v1.\*)
 You can download the latest stable release by
 - clicking [here](https://github.com/stfbk/tlsassistant/releases);
 - cloning from the stable branch by running
