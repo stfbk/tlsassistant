@@ -5,7 +5,7 @@ import sys
 import aiohttp
 import async_timeout
 from zipfile import ZipFile
-from os import path, geteuid, mkdir, sep, remove, devnull
+from os import path, geteuid, mkdir, sep, remove, devnull, environ
 import subprocess
 import argparse
 import logging
@@ -172,7 +172,7 @@ class Install:
             elif type == "zips":
                 logger.debug(f"Unzipping dependencies{sep}{file}")
                 with ZipFile(
-                    f"dependencies{sep}{file}", "r"
+                        f"dependencies{sep}{file}", "r"
                 ) as zip:  # while opening the zip
                     zip.extractall(
                         f"dependencies{sep}{file.rsplit('.', 1)[0]}"
@@ -183,7 +183,7 @@ class Install:
                     "The type given doesn't match one of the existing one."
                 )
             if path.exists(
-                f"dependencies{sep}{file}"
+                    f"dependencies{sep}{file}"
             ):  # delete the files .deb and .zip after all.
                 logger.debug(f"Removing file dependencies{sep}{file}")
                 remove(f"dependencies{sep}{file}")
@@ -254,7 +254,7 @@ def main():  # exec main
 
 
 if __name__ == "__main__":
-    if geteuid() == 0:  # check if sudo
+    if geteuid() == 0 and (environ.get('TLSA_IN_A_DOCKER_CONTAINER', False)):  # check if sudo
         logger.warning(
             "Do not call the installer with SUDO, only some subprocess need SUDO."
         )
