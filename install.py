@@ -254,7 +254,6 @@ def main():  # exec main
 
 
 if __name__ == "__main__":
-    logger.debug((environ.get('TLSA_IN_A_DOCKER_CONTAINER', False)))
     if geteuid() == 0 and not (environ.get('TLSA_IN_A_DOCKER_CONTAINER', False)):  # check if sudo
         logger.warning(
             "Do not call the installer with SUDO, only some subprocess need SUDO."
