@@ -193,6 +193,7 @@ class Report:
         if not Path("results").exists():
             self.__logging.debug("Adding result folder...")
             mkdir("results")
+        if not Path(f"results{sep}assets").exists():
             self.__logging.debug("Copying assets folder...")
             cp(
                 str(Path(f"configs{sep}out_template{sep}assets").absolute()),
