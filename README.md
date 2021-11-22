@@ -12,10 +12,45 @@ You can either download the (new) *in-development* version or the (old) *stable*
 ### New version (v2.3.0 beta)
 
 #### One Liner (TL;DR)
-To install the tool, execute the following command:
+To install the tool (in a virtual environment), execute the following command:
 ```bash
   sudo apt update && sudo apt install git python3-dev python3-pip python3-venv -y && git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant && python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt && python3 install.py -v
 ```
+---
+
+#### Docker
+
+Recommended for non-ubuntu users:
+
+Since it does use APT and install dependencies, we can use the Dockerfile to build the image and contain the installation process.
+
+<details>
+<summary>Docker build and run tutorial</summary>
+
+clone the repository:
+
+```bash
+  git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant
+```
+Build the docker image:
+```bash
+  docker build -t tlsassistant .
+```
+Run the docker image:
+
+```bash
+docker run --rm -v ${PWD}/results:/tlsassistant/results -t tlsassistant -s fbk.eu
+```
+add all the `args` that we want to pass after the `tlsassistant` keyword.
+
+
+We can use the `-v` flag to mount directories with the TLS configuration files.
+
+```bash
+docker run --rm -v ${PWD}/results:/tlsassistant/results -v ${PWD}/configurations_to_mount:/tlsassistant/config_mounted -t tlsassistant -f config_mounted/apache.conf
+```
+</details>
+
 ---
 #### Step by Step
 If you want to execute step by step instead of a one liner:
