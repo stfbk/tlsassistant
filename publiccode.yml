@@ -83,7 +83,7 @@ description:
       - |-
         https://raw.githubusercontent.com/stfbk/tlsassistant/v1.x/assets/atree_output.png
       - |-
-        https://github.com/stfbk/tlsassistant/blob/v1.x/assets/stix_output.jpg
+        https://raw.githubusercontent.com/stfbk/tlsassistant/v1.x/assets/stix_output.jpg
     shortDescription: |-
       Tool in grado di analizzare i server TLS e le applicazioni Android, scoprirne le vulnerabilità e
 
