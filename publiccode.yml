@@ -81,13 +81,13 @@ description:
       - |-
         https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report.png
       - |-
-        https://raw.githubusercontent.com/stfbk/tlsassistant/v1.x/assets/atree_output.png
+        https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/atree_output.png
       - |-
-        https://raw.githubusercontent.com/stfbk/tlsassistant/v1.x/assets/stix_output.jpg
+        https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/stix_output.jpg
     shortDescription: |-
-      Tool in grado di analizzare i server TLS e le applicazioni Android, scoprirne le vulnerabilità e
+      Tool in grado di analizzare server TLS e apk Android, scoprirne le vulnerabilità e 
 
-       suggerire le mitigazioni necessarie per rendere la trasmissione sicura
+       suggerire le mitigazioni necessarie per correggerne i problemi
 developmentStatus: stable
 it:
   conforme:
