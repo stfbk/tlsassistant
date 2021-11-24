@@ -98,3 +98,23 @@ def remove_wildcard(url) -> str:
     :rtype: str
     """
     return url_domain(url)[2:]
+
+
+def validate_ip(ip: str) -> bool:
+    """
+    Validate an IP
+    :param ip: String to check if it's an IP.
+    :type ip: str
+    :return: True if ip param it's an IP, false otherwise.
+    :rtype: bool
+    """
+    a = ip.rsplit(":", 1)[0].split(".")
+    if len(a) != 4:
+        return False
+    for x in a:
+        if not x.isdigit():
+            return False
+        i = int(x)
+        if i < 0 or i > 255:
+            return False
+    return True
