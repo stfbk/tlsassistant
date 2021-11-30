@@ -1,6 +1,5 @@
 from modules.stix.stix_base import Bundled
 from stix2 import Grouping, Sighting, ObservedData
-
 from utils.logger import Logger
 from utils.validation import Validator
 from itertools import chain
@@ -17,7 +16,6 @@ class Stix:
     def run(self, modules, hostname_or_path: str):
         self.__logger.info("Generating STIX for modules...")
         Validator([(modules, dict)])
-        res = {}
         to_group = []
         obs_data = None
         coa_to_add = []
