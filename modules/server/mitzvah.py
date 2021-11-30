@@ -1,6 +1,7 @@
 from modules.configuration.configuration_base import Parse_configuration_ciphers
 from modules.server.testssl_base import Testssl_base
 from utils.mitigations import load_mitigation
+from modules.stix.stix_base import Bundled
 
 
 class Mitzvah(Testssl_base):
@@ -9,6 +10,7 @@ class Mitzvah(Testssl_base):
     """
 
     conf = Parse_configuration_ciphers(openssl="1.1.0", ciphers=["RC4"])
+    stix = Bundled(mitigation_object=load_mitigation("MITZVAH"))
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         """
