@@ -24,7 +24,7 @@ class MitigationLoader:
     __cache = {}
 
     def load_mitigation(
-        self, mitigation_name: str, raise_error=True, force=False
+        self, mitigation_name: str, raise_error=False, force=False
     ) -> dict:
         """
         Load the mitigation and return the dict of the mitigation loaded

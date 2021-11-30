@@ -1,11 +1,14 @@
 from modules.server.testssl_base import Testssl_base
+from modules.stix.stix_base import Bundled
+from utils.mitigations import load_mitigation
 
 
 class Lucky13(Testssl_base):
-
     """
     Analysis of the lucky13 testssl results
     """
+
+    stix = Bundled(mitigation_object=load_mitigation("LUCKY13"))
 
     # to override
     def _set_arguments(self):

@@ -1,5 +1,7 @@
 from modules.android.super_base import Super_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
+from utils.mitigations import load_mitigation
 
 
 class Certificate_keystore_disclosure(Super_base):
@@ -7,6 +9,10 @@ class Certificate_keystore_disclosure(Super_base):
     Check if the application has a certificate or keystore
 
     """
+
+    stix = Bundled(
+        mitigation_object=load_mitigation("CERTIFICATE_OR_KEYSTORE_DISCLOSURE")
+    )
 
     def _get_logger(self):
         """

@@ -1,11 +1,12 @@
 from modules.configuration.configuration_base import Parse_configuration_protocols
 from modules.server.testssl_base import Testssl_base
+from modules.stix.stix_base import Bundled
 from utils.mitigations import load_mitigation
 
 
 class Drown(Testssl_base):
     conf = Parse_configuration_protocols(openssl="1.0.2g", protocols={"SSLv2": "-"})
-
+    stix = Bundled(mitigation_object=load_mitigation("DROWN"))
     """
     Analysis of the drown testssl results
     """

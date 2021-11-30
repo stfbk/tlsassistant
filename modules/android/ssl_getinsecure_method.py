@@ -1,11 +1,15 @@
 from modules.android.super_base import Super_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
+from utils.mitigations import load_mitigation
 
 
 class Ssl_getinsecure_method(Super_base):
     """
     Check the presence of SSL getInsecure method in the application
     """
+
+    stix = Bundled(mitigation_object=load_mitigation("SSL_GETINSECURE_METHOD"))
 
     def _get_logger(self):
         """

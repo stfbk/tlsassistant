@@ -1,4 +1,5 @@
 from modules.server.hsts_base import Hsts_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
 from utils.mitigations import load_mitigation
 
@@ -7,6 +8,8 @@ class Hsts_preloading(Hsts_base):
     """
     Analysis of the HSTS Preloading status
     """
+
+    stix = Bundled(mitigation_object=load_mitigation("HSTS_PRELOADING"))
 
     def _get_logger(self):
         """

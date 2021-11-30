@@ -1,4 +1,5 @@
 from modules.server.testssl_base import Testssl_base
+from modules.stix.stix_base import Bundled
 from utils.mitigations import load_mitigation
 
 
@@ -7,6 +8,7 @@ class Pfs(Testssl_base):
     Analysis of the pfs testssl results
     """
 
+    stix = Bundled(mitigation_object=load_mitigation("PFS"))
     # to override
     def _set_arguments(self):
         self._arguments = ["-f"]
