@@ -4,7 +4,7 @@ from pathlib import Path
 from os.path import sep
 
 
-def load_mitigation(mitigation_name: str, raise_error=True, force=False) -> dict:
+def load_mitigation(mitigation_name: str, raise_error=False, force=False) -> dict:
     """
     Wrapper for mitigation loader.
 
@@ -24,7 +24,7 @@ class MitigationLoader:
     __cache = {}
 
     def load_mitigation(
-        self, mitigation_name: str, raise_error=False, force=False
+        self, mitigation_name: str, raise_error=True, force=False
     ) -> dict:
         """
         Load the mitigation and return the dict of the mitigation loaded
