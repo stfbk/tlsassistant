@@ -38,5 +38,6 @@ class Pfs(Testssl_base):
         :rtype: dict
         """
         return self._obtain_results(
-            results, ["PFS_ciphers", "PFS_ECDHE_curves", "DH_groups", "pre_128cipher", "PFS"]
+            results,
+            ["PFS_ciphers", "PFS_ECDHE_curves", "DH_groups", "pre_128cipher", "PFS"],
         )
