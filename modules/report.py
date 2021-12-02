@@ -46,7 +46,7 @@ class Report:
         * *results* (dict) -- Dictionary containing the results of the scan.
         * *path* (string) -- Path to the report.
         * *mode* (Mode) -- Report mode.
-        * *modules* (list) -- List of modules to include in the report.
+        * *stix* (bool) -- If True, the report will be in STIX format.
         """
         self.__input_dict = kwargs
 
@@ -175,13 +175,14 @@ class Report:
         * *results* (dict) -- Dictionary containing the results of the scan.
         * *path* (string) -- Path to the report.
         * *mode* (Mode) -- Report mode.
-        * *modules* (list) -- List of modules to include in the report.
+        * *stix* (bool) -- If True, the report will be generated in STIX format.
         """
 
         self.input(**kwargs)
         assert "path" in self.__input_dict, "Missing output path"
         assert "results" in self.__input_dict, "Missing results list"
         assert "mode" in self.__input_dict, "Missing mode"
+        assert "stix" in self.__input_dict, "Missing stix flag"
 
         path = self.__input_dict["path"]
         self.__path = Path(path)
@@ -191,6 +192,8 @@ class Report:
                 (path, str),
                 (self.__input_dict["results"], dict),
                 (self.__input_dict["mode"], self.Mode),
+                (self.__input_dict["stix"], bool),
+
             ]
         )
 
@@ -245,8 +248,7 @@ class Report:
 
         self.__logging.debug("Checks if needs stix...")
 
-        self.__input_dict["stix"] = True
-        if "stix" in self.__input_dict:
+        if "stix" in self.__input_dict and self.__input_dict["stix"]:
             stix_output_path = Path(
                 f"{output_file.absolute().parent}{sep}stix_{output_file.stem}.json"
             ).absolute()

@@ -101,7 +101,6 @@ class Stix:
                 coa_to_add.append(coa)
                 to_group.append(data_to_group)
         object_ref_group = list(chain.from_iterable(to_group))
-        print(object_ref_group)
         group = Grouping(
             name=f"Vulnerabilities",
             object_refs=object_ref_group,
@@ -136,7 +135,6 @@ class Stix:
     def build(self, results: dict, modules: dict):
         res = []
         Validator([(results, dict), (modules, dict)])
-        print(self.type_of_analysis)
         if self.type_of_analysis == Stix.Type.HOSTS:
             self.__logger.debug("STIX creations of hosts...")
             for host in results:

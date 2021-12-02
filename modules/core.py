@@ -54,6 +54,7 @@ class Core:
         apply_fix="",
         openssl_version=None,
         ignore_openssl=False,
+        stix = False,
     ):
         """
         :param hostname_or_path: hostname or path to scan
@@ -76,6 +77,8 @@ class Core:
         :type openssl_version: str
         :param ignore_openssl: ignore openssl version
         :type ignore_openssl: bool
+        :param stix: generate stix report
+        :type stix: bool
         """
         if to_exclude is None:
             to_exclude = []
@@ -97,6 +100,7 @@ class Core:
             apply_fix=apply_fix,
             openssl_version=openssl_version,
             ignore_openssl=ignore_openssl,
+            stix=stix,
         )
         self.__cache[configuration] = self.__load_configuration(modules)
         self.__exec(
@@ -148,6 +152,7 @@ class Core:
                     else kwargs["apply_fix"],
                     str,
                 ),
+                (kwargs['stix'], bool),
             ]
         )
         kwargs["to_exclude"] = list(map(str.lower, kwargs["to_exclude"]))
@@ -391,6 +396,7 @@ class Core:
                 if "group_by" in self.__input_dict
                 and self.__input_dict["group_by"] == "module"
                 else Report_module.Mode.HOSTS,
+                stix = self.__input_dict["stix"],
             )
         self.__logging.debug("Output generated.")
 

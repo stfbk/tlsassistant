@@ -123,6 +123,7 @@ class Tlsa:
                 type_of_analysis=Core.Analysis.HOST,
                 group_by=args.group_by,
                 apply_fix=args.apply_fix,
+                stix = args.stix,
             )
         elif args.apk:
             Core(
@@ -133,6 +134,7 @@ class Tlsa:
                 to_exclude=args.exclude,
                 type_of_analysis=Core.Analysis.APK,
                 group_by=args.group_by,
+                stix=args.stix,
             )
         elif args.domain_file:
             Core(
@@ -143,6 +145,7 @@ class Tlsa:
                 to_exclude=args.exclude,
                 type_of_analysis=Core.Analysis.DOMAINS,
                 group_by=args.group_by,
+                stix=args.stix,
             )
         elif args.file:
             if isinstance(args.configuration, list):
@@ -158,6 +161,7 @@ class Tlsa:
                 to_exclude=args.exclude,
                 group_by=args.group_by,
                 apply_fix=args.apply_fix,
+                stix=args.stix,
                 openssl_version=args.openssl,
                 ignore_openssl=args.ignore_openssl,
             )
