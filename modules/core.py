@@ -54,7 +54,7 @@ class Core:
         apply_fix="",
         openssl_version=None,
         ignore_openssl=False,
-        stix = False,
+        stix=False,
     ):
         """
         :param hostname_or_path: hostname or path to scan
@@ -152,7 +152,7 @@ class Core:
                     else kwargs["apply_fix"],
                     str,
                 ),
-                (kwargs['stix'], bool),
+                (kwargs["stix"], bool),
             ]
         )
         kwargs["to_exclude"] = list(map(str.lower, kwargs["to_exclude"]))
@@ -396,7 +396,7 @@ class Core:
                 if "group_by" in self.__input_dict
                 and self.__input_dict["group_by"] == "module"
                 else Report_module.Mode.HOSTS,
-                stix = self.__input_dict["stix"],
+                stix=self.__input_dict["stix"],
             )
         self.__logging.debug("Output generated.")
 

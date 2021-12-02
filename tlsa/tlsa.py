@@ -123,7 +123,7 @@ class Tlsa:
                 type_of_analysis=Core.Analysis.HOST,
                 group_by=args.group_by,
                 apply_fix=args.apply_fix,
-                stix = args.stix,
+                stix=args.stix,
             )
         elif args.apk:
             Core(

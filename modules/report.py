@@ -193,7 +193,6 @@ class Report:
                 (self.__input_dict["results"], dict),
                 (self.__input_dict["mode"], self.Mode),
                 (self.__input_dict["stix"], bool),
-
             ]
         )
 

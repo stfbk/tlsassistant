@@ -11,6 +11,7 @@ class Stix:
     """
     This class is used to create a STIX bundle for each module.
     """
+
     # necessary for better stix output
     __cached_objects = {}
     __cached_hosts_or_paths = {}
@@ -19,6 +20,7 @@ class Stix:
         """
         Class used to indicate the type of STIX Analysis: Hosts or Modules.
         """
+
         HOSTS = 0
         MODULES = 1
 
@@ -31,26 +33,28 @@ class Stix:
         if module not in self.__cached_objects:
             self.__logger.debug(f"Caching {module}..")
             self.__cached_objects[module] = {
-                'coa': coa,
-                'mitigates': mitigates,
-                'vuln': vuln,
+                "coa": coa,
+                "mitigates": mitigates,
+                "vuln": vuln,
             }
         else:
             self.__logger.debug(f"Using cached {module}..")
-            coa = self.__cached_objects[module]['coa']
-            mitigates = self.__cached_objects[module]['mitigates']
-            vuln = self.__cached_objects[module]['vuln']
+            coa = self.__cached_objects[module]["coa"]
+            mitigates = self.__cached_objects[module]["mitigates"]
+            vuln = self.__cached_objects[module]["vuln"]
         return coa, mitigates, vuln
 
     def __check_if_cached_observed_obj(self, hostname_or_path, observed_obj):
         if hostname_or_path not in self.__cached_hosts_or_paths:
             self.__logger.debug(f"Caching {hostname_or_path}..")
             self.__cached_hosts_or_paths[hostname_or_path] = {
-                'observed_obj': observed_obj,
+                "observed_obj": observed_obj,
             }
         else:
             self.__logger.debug(f"Using cached {hostname_or_path}..")
-            observed_obj = self.__cached_hosts_or_paths[hostname_or_path]['observed_obj']
+            observed_obj = self.__cached_hosts_or_paths[hostname_or_path][
+                "observed_obj"
+            ]
         return observed_obj
 
     def __run_modules_report(self, module, loaded_module, list_of_hosts_or_paths: list):
@@ -67,7 +71,9 @@ class Stix:
                 )
                 # mitigates coa and vuln are the same everytime, so it's ok to overwrite them.
                 observed_obj = ObservedData(**obs_data)
-                observed_obj= self.__check_if_cached_observed_obj(hostname_or_path, observed_obj)
+                observed_obj = self.__check_if_cached_observed_obj(
+                    hostname_or_path, observed_obj
+                )
                 obs_data_to_group.append(observed_obj)
             if list_of_hosts_or_paths:
                 object_ref_group = [coa, mitigates, vuln]
@@ -88,7 +94,7 @@ class Stix:
         coa_to_add = []
         for module, loaded_module in modules.items():
             if self.__check_module(
-                    loaded_module
+                loaded_module
             ):  # checks for STIX bundle wrapper class
                 # if ok, then run and obtain
                 self.__logger.debug(f"Generating STIX for module: {module}")
@@ -96,7 +102,9 @@ class Stix:
                 obs_data, coa, mitigates, vuln = loaded_module.stix.sight_data(
                     hostname_or_path, obs_data if obs_data else None
                 )
-                coa, mitigates, vuln = self.__check_if_cached(module, coa, mitigates, vuln)
+                coa, mitigates, vuln = self.__check_if_cached(
+                    module, coa, mitigates, vuln
+                )
                 data_to_group = [mitigates, vuln]
                 coa_to_add.append(coa)
                 to_group.append(data_to_group)
@@ -140,9 +148,7 @@ class Stix:
             for host in results:
                 self.__logger.debug(f"creating {host}...")
                 # obtaining vuln module list:
-                vulnerable_modules = {
-                    k: modules[k] for k in results[host]
-                }
+                vulnerable_modules = {k: modules[k] for k in results[host]}
                 if vulnerable_modules:
                     sighting, group, object_refs, observed_data = self.run(
                         modules=vulnerable_modules, hostname_or_path=host

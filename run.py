@@ -133,7 +133,7 @@ if __name__ == "__main__":
         "--stix",
         action="store_true",
         help="Generate STIX2 compliant output.",
-        default = False
+        default=False,
     )
     # todo add default aliases configurations for analysis
     # configurations.add_argument()
