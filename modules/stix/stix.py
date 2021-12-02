@@ -1,3 +1,5 @@
+from enum import Enum
+
 from modules.stix.stix_base import Bundled
 from stix2 import Grouping, Sighting, ObservedData, MemoryStore, Bundle
 from utils.logger import Logger
@@ -10,7 +12,7 @@ class Stix:
     This class is used to create a STIX bundle for each module.
     """
 
-    class Type:
+    class Type(Enum):
         """
         Class used to indicate the type of STIX Analysis: Hosts or Modules.
         """
@@ -20,17 +22,17 @@ class Stix:
     def __init__(self, type_of_analysis: Type):
         self.bundle = None
         self.__logger = Logger("STIX")
-        self.type_of_analysis = type_of_analysis
+        self.type_of_analysis = self.Type(type_of_analysis)
 
     def __run_modules_report(self, module, loaded_module, list_of_hosts_or_paths: list):
-        if self.__check_module(
-                loaded_module
-        ):
+        if self.__check_module(loaded_module):
             obs_data = None
             obs_data_to_group = []
             vuln, mitigates, coa = None, None, None
             for hostname_or_path in list_of_hosts_or_paths:
-                self.__logger.debug(f"Generating STIX for module: {module} - {hostname_or_path}")
+                self.__logger.debug(
+                    f"Generating STIX for module: {module} - {hostname_or_path}"
+                )
                 obs_data, coa, mitigates, vuln = loaded_module.stix.sight_data(
                     hostname_or_path, obs_data if obs_data else None
                 )
@@ -38,7 +40,11 @@ class Stix:
                 obs_data_to_group.append(ObservedData(**obs_data))
             if list_of_hosts_or_paths:
                 object_ref_group = [vuln, mitigates, coa]
-                return Sighting(vuln, observed_data_refs=obs_data_to_group), object_ref_group, obs_data_to_group
+                return (
+                    Sighting(vuln, observed_data_refs=obs_data_to_group),
+                    object_ref_group,
+                    obs_data_to_group,
+                )
             else:
                 return Sighting(), None, None
         return None, None, None
@@ -62,6 +68,7 @@ class Stix:
                 coa_to_add.append(coa)
                 to_group.append(data_to_group)
         object_ref_group = list(chain.from_iterable(to_group))
+        print(object_ref_group)
         group = Grouping(
             name=f"Vulnerabilities",
             object_refs=object_ref_group,
@@ -74,57 +81,64 @@ class Stix:
 
     def run(self, **kwargs):
         type_of_analysis = self.type_of_analysis
-        validate = Validator(
-            [
-                (type_of_analysis, int)
-            ]
-        )
+        validate = Validator([(type_of_analysis, self.Type)])
         if type_of_analysis == Stix.Type.HOSTS:
             assert "hostname_or_path" in kwargs, "hostname_or_path is required"
             assert "modules" in kwargs, "modules is required"
             validate.dict(kwargs["modules"])
             validate.string(kwargs["hostname_or_path"])
-            return self.__run_hosts_report(kwargs["modules"], kwargs["hostname_or_path"])
+            return self.__run_hosts_report(
+                kwargs["modules"], kwargs["hostname_or_path"]
+            )
         else:  # type_of_analysis == Stix.Type.MODULES
             assert "module" in kwargs, "module is required"
             assert "loaded_module" in kwargs, "loaded_module is required"
             assert "hostnames_or_paths" in kwargs, "hostnames_or_paths is required"
             validate.string(kwargs["module"])
             validate.list(kwargs["hostnames_or_paths"])
-            return self.__run_modules_report(kwargs["module"], kwargs["loaded_module"],
-                                             kwargs["hostnames_or_paths"])
+            return self.__run_modules_report(
+                kwargs["module"], kwargs["loaded_module"], kwargs["hostnames_or_paths"]
+            )
 
-    def build(self, hostnames_or_paths: list, modules: dict):
+    def build(self, results: dict, modules: dict):
         res = []
-        Validator(
-            [
-                (hostnames_or_paths, list),
-                (modules, dict)
-            ]
-        )
+        Validator([(results, dict), (modules, dict)])
+        print(self.type_of_analysis)
         if self.type_of_analysis == Stix.Type.HOSTS:
             self.__logger.debug("STIX creations of hosts...")
-            for host in hostnames_or_paths:
+            for host in results:
                 self.__logger.debug(f"creating {host}...")
-                sighting, group, object_refs, observed_data = self.run(modules=modules, hostname_or_path=host)
-                first_level = [sighting, group, observed_data]
-                res = list(chain(res, first_level, object_refs))
+                # obtaining vuln module list:
+                vulnerable_modules = {
+                    k: modules[k] for k in results[host]
+                }
+                if vulnerable_modules:
+                    sighting, group, object_refs, observed_data = self.run(
+                        modules=vulnerable_modules, hostname_or_path=host
+                    )
+                    first_level = [sighting, group, observed_data]
+                    res = list(chain(res, first_level, object_refs))
         else:
             self.__logger.debug("STIX creations of modules...")
             for module, loaded_module in modules.items():
-                self.__logger.debug(f"creating for {module}...")
-                sighting, object_refs, observed_data = self.run(type_of_analysis=Stix.Type.MODULES, module=module,
-                                                                loaded_module=loaded_module,
-                                                                hostnames_or_paths=hostnames_or_paths)
-                first_level = [sighting, observed_data]
-                res = list(chain(res, first_level, object_refs))
+                if module in results:
+                    if results[module]["hosts"]:
+                        self.__logger.debug(f"creating for {module}...")
+                        sighting, object_refs, observed_data = self.run(
+                            type_of_analysis=Stix.Type.MODULES,
+                            module=module,
+                            loaded_module=loaded_module,
+                            hostnames_or_paths=results[module]["hosts"],
+                        )
+                        first_level = [sighting, observed_data]
+                        res = list(chain(res, first_level, object_refs))
         self.__logger.debug(f"Saving locally bundle...")
         self.bundle = Bundle(*res, allow_custom=True)
         self.__logger.debug(f"Done.")
         return self
 
-    def build_and_save(self, hostnames_or_paths: list, modules: dict, path: str):
-        return self.build(hostnames_or_paths, modules).save_to_file(path)
+    def build_and_save(self, results: dict, modules: dict, path: str):
+        return self.build(results, modules).save_to_file(path)
 
     def save_to_file(self, path: str):
         self.__save_bundle(self.bundle, path)

@@ -1,6 +1,7 @@
 from enum import Enum
 from os import mkdir
 
+from modules.stix.stix import Stix
 from utils.validation import Validator, rec_search_key
 from utils import output
 from datetime import datetime
@@ -60,7 +61,6 @@ class Report:
         :return: Dictionary containing the results of the scan.
         :rtype: dict
         """
-        self.__logging.info(f"Generating modules report..")
         out = {}
         for module in modules:
             vuln_hosts = []
@@ -95,22 +95,24 @@ class Report:
         :return: Dictionary containing the results of the scan.
         :rtype: dict
         """
-        self.__logging.info(f"Generating hosts report..")
+        out = {}
         for hostname in results:
             # the results are good, we need to remove the "Entry" key but preserve the rest with the CaseInsensitiveDict
+            if hostname not in out:
+                out[hostname] = {}
             for module in results[hostname]:
                 raw_results = {}
                 if "raw" in results[hostname][module]:
                     raw_results = results[hostname][module]["raw"].copy()
                 if "Entry" in results[hostname][module]:
-                    results[hostname][module] = CaseInsensitiveDict(
+                    out[hostname][module] = CaseInsensitiveDict(
                         results[hostname][module]["Entry"]
                     )
                     if raw_results:
-                        results[hostname][module]["raw"] = pformat(
+                        out[hostname][module]["raw"] = pformat(
                             raw_results.copy(), indent=2
                         )
-        return results
+        return out
 
     def __jinja2__report(
         self, mode: Mode, results: dict, modules: list, date: datetime.date
@@ -132,9 +134,11 @@ class Report:
         env = Environment(loader=fsl)
         to_process = {"version": version, "date": date, "modules": modules}
         if mode == self.Mode.MODULES:
+            self.__logging.info(f"Generating modules report..")
             template = env.get_template(f"modules_report.html")
             to_process["results"] = self.__modules_report_formatter(results, modules)
         elif mode == self.Mode.HOSTS:
+            self.__logging.info(f"Generating hosts report..")
             template = env.get_template(f"hosts_report.html")
             to_process["results"] = self.__hosts_report_formatter(results)
         else:
@@ -238,4 +242,22 @@ class Report:
             self.__logging.debug("Starting HTML to PDF...")
             output.html_to_pdf(str(output_file.absolute()), output_path)
         self.__logging.info(f"Report generated at {output_path}")
-        # todo: add PDF library
+
+        self.__logging.debug("Checks if needs stix...")
+
+        self.__input_dict["stix"] = True
+        if "stix" in self.__input_dict:
+            stix_output_path = Path(
+                f"{output_file.absolute().parent}{sep}stix_{output_file.stem}.json"
+            ).absolute()
+            results_to_stix = (
+                self.__hosts_report_formatter(results)
+                if self.__input_dict["mode"] == self.Mode.HOSTS
+                else self.__modules_report_formatter(results, modules)
+            )
+            self.__logging.info("Starting STIX generation...")
+            Stix(type_of_analysis=self.__input_dict["mode"].value).build_and_save(
+                results_to_stix, modules, str(stix_output_path)
+            )
+
+    # todo: add PDF library
