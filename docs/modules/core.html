@@ -82,6 +82,7 @@ class Core:
         apply_fix=&#34;&#34;,
         openssl_version=None,
         ignore_openssl=False,
+        stix=False,
     ):
         &#34;&#34;&#34;
         :param hostname_or_path: hostname or path to scan
@@ -104,6 +105,8 @@ class Core:
         :type openssl_version: str
         :param ignore_openssl: ignore openssl version
         :type ignore_openssl: bool
+        :param stix: generate stix report
+        :type stix: bool
         &#34;&#34;&#34;
         if to_exclude is None:
             to_exclude = []
@@ -125,6 +128,7 @@ class Core:
             apply_fix=apply_fix,
             openssl_version=openssl_version,
             ignore_openssl=ignore_openssl,
+            stix=stix,
         )
         self.__cache[configuration] = self.__load_configuration(modules)
         self.__exec(
@@ -176,6 +180,7 @@ class Core:
                     else kwargs[&#34;apply_fix&#34;],
                     str,
                 ),
+                (kwargs[&#34;stix&#34;], bool),
             ]
         )
         kwargs[&#34;to_exclude&#34;] = list(map(str.lower, kwargs[&#34;to_exclude&#34;]))
@@ -419,6 +424,7 @@ class Core:
                 if &#34;group_by&#34; in self.__input_dict
                 and self.__input_dict[&#34;group_by&#34;] == &#34;module&#34;
                 else Report_module.Mode.HOSTS,
+                stix=self.__input_dict[&#34;stix&#34;],
             )
         self.__logging.debug(&#34;Output generated.&#34;)
 
@@ -611,7 +617,7 @@ class Core:
 <dl>
 <dt id="modules.core.Core"><code class="flex name class">
 <span>class <span class="ident">Core</span></span>
-<span>(</span><span>hostname_or_path: str, configuration: str, output=None, output_type=None, type_of_analysis=Analysis.HOST, to_exclude=None, group_by='host', apply_fix='', openssl_version=None, ignore_openssl=False)</span>
+<span>(</span><span>hostname_or_path: str, configuration: str, output=None, output_type=None, type_of_analysis=Analysis.HOST, to_exclude=None, group_by='host', apply_fix='', openssl_version=None, ignore_openssl=False, stix=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Core module</p>
@@ -634,7 +640,9 @@ class Core:
 :param openssl_version: version of openssl to use
 :type openssl_version: str
 :param ignore_openssl: ignore openssl version
-:type ignore_openssl: bool</p></div>
+:type ignore_openssl: bool
+:param stix: generate stix report
+:type stix: bool</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -676,6 +684,7 @@ class Core:
         apply_fix=&#34;&#34;,
         openssl_version=None,
         ignore_openssl=False,
+        stix=False,
     ):
         &#34;&#34;&#34;
         :param hostname_or_path: hostname or path to scan
@@ -698,6 +707,8 @@ class Core:
         :type openssl_version: str
         :param ignore_openssl: ignore openssl version
         :type ignore_openssl: bool
+        :param stix: generate stix report
+        :type stix: bool
         &#34;&#34;&#34;
         if to_exclude is None:
             to_exclude = []
@@ -719,6 +730,7 @@ class Core:
             apply_fix=apply_fix,
             openssl_version=openssl_version,
             ignore_openssl=ignore_openssl,
+            stix=stix,
         )
         self.__cache[configuration] = self.__load_configuration(modules)
         self.__exec(
@@ -770,6 +782,7 @@ class Core:
                     else kwargs[&#34;apply_fix&#34;],
                     str,
                 ),
+                (kwargs[&#34;stix&#34;], bool),
             ]
         )
         kwargs[&#34;to_exclude&#34;] = list(map(str.lower, kwargs[&#34;to_exclude&#34;]))
@@ -1013,6 +1026,7 @@ class Core:
                 if &#34;group_by&#34; in self.__input_dict
                 and self.__input_dict[&#34;group_by&#34;] == &#34;module&#34;
                 else Report_module.Mode.HOSTS,
+                stix=self.__input_dict[&#34;stix&#34;],
             )
         self.__logging.debug(&#34;Output generated.&#34;)
 
@@ -1247,6 +1261,7 @@ class Core:
                 else kwargs[&#34;apply_fix&#34;],
                 str,
             ),
+            (kwargs[&#34;stix&#34;], bool),
         ]
     )
     kwargs[&#34;to_exclude&#34;] = list(map(str.lower, kwargs[&#34;to_exclude&#34;]))

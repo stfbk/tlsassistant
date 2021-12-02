@@ -19,7 +19,9 @@ URLS=[
 "utils/colors.html",
 "utils/subdomain_enumeration.html",
 "modules/index.html",
-"modules/stix.html",
+"modules/stix/index.html",
+"modules/stix/stix.html",
+"modules/stix/stix_base.html",
 "modules/android/index.html",
 "modules/android/wrappers/index.html",
 "modules/android/wrappers/mallodroid.html",
@@ -33,8 +35,6 @@ URLS=[
 "modules/android/hostnameverifier.html",
 "modules/android/ssl_getinsecure_method.html",
 "modules/android/webview_ssl_errors.html",
-"modules/android/accepting_all_certificates.html",
-"modules/android/certificate_keystore_disclosure.html",
 "modules/parse_input_conf.html",
 "modules/server/index.html",
 "modules/server/hsts_base.html",
@@ -302,7 +302,18 @@ INDEX=[
 {
 "ref":"utils.mitigations.load_mitigation",
 "url":12,
-"doc":"Load the mitigation and return the dict of the mitigation loaded :param mitigation_name: The object to type check :param raise_error: Raise the error if any. :type raise_error: bool :return: Dict of the mitigation if present, empty dict or raise error if not :rtype: dict :raise FileNotFoundError: If mitigation not found",
+"doc":"Wrapper for mitigation loader. :param mitigation_name: The object to type check :param raise_error: Raise the error if any. :type raise_error: bool :param force: Force the analysis and ingore the cache :type force: bool :return: Dict of the mitigation if present, empty dict or raise error if not :rtype: dict :raise FileNotFoundError: If mitigation not found",
+"func":1
+},
+{
+"ref":"utils.mitigations.MitigationLoader",
+"url":12,
+"doc":""
+},
+{
+"ref":"utils.mitigations.MitigationLoader.load_mitigation",
+"url":12,
+"doc":"Load the mitigation and return the dict of the mitigation loaded :param mitigation_name: The object to type check :param raise_error: Raise the error if any. :type raise_error: bool :param force: Force the analysis and ingore the cache :type force: bool :return: Dict of the mitigation if present, empty dict or raise error if not :rtype: dict :raise FileNotFoundError: If mitigation not found",
 "func":1
 },
 {
@@ -355,6 +366,12 @@ INDEX=[
 "ref":"utils.urls.remove_wildcard",
 "url":14,
 "doc":"Remove the wildcard from the last subdomain. :param url: The url to remove the wildcard from :type url: str :return: The url without the wildcard :rtype: str",
+"func":1
+},
+{
+"ref":"utils.urls.validate_ip",
+"url":14,
+"doc":"Validate an IP :param ip: String to check if it's an IP. :type ip: str :return: True if ip param it's an IP, false otherwise. :rtype: bool",
 "func":1
 },
 {
@@ -728,362 +745,403 @@ INDEX=[
 "doc":""
 },
 {
-"ref":"modules.stix.Stixer",
-"url":20,
-"doc":""
-},
-{
-"ref":"modules.android",
+"ref":"modules.stix.stix",
 "url":21,
 "doc":""
 },
 {
-"ref":"modules.android.wrappers",
+"ref":"modules.stix.stix.Stix",
+"url":21,
+"doc":"This class is used to create a STIX bundle for each module."
+},
+{
+"ref":"modules.stix.stix.Stix.Type",
+"url":21,
+"doc":"Class used to indicate the type of STIX Analysis: Hosts or Modules."
+},
+{
+"ref":"modules.stix.stix.Stix.run",
+"url":21,
+"doc":"",
+"func":1
+},
+{
+"ref":"modules.stix.stix.Stix.build",
+"url":21,
+"doc":"",
+"func":1
+},
+{
+"ref":"modules.stix.stix.Stix.build_and_save",
+"url":21,
+"doc":"",
+"func":1
+},
+{
+"ref":"modules.stix.stix.Stix.save_to_file",
+"url":21,
+"doc":"",
+"func":1
+},
+{
+"ref":"modules.stix.stix_base",
 "url":22,
 "doc":""
 },
 {
-"ref":"modules.android.wrappers.mallodroid",
+"ref":"modules.stix.stix_base.Bundled",
+"url":22,
+"doc":"This class will generate the bundle for the STIX2 objects dinamically from the mitigation. This class will generate the bundle for the STIX2 objects dinamically from the mitigation. The init method will initialize the object with the required parameters. :param mitigation_object: The mitigation object :type mitigation_object: dict :param vuln_args: The vulnerability arguments :type vuln_args: dict :param obs_args: The observed data arguments :type obs_args: dict :param coa_args: The course of action arguments :type coa_args: dict"
+},
+{
+"ref":"modules.stix.stix_base.Bundled.sight_data",
+"url":22,
+"doc":"",
+"func":1
+},
+{
+"ref":"modules.android",
 "url":23,
 "doc":""
 },
 {
+"ref":"modules.android.wrappers",
+"url":24,
+"doc":""
+},
+{
+"ref":"modules.android.wrappers.mallodroid",
+"url":25,
+"doc":""
+},
+{
 "ref":"modules.android.wrappers.mallodroid.Mallodroid",
-"url":23,
+"url":25,
 "doc":"Mallodroid is a tool to perform static analysis of Android applications. This wrapper is a python wrapper to mallodroid.py."
 },
 {
 "ref":"modules.android.wrappers.mallodroid.Mallodroid.input",
-"url":23,
+"url":25,
 "doc":"This method is used to set the input :param kwargs: :Keyword Arguments: path: path to the file to be analyzed args: list of arguments to be passed to mallodroid force: force the analysis of the file (default: False)",
 "func":1
 },
 {
 "ref":"modules.android.wrappers.mallodroid.Mallodroid.output",
-"url":23,
+"url":25,
 "doc":"This method is used to get the output of the analysis :param kwargs: :Keyword Arguments: path: path to the file to be analyzed :return: a dictionary result :rtype: dict",
 "func":1
 },
 {
 "ref":"modules.android.wrappers.mallodroid.Mallodroid.run",
-"url":23,
+"url":25,
 "doc":"This method is used to run the analysis :param kwargs: :Keyword Arguments: path: path to the file to be analyzed args: list of arguments to be passed to mallodroid force: force the analysis of the file ignoring cache (default: False)",
 "func":1
 },
 {
 "ref":"modules.android.wrappers.super",
-"url":24,
+"url":26,
 "doc":""
 },
 {
 "ref":"modules.android.wrappers.super.Parser",
-"url":24,
+"url":26,
 "doc":"Parser for SUPERAndroidAnalyzer results. :param results: JSON results from SUPERAndroidAnalyzer. :type results: dict"
 },
 {
 "ref":"modules.android.wrappers.super.Parser.output",
-"url":24,
+"url":26,
 "doc":"Returns the parsed results. :return: Parsed results. :rtype: dict",
 "func":1
 },
 {
 "ref":"modules.android.wrappers.super.Super",
-"url":24,
+"url":26,
 "doc":"SuperAndroidAnalyzer is a tool to scan Android applications for vulnerabilities. This tool is a wrapper for the SUPER tool."
 },
 {
 "ref":"modules.android.wrappers.super.Super.input",
-"url":24,
+"url":26,
 "doc":"Parses the input arguments. :param kwargs: Dictionary of input arguments. :Keyword Arguments:   path ( str )  Path to the file to be scanned.   args ( list )  Additional arguments to be passed to SUPER.   force ( bool )  Force the scan even if the file is already scanned. :type kwargs: dict",
 "func":1
 },
 {
 "ref":"modules.android.wrappers.super.Super.output",
-"url":24,
+"url":26,
 "doc":"Returns the parsed results. :param kwargs: Dictionary of input arguments. :Keyword Arguments:   path ( str )  Path to the file to be scanned. :type kwargs: dict :return: Parsed results. :rtype: dict",
 "func":1
 },
 {
 "ref":"modules.android.wrappers.super.Super.run",
-"url":24,
+"url":26,
 "doc":"Runs SUPER. :param kwargs: Dictionary of input arguments. :Keyword Arguments:   path ( str )  Path to the file to be scanned.   args ( list )  Additional arguments to be passed to SUPER.   force ( bool )  Force the scan even if the file is already scanned. :type kwargs: dict",
 "func":1
 },
 {
 "ref":"modules.android.wrappers.super.Super.subprocess_call",
-"url":24,
+"url":26,
 "doc":"Calls a subprocess and returns the output. :param cmd: Command to be executed. :type cmd: list :param null: File to be used as a null device. :type null: str :param try_again: If True, will try again if the subprocess call fails. :type try_again: bool :return: Output of the subprocess call, if fails return 2. :rtype: str or int",
 "func":1
 },
 {
 "ref":"modules.android.sslerror",
-"url":25,
+"url":27,
 "doc":""
 },
 {
 "ref":"modules.android.sslerror.Ssl_error",
-"url":25,
+"url":27,
 "doc":"Checks if the application got any ssl error."
 },
 {
+"ref":"modules.android.sslerror.Ssl_error.stix",
+"url":27,
+"doc":""
+},
+{
 "ref":"modules.android.sslerror.Ssl_error.input",
-"url":26,
+"url":28,
 "doc":"Inputs the arguments for the Mallodroid instance. :param kwargs: :Keyword Arguments: - path (str): Path to the apk file. - args (list): List of arguments to be passed to the Mallodroid instance. - force (bool): Force the execution of the Mallodroid instance.",
 "func":1
 },
 {
 "ref":"modules.android.sslerror.Ssl_error.run",
-"url":26,
+"url":28,
 "doc":"Runs the Mallodroid module. :param kwargs: :Keyword Arguments: - path (str): Path to the apk file. - args (list): List of arguments to be passed to the Mallodroid instance. - force (bool): Force the execution of the Mallodroid instance.",
 "func":1
 },
 {
 "ref":"modules.android.sslerror.Ssl_error.output",
-"url":26,
+"url":28,
 "doc":"Returns the output of the Mallodroid module. :return: The output of the Mallodroid module. :rtype: dict",
 "func":1
 },
 {
 "ref":"modules.android.obfuscated_code",
-"url":27,
+"url":29,
 "doc":""
 },
 {
 "ref":"modules.android.obfuscated_code.Obfuscated_code",
-"url":27,
+"url":29,
 "doc":"Check if the code is obfuscated"
 },
 {
+"ref":"modules.android.obfuscated_code.Obfuscated_code.stix",
+"url":29,
+"doc":""
+},
+{
 "ref":"modules.android.obfuscated_code.Obfuscated_code.input",
-"url":28,
+"url":30,
 "doc":"Receives the input arguments from the user. :param kwargs: input arguments :Keyword Arguments:   path ( str )  path to the file   args ( list )  list of arguments   force ( bool )  force the analysis",
 "func":1
 },
 {
 "ref":"modules.android.obfuscated_code.Obfuscated_code.run",
-"url":28,
+"url":30,
 "doc":"Runs the analysis. :param kwargs: input arguments :Keyword Arguments:   path ( str )  path to the file   args ( list )  list of arguments   force ( bool )  force the analysis :return: results :rtype: dict :raise AssertionError: if the input arguments are not valid",
 "func":1
 },
 {
 "ref":"modules.android.mallodroid_base",
-"url":26,
+"url":28,
 "doc":""
 },
 {
 "ref":"modules.android.mallodroid_base.Mallodroid_base",
-"url":26,
+"url":28,
 "doc":"Interface class for Mallodroid vulnerability detection."
 },
 {
 "ref":"modules.android.mallodroid_base.Mallodroid_base.input",
-"url":26,
+"url":28,
 "doc":"Inputs the arguments for the Mallodroid instance. :param kwargs: :Keyword Arguments: - path (str): Path to the apk file. - args (list): List of arguments to be passed to the Mallodroid instance. - force (bool): Force the execution of the Mallodroid instance.",
 "func":1
 },
 {
 "ref":"modules.android.mallodroid_base.Mallodroid_base.run",
-"url":26,
+"url":28,
 "doc":"Runs the Mallodroid module. :param kwargs: :Keyword Arguments: - path (str): Path to the apk file. - args (list): List of arguments to be passed to the Mallodroid instance. - force (bool): Force the execution of the Mallodroid instance.",
 "func":1
 },
 {
 "ref":"modules.android.mallodroid_base.Mallodroid_base.output",
-"url":26,
+"url":28,
 "doc":"Returns the output of the Mallodroid module. :return: The output of the Mallodroid module. :rtype: dict",
 "func":1
 },
 {
 "ref":"modules.android.trustmanager",
-"url":29,
+"url":31,
 "doc":""
 },
 {
 "ref":"modules.android.trustmanager.Trustmanager",
-"url":29,
+"url":31,
 "doc":"Check if the app uses a custom TrustManager."
 },
 {
+"ref":"modules.android.trustmanager.Trustmanager.stix",
+"url":31,
+"doc":""
+},
+{
 "ref":"modules.android.trustmanager.Trustmanager.input",
-"url":26,
+"url":28,
 "doc":"Inputs the arguments for the Mallodroid instance. :param kwargs: :Keyword Arguments: - path (str): Path to the apk file. - args (list): List of arguments to be passed to the Mallodroid instance. - force (bool): Force the execution of the Mallodroid instance.",
 "func":1
 },
 {
 "ref":"modules.android.trustmanager.Trustmanager.run",
-"url":26,
+"url":28,
 "doc":"Runs the Mallodroid module. :param kwargs: :Keyword Arguments: - path (str): Path to the apk file. - args (list): List of arguments to be passed to the Mallodroid instance. - force (bool): Force the execution of the Mallodroid instance.",
 "func":1
 },
 {
 "ref":"modules.android.trustmanager.Trustmanager.output",
-"url":26,
+"url":28,
 "doc":"Returns the output of the Mallodroid module. :return: The output of the Mallodroid module. :rtype: dict",
 "func":1
 },
 {
 "ref":"modules.android.weak_algorithms",
-"url":30,
+"url":32,
 "doc":""
 },
 {
 "ref":"modules.android.weak_algorithms.Weak_algorithms",
-"url":30,
+"url":32,
 "doc":"Analyze the application to find the known weak algorithms."
 },
 {
+"ref":"modules.android.weak_algorithms.Weak_algorithms.stix",
+"url":32,
+"doc":""
+},
+{
 "ref":"modules.android.weak_algorithms.Weak_algorithms.input",
-"url":28,
+"url":30,
 "doc":"Receives the input arguments from the user. :param kwargs: input arguments :Keyword Arguments:   path ( str )  path to the file   args ( list )  list of arguments   force ( bool )  force the analysis",
 "func":1
 },
 {
 "ref":"modules.android.weak_algorithms.Weak_algorithms.run",
-"url":28,
+"url":30,
 "doc":"Runs the analysis. :param kwargs: input arguments :Keyword Arguments:   path ( str )  path to the file   args ( list )  list of arguments   force ( bool )  force the analysis :return: results :rtype: dict :raise AssertionError: if the input arguments are not valid",
 "func":1
 },
 {
 "ref":"modules.android.hostnameverifier",
-"url":31,
+"url":33,
 "doc":""
 },
 {
 "ref":"modules.android.hostnameverifier.Hostnameverifier",
-"url":31,
+"url":33,
 "doc":"Checks if the device has a custom hostname."
 },
 {
+"ref":"modules.android.hostnameverifier.Hostnameverifier.stix",
+"url":33,
+"doc":""
+},
+{
 "ref":"modules.android.hostnameverifier.Hostnameverifier.input",
-"url":26,
+"url":28,
 "doc":"Inputs the arguments for the Mallodroid instance. :param kwargs: :Keyword Arguments: - path (str): Path to the apk file. - args (list): List of arguments to be passed to the Mallodroid instance. - force (bool): Force the execution of the Mallodroid instance.",
 "func":1
 },
 {
 "ref":"modules.android.hostnameverifier.Hostnameverifier.run",
-"url":26,
+"url":28,
 "doc":"Runs the Mallodroid module. :param kwargs: :Keyword Arguments: - path (str): Path to the apk file. - args (list): List of arguments to be passed to the Mallodroid instance. - force (bool): Force the execution of the Mallodroid instance.",
 "func":1
 },
 {
 "ref":"modules.android.hostnameverifier.Hostnameverifier.output",
-"url":26,
+"url":28,
 "doc":"Returns the output of the Mallodroid module. :return: The output of the Mallodroid module. :rtype: dict",
 "func":1
 },
 {
 "ref":"modules.android.ssl_getinsecure_method",
-"url":32,
+"url":34,
 "doc":""
 },
 {
 "ref":"modules.android.ssl_getinsecure_method.Ssl_getinsecure_method",
-"url":32,
+"url":34,
 "doc":"Check the presence of SSL getInsecure method in the application"
 },
 {
+"ref":"modules.android.ssl_getinsecure_method.Ssl_getinsecure_method.stix",
+"url":34,
+"doc":""
+},
+{
 "ref":"modules.android.ssl_getinsecure_method.Ssl_getinsecure_method.input",
-"url":28,
+"url":30,
 "doc":"Receives the input arguments from the user. :param kwargs: input arguments :Keyword Arguments:   path ( str )  path to the file   args ( list )  list of arguments   force ( bool )  force the analysis",
 "func":1
 },
 {
 "ref":"modules.android.ssl_getinsecure_method.Ssl_getinsecure_method.run",
-"url":28,
+"url":30,
 "doc":"Runs the analysis. :param kwargs: input arguments :Keyword Arguments:   path ( str )  path to the file   args ( list )  list of arguments   force ( bool )  force the analysis :return: results :rtype: dict :raise AssertionError: if the input arguments are not valid",
 "func":1
 },
 {
 "ref":"modules.android.webview_ssl_errors",
-"url":33,
+"url":35,
 "doc":""
 },
 {
 "ref":"modules.android.webview_ssl_errors.Webview_ssl_errors",
-"url":33,
+"url":35,
 "doc":"Check if the WebView ignores SSL Errors."
 },
 {
+"ref":"modules.android.webview_ssl_errors.Webview_ssl_errors.stix",
+"url":35,
+"doc":""
+},
+{
 "ref":"modules.android.webview_ssl_errors.Webview_ssl_errors.input",
-"url":28,
+"url":30,
 "doc":"Receives the input arguments from the user. :param kwargs: input arguments :Keyword Arguments:   path ( str )  path to the file   args ( list )  list of arguments   force ( bool )  force the analysis",
 "func":1
 },
 {
 "ref":"modules.android.webview_ssl_errors.Webview_ssl_errors.run",
-"url":28,
-"doc":"Runs the analysis. :param kwargs: input arguments :Keyword Arguments:   path ( str )  path to the file   args ( list )  list of arguments   force ( bool )  force the analysis :return: results :rtype: dict :raise AssertionError: if the input arguments are not valid",
-"func":1
-},
-{
-"ref":"modules.android.accepting_all_certificates",
-"url":34,
-"doc":""
-},
-{
-"ref":"modules.android.accepting_all_certificates.Accepting_all_certificates",
-"url":34,
-"doc":"Check if the apk accepts all certificates."
-},
-{
-"ref":"modules.android.accepting_all_certificates.Accepting_all_certificates.input",
-"url":28,
-"doc":"Receives the input arguments from the user. :param kwargs: input arguments :Keyword Arguments:   path ( str )  path to the file   args ( list )  list of arguments   force ( bool )  force the analysis",
-"func":1
-},
-{
-"ref":"modules.android.accepting_all_certificates.Accepting_all_certificates.run",
-"url":28,
-"doc":"Runs the analysis. :param kwargs: input arguments :Keyword Arguments:   path ( str )  path to the file   args ( list )  list of arguments   force ( bool )  force the analysis :return: results :rtype: dict :raise AssertionError: if the input arguments are not valid",
-"func":1
-},
-{
-"ref":"modules.android.certificate_keystore_disclosure",
-"url":35,
-"doc":""
-},
-{
-"ref":"modules.android.certificate_keystore_disclosure.Certificate_keystore_disclosure",
-"url":35,
-"doc":"Check if the application has a certificate or keystore"
-},
-{
-"ref":"modules.android.certificate_keystore_disclosure.Certificate_keystore_disclosure.input",
-"url":28,
-"doc":"Receives the input arguments from the user. :param kwargs: input arguments :Keyword Arguments:   path ( str )  path to the file   args ( list )  list of arguments   force ( bool )  force the analysis",
-"func":1
-},
-{
-"ref":"modules.android.certificate_keystore_disclosure.Certificate_keystore_disclosure.run",
-"url":28,
+"url":30,
 "doc":"Runs the analysis. :param kwargs: input arguments :Keyword Arguments:   path ( str )  path to the file   args ( list )  list of arguments   force ( bool )  force the analysis :return: results :rtype: dict :raise AssertionError: if the input arguments are not valid",
 "func":1
 },
 {
 "ref":"modules.android.super_base",
-"url":28,
+"url":30,
 "doc":""
 },
 {
 "ref":"modules.android.super_base.Super_base",
-"url":28,
+"url":30,
 "doc":"Interface for SUPERAndroidAnalyzer vulnerability detection."
 },
 {
 "ref":"modules.android.super_base.Super_base.input",
-"url":28,
+"url":30,
 "doc":"Receives the input arguments from the user. :param kwargs: input arguments :Keyword Arguments:   path ( str )  path to the file   args ( list )  list of arguments   force ( bool )  force the analysis",
 "func":1
 },
 {
 "ref":"modules.android.super_base.Super_base.run",
-"url":28,
+"url":30,
 "doc":"Runs the analysis. :param kwargs: input arguments :Keyword Arguments:   path ( str )  path to the file   args ( list )  list of arguments   force ( bool )  force the analysis :return: results :rtype: dict :raise AssertionError: if the input arguments are not valid",
 "func":1
 },
 {
 "ref":"modules.android.super_base.Super_base.output",
-"url":28,
+"url":30,
 "doc":"",
 "func":1
 },
@@ -1296,12 +1354,6 @@ INDEX=[
 "func":1
 },
 {
-"ref":"modules.server.wrappers.testssl.validate_ip",
-"url":43,
-"doc":"Validate an IP :param ip: String to check if it's an IP. :type ip: str :return: True if ip param it's an IP, false otherwise. :rtype: bool",
-"func":1
-},
-{
 "ref":"modules.server.wrappers.testssl.Testssl",
 "url":43,
 "doc":"Testssl wrapper module. Loads testssl variables."
@@ -1337,6 +1389,11 @@ INDEX=[
 {
 "ref":"modules.server.crime.Crime.conf",
 "url":44,
+"doc":""
+},
+{
+"ref":"modules.server.crime.Crime.stix",
+"url":44,
 "doc":"Analysis of the crime testssl results"
 },
 {
@@ -1368,6 +1425,11 @@ INDEX=[
 "doc":"Analysis of the logjam testssl results"
 },
 {
+"ref":"modules.server.logjam.Logjam.stix",
+"url":46,
+"doc":""
+},
+{
 "ref":"modules.server.logjam.Logjam.input",
 "url":45,
 "doc":"This method is used to set the input parameters for the analysis. :param kwargs: :type kwargs: dict :Keyword Arguments:   hostname ( str )  Hostname to be analyzed.   force ( bool )  Force the analysis.   port ( str )  Port to be analyzed.   keys ( list )  List of keys to be analyzed.",
@@ -1394,6 +1456,11 @@ INDEX=[
 "ref":"modules.server.heartbleed.Heartbleed",
 "url":47,
 "doc":"Analysis of the heartbleed testssl results"
+},
+{
+"ref":"modules.server.heartbleed.Heartbleed.stix",
+"url":47,
+"doc":""
 },
 {
 "ref":"modules.server.heartbleed.Heartbleed.input",
@@ -1426,6 +1493,11 @@ INDEX=[
 {
 "ref":"modules.server.drown.Drown.conf",
 "url":48,
+"doc":""
+},
+{
+"ref":"modules.server.drown.Drown.stix",
+"url":48,
 "doc":"Analysis of the drown testssl results"
 },
 {
@@ -1457,6 +1529,11 @@ INDEX=[
 "doc":"Analysis of the pfs testssl results"
 },
 {
+"ref":"modules.server.pfs.Pfs.stix",
+"url":49,
+"doc":""
+},
+{
 "ref":"modules.server.pfs.Pfs.input",
 "url":45,
 "doc":"This method is used to set the input parameters for the analysis. :param kwargs: :type kwargs: dict :Keyword Arguments:   hostname ( str )  Hostname to be analyzed.   force ( bool )  Force the analysis.   port ( str )  Port to be analyzed.   keys ( list )  List of keys to be analyzed.",
@@ -1486,6 +1563,11 @@ INDEX=[
 },
 {
 "ref":"modules.server.hsts_set.Hsts_set.conf",
+"url":50,
+"doc":""
+},
+{
+"ref":"modules.server.hsts_set.Hsts_set.stix",
 "url":50,
 "doc":""
 },
@@ -1546,6 +1628,11 @@ INDEX=[
 "doc":"Analysis of the 3shake testssl results"
 },
 {
+"ref":"modules.server.three_shake.Three_shake.stix",
+"url":51,
+"doc":""
+},
+{
 "ref":"modules.server.three_shake.Three_shake.input",
 "url":45,
 "doc":"This method is used to set the input parameters for the analysis. :param kwargs: :type kwargs: dict :Keyword Arguments:   hostname ( str )  Hostname to be analyzed.   force ( bool )  Force the analysis.   port ( str )  Port to be analyzed.   keys ( list )  List of keys to be analyzed.",
@@ -1572,6 +1659,11 @@ INDEX=[
 "ref":"modules.server.renegotiation.Renegotiation",
 "url":52,
 "doc":"Analysis of the renego testssl results"
+},
+{
+"ref":"modules.server.renegotiation.Renegotiation.stix",
+"url":52,
+"doc":""
 },
 {
 "ref":"modules.server.renegotiation.Renegotiation.input",
@@ -1602,6 +1694,11 @@ INDEX=[
 "doc":"Analysis of the breach testssl results"
 },
 {
+"ref":"modules.server.breach.Breach.stix",
+"url":53,
+"doc":""
+},
+{
 "ref":"modules.server.breach.Breach.input",
 "url":45,
 "doc":"This method is used to set the input parameters for the analysis. :param kwargs: :type kwargs: dict :Keyword Arguments:   hostname ( str )  Hostname to be analyzed.   force ( bool )  Force the analysis.   port ( str )  Port to be analyzed.   keys ( list )  List of keys to be analyzed.",
@@ -1627,12 +1724,17 @@ INDEX=[
 {
 "ref":"modules.server.sweet32.Sweet32",
 "url":54,
-"doc":"Testssl.sh is a tool to test the SSL configuration of a server. This is a base class for the different vulnerabilities found by testssl.sh."
+"doc":"Analysis of the sweet32 testssl results"
 },
 {
 "ref":"modules.server.sweet32.Sweet32.conf",
 "url":54,
-"doc":"Analysis of the sweet32 testssl results"
+"doc":""
+},
+{
+"ref":"modules.server.sweet32.Sweet32.stix",
+"url":54,
+"doc":""
 },
 {
 "ref":"modules.server.sweet32.Sweet32.input",
@@ -1663,6 +1765,11 @@ INDEX=[
 "doc":"Analysis of the sloth tlsfuzzer output"
 },
 {
+"ref":"modules.server.sloth.Sloth.stix",
+"url":55,
+"doc":""
+},
+{
 "ref":"modules.server.sloth.Sloth.input",
 "url":56,
 "doc":"Set input arguments for the analysis :param kwargs: :type kwargs: dict :Keyword Arguments:   hostname ( str )  Hostname to be tested   force ( bool )  Force the analysis   port ( str )  Port to be tested   scripts ( list )  List of scripts to be executed",
@@ -1689,6 +1796,11 @@ INDEX=[
 "ref":"modules.server.ccs_injection.Ccs_injection",
 "url":57,
 "doc":"Analysis of the css_injection testssl results"
+},
+{
+"ref":"modules.server.ccs_injection.Ccs_injection.stix",
+"url":57,
+"doc":""
 },
 {
 "ref":"modules.server.ccs_injection.Ccs_injection.input",
@@ -1720,6 +1832,11 @@ INDEX=[
 },
 {
 "ref":"modules.server.nomore.Nomore.conf",
+"url":58,
+"doc":""
+},
+{
+"ref":"modules.server.nomore.Nomore.stix",
 "url":58,
 "doc":""
 },
@@ -1780,6 +1897,11 @@ INDEX=[
 "doc":"Analysis of the certificate transparency testssl results"
 },
 {
+"ref":"modules.server.certificate_transparency.Certificate_transparency.stix",
+"url":59,
+"doc":""
+},
+{
 "ref":"modules.server.certificate_transparency.Certificate_transparency.input",
 "url":45,
 "doc":"This method is used to set the input parameters for the analysis. :param kwargs: :type kwargs: dict :Keyword Arguments:   hostname ( str )  Hostname to be analyzed.   force ( bool )  Force the analysis.   port ( str )  Port to be analyzed.   keys ( list )  List of keys to be analyzed.",
@@ -1813,6 +1935,11 @@ INDEX=[
 "doc":""
 },
 {
+"ref":"modules.server.https_enforced.Https_enforced.stix",
+"url":60,
+"doc":""
+},
+{
 "ref":"modules.server.https_enforced.Https_enforced.input",
 "url":38,
 "doc":"Inputs the required data to the analysis. :param kwargs: data to be used for the analysis :type kwargs: dict :Keyword Arguments:   hostname ( str )  the hostname to be used for the analysis   force ( bool )  force the analysis to be run, default is True   port ( str )  the port to be used for the analysis   type ( str )  the type of analysis to be done",
@@ -1839,6 +1966,11 @@ INDEX=[
 "ref":"modules.server.freak.Freak",
 "url":61,
 "doc":"Analysis of the freak testssl results"
+},
+{
+"ref":"modules.server.freak.Freak.stix",
+"url":61,
+"doc":""
 },
 {
 "ref":"modules.server.freak.Freak.input",
@@ -1874,6 +2006,11 @@ INDEX=[
 "doc":""
 },
 {
+"ref":"modules.server.mitzvah.Mitzvah.stix",
+"url":62,
+"doc":""
+},
+{
 "ref":"modules.server.mitzvah.Mitzvah.input",
 "url":45,
 "doc":"This method is used to set the input parameters for the analysis. :param kwargs: :type kwargs: dict :Keyword Arguments:   hostname ( str )  Hostname to be analyzed.   force ( bool )  Force the analysis.   port ( str )  Port to be analyzed.   keys ( list )  List of keys to be analyzed.",
@@ -1902,6 +2039,11 @@ INDEX=[
 "doc":"Analysis of the HSTS Preloading status"
 },
 {
+"ref":"modules.server.hsts_preloading.Hsts_preloading.stix",
+"url":63,
+"doc":""
+},
+{
 "ref":"modules.server.hsts_preloading.Hsts_preloading.input",
 "url":38,
 "doc":"Inputs the required data to the analysis. :param kwargs: data to be used for the analysis :type kwargs: dict :Keyword Arguments:   hostname ( str )  the hostname to be used for the analysis   force ( bool )  force the analysis to be run, default is True   port ( str )  the port to be used for the analysis   type ( str )  the type of analysis to be done",
@@ -1928,6 +2070,11 @@ INDEX=[
 "ref":"modules.server.ticketbleed.Ticketbleed",
 "url":64,
 "doc":"Analysis of the ticketbleed testssl results"
+},
+{
+"ref":"modules.server.ticketbleed.Ticketbleed.stix",
+"url":64,
+"doc":""
 },
 {
 "ref":"modules.server.ticketbleed.Ticketbleed.input",
@@ -1960,6 +2107,11 @@ INDEX=[
 {
 "ref":"modules.server.robot.Robot.conf",
 "url":65,
+"doc":""
+},
+{
+"ref":"modules.server.robot.Robot.stix",
+"url":65,
 "doc":"Analysis of the robot testssl results"
 },
 {
@@ -1989,6 +2141,11 @@ INDEX=[
 "ref":"modules.server.beast.Beast",
 "url":66,
 "doc":"Analysis of the beast testssl results"
+},
+{
+"ref":"modules.server.beast.Beast.stix",
+"url":66,
+"doc":""
 },
 {
 "ref":"modules.server.beast.Beast.input",
@@ -2024,6 +2181,11 @@ INDEX=[
 "doc":""
 },
 {
+"ref":"modules.server.poodle.Poodle.stix",
+"url":67,
+"doc":""
+},
+{
 "ref":"modules.server.poodle.Poodle.input",
 "url":45,
 "doc":"This method is used to set the input parameters for the analysis. :param kwargs: :type kwargs: dict :Keyword Arguments:   hostname ( str )  Hostname to be analyzed.   force ( bool )  Force the analysis.   port ( str )  Port to be analyzed.   keys ( list )  List of keys to be analyzed.",
@@ -2052,6 +2214,11 @@ INDEX=[
 "doc":"Analysis of the lucky13 testssl results"
 },
 {
+"ref":"modules.server.lucky13.Lucky13.stix",
+"url":68,
+"doc":""
+},
+{
 "ref":"modules.server.lucky13.Lucky13.input",
 "url":45,
 "doc":"This method is used to set the input parameters for the analysis. :param kwargs: :type kwargs: dict :Keyword Arguments:   hostname ( str )  Hostname to be analyzed.   force ( bool )  Force the analysis.   port ( str )  Port to be analyzed.   keys ( list )  List of keys to be analyzed.",
@@ -2077,7 +2244,7 @@ INDEX=[
 {
 "ref":"modules.core.Core",
 "url":69,
-"doc":"Core module :param hostname_or_path: hostname or path to scan :type hostname_or_path: str or list :param configuration: path to configuration file :type configuration: str or list :param output: path to output file :type output: str or list :param output_type: type of output :type output_type: str or list :param type_of_analysis: type of analysis :type type_of_analysis: str or list :param to_exclude: list of domains to exclude :type to_exclude: str or list :param group_by: choose what to group by in the output :type group_by: str :param apply_fix: apply a fix to the scan :type apply_fix: str :param openssl_version: version of openssl to use :type openssl_version: str :param ignore_openssl: ignore openssl version :type ignore_openssl: bool"
+"doc":"Core module :param hostname_or_path: hostname or path to scan :type hostname_or_path: str or list :param configuration: path to configuration file :type configuration: str or list :param output: path to output file :type output: str or list :param output_type: type of output :type output_type: str or list :param type_of_analysis: type of analysis :type type_of_analysis: str or list :param to_exclude: list of domains to exclude :type to_exclude: str or list :param group_by: choose what to group by in the output :type group_by: str :param apply_fix: apply a fix to the scan :type apply_fix: str :param openssl_version: version of openssl to use :type openssl_version: str :param ignore_openssl: ignore openssl version :type ignore_openssl: bool :param stix: generate stix report :type stix: bool"
 },
 {
 "ref":"modules.core.Core.Report",
@@ -2391,13 +2558,13 @@ INDEX=[
 {
 "ref":"modules.report.Report.input",
 "url":73,
-"doc":"Input function for the Report module. :param kwargs: Arguments for the Report module. See below. :type kwargs: dict :Keyword Arguments:   results (dict)  Dictionary containing the results of the scan.   path (string)  Path to the report.   mode (Mode)  Report mode.   modules (list)  List of modules to include in the report.",
+"doc":"Input function for the Report module. :param kwargs: Arguments for the Report module. See below. :type kwargs: dict :Keyword Arguments:   results (dict)  Dictionary containing the results of the scan.   path (string)  Path to the report.   mode (Mode)  Report mode.   stix (bool)  If True, the report will be in STIX format.",
 "func":1
 },
 {
 "ref":"modules.report.Report.run",
 "url":73,
-"doc":"Runs the report. :param kwargs: Arguments for the Report module. See below. :type kwargs: dict :Keyword Arguments:   results (dict)  Dictionary containing the results of the scan.   path (string)  Path to the report.   mode (Mode)  Report mode.   modules (list)  List of modules to include in the report.",
+"doc":"Runs the report. :param kwargs: Arguments for the Report module. See below. :type kwargs: dict :Keyword Arguments:   results (dict)  Dictionary containing the results of the scan.   path (string)  Path to the report.   mode (Mode)  Report mode.   stix (bool)  If True, the report will be generated in STIX format.",
 "func":1
 }
 ]

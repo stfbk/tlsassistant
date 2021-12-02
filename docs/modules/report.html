@@ -29,6 +29,7 @@
 <pre><code class="python">from enum import Enum
 from os import mkdir
 
+from modules.stix.stix import Stix
 from utils.validation import Validator, rec_search_key
 from utils import output
 from datetime import datetime
@@ -73,7 +74,7 @@ class Report:
         * *results* (dict) -- Dictionary containing the results of the scan.
         * *path* (string) -- Path to the report.
         * *mode* (Mode) -- Report mode.
-        * *modules* (list) -- List of modules to include in the report.
+        * *stix* (bool) -- If True, the report will be in STIX format.
         &#34;&#34;&#34;
         self.__input_dict = kwargs
 
@@ -88,7 +89,6 @@ class Report:
         :return: Dictionary containing the results of the scan.
         :rtype: dict
         &#34;&#34;&#34;
-        self.__logging.info(f&#34;Generating modules report..&#34;)
         out = {}
         for module in modules:
             vuln_hosts = []
@@ -123,22 +123,24 @@ class Report:
         :return: Dictionary containing the results of the scan.
         :rtype: dict
         &#34;&#34;&#34;
-        self.__logging.info(f&#34;Generating hosts report..&#34;)
+        out = {}
         for hostname in results:
             # the results are good, we need to remove the &#34;Entry&#34; key but preserve the rest with the CaseInsensitiveDict
+            if hostname not in out:
+                out[hostname] = {}
             for module in results[hostname]:
                 raw_results = {}
                 if &#34;raw&#34; in results[hostname][module]:
                     raw_results = results[hostname][module][&#34;raw&#34;].copy()
                 if &#34;Entry&#34; in results[hostname][module]:
-                    results[hostname][module] = CaseInsensitiveDict(
+                    out[hostname][module] = CaseInsensitiveDict(
                         results[hostname][module][&#34;Entry&#34;]
                     )
                     if raw_results:
-                        results[hostname][module][&#34;raw&#34;] = pformat(
+                        out[hostname][module][&#34;raw&#34;] = pformat(
                             raw_results.copy(), indent=2
                         )
-        return results
+        return out
 
     def __jinja2__report(
         self, mode: Mode, results: dict, modules: list, date: datetime.date
@@ -160,9 +162,11 @@ class Report:
         env = Environment(loader=fsl)
         to_process = {&#34;version&#34;: version, &#34;date&#34;: date, &#34;modules&#34;: modules}
         if mode == self.Mode.MODULES:
+            self.__logging.info(f&#34;Generating modules report..&#34;)
             template = env.get_template(f&#34;modules_report.html&#34;)
             to_process[&#34;results&#34;] = self.__modules_report_formatter(results, modules)
         elif mode == self.Mode.HOSTS:
+            self.__logging.info(f&#34;Generating hosts report..&#34;)
             template = env.get_template(f&#34;hosts_report.html&#34;)
             to_process[&#34;results&#34;] = self.__hosts_report_formatter(results)
         else:
@@ -199,13 +203,14 @@ class Report:
         * *results* (dict) -- Dictionary containing the results of the scan.
         * *path* (string) -- Path to the report.
         * *mode* (Mode) -- Report mode.
-        * *modules* (list) -- List of modules to include in the report.
+        * *stix* (bool) -- If True, the report will be generated in STIX format.
         &#34;&#34;&#34;
 
         self.input(**kwargs)
         assert &#34;path&#34; in self.__input_dict, &#34;Missing output path&#34;
         assert &#34;results&#34; in self.__input_dict, &#34;Missing results list&#34;
         assert &#34;mode&#34; in self.__input_dict, &#34;Missing mode&#34;
+        assert &#34;stix&#34; in self.__input_dict, &#34;Missing stix flag&#34;
 
         path = self.__input_dict[&#34;path&#34;]
         self.__path = Path(path)
@@ -215,12 +220,14 @@ class Report:
                 (path, str),
                 (self.__input_dict[&#34;results&#34;], dict),
                 (self.__input_dict[&#34;mode&#34;], self.Mode),
+                (self.__input_dict[&#34;stix&#34;], bool),
             ]
         )
 
         if not Path(&#34;results&#34;).exists():
             self.__logging.debug(&#34;Adding result folder...&#34;)
             mkdir(&#34;results&#34;)
+        if not Path(f&#34;results{sep}assets&#34;).exists():
             self.__logging.debug(&#34;Copying assets folder...&#34;)
             cp(
                 str(Path(f&#34;configs{sep}out_template{sep}assets&#34;).absolute()),
@@ -265,7 +272,24 @@ class Report:
             self.__logging.debug(&#34;Starting HTML to PDF...&#34;)
             output.html_to_pdf(str(output_file.absolute()), output_path)
         self.__logging.info(f&#34;Report generated at {output_path}&#34;)
-        # todo: add PDF library</code></pre>
+
+        self.__logging.debug(&#34;Checks if needs stix...&#34;)
+
+        if &#34;stix&#34; in self.__input_dict and self.__input_dict[&#34;stix&#34;]:
+            stix_output_path = Path(
+                f&#34;{output_file.absolute().parent}{sep}stix_{output_file.stem}.json&#34;
+            ).absolute()
+            results_to_stix = (
+                self.__hosts_report_formatter(results)
+                if self.__input_dict[&#34;mode&#34;] == self.Mode.HOSTS
+                else self.__modules_report_formatter(results, modules)
+            )
+            self.__logging.info(&#34;Starting STIX generation...&#34;)
+            Stix(type_of_analysis=self.__input_dict[&#34;mode&#34;].value).build_and_save(
+                results_to_stix, modules, str(stix_output_path)
+            )
+
+    # todo: add PDF library</code></pre>
 </details>
 </section>
 <section>
@@ -316,7 +340,7 @@ class Report:
         * *results* (dict) -- Dictionary containing the results of the scan.
         * *path* (string) -- Path to the report.
         * *mode* (Mode) -- Report mode.
-        * *modules* (list) -- List of modules to include in the report.
+        * *stix* (bool) -- If True, the report will be in STIX format.
         &#34;&#34;&#34;
         self.__input_dict = kwargs
 
@@ -331,7 +355,6 @@ class Report:
         :return: Dictionary containing the results of the scan.
         :rtype: dict
         &#34;&#34;&#34;
-        self.__logging.info(f&#34;Generating modules report..&#34;)
         out = {}
         for module in modules:
             vuln_hosts = []
@@ -366,22 +389,24 @@ class Report:
         :return: Dictionary containing the results of the scan.
         :rtype: dict
         &#34;&#34;&#34;
-        self.__logging.info(f&#34;Generating hosts report..&#34;)
+        out = {}
         for hostname in results:
             # the results are good, we need to remove the &#34;Entry&#34; key but preserve the rest with the CaseInsensitiveDict
+            if hostname not in out:
+                out[hostname] = {}
             for module in results[hostname]:
                 raw_results = {}
                 if &#34;raw&#34; in results[hostname][module]:
                     raw_results = results[hostname][module][&#34;raw&#34;].copy()
                 if &#34;Entry&#34; in results[hostname][module]:
-                    results[hostname][module] = CaseInsensitiveDict(
+                    out[hostname][module] = CaseInsensitiveDict(
                         results[hostname][module][&#34;Entry&#34;]
                     )
                     if raw_results:
-                        results[hostname][module][&#34;raw&#34;] = pformat(
+                        out[hostname][module][&#34;raw&#34;] = pformat(
                             raw_results.copy(), indent=2
                         )
-        return results
+        return out
 
     def __jinja2__report(
         self, mode: Mode, results: dict, modules: list, date: datetime.date
@@ -403,9 +428,11 @@ class Report:
         env = Environment(loader=fsl)
         to_process = {&#34;version&#34;: version, &#34;date&#34;: date, &#34;modules&#34;: modules}
         if mode == self.Mode.MODULES:
+            self.__logging.info(f&#34;Generating modules report..&#34;)
             template = env.get_template(f&#34;modules_report.html&#34;)
             to_process[&#34;results&#34;] = self.__modules_report_formatter(results, modules)
         elif mode == self.Mode.HOSTS:
+            self.__logging.info(f&#34;Generating hosts report..&#34;)
             template = env.get_template(f&#34;hosts_report.html&#34;)
             to_process[&#34;results&#34;] = self.__hosts_report_formatter(results)
         else:
@@ -442,13 +469,14 @@ class Report:
         * *results* (dict) -- Dictionary containing the results of the scan.
         * *path* (string) -- Path to the report.
         * *mode* (Mode) -- Report mode.
-        * *modules* (list) -- List of modules to include in the report.
+        * *stix* (bool) -- If True, the report will be generated in STIX format.
         &#34;&#34;&#34;
 
         self.input(**kwargs)
         assert &#34;path&#34; in self.__input_dict, &#34;Missing output path&#34;
         assert &#34;results&#34; in self.__input_dict, &#34;Missing results list&#34;
         assert &#34;mode&#34; in self.__input_dict, &#34;Missing mode&#34;
+        assert &#34;stix&#34; in self.__input_dict, &#34;Missing stix flag&#34;
 
         path = self.__input_dict[&#34;path&#34;]
         self.__path = Path(path)
@@ -458,12 +486,14 @@ class Report:
                 (path, str),
                 (self.__input_dict[&#34;results&#34;], dict),
                 (self.__input_dict[&#34;mode&#34;], self.Mode),
+                (self.__input_dict[&#34;stix&#34;], bool),
             ]
         )
 
         if not Path(&#34;results&#34;).exists():
             self.__logging.debug(&#34;Adding result folder...&#34;)
             mkdir(&#34;results&#34;)
+        if not Path(f&#34;results{sep}assets&#34;).exists():
             self.__logging.debug(&#34;Copying assets folder...&#34;)
             cp(
                 str(Path(f&#34;configs{sep}out_template{sep}assets&#34;).absolute()),
@@ -508,7 +538,24 @@ class Report:
             self.__logging.debug(&#34;Starting HTML to PDF...&#34;)
             output.html_to_pdf(str(output_file.absolute()), output_path)
         self.__logging.info(f&#34;Report generated at {output_path}&#34;)
-        # todo: add PDF library</code></pre>
+
+        self.__logging.debug(&#34;Checks if needs stix...&#34;)
+
+        if &#34;stix&#34; in self.__input_dict and self.__input_dict[&#34;stix&#34;]:
+            stix_output_path = Path(
+                f&#34;{output_file.absolute().parent}{sep}stix_{output_file.stem}.json&#34;
+            ).absolute()
+            results_to_stix = (
+                self.__hosts_report_formatter(results)
+                if self.__input_dict[&#34;mode&#34;] == self.Mode.HOSTS
+                else self.__modules_report_formatter(results, modules)
+            )
+            self.__logging.info(&#34;Starting STIX generation...&#34;)
+            Stix(type_of_analysis=self.__input_dict[&#34;mode&#34;].value).build_and_save(
+                results_to_stix, modules, str(stix_output_path)
+            )
+
+    # todo: add PDF library</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -530,7 +577,7 @@ class Report:
 * <em>results</em> (dict) &ndash; Dictionary containing the results of the scan.
 * <em>path</em> (string) &ndash; Path to the report.
 * <em>mode</em> (Mode) &ndash; Report mode.
-* <em>modules</em> (list) &ndash; List of modules to include in the report.</p></div>
+* <em>stix</em> (bool) &ndash; If True, the report will be in STIX format.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -545,7 +592,7 @@ class Report:
     * *results* (dict) -- Dictionary containing the results of the scan.
     * *path* (string) -- Path to the report.
     * *mode* (Mode) -- Report mode.
-    * *modules* (list) -- List of modules to include in the report.
+    * *stix* (bool) -- If True, the report will be in STIX format.
     &#34;&#34;&#34;
     self.__input_dict = kwargs</code></pre>
 </details>
@@ -561,7 +608,7 @@ class Report:
 * <em>results</em> (dict) &ndash; Dictionary containing the results of the scan.
 * <em>path</em> (string) &ndash; Path to the report.
 * <em>mode</em> (Mode) &ndash; Report mode.
-* <em>modules</em> (list) &ndash; List of modules to include in the report.</p></div>
+* <em>stix</em> (bool) &ndash; If True, the report will be generated in STIX format.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -577,13 +624,14 @@ class Report:
     * *results* (dict) -- Dictionary containing the results of the scan.
     * *path* (string) -- Path to the report.
     * *mode* (Mode) -- Report mode.
-    * *modules* (list) -- List of modules to include in the report.
+    * *stix* (bool) -- If True, the report will be generated in STIX format.
     &#34;&#34;&#34;
 
     self.input(**kwargs)
     assert &#34;path&#34; in self.__input_dict, &#34;Missing output path&#34;
     assert &#34;results&#34; in self.__input_dict, &#34;Missing results list&#34;
     assert &#34;mode&#34; in self.__input_dict, &#34;Missing mode&#34;
+    assert &#34;stix&#34; in self.__input_dict, &#34;Missing stix flag&#34;
 
     path = self.__input_dict[&#34;path&#34;]
     self.__path = Path(path)
@@ -593,12 +641,14 @@ class Report:
             (path, str),
             (self.__input_dict[&#34;results&#34;], dict),
             (self.__input_dict[&#34;mode&#34;], self.Mode),
+            (self.__input_dict[&#34;stix&#34;], bool),
         ]
     )
 
     if not Path(&#34;results&#34;).exists():
         self.__logging.debug(&#34;Adding result folder...&#34;)
         mkdir(&#34;results&#34;)
+    if not Path(f&#34;results{sep}assets&#34;).exists():
         self.__logging.debug(&#34;Copying assets folder...&#34;)
         cp(
             str(Path(f&#34;configs{sep}out_template{sep}assets&#34;).absolute()),
@@ -643,7 +693,22 @@ class Report:
         self.__logging.debug(&#34;Starting HTML to PDF...&#34;)
         output.html_to_pdf(str(output_file.absolute()), output_path)
     self.__logging.info(f&#34;Report generated at {output_path}&#34;)
-    # todo: add PDF library</code></pre>
+
+    self.__logging.debug(&#34;Checks if needs stix...&#34;)
+
+    if &#34;stix&#34; in self.__input_dict and self.__input_dict[&#34;stix&#34;]:
+        stix_output_path = Path(
+            f&#34;{output_file.absolute().parent}{sep}stix_{output_file.stem}.json&#34;
+        ).absolute()
+        results_to_stix = (
+            self.__hosts_report_formatter(results)
+            if self.__input_dict[&#34;mode&#34;] == self.Mode.HOSTS
+            else self.__modules_report_formatter(results, modules)
+        )
+        self.__logging.info(&#34;Starting STIX generation...&#34;)
+        Stix(type_of_analysis=self.__input_dict[&#34;mode&#34;].value).build_and_save(
+            results_to_stix, modules, str(stix_output_path)
+        )</code></pre>
 </details>
 </dd>
 </dl>

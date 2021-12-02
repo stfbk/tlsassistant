@@ -28,6 +28,7 @@
 </summary>
 <pre><code class="python">from modules.configuration.configuration_base import Parse_configuration_strict_security
 from modules.server.hsts_base import Hsts_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
 from utils.mitigations import load_mitigation
 
@@ -40,6 +41,7 @@ class Hsts_set(Hsts_base):
     conf = (
         Parse_configuration_strict_security()
     )  # TODO: Check for port 443 or apply it everywhere?
+    stix = Bundled(mitigation_object=load_mitigation(&#34;HSTS_NOT_SET&#34;))
 
     def _get_logger(self):
         &#34;&#34;&#34;
@@ -115,6 +117,7 @@ class Hsts_set(Hsts_base):
     conf = (
         Parse_configuration_strict_security()
     )  # TODO: Check for port 443 or apply it everywhere?
+    stix = Bundled(mitigation_object=load_mitigation(&#34;HSTS_NOT_SET&#34;))
 
     def _get_logger(self):
         &#34;&#34;&#34;
@@ -170,6 +173,10 @@ class Hsts_set(Hsts_base):
 <h3>Class variables</h3>
 <dl>
 <dt id="modules.server.hsts_set.Hsts_set.conf"><code class="name">var <span class="ident">conf</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="modules.server.hsts_set.Hsts_set.stix"><code class="name">var <span class="ident">stix</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -277,6 +284,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.server.hsts_set.Hsts_set.input" href="hsts_base.html#modules.server.hsts_set.Hsts_set.input">input</a></code></li>
 <li><code><a title="modules.server.hsts_set.Hsts_set.output" href="hsts_base.html#modules.server.hsts_set.Hsts_set.output">output</a></code></li>
 <li><code><a title="modules.server.hsts_set.Hsts_set.run" href="hsts_base.html#modules.server.hsts_set.Hsts_set.run">run</a></code></li>
+<li><code><a title="modules.server.hsts_set.Hsts_set.stix" href="#modules.server.hsts_set.Hsts_set.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

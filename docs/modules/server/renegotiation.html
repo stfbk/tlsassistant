@@ -27,6 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from modules.server.testssl_base import Testssl_base
+from modules.stix.stix_base import Bundled
 from utils.mitigations import load_mitigation
 
 
@@ -34,6 +35,8 @@ class Renegotiation(Testssl_base):
     &#34;&#34;&#34;
     Analysis of the renego testssl results
     &#34;&#34;&#34;
+
+    stix = Bundled(mitigation_object=load_mitigation(&#34;RENEGOTIATION&#34;))
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -&gt; dict:
         &#34;&#34;&#34;
@@ -97,6 +100,8 @@ class Renegotiation(Testssl_base):
     Analysis of the renego testssl results
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;RENEGOTIATION&#34;))
+
     def _set_mitigations(self, result: dict, key: str, condition: bool) -&gt; dict:
         &#34;&#34;&#34;
         Sets the mitigations for the result
@@ -139,6 +144,13 @@ class Renegotiation(Testssl_base):
 <ul class="hlist">
 <li><a title="modules.server.testssl_base.Testssl_base" href="testssl_base.html#modules.server.testssl_base.Testssl_base">Testssl_base</a></li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.server.renegotiation.Renegotiation.stix"><code class="name">var <span class="ident">stix</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="modules.server.renegotiation.Renegotiation.input"><code class="name flex">
@@ -241,6 +253,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.server.renegotiation.Renegotiation.input" href="testssl_base.html#modules.server.renegotiation.Renegotiation.input">input</a></code></li>
 <li><code><a title="modules.server.renegotiation.Renegotiation.output" href="testssl_base.html#modules.server.renegotiation.Renegotiation.output">output</a></code></li>
 <li><code><a title="modules.server.renegotiation.Renegotiation.run" href="testssl_base.html#modules.server.renegotiation.Renegotiation.run">run</a></code></li>
+<li><code><a title="modules.server.renegotiation.Renegotiation.stix" href="#modules.server.renegotiation.Renegotiation.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

@@ -29,6 +29,9 @@
 <pre><code class="python">from modules.server.testssl_base import Testssl_base
 import logging
 
+from modules.stix.stix_base import Bundled
+from utils.mitigations import load_mitigation
+
 
 class Certificate_transparency(Testssl_base):
 
@@ -36,6 +39,7 @@ class Certificate_transparency(Testssl_base):
     Analysis of the certificate transparency testssl results
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;CERTIFICATE_TRANSPARENCY&#34;))
     # to override
     def _set_arguments(self):
         &#34;&#34;&#34;
@@ -79,6 +83,7 @@ class Certificate_transparency(Testssl_base):
     Analysis of the certificate transparency testssl results
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;CERTIFICATE_TRANSPARENCY&#34;))
     # to override
     def _set_arguments(self):
         &#34;&#34;&#34;
@@ -101,6 +106,13 @@ class Certificate_transparency(Testssl_base):
 <ul class="hlist">
 <li><a title="modules.server.testssl_base.Testssl_base" href="testssl_base.html#modules.server.testssl_base.Testssl_base">Testssl_base</a></li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.server.certificate_transparency.Certificate_transparency.stix"><code class="name">var <span class="ident">stix</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="modules.server.certificate_transparency.Certificate_transparency.input"><code class="name flex">
@@ -203,6 +215,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.server.certificate_transparency.Certificate_transparency.input" href="testssl_base.html#modules.server.certificate_transparency.Certificate_transparency.input">input</a></code></li>
 <li><code><a title="modules.server.certificate_transparency.Certificate_transparency.output" href="testssl_base.html#modules.server.certificate_transparency.Certificate_transparency.output">output</a></code></li>
 <li><code><a title="modules.server.certificate_transparency.Certificate_transparency.run" href="testssl_base.html#modules.server.certificate_transparency.Certificate_transparency.run">run</a></code></li>
+<li><code><a title="modules.server.certificate_transparency.Certificate_transparency.stix" href="#modules.server.certificate_transparency.Certificate_transparency.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

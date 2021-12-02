@@ -27,6 +27,8 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from modules.server.testssl_base import Testssl_base
+from modules.stix.stix_base import Bundled
+from utils.mitigations import load_mitigation
 
 
 class Pfs(Testssl_base):
@@ -34,9 +36,27 @@ class Pfs(Testssl_base):
     Analysis of the pfs testssl results
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;PFS&#34;))
     # to override
     def _set_arguments(self):
         self._arguments = [&#34;-f&#34;]
+
+    def _set_mitigations(self, result: dict, key: str, condition: bool) -&gt; dict:
+        &#34;&#34;&#34;
+        Sets the mitigations for the given result
+
+        :param result: the result to set the mitigations for
+        :type result: dict
+        :param key: the key of the result
+        :type key: str
+        :param condition: the condition to set the mitigations for
+        :type condition: bool
+        :return: the mitigations for the given result
+        :rtype: dict
+        &#34;&#34;&#34;
+        if condition:
+            result[&#34;mitigation&#34;] = load_mitigation(&#34;PFS&#34;)
+        return result if condition else {}
 
     # to override
     def _worker(self, results):
@@ -48,7 +68,8 @@ class Pfs(Testssl_base):
         :rtype: dict
         &#34;&#34;&#34;
         return self._obtain_results(
-            results, [&#34;PFS_ciphers&#34;, &#34;PFS_ECDHE_curves&#34;, &#34;DH_groups&#34;]
+            results,
+            [&#34;PFS_ciphers&#34;, &#34;PFS_ECDHE_curves&#34;, &#34;DH_groups&#34;, &#34;pre_128cipher&#34;, &#34;PFS&#34;],
         )</code></pre>
 </details>
 </section>
@@ -75,9 +96,27 @@ class Pfs(Testssl_base):
     Analysis of the pfs testssl results
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;PFS&#34;))
     # to override
     def _set_arguments(self):
         self._arguments = [&#34;-f&#34;]
+
+    def _set_mitigations(self, result: dict, key: str, condition: bool) -&gt; dict:
+        &#34;&#34;&#34;
+        Sets the mitigations for the given result
+
+        :param result: the result to set the mitigations for
+        :type result: dict
+        :param key: the key of the result
+        :type key: str
+        :param condition: the condition to set the mitigations for
+        :type condition: bool
+        :return: the mitigations for the given result
+        :rtype: dict
+        &#34;&#34;&#34;
+        if condition:
+            result[&#34;mitigation&#34;] = load_mitigation(&#34;PFS&#34;)
+        return result if condition else {}
 
     # to override
     def _worker(self, results):
@@ -89,13 +128,21 @@ class Pfs(Testssl_base):
         :rtype: dict
         &#34;&#34;&#34;
         return self._obtain_results(
-            results, [&#34;PFS_ciphers&#34;, &#34;PFS_ECDHE_curves&#34;, &#34;DH_groups&#34;]
+            results,
+            [&#34;PFS_ciphers&#34;, &#34;PFS_ECDHE_curves&#34;, &#34;DH_groups&#34;, &#34;pre_128cipher&#34;, &#34;PFS&#34;],
         )</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="modules.server.testssl_base.Testssl_base" href="testssl_base.html#modules.server.testssl_base.Testssl_base">Testssl_base</a></li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.server.pfs.Pfs.stix"><code class="name">var <span class="ident">stix</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="modules.server.pfs.Pfs.input"><code class="name flex">
@@ -198,6 +245,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.server.pfs.Pfs.input" href="testssl_base.html#modules.server.pfs.Pfs.input">input</a></code></li>
 <li><code><a title="modules.server.pfs.Pfs.output" href="testssl_base.html#modules.server.pfs.Pfs.output">output</a></code></li>
 <li><code><a title="modules.server.pfs.Pfs.run" href="testssl_base.html#modules.server.pfs.Pfs.run">run</a></code></li>
+<li><code><a title="modules.server.pfs.Pfs.stix" href="#modules.server.pfs.Pfs.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

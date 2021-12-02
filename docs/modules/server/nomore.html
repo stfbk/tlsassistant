@@ -28,6 +28,7 @@
 </summary>
 <pre><code class="python">from modules.configuration.configuration_base import Parse_configuration_ciphers
 from modules.server.testssl_base import Testssl_base
+from modules.stix.stix_base import Bundled
 from utils.mitigations import load_mitigation
 
 
@@ -37,6 +38,7 @@ class Nomore(Testssl_base):
     &#34;&#34;&#34;
 
     conf = Parse_configuration_ciphers(openssl=&#34;1.1.0&#34;, ciphers=[&#34;RC4&#34;])
+    stix = Bundled(mitigation_object=load_mitigation(&#34;NOMORE&#34;))
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -&gt; dict:
         &#34;&#34;&#34;
@@ -98,6 +100,7 @@ class Nomore(Testssl_base):
     &#34;&#34;&#34;
 
     conf = Parse_configuration_ciphers(openssl=&#34;1.1.0&#34;, ciphers=[&#34;RC4&#34;])
+    stix = Bundled(mitigation_object=load_mitigation(&#34;NOMORE&#34;))
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -&gt; dict:
         &#34;&#34;&#34;
@@ -141,6 +144,10 @@ class Nomore(Testssl_base):
 <h3>Class variables</h3>
 <dl>
 <dt id="modules.server.nomore.Nomore.conf"><code class="name">var <span class="ident">conf</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="modules.server.nomore.Nomore.stix"><code class="name">var <span class="ident">stix</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -248,6 +255,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.server.nomore.Nomore.input" href="testssl_base.html#modules.server.nomore.Nomore.input">input</a></code></li>
 <li><code><a title="modules.server.nomore.Nomore.output" href="testssl_base.html#modules.server.nomore.Nomore.output">output</a></code></li>
 <li><code><a title="modules.server.nomore.Nomore.run" href="testssl_base.html#modules.server.nomore.Nomore.run">run</a></code></li>
+<li><code><a title="modules.server.nomore.Nomore.stix" href="#modules.server.nomore.Nomore.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

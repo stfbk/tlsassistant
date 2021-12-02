@@ -27,6 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from modules.android.mallodroid_base import Mallodroid_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
 from utils.mitigations import load_mitigation
 
@@ -36,6 +37,8 @@ class Hostnameverifier(Mallodroid_base):
     Checks if the device has a custom hostname.
 
     &#34;&#34;&#34;
+
+    stix = Bundled(mitigation_object=load_mitigation(&#34;HOSTNAME_VERIFIER&#34;))
 
     def _get_logger(self):
         &#34;&#34;&#34;
@@ -104,6 +107,8 @@ class Hostnameverifier(Mallodroid_base):
 
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;HOSTNAME_VERIFIER&#34;))
+
     def _get_logger(self):
         &#34;&#34;&#34;
         Returns the module logger
@@ -150,6 +155,13 @@ class Hostnameverifier(Mallodroid_base):
 <ul class="hlist">
 <li><a title="modules.android.mallodroid_base.Mallodroid_base" href="mallodroid_base.html#modules.android.mallodroid_base.Mallodroid_base">Mallodroid_base</a></li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.android.hostnameverifier.Hostnameverifier.stix"><code class="name">var <span class="ident">stix</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="modules.android.hostnameverifier.Hostnameverifier.input"><code class="name flex">
@@ -252,6 +264,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.android.hostnameverifier.Hostnameverifier.input" href="mallodroid_base.html#modules.android.hostnameverifier.Hostnameverifier.input">input</a></code></li>
 <li><code><a title="modules.android.hostnameverifier.Hostnameverifier.output" href="mallodroid_base.html#modules.android.hostnameverifier.Hostnameverifier.output">output</a></code></li>
 <li><code><a title="modules.android.hostnameverifier.Hostnameverifier.run" href="mallodroid_base.html#modules.android.hostnameverifier.Hostnameverifier.run">run</a></code></li>
+<li><code><a title="modules.android.hostnameverifier.Hostnameverifier.stix" href="#modules.android.hostnameverifier.Hostnameverifier.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

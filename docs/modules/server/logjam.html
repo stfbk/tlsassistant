@@ -27,20 +27,39 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from modules.server.testssl_base import Testssl_base
+from modules.stix.stix_base import Bundled
+from utils.mitigations import load_mitigation
 
 
 class Logjam(Testssl_base):
-
     &#34;&#34;&#34;
     Analysis of the logjam testssl results
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;LOGJAM&#34;))
     # to override
     def _set_arguments(self):
         &#34;&#34;&#34;
         Sets the arguments for the testssl command
         &#34;&#34;&#34;
         self._arguments = [&#34;-J&#34;]
+
+    def _set_mitigations(self, result: dict, key: str, condition: bool) -&gt; dict:
+        &#34;&#34;&#34;
+        Override the _set_mitigations method to add the logjam results
+
+        :param result: the results of the testssl command
+        :type result: dict
+        :param key: the key of the result
+        :type key: str
+        :param condition: the condition to check
+        :type condition: bool
+        :return: the result with the mitzvah results
+        :rtype: dict
+        &#34;&#34;&#34;
+        if condition:
+            result[&#34;mitigation&#34;] = load_mitigation(&#34;LOGJAM&#34;)
+        return result if condition else {}
 
     # to override
     def _worker(self, results):
@@ -73,17 +92,34 @@ class Logjam(Testssl_base):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Logjam(Testssl_base):
-
     &#34;&#34;&#34;
     Analysis of the logjam testssl results
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;LOGJAM&#34;))
     # to override
     def _set_arguments(self):
         &#34;&#34;&#34;
         Sets the arguments for the testssl command
         &#34;&#34;&#34;
         self._arguments = [&#34;-J&#34;]
+
+    def _set_mitigations(self, result: dict, key: str, condition: bool) -&gt; dict:
+        &#34;&#34;&#34;
+        Override the _set_mitigations method to add the logjam results
+
+        :param result: the results of the testssl command
+        :type result: dict
+        :param key: the key of the result
+        :type key: str
+        :param condition: the condition to check
+        :type condition: bool
+        :return: the result with the mitzvah results
+        :rtype: dict
+        &#34;&#34;&#34;
+        if condition:
+            result[&#34;mitigation&#34;] = load_mitigation(&#34;LOGJAM&#34;)
+        return result if condition else {}
 
     # to override
     def _worker(self, results):
@@ -100,6 +136,13 @@ class Logjam(Testssl_base):
 <ul class="hlist">
 <li><a title="modules.server.testssl_base.Testssl_base" href="testssl_base.html#modules.server.testssl_base.Testssl_base">Testssl_base</a></li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.server.logjam.Logjam.stix"><code class="name">var <span class="ident">stix</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="modules.server.logjam.Logjam.input"><code class="name flex">
@@ -202,6 +245,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.server.logjam.Logjam.input" href="testssl_base.html#modules.server.logjam.Logjam.input">input</a></code></li>
 <li><code><a title="modules.server.logjam.Logjam.output" href="testssl_base.html#modules.server.logjam.Logjam.output">output</a></code></li>
 <li><code><a title="modules.server.logjam.Logjam.run" href="testssl_base.html#modules.server.logjam.Logjam.run">run</a></code></li>
+<li><code><a title="modules.server.logjam.Logjam.stix" href="#modules.server.logjam.Logjam.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

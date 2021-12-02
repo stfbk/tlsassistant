@@ -28,6 +28,7 @@
 </summary>
 <pre><code class="python">from modules.configuration.configuration_base import Parse_configuration_protocols
 from modules.server.testssl_base import Testssl_base
+from modules.stix.stix_base import Bundled
 from utils.mitigations import load_mitigation
 
 
@@ -37,6 +38,7 @@ class Poodle(Testssl_base):
     &#34;&#34;&#34;
 
     conf = Parse_configuration_protocols(openssl=&#34;3.0.0&#34;, protocols={&#34;SSLv3&#34;: &#34;-&#34;})
+    stix = Bundled(mitigation_object=load_mitigation(&#34;POODLE&#34;))
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -&gt; dict:
         &#34;&#34;&#34;
@@ -99,6 +101,7 @@ class Poodle(Testssl_base):
     &#34;&#34;&#34;
 
     conf = Parse_configuration_protocols(openssl=&#34;3.0.0&#34;, protocols={&#34;SSLv3&#34;: &#34;-&#34;})
+    stix = Bundled(mitigation_object=load_mitigation(&#34;POODLE&#34;))
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -&gt; dict:
         &#34;&#34;&#34;
@@ -143,6 +146,10 @@ class Poodle(Testssl_base):
 <h3>Class variables</h3>
 <dl>
 <dt id="modules.server.poodle.Poodle.conf"><code class="name">var <span class="ident">conf</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="modules.server.poodle.Poodle.stix"><code class="name">var <span class="ident">stix</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -250,6 +257,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.server.poodle.Poodle.input" href="testssl_base.html#modules.server.poodle.Poodle.input">input</a></code></li>
 <li><code><a title="modules.server.poodle.Poodle.output" href="testssl_base.html#modules.server.poodle.Poodle.output">output</a></code></li>
 <li><code><a title="modules.server.poodle.Poodle.run" href="testssl_base.html#modules.server.poodle.Poodle.run">run</a></code></li>
+<li><code><a title="modules.server.poodle.Poodle.stix" href="#modules.server.poodle.Poodle.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

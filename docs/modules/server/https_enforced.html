@@ -28,6 +28,7 @@
 </summary>
 <pre><code class="python">from modules.configuration.configuration_base import Parse_configuration_checks_redirect
 from modules.server.hsts_base import Hsts_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
 from utils.mitigations import load_mitigation
 
@@ -38,6 +39,7 @@ class Https_enforced(Hsts_base):
     &#34;&#34;&#34;
 
     conf = Parse_configuration_checks_redirect()
+    stix = Bundled(mitigation_object=load_mitigation(&#34;HTTPS_NOT_ENFORCED&#34;))
 
     def _get_logger(self):
         &#34;&#34;&#34;
@@ -111,6 +113,7 @@ class Https_enforced(Hsts_base):
     &#34;&#34;&#34;
 
     conf = Parse_configuration_checks_redirect()
+    stix = Bundled(mitigation_object=load_mitigation(&#34;HTTPS_NOT_ENFORCED&#34;))
 
     def _get_logger(self):
         &#34;&#34;&#34;
@@ -166,6 +169,10 @@ class Https_enforced(Hsts_base):
 <h3>Class variables</h3>
 <dl>
 <dt id="modules.server.https_enforced.Https_enforced.conf"><code class="name">var <span class="ident">conf</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="modules.server.https_enforced.Https_enforced.stix"><code class="name">var <span class="ident">stix</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -273,6 +280,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.server.https_enforced.Https_enforced.input" href="hsts_base.html#modules.server.https_enforced.Https_enforced.input">input</a></code></li>
 <li><code><a title="modules.server.https_enforced.Https_enforced.output" href="hsts_base.html#modules.server.https_enforced.Https_enforced.output">output</a></code></li>
 <li><code><a title="modules.server.https_enforced.Https_enforced.run" href="hsts_base.html#modules.server.https_enforced.Https_enforced.run">run</a></code></li>
+<li><code><a title="modules.server.https_enforced.Https_enforced.stix" href="#modules.server.https_enforced.Https_enforced.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>
