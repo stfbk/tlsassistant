@@ -9,7 +9,7 @@
 ## Download
 You can either download the (new) *in-development* version or the (old) *stable* version of the tool.
 
-### New version (v2.3.0 beta)
+### New version (v2.3.1 beta)
 
 #### One Liner (TL;DR)
 To install the tool (in a virtual environment), execute the following command:
