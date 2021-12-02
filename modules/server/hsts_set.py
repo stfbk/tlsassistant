@@ -13,7 +13,7 @@ class Hsts_set(Hsts_base):
     conf = (
         Parse_configuration_strict_security()
     )  # TODO: Check for port 443 or apply it everywhere?
-    stix = Bundled(mitigation_object=load_mitigation("HSTS_SET"))
+    stix = Bundled(mitigation_object=load_mitigation("HSTS_NOT_SET"))
 
     def _get_logger(self):
         """

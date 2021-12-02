@@ -9,7 +9,7 @@ class Hsts_preloading(Hsts_base):
     Analysis of the HSTS Preloading status
     """
 
-    stix = Bundled(mitigation_object=load_mitigation("HSTS_PRELOADING"))
+    stix = Bundled(mitigation_object=load_mitigation("HSTS_NOT_PRELOADED"))
 
     def _get_logger(self):
         """
