@@ -10,7 +10,7 @@ class Accepting_all_certificates(Super_base):
 
     """
 
-    stix = Bundled(mitigation_object=load_mitigation("ACCEPTING_ALL_CERTIFICATES"))
+    stix = Bundled(mitigation_object=load_mitigation("ACCEPTING_ALL_SSL_CERTIFICATES"))
 
     def _get_logger(self):
         """
