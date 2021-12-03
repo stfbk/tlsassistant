@@ -1,0 +1,11 @@
+{
+  "Entry": {
+    "Name": "SSL Error",
+    "ExtendedName": "Secure Socket Layer Error",
+    "Description": "An SSL Error is uncaught or could lead to potential intrusion in the TLS connection.",
+    "Mitigation": {
+      "Textual": "The only acceptable mitigation is to check the related methods to fix the vulnerability or switch the app to an external TLS library (e.g. OkHttp)."
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}

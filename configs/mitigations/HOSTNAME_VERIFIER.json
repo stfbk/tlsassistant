@@ -1,0 +1,11 @@
+{
+  "Entry": {
+    "Name": "Unsecure Android HostnameVerifier",
+    "ExtendedName": "Unsecure Android HostnameVerifier",
+    "Description": "By exploiting an incorrectly designed/configured HostnameVerifier, the app is vulnerable to network attacks. An attacker can potentially read transmitted data (such as login credentials), and even change the data transmitted on the HTTPS connection.",
+    "Mitigation": {
+      "Textual": "The only acceptable mitigation is to check the related methods to fix the vulnerability or switch the app to an external TLS library (e.g. OkHttp)."
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}

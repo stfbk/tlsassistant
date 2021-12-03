@@ -31,7 +31,7 @@ class Ssl_error(Mallodroid_base):
         """
         if condition:
             result["mitigation"] = load_mitigation(
-                "SSL_Error", raise_error=False
+                "SSL_ERROR", raise_error=False
             )  # todo: we are missing a mitigation!
         return result if condition else {}
 
