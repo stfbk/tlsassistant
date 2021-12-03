@@ -27,13 +27,17 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from modules.android.super_base import Super_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
+from utils.mitigations import load_mitigation
 
 
 class Webview_ssl_errors(Super_base):
     &#34;&#34;&#34;
     Check if the WebView ignores SSL Errors.
     &#34;&#34;&#34;
+
+    stix = Bundled(mitigation_object=load_mitigation(&#34;WEBVIEW_IGNORES_SSL_ERRORS&#34;))
 
     def _get_logger(self):
         &#34;&#34;&#34;
@@ -89,6 +93,8 @@ class Webview_ssl_errors(Super_base):
     Check if the WebView ignores SSL Errors.
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;WEBVIEW_IGNORES_SSL_ERRORS&#34;))
+
     def _get_logger(self):
         &#34;&#34;&#34;
         Get the module logger named after the module.
@@ -123,6 +129,13 @@ class Webview_ssl_errors(Super_base):
 <ul class="hlist">
 <li><a title="modules.android.super_base.Super_base" href="super_base.html#modules.android.super_base.Super_base">Super_base</a></li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.android.webview_ssl_errors.Webview_ssl_errors.stix"><code class="name">var <span class="ident">stix</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="modules.android.webview_ssl_errors.Webview_ssl_errors.input"><code class="name flex">
@@ -214,6 +227,7 @@ setTimeout(() => input.focus(), 100);
 <ul class="">
 <li><code><a title="modules.android.webview_ssl_errors.Webview_ssl_errors.input" href="super_base.html#modules.android.webview_ssl_errors.Webview_ssl_errors.input">input</a></code></li>
 <li><code><a title="modules.android.webview_ssl_errors.Webview_ssl_errors.run" href="super_base.html#modules.android.webview_ssl_errors.Webview_ssl_errors.run">run</a></code></li>
+<li><code><a title="modules.android.webview_ssl_errors.Webview_ssl_errors.stix" href="#modules.android.webview_ssl_errors.Webview_ssl_errors.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

@@ -27,6 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from modules.android.mallodroid_base import Mallodroid_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
 from utils.mitigations import load_mitigation
 
@@ -35,6 +36,8 @@ class Ssl_error(Mallodroid_base):
     &#34;&#34;&#34;
     Checks if the application got any ssl error.
     &#34;&#34;&#34;
+
+    stix = Bundled(mitigation_object=load_mitigation(&#34;SSL_ERROR&#34;))
 
     def _get_logger(self):
         &#34;&#34;&#34;
@@ -103,6 +106,8 @@ class Ssl_error(Mallodroid_base):
     Checks if the application got any ssl error.
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;SSL_ERROR&#34;))
+
     def _get_logger(self):
         &#34;&#34;&#34;
         Gets the module&#39;s logger instance.
@@ -150,6 +155,13 @@ class Ssl_error(Mallodroid_base):
 <ul class="hlist">
 <li><a title="modules.android.mallodroid_base.Mallodroid_base" href="mallodroid_base.html#modules.android.mallodroid_base.Mallodroid_base">Mallodroid_base</a></li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.android.sslerror.Ssl_error.stix"><code class="name">var <span class="ident">stix</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="modules.android.sslerror.Ssl_error.input"><code class="name flex">
@@ -252,6 +264,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.android.sslerror.Ssl_error.input" href="mallodroid_base.html#modules.android.sslerror.Ssl_error.input">input</a></code></li>
 <li><code><a title="modules.android.sslerror.Ssl_error.output" href="mallodroid_base.html#modules.android.sslerror.Ssl_error.output">output</a></code></li>
 <li><code><a title="modules.android.sslerror.Ssl_error.run" href="mallodroid_base.html#modules.android.sslerror.Ssl_error.run">run</a></code></li>
+<li><code><a title="modules.android.sslerror.Ssl_error.stix" href="#modules.android.sslerror.Ssl_error.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

@@ -5,7 +5,7 @@ from os import sep, devnull, path, remove
 import uuid
 import logging
 from utils.validation import Validator
-from utils.urls import url_strip, link_sep
+from utils.urls import url_strip, link_sep, validate_ip
 
 
 class Parser:
@@ -54,26 +54,6 @@ class Parser:
         :rtype: tuple of dict
         """
         return self.__output, self.__ip_output
-
-
-def validate_ip(ip: str) -> bool:
-    """
-    Validate an IP
-    :param ip: String to check if it's an IP.
-    :type ip: str
-    :return: True if ip param it's an IP, false otherwise.
-    :rtype: bool
-    """
-    a = ip.rsplit(":", 1)[0].split(".")
-    if len(a) != 4:
-        return False
-    for x in a:
-        if not x.isdigit():
-            return False
-        i = int(x)
-        if i < 0 or i > 255:
-            return False
-    return True
 
 
 class Testssl:

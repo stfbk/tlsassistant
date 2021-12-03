@@ -1,5 +1,6 @@
 from modules.configuration.configuration_base import Parse_configuration_protocols
 from modules.server.testssl_base import Testssl_base
+from modules.stix.stix_base import Bundled
 from utils.mitigations import load_mitigation
 
 
@@ -9,6 +10,7 @@ class Poodle(Testssl_base):
     """
 
     conf = Parse_configuration_protocols(openssl="3.0.0", protocols={"SSLv3": "-"})
+    stix = Bundled(mitigation_object=load_mitigation("POODLE"))
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         """

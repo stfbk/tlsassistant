@@ -28,13 +28,17 @@
 </summary>
 <pre><code class="python">from modules.configuration.configuration_base import Parse_configuration_ciphers
 from modules.server.testssl_base import Testssl_base
+from modules.stix.stix_base import Bundled
+from utils.mitigations import load_mitigation
 
 
 class Sweet32(Testssl_base):
-    conf = Parse_configuration_ciphers(openssl=&#34;1.1.0&#34;, ciphers=[&#34;3DES&#34;])
     &#34;&#34;&#34;
     Analysis of the sweet32 testssl results
     &#34;&#34;&#34;
+
+    conf = Parse_configuration_ciphers(openssl=&#34;1.1.0&#34;, ciphers=[&#34;3DES&#34;])
+    stix = Bundled(mitigation_object=load_mitigation(&#34;SWEET32&#34;))
     # to override
     def _set_arguments(self):
         &#34;&#34;&#34;
@@ -67,17 +71,18 @@ class Sweet32(Testssl_base):
 <span>class <span class="ident">Sweet32</span></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Testssl.sh is a tool to test the SSL configuration of a server.</p>
-<p>This is a base class for the different vulnerabilities found by testssl.sh.</p></div>
+<div class="desc"><p>Analysis of the sweet32 testssl results</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Sweet32(Testssl_base):
-    conf = Parse_configuration_ciphers(openssl=&#34;1.1.0&#34;, ciphers=[&#34;3DES&#34;])
     &#34;&#34;&#34;
     Analysis of the sweet32 testssl results
     &#34;&#34;&#34;
+
+    conf = Parse_configuration_ciphers(openssl=&#34;1.1.0&#34;, ciphers=[&#34;3DES&#34;])
+    stix = Bundled(mitigation_object=load_mitigation(&#34;SWEET32&#34;))
     # to override
     def _set_arguments(self):
         &#34;&#34;&#34;
@@ -104,7 +109,11 @@ class Sweet32(Testssl_base):
 <dl>
 <dt id="modules.server.sweet32.Sweet32.conf"><code class="name">var <span class="ident">conf</span></code></dt>
 <dd>
-<div class="desc"><p>Analysis of the sweet32 testssl results</p></div>
+<div class="desc"></div>
+</dd>
+<dt id="modules.server.sweet32.Sweet32.stix"><code class="name">var <span class="ident">stix</span></code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 </dl>
 <h3>Methods</h3>
@@ -210,6 +219,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.server.sweet32.Sweet32.input" href="testssl_base.html#modules.server.sweet32.Sweet32.input">input</a></code></li>
 <li><code><a title="modules.server.sweet32.Sweet32.output" href="testssl_base.html#modules.server.sweet32.Sweet32.output">output</a></code></li>
 <li><code><a title="modules.server.sweet32.Sweet32.run" href="testssl_base.html#modules.server.sweet32.Sweet32.run">run</a></code></li>
+<li><code><a title="modules.server.sweet32.Sweet32.stix" href="#modules.server.sweet32.Sweet32.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

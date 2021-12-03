@@ -1,6 +1,9 @@
 from modules.server.testssl_base import Testssl_base
 import logging
 
+from modules.stix.stix_base import Bundled
+from utils.mitigations import load_mitigation
+
 
 class Certificate_transparency(Testssl_base):
 
@@ -8,6 +11,7 @@ class Certificate_transparency(Testssl_base):
     Analysis of the certificate transparency testssl results
     """
 
+    stix = Bundled(mitigation_object=load_mitigation("CERTIFICATE_TRANSPARENCY"))
     # to override
     def _set_arguments(self):
         """

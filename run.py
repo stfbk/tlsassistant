@@ -129,6 +129,12 @@ if __name__ == "__main__":
         nargs="+",
         help="List of modules to exclude" "\nFor example\n\t-e breach crime",
     )
+    parser.add_argument(
+        "--stix",
+        action="store_true",
+        help="Generate STIX2 compliant output.",
+        default=False,
+    )
     # todo add default aliases configurations for analysis
     # configurations.add_argument()
     args = parser.parse_args()

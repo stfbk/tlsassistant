@@ -1,4 +1,5 @@
 from modules.server.testssl_base import Testssl_base
+from modules.stix.stix_base import Bundled
 from utils.mitigations import load_mitigation
 
 
@@ -6,6 +7,8 @@ class Three_shake(Testssl_base):
     """
     Analysis of the 3shake testssl results
     """
+
+    stix = Bundled(mitigation_object=load_mitigation("3SHAKE"))
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         """

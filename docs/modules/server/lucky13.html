@@ -27,13 +27,16 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from modules.server.testssl_base import Testssl_base
+from modules.stix.stix_base import Bundled
+from utils.mitigations import load_mitigation
 
 
 class Lucky13(Testssl_base):
-
     &#34;&#34;&#34;
     Analysis of the lucky13 testssl results
     &#34;&#34;&#34;
+
+    stix = Bundled(mitigation_object=load_mitigation(&#34;LUCKY13&#34;))
 
     # to override
     def _set_arguments(self):
@@ -73,10 +76,11 @@ class Lucky13(Testssl_base):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Lucky13(Testssl_base):
-
     &#34;&#34;&#34;
     Analysis of the lucky13 testssl results
     &#34;&#34;&#34;
+
+    stix = Bundled(mitigation_object=load_mitigation(&#34;LUCKY13&#34;))
 
     # to override
     def _set_arguments(self):
@@ -100,6 +104,13 @@ class Lucky13(Testssl_base):
 <ul class="hlist">
 <li><a title="modules.server.testssl_base.Testssl_base" href="testssl_base.html#modules.server.testssl_base.Testssl_base">Testssl_base</a></li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.server.lucky13.Lucky13.stix"><code class="name">var <span class="ident">stix</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="modules.server.lucky13.Lucky13.input"><code class="name flex">
@@ -202,6 +213,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.server.lucky13.Lucky13.input" href="testssl_base.html#modules.server.lucky13.Lucky13.input">input</a></code></li>
 <li><code><a title="modules.server.lucky13.Lucky13.output" href="testssl_base.html#modules.server.lucky13.Lucky13.output">output</a></code></li>
 <li><code><a title="modules.server.lucky13.Lucky13.run" href="testssl_base.html#modules.server.lucky13.Lucky13.run">run</a></code></li>
+<li><code><a title="modules.server.lucky13.Lucky13.stix" href="#modules.server.lucky13.Lucky13.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

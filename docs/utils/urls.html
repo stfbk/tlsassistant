@@ -125,7 +125,27 @@ def remove_wildcard(url) -&gt; str:
     :return: The url without the wildcard
     :rtype: str
     &#34;&#34;&#34;
-    return url_domain(url)[2:]</code></pre>
+    return url_domain(url)[2:]
+
+
+def validate_ip(ip: str) -&gt; bool:
+    &#34;&#34;&#34;
+    Validate an IP
+    :param ip: String to check if it&#39;s an IP.
+    :type ip: str
+    :return: True if ip param it&#39;s an IP, false otherwise.
+    :rtype: bool
+    &#34;&#34;&#34;
+    a = ip.rsplit(&#34;:&#34;, 1)[0].split(&#34;.&#34;)
+    if len(a) != 4:
+        return False
+    for x in a:
+        if not x.isdigit():
+            return False
+        i = int(x)
+        if i &lt; 0 or i &gt; 255:
+            return False
+    return True</code></pre>
 </details>
 </section>
 <section>
@@ -317,6 +337,39 @@ Use :func:<code><a title="utils.urls.url_domain" href="#utils.urls.url_domain">u
     return url.sub(&#34;&#34;, input_url).strip().strip(&#34;/&#34;)</code></pre>
 </details>
 </dd>
+<dt id="utils.urls.validate_ip"><code class="name flex">
+<span>def <span class="ident">validate_ip</span></span>(<span>ip: str) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validate an IP
+:param ip: String to check if it's an IP.
+:type ip: str
+:return: True if ip param it's an IP, false otherwise.
+:rtype: bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_ip(ip: str) -&gt; bool:
+    &#34;&#34;&#34;
+    Validate an IP
+    :param ip: String to check if it&#39;s an IP.
+    :type ip: str
+    :return: True if ip param it&#39;s an IP, false otherwise.
+    :rtype: bool
+    &#34;&#34;&#34;
+    a = ip.rsplit(&#34;:&#34;, 1)[0].split(&#34;.&#34;)
+    if len(a) != 4:
+        return False
+    for x in a:
+        if not x.isdigit():
+            return False
+        i = int(x)
+        if i &lt; 0 or i &gt; 255:
+            return False
+    return True</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -387,6 +440,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="utils.urls.remove_wildcard" href="#utils.urls.remove_wildcard">remove_wildcard</a></code></li>
 <li><code><a title="utils.urls.url_domain" href="#utils.urls.url_domain">url_domain</a></code></li>
 <li><code><a title="utils.urls.url_strip" href="#utils.urls.url_strip">url_strip</a></code></li>
+<li><code><a title="utils.urls.validate_ip" href="#utils.urls.validate_ip">validate_ip</a></code></li>
 </ul>
 </li>
 </ul>

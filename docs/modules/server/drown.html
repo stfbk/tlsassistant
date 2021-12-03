@@ -28,12 +28,13 @@
 </summary>
 <pre><code class="python">from modules.configuration.configuration_base import Parse_configuration_protocols
 from modules.server.testssl_base import Testssl_base
+from modules.stix.stix_base import Bundled
 from utils.mitigations import load_mitigation
 
 
 class Drown(Testssl_base):
     conf = Parse_configuration_protocols(openssl=&#34;1.0.2g&#34;, protocols={&#34;SSLv2&#34;: &#34;-&#34;})
-
+    stix = Bundled(mitigation_object=load_mitigation(&#34;DROWN&#34;))
     &#34;&#34;&#34;
     Analysis of the drown testssl results
     &#34;&#34;&#34;
@@ -96,7 +97,7 @@ class Drown(Testssl_base):
 </summary>
 <pre><code class="python">class Drown(Testssl_base):
     conf = Parse_configuration_protocols(openssl=&#34;1.0.2g&#34;, protocols={&#34;SSLv2&#34;: &#34;-&#34;})
-
+    stix = Bundled(mitigation_object=load_mitigation(&#34;DROWN&#34;))
     &#34;&#34;&#34;
     Analysis of the drown testssl results
     &#34;&#34;&#34;
@@ -144,6 +145,10 @@ class Drown(Testssl_base):
 <h3>Class variables</h3>
 <dl>
 <dt id="modules.server.drown.Drown.conf"><code class="name">var <span class="ident">conf</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="modules.server.drown.Drown.stix"><code class="name">var <span class="ident">stix</span></code></dt>
 <dd>
 <div class="desc"><p>Analysis of the drown testssl results</p></div>
 </dd>
@@ -251,6 +256,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.server.drown.Drown.input" href="testssl_base.html#modules.server.drown.Drown.input">input</a></code></li>
 <li><code><a title="modules.server.drown.Drown.output" href="testssl_base.html#modules.server.drown.Drown.output">output</a></code></li>
 <li><code><a title="modules.server.drown.Drown.run" href="testssl_base.html#modules.server.drown.Drown.run">run</a></code></li>
+<li><code><a title="modules.server.drown.Drown.stix" href="#modules.server.drown.Drown.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

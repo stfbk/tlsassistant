@@ -1,4 +1,5 @@
 from modules.android.mallodroid_base import Mallodroid_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
 from utils.mitigations import load_mitigation
 
@@ -8,6 +9,8 @@ class Hostnameverifier(Mallodroid_base):
     Checks if the device has a custom hostname.
 
     """
+
+    stix = Bundled(mitigation_object=load_mitigation("HOSTNAME_VERIFIER"))
 
     def _get_logger(self):
         """

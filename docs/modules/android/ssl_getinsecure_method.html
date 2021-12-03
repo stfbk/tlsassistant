@@ -27,13 +27,17 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from modules.android.super_base import Super_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
+from utils.mitigations import load_mitigation
 
 
 class Ssl_getinsecure_method(Super_base):
     &#34;&#34;&#34;
     Check the presence of SSL getInsecure method in the application
     &#34;&#34;&#34;
+
+    stix = Bundled(mitigation_object=load_mitigation(&#34;SSL_GETINSECURE_METHOD&#34;))
 
     def _get_logger(self):
         &#34;&#34;&#34;
@@ -85,6 +89,8 @@ class Ssl_getinsecure_method(Super_base):
     Check the presence of SSL getInsecure method in the application
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;SSL_GETINSECURE_METHOD&#34;))
+
     def _get_logger(self):
         &#34;&#34;&#34;
         The function returns the custom logger
@@ -115,6 +121,13 @@ class Ssl_getinsecure_method(Super_base):
 <ul class="hlist">
 <li><a title="modules.android.super_base.Super_base" href="super_base.html#modules.android.super_base.Super_base">Super_base</a></li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.android.ssl_getinsecure_method.Ssl_getinsecure_method.stix"><code class="name">var <span class="ident">stix</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="modules.android.ssl_getinsecure_method.Ssl_getinsecure_method.input"><code class="name flex">
@@ -206,6 +219,7 @@ setTimeout(() => input.focus(), 100);
 <ul class="">
 <li><code><a title="modules.android.ssl_getinsecure_method.Ssl_getinsecure_method.input" href="super_base.html#modules.android.ssl_getinsecure_method.Ssl_getinsecure_method.input">input</a></code></li>
 <li><code><a title="modules.android.ssl_getinsecure_method.Ssl_getinsecure_method.run" href="super_base.html#modules.android.ssl_getinsecure_method.Ssl_getinsecure_method.run">run</a></code></li>
+<li><code><a title="modules.android.ssl_getinsecure_method.Ssl_getinsecure_method.stix" href="#modules.android.ssl_getinsecure_method.Ssl_getinsecure_method.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

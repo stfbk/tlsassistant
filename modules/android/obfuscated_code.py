@@ -1,11 +1,15 @@
 from modules.android.super_base import Super_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
+from utils.mitigations import load_mitigation
 
 
 class Obfuscated_code(Super_base):
     """
     Check if the code is obfuscated
     """
+
+    stix = Bundled(mitigation_object=load_mitigation("OBFUSCATED_CODE"))
 
     def _get_logger(self):
         """

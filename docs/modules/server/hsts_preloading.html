@@ -27,6 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from modules.server.hsts_base import Hsts_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
 from utils.mitigations import load_mitigation
 
@@ -35,6 +36,8 @@ class Hsts_preloading(Hsts_base):
     &#34;&#34;&#34;
     Analysis of the HSTS Preloading status
     &#34;&#34;&#34;
+
+    stix = Bundled(mitigation_object=load_mitigation(&#34;HSTS_NOT_PRELOADED&#34;))
 
     def _get_logger(self):
         &#34;&#34;&#34;
@@ -107,6 +110,8 @@ class Hsts_preloading(Hsts_base):
     Analysis of the HSTS Preloading status
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;HSTS_NOT_PRELOADED&#34;))
+
     def _get_logger(self):
         &#34;&#34;&#34;
         Logger for the module.
@@ -158,6 +163,13 @@ class Hsts_preloading(Hsts_base):
 <ul class="hlist">
 <li><a title="modules.server.hsts_base.Hsts_base" href="hsts_base.html#modules.server.hsts_base.Hsts_base">Hsts_base</a></li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.server.hsts_preloading.Hsts_preloading.stix"><code class="name">var <span class="ident">stix</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="modules.server.hsts_preloading.Hsts_preloading.input"><code class="name flex">
@@ -260,6 +272,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.server.hsts_preloading.Hsts_preloading.input" href="hsts_base.html#modules.server.hsts_preloading.Hsts_preloading.input">input</a></code></li>
 <li><code><a title="modules.server.hsts_preloading.Hsts_preloading.output" href="hsts_base.html#modules.server.hsts_preloading.Hsts_preloading.output">output</a></code></li>
 <li><code><a title="modules.server.hsts_preloading.Hsts_preloading.run" href="hsts_base.html#modules.server.hsts_preloading.Hsts_preloading.run">run</a></code></li>
+<li><code><a title="modules.server.hsts_preloading.Hsts_preloading.stix" href="#modules.server.hsts_preloading.Hsts_preloading.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

@@ -1,5 +1,6 @@
 from modules.configuration.configuration_base import Parse_configuration_checks_redirect
 from modules.server.hsts_base import Hsts_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
 from utils.mitigations import load_mitigation
 
@@ -10,6 +11,7 @@ class Https_enforced(Hsts_base):
     """
 
     conf = Parse_configuration_checks_redirect()
+    stix = Bundled(mitigation_object=load_mitigation("HTTPS_NOT_ENFORCED"))
 
     def _get_logger(self):
         """

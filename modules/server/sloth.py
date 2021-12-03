@@ -2,13 +2,17 @@ from os.path import sep
 from pathlib import Path
 
 from modules.server.tlsfuzzer_base import Tlsfuzzer_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
+from utils.mitigations import load_mitigation
 
 
 class Sloth(Tlsfuzzer_base):
     """
     Analysis of the sloth tlsfuzzer output
     """
+
+    stix = Bundled(mitigation_object=load_mitigation("SLOTH"))
 
     def _get_logger(self):
         """

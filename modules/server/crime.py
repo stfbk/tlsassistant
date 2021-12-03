@@ -2,12 +2,14 @@ from modules.configuration.configuration_base import (
     Parse_configuration_checks_compression,
 )
 from modules.server.testssl_base import Testssl_base
-import logging
+
+from modules.stix.stix_base import Bundled
+from utils.mitigations import load_mitigation
 
 
 class Crime(Testssl_base):
     conf = Parse_configuration_checks_compression(openssl="1.1.0")
-
+    stix = Bundled(mitigation_object=load_mitigation("CRIME"))
     """
     Analysis of the crime testssl results
     """

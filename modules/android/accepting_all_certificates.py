@@ -1,5 +1,7 @@
 from modules.android.super_base import Super_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
+from utils.mitigations import load_mitigation
 
 
 class Accepting_all_certificates(Super_base):
@@ -7,6 +9,8 @@ class Accepting_all_certificates(Super_base):
     Check if the apk accepts all certificates.
 
     """
+
+    stix = Bundled(mitigation_object=load_mitigation("ACCEPTING_ALL_SSL_CERTIFICATES"))
 
     def _get_logger(self):
         """

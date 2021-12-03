@@ -30,13 +30,17 @@
 from pathlib import Path
 
 from modules.server.tlsfuzzer_base import Tlsfuzzer_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
+from utils.mitigations import load_mitigation
 
 
 class Sloth(Tlsfuzzer_base):
     &#34;&#34;&#34;
     Analysis of the sloth tlsfuzzer output
     &#34;&#34;&#34;
+
+    stix = Bundled(mitigation_object=load_mitigation(&#34;SLOTH&#34;))
 
     def _get_logger(self):
         &#34;&#34;&#34;
@@ -134,6 +138,8 @@ class Sloth(Tlsfuzzer_base):
     Analysis of the sloth tlsfuzzer output
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;SLOTH&#34;))
+
     def _get_logger(self):
         &#34;&#34;&#34;
         Set up the logger
@@ -210,6 +216,13 @@ class Sloth(Tlsfuzzer_base):
 <ul class="hlist">
 <li><a title="modules.server.tlsfuzzer_base.Tlsfuzzer_base" href="tlsfuzzer_base.html#modules.server.tlsfuzzer_base.Tlsfuzzer_base">Tlsfuzzer_base</a></li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.server.sloth.Sloth.stix"><code class="name">var <span class="ident">stix</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="modules.server.sloth.Sloth.input"><code class="name flex">
@@ -312,6 +325,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.server.sloth.Sloth.input" href="tlsfuzzer_base.html#modules.server.sloth.Sloth.input">input</a></code></li>
 <li><code><a title="modules.server.sloth.Sloth.output" href="tlsfuzzer_base.html#modules.server.sloth.Sloth.output">output</a></code></li>
 <li><code><a title="modules.server.sloth.Sloth.run" href="tlsfuzzer_base.html#modules.server.sloth.Sloth.run">run</a></code></li>
+<li><code><a title="modules.server.sloth.Sloth.stix" href="#modules.server.sloth.Sloth.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

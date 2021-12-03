@@ -27,6 +27,8 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from modules.server.testssl_base import Testssl_base
+from modules.stix.stix_base import Bundled
+from utils.mitigations import load_mitigation
 
 
 class Heartbleed(Testssl_base):
@@ -35,6 +37,7 @@ class Heartbleed(Testssl_base):
     Analysis of the heartbleed testssl results
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;HEARTBLEED&#34;))
     # to override
     def _set_arguments(self):
         &#34;&#34;&#34;
@@ -78,6 +81,7 @@ class Heartbleed(Testssl_base):
     Analysis of the heartbleed testssl results
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;HEARTBLEED&#34;))
     # to override
     def _set_arguments(self):
         &#34;&#34;&#34;
@@ -100,6 +104,13 @@ class Heartbleed(Testssl_base):
 <ul class="hlist">
 <li><a title="modules.server.testssl_base.Testssl_base" href="testssl_base.html#modules.server.testssl_base.Testssl_base">Testssl_base</a></li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.server.heartbleed.Heartbleed.stix"><code class="name">var <span class="ident">stix</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="modules.server.heartbleed.Heartbleed.input"><code class="name flex">
@@ -202,6 +213,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.server.heartbleed.Heartbleed.input" href="testssl_base.html#modules.server.heartbleed.Heartbleed.input">input</a></code></li>
 <li><code><a title="modules.server.heartbleed.Heartbleed.output" href="testssl_base.html#modules.server.heartbleed.Heartbleed.output">output</a></code></li>
 <li><code><a title="modules.server.heartbleed.Heartbleed.run" href="testssl_base.html#modules.server.heartbleed.Heartbleed.run">run</a></code></li>
+<li><code><a title="modules.server.heartbleed.Heartbleed.stix" href="#modules.server.heartbleed.Heartbleed.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>

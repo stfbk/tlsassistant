@@ -27,6 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from modules.android.mallodroid_base import Mallodroid_base
+from modules.stix.stix_base import Bundled
 from utils.logger import Logger
 from utils.mitigations import load_mitigation
 
@@ -35,6 +36,8 @@ class Trustmanager(Mallodroid_base):
     &#34;&#34;&#34;
     Check if the app uses a custom TrustManager.
     &#34;&#34;&#34;
+
+    stix = Bundled(mitigation_object=load_mitigation(&#34;TRUST_MANAGER&#34;))
 
     def _get_logger(self):
         &#34;&#34;&#34;
@@ -93,6 +96,8 @@ class Trustmanager(Mallodroid_base):
     Check if the app uses a custom TrustManager.
     &#34;&#34;&#34;
 
+    stix = Bundled(mitigation_object=load_mitigation(&#34;TRUST_MANAGER&#34;))
+
     def _get_logger(self):
         &#34;&#34;&#34;
         Logger for this module.
@@ -130,6 +135,13 @@ class Trustmanager(Mallodroid_base):
 <ul class="hlist">
 <li><a title="modules.android.mallodroid_base.Mallodroid_base" href="mallodroid_base.html#modules.android.mallodroid_base.Mallodroid_base">Mallodroid_base</a></li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="modules.android.trustmanager.Trustmanager.stix"><code class="name">var <span class="ident">stix</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="modules.android.trustmanager.Trustmanager.input"><code class="name flex">
@@ -232,6 +244,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="modules.android.trustmanager.Trustmanager.input" href="mallodroid_base.html#modules.android.trustmanager.Trustmanager.input">input</a></code></li>
 <li><code><a title="modules.android.trustmanager.Trustmanager.output" href="mallodroid_base.html#modules.android.trustmanager.Trustmanager.output">output</a></code></li>
 <li><code><a title="modules.android.trustmanager.Trustmanager.run" href="mallodroid_base.html#modules.android.trustmanager.Trustmanager.run">run</a></code></li>
+<li><code><a title="modules.android.trustmanager.Trustmanager.stix" href="#modules.android.trustmanager.Trustmanager.stix">stix</a></code></li>
 </ul>
 </li>
 </ul>
