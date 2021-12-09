@@ -315,7 +315,7 @@ You can download the latest stable release by
 - [ ] Creation of new *Output* modules
   - [ ] Configuration analysis
   - [ ] Attack Tree `matching TLSAssistant v1.x output`
-  - [ ] STIX `matching TLSAssistant v1.x output`
+  - [x] STIX `matching TLSAssistant v1.x output`
   - [ ] Scoreboard
 - [ ] Improve webserver coverage
 
