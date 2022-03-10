@@ -170,12 +170,12 @@ class Configuration:
             return True
 
     def __vhost_wrapper(
-        self,
-        modules: dict,
-        online=False,
-        fix=False,
-        openssl: str = None,
-        ignore_openssl: bool = False,
+            self,
+            modules: dict,
+            online=False,
+            fix=False,
+            openssl: str = None,
+            ignore_openssl: bool = False,
     ):
         """
         Wrapper for the vhosts.
@@ -240,16 +240,16 @@ class Configuration:
         return module.conf.fix(vhost)
 
     def __blackbox(
-        self,
-        module,
-        name,
-        fix,
-        vhost,
-        vhost_name,
-        openssl,
-        ignore_openssl,
-        boolean_results,
-        global_value,
+            self,
+            module,
+            name,
+            fix,
+            vhost,
+            vhost_name,
+            openssl,
+            ignore_openssl,
+            boolean_results,
+            global_value,
     ):
         """
         Internal method to check the configuration blackbox.
@@ -357,6 +357,10 @@ class Configuration:
             path = file_name
         file = Path(path)
         file.touch()
-        with make_loader() as loader:
+
+        options = {
+            'namedblocks': False
+        }
+        with make_loader(**options) as loader:
             loader.dump(filepath=str(file.absolute()), dct=self.__loaded_conf)
         self.__logging.info(f"Saved configuration in file {file.absolute()}")
