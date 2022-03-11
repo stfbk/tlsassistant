@@ -54,9 +54,15 @@ class Configuration:
         if self.__type == self.Type.APACHE:
             if "VirtualHost" not in self.__loaded_conf:
                 self.__loaded_conf["VirtualHost"] = []
-            for vhost in self.__loaded_conf["VirtualHost"]:
-                if not port or port in list(vhost.keys())[0]:
-                    yield vhost
+            loaded_vhost = self.__loaded_conf["VirtualHost"]
+            # loaded_vhost è dict se solo uno presente, lista di dict altrimenti
+            if isinstance(loaded_vhost, list):
+                for vhost in loaded_vhost:
+                    if not port or port in list(vhost.keys())[0]:
+                        yield vhost
+            else:
+                if not port or port in list(loaded_vhost.keys())[0]:
+                    yield loaded_vhost
         elif self.__type == self.Type.NGINX:
             raise NotImplementedError
 
