@@ -146,3 +146,12 @@ pyproject.toml
 
 #notes
 TLSAv2_Notes
+
+# tool dependencies
+dependencies/
+
+# results folder
+results/
+
+# tmp files and folders
+tmp*

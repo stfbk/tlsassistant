@@ -54,9 +54,15 @@ class Configuration:
         if self.__type == self.Type.APACHE:
             if "VirtualHost" not in self.__loaded_conf:
                 self.__loaded_conf["VirtualHost"] = []
-            for vhost in self.__loaded_conf["VirtualHost"]:
-                if not port or port in list(vhost.keys())[0]:
-                    yield vhost
+            loaded_vhost = self.__loaded_conf["VirtualHost"]
+            # loaded_vhost è dict se solo uno presente, lista di dict altrimenti
+            if isinstance(loaded_vhost, list):
+                for vhost in loaded_vhost:
+                    if not port or port in list(vhost.keys())[0]:
+                        yield vhost
+            else:
+                if not port or port in list(loaded_vhost.keys())[0]:
+                    yield loaded_vhost
         elif self.__type == self.Type.NGINX:
             raise NotImplementedError
 
@@ -170,12 +176,12 @@ class Configuration:
             return True
 
     def __vhost_wrapper(
-        self,
-        modules: dict,
-        online=False,
-        fix=False,
-        openssl: str = None,
-        ignore_openssl: bool = False,
+            self,
+            modules: dict,
+            online=False,
+            fix=False,
+            openssl: str = None,
+            ignore_openssl: bool = False,
     ):
         """
         Wrapper for the vhosts.
@@ -194,12 +200,13 @@ class Configuration:
         :rtype: dict
         """
         boolean_results = {}
+        is_executed = False  # needed to check if the for loop is executed, and so the boolean_results are filled
         boolean_results_global = self.__check_global(modules, openssl, ignore_openssl)
         for virtualhost in self.__obtain_vhost(port=self.__port):
             for vhost_name, vhost in virtualhost.items():
                 for name, module in modules.items():
                     if self.__is_config_enabled(module) and self.__check_usage(
-                        module, vhost_name
+                            module, vhost_name
                     ):
                         if not online:
                             self.__blackbox(
@@ -215,11 +222,12 @@ class Configuration:
                             )
                         else:
                             self.__hybrid(module, name, vhost, vhost_name)
+                        is_executed = True
                     else:
                         self.__logging.debug(
                             f"The module {name} isn't compatible. Skipping..."
                         )
-        return boolean_results
+        return boolean_results if is_executed else {'General rules': boolean_results_global}
 
     def __hybrid(self, module, name, vhost, vhost_name) -> dict:
         """
@@ -240,16 +248,16 @@ class Configuration:
         return module.conf.fix(vhost)
 
     def __blackbox(
-        self,
-        module,
-        name,
-        fix,
-        vhost,
-        vhost_name,
-        openssl,
-        ignore_openssl,
-        boolean_results,
-        global_value,
+            self,
+            module,
+            name,
+            fix,
+            vhost,
+            vhost_name,
+            openssl,
+            ignore_openssl,
+            boolean_results,
+            global_value,
     ):
         """
         Internal method to check the configuration blackbox.
@@ -357,6 +365,10 @@ class Configuration:
             path = file_name
         file = Path(path)
         file.touch()
-        with make_loader() as loader:
+
+        options = {
+            'namedblocks': False
+        }
+        with make_loader(**options) as loader:
             loader.dump(filepath=str(file.absolute()), dct=self.__loaded_conf)
         self.__logging.info(f"Saved configuration in file {file.absolute()}")
