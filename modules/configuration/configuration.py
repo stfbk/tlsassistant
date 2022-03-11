@@ -194,12 +194,13 @@ class Configuration:
         :rtype: dict
         """
         boolean_results = {}
+        is_executed = False  # needed to check if the for loop is executed, and so the boolean_results are filled
         boolean_results_global = self.__check_global(modules, openssl, ignore_openssl)
         for virtualhost in self.__obtain_vhost(port=self.__port):
             for vhost_name, vhost in virtualhost.items():
                 for name, module in modules.items():
                     if self.__is_config_enabled(module) and self.__check_usage(
-                        module, vhost_name
+                            module, vhost_name
                     ):
                         if not online:
                             self.__blackbox(
@@ -215,11 +216,12 @@ class Configuration:
                             )
                         else:
                             self.__hybrid(module, name, vhost, vhost_name)
+                        is_executed = True
                     else:
                         self.__logging.debug(
                             f"The module {name} isn't compatible. Skipping..."
                         )
-        return boolean_results
+        return boolean_results if is_executed else {'General rules': boolean_results_global}
 
     def __hybrid(self, module, name, vhost, vhost_name) -> dict:
         """
