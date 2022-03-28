@@ -13,7 +13,7 @@ class Configuration:
     Apache/Nginx configuration file parser
     """
 
-    class Type(Enum):
+    class WebserverType(Enum):
         """
         Enum for configuration file types
         """
@@ -22,16 +22,16 @@ class Configuration:
         APACHE = 1
         NGINX = 2
 
-    def __init__(self, path: str, type_: Type = Type.AUTO, port=None):
+    def __init__(self, path: str, type_: WebserverType = WebserverType.AUTO, port=None):
         """
         :param path: path to the configuration file
         :type path: str
-        :param type_: Type of the configuration file.
-        :type type_: Type
+        :param type_: WebserverType of the configuration file.
+        :type type_: WebserverType
         :param port: port to use for the check.
         :type port: str
         """
-        Validator([(path, str), (type_, self.Type), (port if port else "", str)])
+        Validator([(path, str), (type_, self.WebserverType), (port if port else "", str)])
         self.__path = path
         self.__type = type_
         self.__port = port
@@ -50,8 +50,8 @@ class Configuration:
         :return: list of virtualhosts
         :rtype: list
         """
-        assert self.__type != self.Type.AUTO, "Can't use this method with AUTO type."
-        if self.__type == self.Type.APACHE:
+        assert self.__type != self.WebserverType.AUTO, "Can't use this method with AUTO type."
+        if self.__type == self.WebserverType.APACHE:
             if "VirtualHost" not in self.__loaded_conf:
                 self.__loaded_conf["VirtualHost"] = []
             loaded_vhost = self.__loaded_conf["VirtualHost"]
@@ -63,7 +63,7 @@ class Configuration:
             else:
                 if not port or port in list(loaded_vhost.keys())[0]:
                     yield loaded_vhost
-        elif self.__type == self.Type.NGINX:
+        elif self.__type == self.WebserverType.NGINX:
             def __gen(conf_server):
                 for server in conf_server:
                     if any(isinstance(el, list) for el in server['listen']):
@@ -99,17 +99,17 @@ class Configuration:
             file.exists()
         ), f"Can't find the APACHE/NGINX file to parse at {file.absolute()}"
 
-        if self.__type == self.Type.AUTO:
+        if self.__type == self.WebserverType.AUTO:
             try:
                 results = self.__load_apache_conf(file)
-                self.__type = self.Type.APACHE
+                self.__type = self.WebserverType.APACHE
             except Exception as e:
                 self.__logging.debug(
                     f"Couldn't parse config as apache: {e}\ntrying with nginx..."
                 )
                 results = self.__load_nginx_conf(file)
-                self.__type = self.Type.NGINX
-        elif self.__type == self.Type.APACHE:
+                self.__type = self.WebserverType.NGINX
+        elif self.__type == self.WebserverType.APACHE:
             results = self.__load_apache_conf(file)
         else:
             results = self.__load_nginx_conf(file)
