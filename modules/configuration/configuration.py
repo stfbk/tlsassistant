@@ -64,7 +64,25 @@ class Configuration:
                 if not port or port in list(loaded_vhost.keys())[0]:
                     yield loaded_vhost
         elif self.__type == self.Type.NGINX:
-            raise NotImplementedError
+            def __gen(conf_server):
+                for server in conf_server:
+                    if any(isinstance(el, list) for el in server['listen']):
+                        for _port in server['listen']:
+                            if not port or port in _port[0]:
+                                yield {_port[0]: server}
+                    else:
+                        if not port or port in server['listen'][0]:
+                            yield {server['listen'][0]: server}
+
+            for file, conf in self.__loaded_conf.items():
+                if 'server' in conf:
+                    yield from __gen(conf['server'])
+
+                if 'http' in conf:
+                    for http in conf['http']:
+                        if 'server' in http:
+                            yield from __gen(http['server'])
+            
 
     def __load_conf(self, path) -> dict:
         """
@@ -80,6 +98,7 @@ class Configuration:
         assert (
             file.exists()
         ), f"Can't find the APACHE/NGINX file to parse at {file.absolute()}"
+
         if self.__type == self.Type.AUTO:
             try:
                 results = self.__load_apache_conf(file)
@@ -94,6 +113,7 @@ class Configuration:
             results = self.__load_apache_conf(file)
         else:
             results = self.__load_nginx_conf(file)
+
         return results
 
     def __load_apache_conf(self, file: Path) -> dict:
@@ -117,7 +137,67 @@ class Configuration:
         :return: loaded configuration
         :rtype: dict
         """
-        return nginx_parse(str(file.absolute()))
+
+        def __structure(payload, struct):
+            """
+            Funzione ricorsiva per generare una struttura chiave:blocco.
+
+            :param payload: output della libreria parsing nginx
+            :type payload: list
+            :param struct: modifica la reference a questo dict
+            :type struct: dict
+            """
+            for directive in payload:
+                directive_key = directive['directive']
+                special = False
+
+                if directive_key not in struct:
+                    struct[directive_key] = []
+                elif 'block' not in directive: 
+                    # se esiste già questa chiave ma non è un inizio di sottoblocco,
+                    # allora è una lista di lista, ad indicare più direttive con uguale chiave
+                    # ma distinto valore.
+                    # Esempio: 
+                    # {
+                    #   listen 80;
+                    #   listen 443 ssl;
+                    # }
+                    # diventa
+                    #   {'listen': [['80'], ['443', 'ssl']]}
+                    if any(isinstance(el, str) for el in struct[directive_key]):
+                        # prima volta che scopro che ci sono più chiavi uguali,
+                        # quindi modifico il valore della chiave in array, e aggiungo 
+                        # ciò che ho attualmente nel loop...
+                        struct[directive_key] = [struct[directive_key], directive['args']]
+                        special = True
+                    elif any(isinstance(el, list) for el in struct[directive_key]):
+                        struct[directive_key].append(directive['args'])
+                        special = True
+
+                if 'block' in directive:
+                    struct[directive_key].append({})
+                    index = len(struct[directive_key]) - 1
+
+                    if len(directive['args']) != 0:
+                        arg = repr(directive['args']) # repr della lista per argomento di un blocco
+                        struct[directive_key][index][arg] = {} # Sottoblocco con chiave gli argomenti di un blocco, esempio location >>> = /50x.html <<< {...}
+                        __structure(directive['block'], struct[directive_key][index][arg])
+                    else:
+                        __structure(directive['block'], struct[directive_key][index])
+                elif not special: # se non è un inizio di sottoblocco e non è già stato elaborato in precedenza
+                    struct[directive_key] = directive['args']
+
+        payload = nginx_parse(str(file.absolute()))
+    
+        if payload['status'] != 'ok' or len(payload['errors']) > 0:
+            raise Exception(f"Error parsing nginx config: {payload['errors']}")
+
+        struct = {}
+        for file in payload['config']:
+            struct[file['file']] = {};
+            __structure(file['parsed'], struct[file['file']])
+
+        return struct
 
     def __is_config_enabled(self, module) -> bool:
         """
