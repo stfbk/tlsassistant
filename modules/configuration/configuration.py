@@ -1,8 +1,7 @@
-from enum import Enum
 from pathlib import Path
-
 from modules.configuration.configuration_base import Config_base
 from utils.logger import Logger
+from utils.type import WebserverType
 from utils.validation import Validator
 from crossplane import parse as nginx_parse
 from apacheconfig import make_loader
@@ -13,15 +12,6 @@ class Configuration:
     Apache/Nginx configuration file parser
     """
 
-    class WebserverType(Enum):
-        """
-        Enum for configuration file types
-        """
-
-        AUTO = 0
-        APACHE = 1
-        NGINX = 2
-
     def __init__(self, path: str, type_: WebserverType = WebserverType.AUTO, port=None):
         """
         :param path: path to the configuration file
@@ -31,7 +21,7 @@ class Configuration:
         :param port: port to use for the check.
         :type port: str
         """
-        Validator([(path, str), (type_, self.WebserverType), (port if port else "", str)])
+        Validator([(path, str), (type_, WebserverType), (port if port else "", str)])
         self.__path = path
         self.__type = type_
         self.__port = port
@@ -50,8 +40,8 @@ class Configuration:
         :return: list of virtualhosts
         :rtype: list
         """
-        assert self.__type != self.WebserverType.AUTO, "Can't use this method with AUTO type."
-        if self.__type == self.WebserverType.APACHE:
+        assert self.__type != WebserverType.AUTO, "Can't use this method with webserver AUTO type."
+        if self.__type == WebserverType.APACHE:
             if "VirtualHost" not in self.__loaded_conf:
                 self.__loaded_conf["VirtualHost"] = []
             loaded_vhost = self.__loaded_conf["VirtualHost"]
@@ -63,11 +53,14 @@ class Configuration:
             else:
                 if not port or port in list(loaded_vhost.keys())[0]:
                     yield loaded_vhost
-        elif self.__type == self.WebserverType.NGINX:
+        elif self.__type == WebserverType.NGINX:
             def __gen(conf_server):
                 for server in conf_server:
+                    # Nella struttura custom, se lista di lista allora il blocco server
+                    # contiene più di una direttiva 'listen'
                     if any(isinstance(el, list) for el in server['listen']):
                         for _port in server['listen']:
+                            # Assumo che il primo elemento della (sotto)lista sia la porta
                             if not port or port in _port[0]:
                                 yield {_port[0]: server}
                     else:
@@ -99,17 +92,17 @@ class Configuration:
             file.exists()
         ), f"Can't find the APACHE/NGINX file to parse at {file.absolute()}"
 
-        if self.__type == self.WebserverType.AUTO:
+        if self.__type == WebserverType.AUTO:
             try:
                 results = self.__load_apache_conf(file)
-                self.__type = self.WebserverType.APACHE
+                self.__type = WebserverType.APACHE
             except Exception as e:
                 self.__logging.debug(
                     f"Couldn't parse config as apache: {e}\ntrying with nginx..."
                 )
                 results = self.__load_nginx_conf(file)
-                self.__type = self.WebserverType.NGINX
-        elif self.__type == self.WebserverType.APACHE:
+                self.__type = WebserverType.NGINX
+        elif self.__type == WebserverType.APACHE:
             results = self.__load_apache_conf(file)
         else:
             results = self.__load_nginx_conf(file)
@@ -366,6 +359,8 @@ class Configuration:
         self.__logging.debug(f"Analyzing vulnerability {name} in vhost {vhost_name}..")
         if vhost_name not in boolean_results:
             boolean_results[vhost_name] = {}
+        
+        module.conf.set_webserver(self.__type)
         is_empty = module.conf.is_empty(vhost)
 
         module_result = module.conf.condition(

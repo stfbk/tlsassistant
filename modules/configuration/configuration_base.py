@@ -1,6 +1,6 @@
-from enum import Enum
 from ssl import OPENSSL_VERSION
 import logging
+from utils.type import PortType, WebserverType
 from utils.validation import Validator
 
 
@@ -83,23 +83,13 @@ class OpenSSL:
         return (ver1 < ver2) if not reverse else (ver1 > ver2)
 
 
-class Type:
-    """
-    Type of configuration.
-    """
-
-    NONE = 0
-    HTTP = 80
-    SSL = 443
-
-
 class Config_base:
     """
     Interface for configuration base.
     """
 
     openSSL = OpenSSL()
-    VHOST_USE = Type.NONE
+    VHOST_USE = PortType.NONE
 
     def condition(self, vhost):
         """
@@ -345,7 +335,7 @@ class Parse_configuration_strict_security(Config_base):
     Check if vhost is vulnerable to misconfigured TLS strict security.
     """
 
-    VHOST_USE = Type.SSL
+    VHOST_USE = PortType.SSL
 
     def __init__(self):
         self.__key = "Header"
@@ -408,7 +398,7 @@ class Parse_configuration_checks_compression(Config_base):
     :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
     """
 
-    VHOST_USE = Type.NONE
+    VHOST_USE = PortType.NONE
 
     def __init__(self, openssl: str):
         self.__openssl = openssl
@@ -498,7 +488,7 @@ class Parse_configuration_checks_redirect(Config_base):
     Check if vhost is vulnerable to misconfigured TLS redirect.
     """
 
-    VHOST_USE = Type.HTTP
+    VHOST_USE = PortType.HTTP
 
     def __init__(self):
         self.__keys = ["RewriteEngine", "RewriteRule"]
