@@ -1,6 +1,8 @@
 from enum import Enum
 from os import mkdir
 
+import requests as requests
+
 from modules.stix.stix import Stix
 from utils.validation import Validator, rec_search_key
 from utils import output
@@ -164,6 +166,61 @@ class Report:
                 res[hostname] = res[hostname]["results"]
         return res, modules
 
+    # sending results to the webhook with an exception safe way
+    def __send_webhook(
+        self,
+        webhook_url: str,
+        results: dict,
+        modules: dict,
+        post=True,
+        result_param="results",
+        modules_param="modules",
+        other_params=None,
+    ):
+        """
+        Sends the results to the webhook.
+
+        :param webhook_url: Webhook URL.
+        :type webhook_url: str
+        :param results: Dictionary containing the results of the scan.
+        :type results: dict
+        :param modules: Dictionary containing the loaded modules.
+        :type modules: dict
+        """
+        if other_params is None:
+            other_params = {}
+        self.__logging.debug(f"Sending results to webhook..")
+        try:
+            json_data = {
+                result_param: pformat(results, indent=2),
+                modules_param: pformat(modules, indent=2),
+                "version": version,
+                "date": str(datetime.today()),
+            }
+            json_data.update(other_params)
+            headers = {
+                "Content-Type": "application/json",
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/39.0.2171.95 "
+                "Safari/537.36",
+            }
+            if post:
+                requests.post(
+                    webhook_url,
+                    headers=headers,
+                    json=json_data,
+                )
+            else:
+
+                requests.get(
+                    webhook_url,
+                    headers=headers,
+                    params=json_data,
+                )
+        except Exception as e:
+            self.__logging.error(f"Error sending results to webhook: {e}")
+
     def run(self, **kwargs):
         """
         Runs the report.
@@ -176,6 +233,7 @@ class Report:
         * *path* (string) -- Path to the report.
         * *mode* (Mode) -- Report mode.
         * *stix* (bool) -- If True, the report will be generated in STIX format.
+        * *webhook* (string) -- Webhook to send the report to.
         """
 
         self.input(**kwargs)
@@ -183,6 +241,8 @@ class Report:
         assert "results" in self.__input_dict, "Missing results list"
         assert "mode" in self.__input_dict, "Missing mode"
         assert "stix" in self.__input_dict, "Missing stix flag"
+        if "webhook" not in self.__input_dict or self.__input_dict["webhook"] is None:
+            self.__input_dict["webhook"] = ""
 
         path = self.__input_dict["path"]
         self.__path = Path(path)
@@ -193,6 +253,7 @@ class Report:
                 (self.__input_dict["results"], dict),
                 (self.__input_dict["mode"], self.Mode),
                 (self.__input_dict["stix"], bool),
+                (self.__input_dict["webhook"], str),
             ]
         )
 
@@ -259,6 +320,12 @@ class Report:
             self.__logging.info("Starting STIX generation...")
             Stix(type_of_analysis=self.__input_dict["mode"].value).build_and_save(
                 results_to_stix, modules, str(stix_output_path)
+            )
+        self.__logging.debug("Checks if needs webhook...")
+        if "webhook" in self.__input_dict and self.__input_dict["webhook"]:
+            self.__logging.info("Starting webhook...")
+            self.__send_webhook(
+                self.__input_dict["webhook"], results=results, modules=modules
             )
 
     # todo: add PDF library
