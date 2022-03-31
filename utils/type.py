@@ -9,7 +9,7 @@ class WebserverType(Enum):
     APACHE = 1
     NGINX = 2
 
-class PortType(Enum):
+class PortType: # No inheritance from Enum
     """
     Type of configuration.
     """
