@@ -190,6 +190,10 @@ class Configuration:
             struct[file['file']] = {};
             __structure(file['parsed'], struct[file['file']])
 
+            # Remove file if it doesn't have any 'http' or 'server' block
+            if 'http' not in struct[file['file']] and 'server' not in struct[file['file']]:
+                del struct[file['file']]
+
         return struct
 
     def __is_config_enabled(self, module) -> bool:
@@ -223,7 +227,9 @@ class Configuration:
                     module,
                     name,
                     fix=False,
-                    vhost=self.__loaded_conf,
+                    vhost=self.__loaded_conf 
+                            if self.__type == WebserverType.APACHE 
+                            else next(val['http'][0] for file, val in self.__loaded_conf.items() if 'http' in val),
                     vhost_name="global",
                     openssl=openssl,
                     ignore_openssl=ignore_openssl,
@@ -361,6 +367,7 @@ class Configuration:
             boolean_results[vhost_name] = {}
         
         module.conf.set_webserver(self.__type)
+
         is_empty = module.conf.is_empty(vhost)
 
         module_result = module.conf.condition(
