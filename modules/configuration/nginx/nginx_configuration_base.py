@@ -14,10 +14,9 @@ class Nginx_parse_configuration_protocols():
         :param protocols: TLS/SSL protocols to check.
         :type protocols: dict
         """
-        raise NotImplementedError
         self.__openssl = openssl
         self.__protocols = protocols
-        self.__key = "SSLProtocol"
+        self.__key = "ssl_protocols"
         Validator([(openssl, str), (protocols, dict)])
 
     def is_empty(self, vhost):
@@ -25,11 +24,10 @@ class Nginx_parse_configuration_protocols():
         Check if vhost doesn't have the contextual directive.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :returns: True if vhost doesn't have the contextual directive.
         :rtype: bool
         """
-        raise NotImplementedError
         return self.__key not in vhost or not vhost[self.__key]
 
     def is_tls(self, vhost, version=3):
@@ -43,10 +41,10 @@ class Nginx_parse_configuration_protocols():
         :returns: True if vhost is using ONLY the TLS version x.
         :rtype: bool
         """
-        raise NotImplementedError
         return (
-            "SSLProtocol" in vhost
-            and vhost["SSLProtocol"].lower() == f"tlsv1.{version}"
+            "ssl_protocols" in vhost
+            and len(vhost["ssl_protocols"]) == 1
+            and any(protocol.lower() == f"tlsv1.{version}" for protocol in vhost["ssl_protocols"])
         )
 
     def fix(self, vhost):
@@ -84,7 +82,6 @@ class Nginx_parse_configuration_protocols():
         :returns: True if vhost is vulnerable to TLS SSLProtocol bad configuration.
         :rtype: bool
         """
-        raise NotImplementedError
         if self.is_tls(vhost, version=3):
             logging.debug("TLSv1.3 Detected as mutually allowed.")
             return False
@@ -100,14 +97,14 @@ class Nginx_parse_configuration_protocols():
                 is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
 
             return not is_safe and True in (
-                operation + cipher.lower()
-                not in (vhost[key].lower() if key in vhost else "")
+                cipher.lower()
+                not in ([protocol.lower() for protocol in vhost[key]] if key in vhost else "")
                 for cipher, operation in self.__protocols.items()
             )
         else:
             return True in (
-                operation + cipher.lower()
-                not in (vhost[key].lower() if key in vhost else "")
+                cipher.lower()
+                not in ([protocol.lower() for protocol in vhost[key]] if key in vhost else "")
                 for cipher, operation in self.__protocols.items()
             )  # is vulnerable if True
 
@@ -117,10 +114,9 @@ class Nginx_parse_configuration_ciphers():
     """
 
     def __init__(self, openssl: str, ciphers: list):
-        raise NotImplementedError
         self.__openssl = openssl
         self.__ciphers = ciphers
-        self.__key = "SSLCipherSuite"
+        self.__key = "ssl_ciphers"
         Validator([(openssl, str), (ciphers, list)])
 
     def is_tls(self, vhost, version=3):
@@ -134,10 +130,10 @@ class Nginx_parse_configuration_ciphers():
         :returns: True if vhost is using ONLY the TLS version x.
         :rtype: bool
         """
-        raise NotImplementedError
         return (
-            "SSLProtocol" in vhost
-            and vhost["SSLProtocol"].lower() == f"tlsv1.{version}"
+            "ssl_protocols" in vhost
+            and len(vhost["ssl_protocols"]) == 1
+            and any(protocol.lower() == f"tlsv1.{version}" for protocol in vhost["ssl_protocols"])
         )
 
     def is_empty(self, vhost):
@@ -149,7 +145,6 @@ class Nginx_parse_configuration_ciphers():
         :returns: True if vhost doesn't have the contextual directive.
         :rtype: bool
         """
-        raise NotImplementedError
         return self.__key not in vhost or not vhost[self.__key]
 
     def fix(self, vhost):
@@ -187,7 +182,6 @@ class Nginx_parse_configuration_ciphers():
         :returns: True if vhost is vulnerable to misconfigured TLS cipher.
         :rtype: bool
         """
-        raise NotImplementedError
         if self.is_tls(vhost, version=3):
             logging.debug("TLSv1.3 Detected as mutually allowed.")
             return False
@@ -203,12 +197,12 @@ class Nginx_parse_configuration_ciphers():
                 is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
 
             return not is_safe and True in (
-                "!" + cipher.lower() not in (vhost[key].lower() if key in vhost else "")
+                "!" + cipher.lower() not in ([c.lower() for c in vhost[key]] if key in vhost else "")
                 for cipher in self.__ciphers
             )
         else:
             return True in (
-                "!" + cipher.lower() not in (vhost[key].lower() if key in vhost else "")
+                "!" + cipher.lower() not in ([c.lower() for c in vhost[key]] if key in vhost else "")
                 for cipher in self.__ciphers
             )  # is vulnerable if True
 
@@ -218,8 +212,7 @@ class Nginx_parse_configuration_strict_security():
     """
 
     def __init__(self):
-        raise NotImplementedError
-        self.__key = "Header"
+        self.__key = "add_header"
 
     def is_empty(self, vhost):
         """
@@ -230,7 +223,6 @@ class Nginx_parse_configuration_strict_security():
         :returns: True if vhost doesn't have the header directive.
         :rtype: bool
         """
-        raise NotImplementedError
         return self.__key not in vhost or not vhost[self.__key]
 
     def fix(self, vhost):
@@ -266,7 +258,6 @@ class Nginx_parse_configuration_strict_security():
         :returns: True if vhost is vulnerable to misconfigured TLS strict security.
         :rtype: bool
         """
-        raise NotImplementedError
         return (
             self.__key not in vhost
             or "Strict-Transport-Security" not in vhost[self.__key]
@@ -281,9 +272,8 @@ class Nginx_parse_configuration_checks_compression():
     """
 
     def __init__(self, openssl: str):
-        raise NotImplementedError
         self.__openssl = openssl
-        self.__key = "SSLCompression"
+        self.__key = "ssl_compression"
         self.__value = "Off"
         Validator([(openssl, str)])
 
@@ -298,10 +288,10 @@ class Nginx_parse_configuration_checks_compression():
         :returns: True if vhost is using only a specific version of TLS.
         :rtype: bool
         """
-        raise NotImplementedError
         return (
-            "SSLProtocol" in vhost
-            and vhost["SSLProtocol"].lower() == f"tlsv1.{version}"
+            "ssl_protocols" in vhost
+            and len(vhost["ssl_protocols"]) == 1
+            and any(protocol.lower() == f"tlsv1.{version}" for protocol in vhost["ssl_protocols"])
         )
 
     def is_empty(self, vhost):
@@ -313,8 +303,7 @@ class Nginx_parse_configuration_checks_compression():
         :returns: True if vhost doesn't have the SSLCompression directive.
         :rtype: bool
         """
-        raise NotImplementedError
-        return self.__key not in vhost or not vhost[self.__key]
+        return True
 
     def fix(self, vhost):
         """
@@ -323,14 +312,8 @@ class Nginx_parse_configuration_checks_compression():
         :param vhost: VirtualHost object.
         :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
         """
-        raise NotImplementedError
-        key = self.__key
-        backup = vhost[key] if key in vhost else ""
-        vhost[key] = self.__value
-        return {
-            "before": f"{key} {backup}" if backup else "",
-            "after": f"{key} {vhost[key]}",
-        }
+        # no directive fix available for nginx 
+        pass
 
     def condition(self, vhost, openssl: str = None, ignore_openssl=False):
         """
@@ -345,7 +328,6 @@ class Nginx_parse_configuration_checks_compression():
         :returns: True if vhost is vulnerable to misconfigured TLS compression.
         :rtype: bool
         """
-        raise NotImplementedError
         if self.is_tls(vhost, version=3):
             logging.debug("TLSv1.3 Detected as mutually allowed.")
             return False
@@ -354,6 +336,7 @@ class Nginx_parse_configuration_checks_compression():
         if openssl is None:
             openssl = ""
         Validator([(openssl, str)])
+        # nginx non ha direttive per ssl compression, dipende solo dalla versione utilizzata
         if not ignore_openssl:
             if openssl:
                 is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
@@ -373,7 +356,7 @@ class Nginx_parse_configuration_checks_redirect():
     """
 
     def __init__(self):
-        raise NotImplementedError
+        return
         self.__keys = ["RewriteEngine", "RewriteRule"]
 
     def is_empty(self, vhost):
@@ -385,7 +368,7 @@ class Nginx_parse_configuration_checks_redirect():
         :returns: True if vhost doesn't have the RewriteEngine and RewriteRule directives.
         :rtype: bool
         """
-        raise NotImplementedError
+        return
         return True in (key not in vhost for key in self.__keys)
 
     def fix(self, vhost):
@@ -395,7 +378,7 @@ class Nginx_parse_configuration_checks_redirect():
         :param vhost: VirtualHost object.
         :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
         """
-        raise NotImplementedError
+        return
         RewriteEngine, RewriteRule = self.__keys
         backup_rewrite_engine = vhost[RewriteEngine] if RewriteEngine in vhost else ""
         backup_rewrite_rule = vhost[RewriteRule] if RewriteRule in vhost else ""
@@ -425,7 +408,7 @@ class Nginx_parse_configuration_checks_redirect():
         :returns: True if vhost is vulnerable to misconfigured TLS redirect.
         :rtype: bool
         """
-        raise NotImplementedError
+        return
         RewriteEngine, RewriteRule = self.__keys
         return (
             RewriteEngine not in vhost
