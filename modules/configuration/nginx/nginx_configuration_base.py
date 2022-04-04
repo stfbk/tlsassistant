@@ -336,6 +336,7 @@ class Nginx_parse_configuration_checks_compression():
         if openssl is None:
             openssl = ""
         Validator([(openssl, str)])
+        
         # nginx non ha direttive per ssl compression, dipende solo dalla versione utilizzata
         if not ignore_openssl:
             if openssl:
@@ -343,12 +344,11 @@ class Nginx_parse_configuration_checks_compression():
             else:
                 is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
 
-            return not is_safe and (key not in vhost or vhost[key] != self.__value)
+            return not is_safe
 
         else:
-            return (
-                key not in vhost or vhost[key] != self.__value
-            )  # is vulnerable if True
+            return True  # potentially always vulnerable without OpenSSL version check
+            # is vulnerable if True
 
 class Nginx_parse_configuration_checks_redirect():
     """
@@ -356,20 +356,18 @@ class Nginx_parse_configuration_checks_redirect():
     """
 
     def __init__(self):
-        return
-        self.__keys = ["RewriteEngine", "RewriteRule"]
+        self.__key = "return";
 
     def is_empty(self, vhost):
         """
-        Check if vhost doesn't have the RewriteEngine and RewriteRule directives.
+        Check if vhost doesn't have the 'return' directive.
 
         :param vhost: VirtualHost object.
         :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
         :returns: True if vhost doesn't have the RewriteEngine and RewriteRule directives.
         :rtype: bool
         """
-        return
-        return True in (key not in vhost for key in self.__keys)
+        return self.__key not in vhost or "301" not in vhost[self.__key]
 
     def fix(self, vhost):
         """
@@ -408,11 +406,8 @@ class Nginx_parse_configuration_checks_redirect():
         :returns: True if vhost is vulnerable to misconfigured TLS redirect.
         :rtype: bool
         """
-        return
-        RewriteEngine, RewriteRule = self.__keys
         return (
-            RewriteEngine not in vhost
-            or RewriteRule not in vhost
-            or vhost[RewriteEngine] != "on"
-            or vhost[RewriteRule] != "^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]"
+            self.__key not in vhost
+            or "301" not in vhost[self.__key]
+            or ("https" not in args for args in vhost[self.__key])
         )  # vulnerable if True
