@@ -7,7 +7,7 @@ class Apache_parse_configuration_protocols():
     Check if vhost is vulnerable to TLS SSLProtocol bad configuration.
     """
 
-    def __init__(self, openssl: str, protocols: dict):
+    def __init__(self, openssl: str, protocols: dict, openssl_class):
         """
         :param openssl: OpenSSL version.
         :type openssl: str
@@ -16,6 +16,7 @@ class Apache_parse_configuration_protocols():
         """
         self.__openssl = openssl
         self.__protocols = protocols
+        self.openSSL = openssl_class
         self.__key = "SSLProtocol"
         Validator([(openssl, str), (protocols, dict)])
 
@@ -112,9 +113,10 @@ class Apache_parse_configuration_ciphers():
     Check if vhost is vulnerable to misconfigured TLS cipher.
     """
 
-    def __init__(self, openssl: str, ciphers: list):
+    def __init__(self, openssl: str, ciphers: list, openssl_class):
         self.__openssl = openssl
         self.__ciphers = ciphers
+        self.openSSL = openssl_class
         self.__key = "SSLCipherSuite"
         Validator([(openssl, str), (ciphers, list)])
 
@@ -269,8 +271,9 @@ class Apache_parse_configuration_checks_compression():
     :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
     """
 
-    def __init__(self, openssl: str):
+    def __init__(self, openssl: str, openssl_class):
         self.__openssl = openssl
+        self.openSSL = openssl_class
         self.__key = "SSLCompression"
         self.__value = "Off"
         Validator([(openssl, str)])

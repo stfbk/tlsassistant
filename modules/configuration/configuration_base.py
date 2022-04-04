@@ -158,9 +158,9 @@ class Parse_configuration_protocols(Config_base):
     def set_webserver(self, webserver: WebserverType):
         self.__webserver_type = webserver
         if webserver == WebserverType.APACHE:
-            self.__execution_class = Apache_parse_configuration_protocols(self.__openssl, self.__protocols)
+            self.__execution_class = Apache_parse_configuration_protocols(self.__openssl, self.__protocols, self.openSSL)
         elif webserver == WebserverType.NGINX: 
-            self.__execution_class = Nginx_parse_configuration_protocols(self.__openssl, self.__protocols)
+            self.__execution_class = Nginx_parse_configuration_protocols(self.__openssl, self.__protocols, self.openSSL)
 
     def is_empty(self, vhost):
         """
@@ -230,9 +230,9 @@ class Parse_configuration_ciphers(Config_base):
     def set_webserver(self, webserver: WebserverType):
         self.__webserver_type = webserver
         if webserver == WebserverType.APACHE:
-            self.__execution_class = Apache_parse_configuration_ciphers(self.__openssl, self.__ciphers)
+            self.__execution_class = Apache_parse_configuration_ciphers(self.__openssl, self.__ciphers, self.openSSL)
         elif webserver == WebserverType.NGINX: 
-            self.__execution_class = Nginx_parse_configuration_ciphers(self.__openssl, self.__ciphers)
+            self.__execution_class = Nginx_parse_configuration_ciphers(self.__openssl, self.__ciphers, self.openSSL)
 
     def is_tls(self, vhost, version=3):
         """
@@ -358,9 +358,9 @@ class Parse_configuration_checks_compression(Config_base):
     def set_webserver(self, webserver: WebserverType):
         self.__webserver_type = webserver
         if webserver == WebserverType.APACHE:
-            self.__execution_class = Apache_parse_configuration_checks_compression(self.__openssl)
+            self.__execution_class = Apache_parse_configuration_checks_compression(self.__openssl, self.openSSL)
         elif webserver == WebserverType.NGINX: 
-            self.__execution_class = Nginx_parse_configuration_checks_compression(self.__openssl)
+            self.__execution_class = Nginx_parse_configuration_checks_compression(self.__openssl, self.openSSL)
 
 
     def is_tls(self, vhost, version=3):
