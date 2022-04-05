@@ -24,7 +24,7 @@ class Nginx_parse_configuration_protocols():
         """
         Check if vhost doesn't have the contextual directive.
 
-        :param vhost: VirtualHost object.
+        :param vhost: "VirtualHost" object.
         :type vhost: dict
         :returns: True if vhost doesn't have the contextual directive.
         :rtype: bool
@@ -35,8 +35,8 @@ class Nginx_parse_configuration_protocols():
         """
         Check if vhost is using only the TLS version x.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         :param version: TLS version to check.
         :type version: int
         :returns: True if vhost is using ONLY the TLS version x.
@@ -52,8 +52,8 @@ class Nginx_parse_configuration_protocols():
         """
         Fix TLS/SSL protocol bad configuration.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         """
         raise NotImplementedError
         key = self.__key
@@ -74,8 +74,8 @@ class Nginx_parse_configuration_protocols():
         """
         Check if vhost is vulnerable to TLS SSLProtocol bad configuration.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         :param openssl: OpenSSL version.
         :type openssl: str
         :param ignore_openssl: Ignore OpenSSL version.
@@ -91,6 +91,7 @@ class Nginx_parse_configuration_protocols():
         if openssl is None:
             openssl = ""
         Validator([(openssl, str)])
+
         if not ignore_openssl:
             if openssl:
                 is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
@@ -103,6 +104,8 @@ class Nginx_parse_configuration_protocols():
                 for cipher, operation in self.__protocols.items()
             )
         else:
+            # Syntax:	ssl_protocols [SSLv2] [SSLv3] [TLSv1] [TLSv1.1] [TLSv1.2] [TLSv1.3];
+            # Default:	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
             return True in (
                 cipher.lower()
                 not in ([protocol.lower() for protocol in vhost[key]] if key in vhost else "")
@@ -125,8 +128,8 @@ class Nginx_parse_configuration_ciphers():
         """
         Check if vhost is using ONLY the TLS version x.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         :param version: TLS version to check.
         :type version: int
         :returns: True if vhost is using ONLY the TLS version x.
@@ -142,8 +145,8 @@ class Nginx_parse_configuration_ciphers():
         """
         Check if vhost doesn't have the contextual directive.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         :returns: True if vhost doesn't have the contextual directive.
         :rtype: bool
         """
@@ -153,8 +156,8 @@ class Nginx_parse_configuration_ciphers():
         """
         Fix misconfigured TLS cipher in vhost.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         """
         raise NotImplementedError
         key = self.__key
@@ -175,8 +178,8 @@ class Nginx_parse_configuration_ciphers():
         """
         Check if vhost is vulnerable to misconfigured TLS cipher.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         :param openssl: OpenSSL version.
         :type openssl: str
         :param ignore_openssl: Ignore OpenSSL version.
@@ -199,12 +202,15 @@ class Nginx_parse_configuration_ciphers():
                 is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
 
             return not is_safe and True in (
-                "!" + cipher.lower() not in ([c.lower() for c in vhost[key]] if key in vhost else "")
+                "!" + cipher.lower() not in (vhost[key][0].lower() if (key in vhost and len(vhost[key]) != 0) else "")
                 for cipher in self.__ciphers
             )
         else:
+            # Syntax:	ssl_ciphers ciphers;
+            # Default:	ssl_ciphers HIGH:!aNULL:!MD5;
+            # The ciphers are specified in the format understood by the OpenSSL library
             return True in (
-                "!" + cipher.lower() not in ([c.lower() for c in vhost[key]] if key in vhost else "")
+                "!" + cipher.lower() not in (vhost[key][0].lower() if (key in vhost and len(vhost[key]) != 0) else "")
                 for cipher in self.__ciphers
             )  # is vulnerable if True
 
@@ -220,8 +226,8 @@ class Nginx_parse_configuration_strict_security():
         """
         Check if vhost doesn't have the header directive.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         :returns: True if vhost doesn't have the header directive.
         :rtype: bool
         """
@@ -231,8 +237,8 @@ class Nginx_parse_configuration_strict_security():
         """
         Fix misconfigured TLS strict security in vhost.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         """
         raise NotImplementedError
         key = self.__key
@@ -251,8 +257,8 @@ class Nginx_parse_configuration_strict_security():
         """
         Check if vhost is vulnerable to misconfigured TLS strict security.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         :param openssl: OpenSSL version.
         :type openssl: str
         :param ignore_openssl: Ignore OpenSSL version.
@@ -269,8 +275,8 @@ class Nginx_parse_configuration_checks_compression():
     """
     Check if vhost is vulnerable to misconfigured TLS compression.
 
-    :param vhost: VirtualHost object.
-    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :param vhost: "VirtualHost" object.
+    :type vhost: dict
     """
 
     def __init__(self, openssl: str, openssl_class):
@@ -284,8 +290,8 @@ class Nginx_parse_configuration_checks_compression():
         """
         Check if vhost is using only a specific version of TLS.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         :param version: TLS version.
         :type version: int
         :returns: True if vhost is using only a specific version of TLS.
@@ -301,8 +307,8 @@ class Nginx_parse_configuration_checks_compression():
         """
         Check if vhost doesn't have the SSLCompression directive.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         :returns: True if vhost doesn't have the SSLCompression directive.
         :rtype: bool
         """
@@ -312,8 +318,8 @@ class Nginx_parse_configuration_checks_compression():
         """
         Fix misconfigured TLS compression in vhost.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         """
         # no directive fix available for nginx 
         pass
@@ -322,8 +328,8 @@ class Nginx_parse_configuration_checks_compression():
         """
         Check if vhost is vulnerable to misconfigured TLS compression.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         :param openssl: OpenSSL version.
         :type openssl: str
         :param ignore_openssl: Ignore OpenSSL version.
@@ -365,8 +371,8 @@ class Nginx_parse_configuration_checks_redirect():
         """
         Check if vhost doesn't have the 'return' directive.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         :returns: True if vhost doesn't have the RewriteEngine and RewriteRule directives.
         :rtype: bool
         """
@@ -376,8 +382,8 @@ class Nginx_parse_configuration_checks_redirect():
         """
         Fix misconfigured TLS redirect in vhost.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         """
         return
         RewriteEngine, RewriteRule = self.__keys
@@ -400,8 +406,8 @@ class Nginx_parse_configuration_checks_redirect():
         """
         Check if vhost is vulnerable to misconfigured TLS redirect.
 
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :param vhost: "VirtualHost" object.
+        :type vhost: dict
         :param openssl: OpenSSL version.
         :type openssl: str
         :param ignore_openssl: Ignore OpenSSL version.
@@ -409,8 +415,10 @@ class Nginx_parse_configuration_checks_redirect():
         :returns: True if vhost is vulnerable to misconfigured TLS redirect.
         :rtype: bool
         """
+        # Syntax: return_code URL;
         return (
             self.__key not in vhost
             or "301" not in vhost[self.__key]
-            or ("https" not in args for args in vhost[self.__key])
+            or ("301" in vhost[self.__key]
+                and "https" not in vhost[self.__key][-1].lower())
         )  # vulnerable if True
