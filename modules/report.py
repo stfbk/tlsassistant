@@ -16,7 +16,6 @@ from utils.globals import version
 from distutils.dir_util import copy_tree as cp
 from utils.prune import pruner
 from pprint import pformat
-from utils.booleanize import boolean_results_hosts, boolean_results_modules
 
 
 class Report:
@@ -50,6 +49,8 @@ class Report:
         * *path* (string) -- Path to the report.
         * *mode* (Mode) -- Report mode.
         * *stix* (bool) -- If True, the report will be in STIX format.
+        * *webhook* (string) -- Webhook to send the report to.
+        * *prometheus* (string) -- Prometheus file path.
         """
         self.__input_dict = kwargs
 
@@ -235,6 +236,7 @@ class Report:
         * *mode* (Mode) -- Report mode.
         * *stix* (bool) -- If True, the report will be generated in STIX format.
         * *webhook* (string) -- Webhook to send the report to.
+        * *prometheus* (string) -- Prometheus output path.
         """
 
         self.input(**kwargs)
@@ -255,6 +257,12 @@ class Report:
                 (self.__input_dict["mode"], self.Mode),
                 (self.__input_dict["stix"], bool),
                 (self.__input_dict["webhook"], str),
+                (
+                    ""
+                    if "prometheus" not in self.__input_dict or not self.__input_dict["prometheus"]
+                    else kwargs["prometheus"],
+                    str,
+                ),
             ]
         )
 
@@ -327,8 +335,53 @@ class Report:
             self.__logging.info("Starting webhook...")
             self.__send_webhook(
                 self.__input_dict["webhook"],
-                results=results["results"],
+                results=results,
                 modules=modules,
             )
+        if 'prometheus' in self.__input_dict and self.__input_dict['prometheus'] != '':
+            self.__logging.info("Starting prometheus...")
+            
+            output_path_prometheus = f"{output_file.absolute().parent}{sep}{output_file.stem}_prometheus.log" if not self.__input_dict['prometheus'] else self.__input_dict['prometheus']
+            Prometheus(results=results, modules=modules).run(output_path_prometheus)
 
     # todo: add PDF library
+class Prometheus:
+    """
+    This class generates a prometheus compliant output
+    """
+    def __init__(self,results,modules):
+        self.__logging = Logger("Prometheus")
+        Validator(
+            [
+                (results,dict),
+                (modules,dict),
+            ]
+        )
+        self.results = results
+        self.modules = modules
+        self.output=[]
+        
+    
+    def generate_output(self):
+        """
+        This method will generate the output in the form of
+        tls_check{vhost=hostname_analyzed,vulnerability=Module_name} 1 if vulnerable, 0 if not
+        """
+        self.__logging.debug("Generating output...")
+        for module in self.modules:
+            for host in self.results:
+                if module in self.results[host]:
+                    self.output.append(f"tls_check{{vhost=\"{host}\",vulnerability=\"{module}\"}} 1")
+                else:
+                    self.output.append(f"tls_check{{vhost=\"{host}\",vulnerability=\"{module}\"}} 0")
+                
+
+                
+
+    def run(self,file_name:str):
+        self.generate_output()
+        with open(file_name,"w") as f:
+            self.__logging.debug(f"Writing output in file {file_name}")
+            for line in self.output:
+                f.write(line+"\n")
+        self.__logging.info(f"Prometheus output generated at {file_name}")
