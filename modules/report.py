@@ -16,6 +16,7 @@ from utils.globals import version
 from distutils.dir_util import copy_tree as cp
 from utils.prune import pruner
 from pprint import pformat
+from utils.booleanize import boolean_results_hosts, boolean_results_modules
 
 
 class Report:
@@ -325,7 +326,9 @@ class Report:
         if "webhook" in self.__input_dict and self.__input_dict["webhook"]:
             self.__logging.info("Starting webhook...")
             self.__send_webhook(
-                self.__input_dict["webhook"], results=results, modules=modules
+                self.__input_dict["webhook"],
+                results=results["results"],
+                modules=modules,
             )
 
     # todo: add PDF library
