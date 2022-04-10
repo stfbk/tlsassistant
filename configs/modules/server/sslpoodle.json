@@ -8,8 +8,8 @@
       }
    ],
    "description":"This modules runs the vulnerability check for POODLE.",
-   "path":"modules/server/poodle.py",
-   "class_name":"Poodle",
+   "path":"modules/server/sslpoodle.py",
+   "class_name":"SSLPoodle",
    "output":[
       {
          "name":"results",

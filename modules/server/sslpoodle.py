@@ -4,13 +4,13 @@ from modules.stix.stix_base import Bundled
 from utils.mitigations import load_mitigation
 
 
-class Poodle(Testssl_base):
+class SSLPoodle(Testssl_base):
     """
     Analysis of the poodle testssl results
     """
 
     conf = Parse_configuration_protocols(openssl="3.0.0", protocols={"SSLv3": "-"})
-    stix = Bundled(mitigation_object=load_mitigation("POODLE"))
+    stix = Bundled(mitigation_object=load_mitigation("SSL POODLE"))
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         """
@@ -27,7 +27,7 @@ class Poodle(Testssl_base):
         """
         condition = condition and (key == "POODLE_SSL" or key == "fallback_SCSV")
         if condition:
-            result["mitigation"] = load_mitigation("POODLE")
+            result["mitigation"] = load_mitigation("SSL POODLE")
         return result if condition else {}
 
     # to override

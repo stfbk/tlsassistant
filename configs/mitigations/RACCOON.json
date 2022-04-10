@@ -1,0 +1,19 @@
+{
+  "Entry": {
+    "Name": "Raccoon",
+    "ExtendedName": "Raccoon",
+    "CVE": "2020-1968",
+    "CVSS3": "3.7 (Low)",
+    "#comment": " AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N ",
+    "Description": "The Raccoon attack exploits a flaw in the TLS specification which can lead to an attacker being able to compute the pre-master secret in connections which have used a Diffie-Hellman (DH) based ciphersuite. In such a case this would result in the attacker being able to eavesdrop on all encrypted communications sent over that TLS connection.",
+    "Mitigation": {
+      "Textual": "Using of 'static' DH ciphersuites should be completly avoided. Also reuising the same DHE secret for multiple connections should be avoided.",
+      "Apache": "",
+      "Nginx": ""
+
+    }
+  },
+  "#comment": " https://nvd.nist.gov/vuln/detail/CVE-2020-1968 ",
+  "#comment1": " https://raccoon-attack.com/ ",
+  "#omit-xml-declaration": "yes"
+}
