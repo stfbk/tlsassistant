@@ -55,16 +55,24 @@ class Nginx_parse_configuration_protocols():
         :param vhost: "VirtualHost" object.
         :type vhost: dict
         """
-        raise NotImplementedError
         key = self.__key
-        backup = vhost[key] if key in vhost else ""
+        ciphers = ['SSLv2', 'SSLv3','TLSv1', 'TLSv1.1', 'TLSv1.2', 'TLSv1.3']
+        ciphers_default = ['TLSv1', 'TLSv1.1', 'TLSv1.2']
+        backup = vhost[key].copy() if key in vhost else []
         v = Validator()
         for cipher, operation in self.__protocols.items():
             v.string(cipher)
-            vhost[key] = (
-                f"{(vhost[key] if key in vhost and vhost[key] else 'ALL ')}"
-                f"{' ' if key in vhost and vhost[key] else ''}{operation}{cipher}"
-            )
+            if operation == '-':
+                if key in vhost:
+                    if len(vhost[key]) == 1:
+                        if vhost[key][0].lower() == cipher.lower():
+                            vhost[key] = ciphers_default
+                    elif cipher in vhost[key]:
+                        vhost[key].remove(cipher)
+                else:
+                    vhost[key] = ciphers_default
+            else:
+                raise NotImplementedError
         return {
             "before": f"{key} {backup}" if backup else "",
             "after": f"{key} {vhost[key]}",
@@ -159,16 +167,20 @@ class Nginx_parse_configuration_ciphers():
         :param vhost: "VirtualHost" object.
         :type vhost: dict
         """
-        raise NotImplementedError
         key = self.__key
         v = Validator()
-        backup = vhost[key] if key in vhost else ""
+        backup = vhost[key].copy() if key in vhost else []
         for cipher in self.__ciphers:
             v.string(cipher)
-            vhost[key] = (
-                f"{vhost[key] if key in vhost and vhost[key] else ''}"
-                f"{':' if key in vhost and vhost[key] else ''}!{cipher.upper()}"
-            )
+            if key in vhost:
+                if len(vhost[key]) == 1:
+                    # ssl_ciphers directive has only one argument
+                    vhost[key][0] += f":!{cipher.upper()}"
+                else:
+                    vhost[key] = [f'HIGH:!aNULL:!MD5:!{cipher.upper()}']
+            else:
+                vhost[key] = [f'HIGH:!aNULL:!MD5:!{cipher.upper()}']
+        
         return {
             "before": f"{key} {backup}" if backup else "",
             "after": f"{key} {vhost[key]}",
@@ -240,12 +252,12 @@ class Nginx_parse_configuration_strict_security():
         :param vhost: "VirtualHost" object.
         :type vhost: dict
         """
-        raise NotImplementedError
         key = self.__key
-        backup = vhost[key] if key in vhost else ""
-        to_add = 'always set Strict-Transport-Security "max-age=63072000"'
+        backup = vhost[key].copy() if key in vhost else []
+        to_add = ['Strict-Transport-Security', 'max-age=31536000; includeSubdomains; preload']
         if key in vhost:
-            vhost[key] += f";{to_add}"
+            vhost[key] = [vhost[key]]
+            vhost[key].append(to_add)
         else:
             vhost[key] = to_add
         return {
@@ -322,7 +334,7 @@ class Nginx_parse_configuration_checks_compression():
         :type vhost: dict
         """
         # no directive fix available for nginx 
-        pass
+        return {}
 
     def condition(self, vhost, openssl: str = None, ignore_openssl=False):
         """
@@ -385,21 +397,17 @@ class Nginx_parse_configuration_checks_redirect():
         :param vhost: "VirtualHost" object.
         :type vhost: dict
         """
-        return
-        RewriteEngine, RewriteRule = self.__keys
-        backup_rewrite_engine = vhost[RewriteEngine] if RewriteEngine in vhost else ""
-        backup_rewrite_rule = vhost[RewriteRule] if RewriteRule in vhost else ""
-        vhost[RewriteEngine] = "on"
-        vhost[RewriteRule] = "^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]"
+        key = self.__key
+        backup = vhost[key].copy() if key in vhost else []
+        if key not in vhost:
+            vhost[key] = ['301', 'https://$host$request_uri']
+        else:
+            # TODO: Verificare quale altro c'è già?
+            pass
+        
         return {
-            "before": {
-                "RewriteEngine": backup_rewrite_engine,
-                "RewriteRule": backup_rewrite_rule,
-            },
-            "after": {
-                "RewriteEngine": vhost[RewriteEngine],
-                "RewriteRule": vhost[RewriteRule],
-            },
+            "before": f"{key} {backup}" if backup else "",
+            "after": f"{key} {vhost[key]}"
         }
 
     def condition(self, vhost, openssl=None, ignore_openssl=False):
