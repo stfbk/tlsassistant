@@ -3,7 +3,9 @@ from pathlib import Path
 
 from modules.configuration.configuration import Configuration
 from modules.server.testssl_base import Testssl_base
+from modules.server.tlsscanner_base import TLS_Scanner_base 
 from modules.server.wrappers.testssl import Testssl
+from modules.server.wrappers.tlsscanner import TLS_Scanner
 from utils.booleanize import boolean_results
 from utils.logger import Logger
 from utils.colors import Color
@@ -104,13 +106,13 @@ class Core:
         )
         self.__cache[configuration] = self.__load_configuration(modules)
         print(self.__cache[configuration])
-        
+        ''''''
         self.__exec(
             type_of_analysis=self.__input_dict["type_of_analysis"],
             hostname_or_path=self.__input_dict["hostname_or_path"],
             configuration=self.__input_dict["configuration"],
         )
-        ''''''
+        
        
 
     def __string_output_type(self, kwargs_type: Report) -> str:
@@ -229,6 +231,33 @@ class Core:
         if self.__is_testssl(module):
             testssl_args += module._arguments
         return testssl_args
+    
+    def __is_tls_scanner(self, module: object) -> bool:
+        """
+        Checks if the module is a tls_scanner module
+
+        :param module: module to check
+        :type module: object
+        :return: True if the module is a tls_scanner module
+        :rtype: bool
+        """
+        return isinstance(module, TLS_Scanner_base)
+
+    def __add_tls_scanner_args(self, module: TLS_Scanner_base, tls_scanner_args: list) -> list:
+        """
+        Adds tls_scanner arguments from the module
+
+        :param module: module to add arguments from
+        :type module: TLS_Scanner_base
+        :param tls_scanner_args: list of arguments
+        :type tls_scanner_args: list
+        :return: list of arguments
+        :rtype: list
+
+        """
+        if self.__is_tls_scanner(module):
+            tls_scanner_args += module._arguments
+        return tls_scanner_args
 
     def __conf_analysis(
         self,
@@ -306,6 +335,37 @@ class Core:
             )
             self.__logging.debug(f"Preanalysis testssl done.")
 
+    def __preanalysis_tls_scanner(
+        self, tls_scanner_args: list, type_of_analysis: Analysis, hostname: str, port: str
+    ):
+        """
+        Preanalysis of tls scanner
+
+        :param tls_scanner_args: arguments for tls_scanner
+        :type tls_scanner_args: list
+        :param type_of_analysis: type of analysis
+        :type type_of_analysis: Analysis
+        :param hostname: hostname
+        :type hostname: str
+        :param port: port to use
+        :type port: str
+        :return: preanalysis
+        :rtype: dict
+        """
+        if tls_scanner_args and (
+            type_of_analysis == self.Analysis.HOST
+            or type_of_analysis == self.Analysis.DOMAINS
+        ):
+            self.__logging.debug(
+                f"Starting preanalysis tls_scanner with args {tls_scanner_args}..."
+            )
+            TLS_Scanner().run(
+                hostname=f"{hostname}:{port}",
+                args=tls_scanner_args,
+                force=True,  # this should solve for multiple scans on the same IP with different ports
+            )
+            self.__logging.debug(f"Preanalysis tls_scanner done.")
+
     def __load_modules(self, parsed_configuration: dict) -> (dict, dict, list):
         """
         Loads the modules
@@ -319,6 +379,7 @@ class Core:
         loaded_modules = {}
         loaded_arguments = {}
         testssl_args = []
+        tls_scanner_args = []
         for name, module_args in parsed_configuration.items():
             if name not in self.__input_dict["to_exclude"]:
                 Module, args = module_args
@@ -335,9 +396,12 @@ class Core:
                 testssl_args = self.__add_testssl_args(
                     loaded_modules[name], testssl_args
                 )
+                tls_scanner_args = self.__add_tls_scanner_args(
+                    loaded_modules[name], tls_scanner_args
+                )
             else:
                 self.__logging.debug(f"Module {name} excluded, skipping..")
-        return loaded_modules, loaded_arguments, testssl_args
+        return loaded_modules, loaded_arguments, testssl_args, tls_scanner_args
 
     def __run_analysis(
         self,
@@ -522,7 +586,7 @@ class Core:
 
         self.__logging.info(f"Loading modules..")
         # loading modules
-        loaded_modules, loaded_arguments, testssl_args = self.__load_modules(
+        loaded_modules, loaded_arguments, testssl_args, tls_scanner_args = self.__load_modules(
             parsed_configuration
         )
         # preanalysis if needed
@@ -537,6 +601,10 @@ class Core:
         else:
             self.__preanalysis_testssl(
                 testssl_args, type_of_analysis, hostname_or_path, port
+            )
+
+            self.__preanalysis_tls_scanner(
+                tls_scanner_args, type_of_analysis, hostname_or_path, port
             )
 
             results = self.__run_analysis(
@@ -559,6 +627,7 @@ class Core:
                     port=port,
                 )
         self.__logging.info(f"Analysis of {hostname_or_path} done.")
+        print("Results", results)
         return loaded_modules, results
         # todo add output attack trees
 

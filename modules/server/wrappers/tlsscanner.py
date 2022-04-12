@@ -1,17 +1,19 @@
 import json
+import logging
+import re
 import subprocess
 import sys
-from os import sep, devnull, path, remove
 import uuid
-import logging
+from os import devnull, path, remove, sep
+from collections import defaultdict
+
+from utils.urls import link_sep, url_strip, validate_ip
 from utils.validation import Validator
-from utils.urls import url_strip, link_sep, validate_ip
 
 
 class Parser:
     """
-    Class used to parse tlsfuzzer results.
-    The results are parsed and grouped by IP/SITE.
+    Class used to parse TLS-Scanner results.
     """
 
     def __init__(self, to_parse: dict):
@@ -26,27 +28,8 @@ class Parser:
         self.__parse()
 
     def __parse(self):  # parse method
-        for result in self.__results:  # for each result
-            site, ip = result["ip"].rsplit("/", 1)  # split ip, it usually is website/ip
-            if site == "" or validate_ip(
-                site
-            ):  # if site value is missing or it's an IP
-                site = "IP_SCANS"  # group them by IP SCAN
-            if ip != "":  # if the ip is missing, it's nothing we care about.
-                if (
-                    site not in self.__output
-                ):  # if site is not in output, it's the first time that we see it.
-                    self.__output[site] = {}  # site inizialization
-                if (
-                    ip not in self.__output[site]
-                ):  # same for the previous comment, but with the IP
-                    self.__output[site][ip] = {}  # ip inizialization
-                self.__ip_output[ip] = site  # reverse cache
-                id = result["id"]  # obtain ID
-                result.pop("id", None)  # Remove ID from results
-                result.pop("ip", None)  # Remove IP from results
-                self.__output[site][ip][id] = result  # put the result
-        
+        self.__output = self.__results
+
 
     def output(self) -> (dict, dict):
         """
@@ -57,9 +40,9 @@ class Parser:
         return self.__output, self.__ip_output
 
 
-class Testssl:
+class TLS_Scanner:
     """
-    Testssl wrapper module.
+    TLS-Scanner wrapper module.
     """
 
     __cache = {}
@@ -67,9 +50,9 @@ class Testssl:
 
     def __init__(self):
         """
-        Loads testssl variables.
+        Loads TLS-Scanner variables.
         """
-        self.__testssl = f"dependencies{sep}3.0.4{sep}testssl.sh-3.0.4{sep}testssl.sh"
+        self.__tls_scanner = f"dependencies{sep}tls_scanner{sep}TLS-Server-Scanner.jar"
         self.__input_dict = {}
 
     def input(self, **kwargs):
@@ -104,9 +87,10 @@ class Testssl:
         :rtype: dict
         :raise AssertionError: If hostname parameter is not found.
         """
+        '''
         if "hostname" in kwargs:
             kwargs["hostname"] = link_sep(kwargs["hostname"])[0]
-
+        '''
         if "hostname" not in kwargs:
             raise AssertionError("Missing parameter hostname.")
         elif kwargs["hostname"] not in self.__cache:
@@ -238,6 +222,122 @@ class Testssl:
             self.__clean_cache()
         self.__scan_hostname(hostname, args, force, one)
 
+
+    def __escape_output(self, output):
+        # Thanks to Stack Overflow
+        # https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
+        ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+        output = ansi_escape.sub('', output)
+        return output
+
+    def __parse_output(self, output: str):
+        output = self.__escape_output(output)
+        output = output.split("\n")
+        '''
+        report = {
+            "ALPACA":{
+                "Result" : "",
+                "Details" : {},
+            },
+            "Padding Oracle":{
+                "Result" : "",
+                "Details" : {}
+            },
+            "Raccoon" : {
+                "Result" : ""
+            },
+            "Direct Raccoon" : {
+                "Result" : "",
+                "Details" : {}
+            },
+            "TLS Poodle" : {
+                "Result" : ""
+            }
+        }'''
+        report = defaultdict(dict)
+
+        alpaca_details = {}
+        padding_oracle_details = {}
+        direct_raccoon_details = {}
+
+        for i in range(0,len(output)): 
+            if "Attack Vulnerabilities" in output[i]:
+                j = i + 1
+                while output[j] != "------------------------------------------------------------":
+                    j += 1
+                vulns = output[i+2:j-1]    
+                        
+                for vuln in vulns:
+                    vuln,res = vuln.split(" : ",1)  
+                    vuln = vuln.replace("\t","").strip()
+                    report[vuln]["Result"] = res
+                i = j # Skip lines
+            
+            elif "Alpaca Details" in output[i]:
+                j = i + 1
+                while output[j] != "------------------------------------------------------------":
+                    j += 1
+                alpaca_details_temp = output[i+2:j-1]
+                for detail in alpaca_details_temp:                
+                    detail,res = detail.split(" : ",1)
+                    detail = detail.replace("\t","")
+                    if "Strict ALPN" == detail:
+                        alpaca_details["Strict ALPN"] = res
+                    elif "Strict SNI" == detail:
+                        alpaca_details["Strict SNI"] = res
+                    elif "ALPACA Mitigation" == detail:
+                        alpaca_details["ALPACA Mitigation"] = res
+                i = j # Skip lines
+
+            elif "Padding Oracle Details" in output[i] and report["Padding Oracle"]["Result"] == "vulnerable":
+                j = i + 1
+                while output[j] != "------------------------------------------------------------":
+                    j += 1
+                padding_oracle_details_temp = output[i+2:j-1]
+                for detail in padding_oracle_details_temp:
+                    detail = detail.split("|")
+                    name = ('-'.join(detail[0].split("\t")[2:])).strip()                
+                    behaviour_difference = detail[1].strip()
+                    result = detail[2].strip()
+
+                    if "<" in detail[3].strip():
+                        P = float(detail[3].strip()[4:])
+                    else:
+                        P = float(detail[3].strip()[3:])
+                    
+                    padding_oracle_details[name] = {
+                        'Behaviour' : behaviour_difference,
+                        'Result': result,
+                        'Confidence' : P
+                    }
+                i = j # Skip lines
+
+            elif "Direct Raccoon Results" in output[i] and report["Direct Raccoon"]["Result"] == "vulnerable":
+                j = i + 1
+                while output[j] != "------------------------------------------------------------":
+                    j += 1
+                direct_raccoon_details_temp = output[i+2:j-1]
+                for detail in direct_raccoon_details_temp:
+                    detail = detail.split("|")
+                    name = detail[0].replace("\t","-").strip()   
+                    behaviour_difference = detail[1].strip()
+                    result = detail[2].strip()
+                    if "<" in detail[3].strip():
+                        P = float(detail[3].strip()[4:])
+                    else:
+                        P = float(detail[3].strip()[3:])
+                    direct_raccoon_details[name] = {
+                        'Behaviour' : behaviour_difference,
+                        'Result': result,
+                        'Confidence' : P
+                    }
+                i = j # Skip lines
+
+        report["Padding Oracle"]["Details"] = padding_oracle_details
+        report["ALPACA"]["Details"] = alpaca_details
+        report["Direct Raccoon"]["Details"] = direct_raccoon_details
+        return report
+
     def __scan_hostname(self, hostname: str, args: [str], force: bool, one: bool):
         """
         Internal module of scan
@@ -250,6 +350,7 @@ class Testssl:
         :param one: Add '--IP=one' to testssl.sh calls.
         :type one: bool
         """
+        # TODO: Add multihost support
         if force:
             logging.debug("Starting testssl analysis")
             file_name = uuid.uuid4().hex
@@ -258,61 +359,45 @@ class Testssl:
             )
             with open(devnull, "w") as null:
                 cmd = [
-                    "bash",
-                    self.__testssl,
-                    f"--jsonfile=dependencies{sep}{file_name}.json",
+                    "java",
+                    "-jar",
+                    self.__tls_scanner,
+                    "-connect",
+                    f"{hostname}",
+                    "-scanDetail",
+                    "QUICK"
                 ]
-                if one and not validate_ip(hostname):
-                    logging.debug("Scanning with --IP=one..")
-                    cmd.append(f"--ip=one")
+                
                 if args:
                     logging.debug(f"Scanning with personalized args: {args}")
-                    for arg in args:
-                        cmd.append(arg)
-                cmd.append(hostname)
-                print(' '.join(cmd))
+                    cmd.append("-vulns")
+                    cmd.append(",".join(set(args))) 
+
+                output = ""  
                 try:
-                    subprocess.run(
+                    print(' '.join(cmd))
+                    output = subprocess.check_output(
                         cmd,
                         stderr=sys.stderr,
-                        stdout=(
-                            sys.stdout
-                            if logging.getLogger().isEnabledFor(
-                                logging.DEBUG
-                            )  # if the user asked for debug mode, let him see the output.
-                            else null  # else /dev/null
-                        ),
-                        check=True,  # check call equivalent
+                        #check=True,  # check call equivalent
                         text=True,  # text as an input
-                        input="yes",  # if asked, write 'yes' on each prompt
                     )
+                    if logging.getLogger().isEnabledFor(logging.DEBUG):
+                        print(output)
+                    
                 except subprocess.CalledProcessError as c:
                     logging.debug(c)
-                if path.exists(
-                    f"dependencies{sep}{file_name}.json"
-                ):  # load the temp file results
-                    with open(
-                        f"dependencies{sep}{file_name}.json", "r"
-                    ) as file:  # load temp file
-                        data = file.read()
-                        print("###")
-                        print(data)
-                        cache, ip_cache = Parser(json.loads(data)).output()
-                        print(cache, ip_cache)
-                        print("###")
-                        self.__update_cache(cache, ip_cache)
-                    remove(f"dependencies{sep}{file_name}.json")
+                
+
+                data = self.__parse_output(output)
+                data = {hostname : data}
+
+                cache, ip_cache = Parser(data).output()
+                print(cache)
+                self.__update_cache(cache, ip_cache)
+
         else:
-            print("Not forced", link_sep(hostname)[0], self.__cache)
-            if not validate_ip(
-                hostname
-            ):  # recursive: if force : false, check if in cache. if not, recursive call
-                if link_sep(hostname)[0] not in self.__cache:
-                    self.__scan_hostname(
+            if hostname not in self.__cache:
+                self.__scan_hostname(
                         hostname, args=args, force=True, one=one
                     )  # with force = True
-            else:
-                if (
-                    link_sep(hostname)[0] not in self.__ip_cache
-                ):  # if it's an ip, check for it in reverse proxy
-                    self.__scan_hostname(hostname, args=args, force=True, one=one)

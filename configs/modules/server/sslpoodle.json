@@ -7,7 +7,7 @@
          "required":"True"
       }
    ],
-   "description":"This modules runs the vulnerability check for POODLE.",
+   "description":"This modules runs the vulnerability check for SSL POODLE.",
    "path":"modules/server/sslpoodle.py",
    "class_name":"SSLPoodle",
    "output":[
