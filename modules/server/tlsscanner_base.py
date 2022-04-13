@@ -93,6 +93,21 @@ class TLS_Scanner_base:
         """
         val = Validator([(results, dict), (keys, list)])
         out = {}
+        print()
+        print("tlsscanner_base.py._obtain_results",results, keys)
+        
+        for hostname in results:
+            for key in keys:
+                print(results[hostname][key], hostname, key)
+                condition = results[hostname][key]['Result'] != "not vulnerable" and results[hostname][key]['Result'] != "error" and results[hostname][key]['Result'] != "not tested yet"
+
+                conditioned_result = self._set_mitigations(
+                    results[hostname][key], key, condition
+                )
+
+                print(results[hostname][key])
+
+        '''
         for ip in results:
             for key in keys:
                 val.string(key)
@@ -117,6 +132,7 @@ class TLS_Scanner_base:
                         out["key"] = []
                     if key not in out["key"]:
                         out["key"].append(key)
+        '''
         return out
 
     def run(self, **kwargs):

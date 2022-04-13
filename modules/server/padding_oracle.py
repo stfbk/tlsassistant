@@ -4,9 +4,9 @@ from modules.stix.stix_base import Bundled
 from utils.mitigations import load_mitigation
 
 
-class TLSPoodle(TLS_Scanner_base):
+class PaddngOracle(TLS_Scanner_base):
     """
-    Analysis of the poodle testssl results
+    Analysis of the Padding Oracle testssl results
     """
 
     conf = Parse_configuration_protocols(openssl="3.0.0", protocols={"SSLv3": "-"}) # FIXX?
@@ -25,9 +25,12 @@ class TLSPoodle(TLS_Scanner_base):
         :return: the result with the mitigations
         :rtype: dict
         """
-        condition = condition and key == "TLS Poodle"
+        condition = condition and key == "Padding Oracle"
         if condition:
-            result["mitigation"] = load_mitigation("TLS POODLE")
+            result["mitigation"] = load_mitigation("Padding Oracle")
+
+        # Add vulnerable ciphers to the mitigation 
+        
         return result if condition else {}
 
     # to override
@@ -35,7 +38,7 @@ class TLSPoodle(TLS_Scanner_base):
         """
         Sets the arguments for the testssl command
         """
-        self._arguments = ["Sni","ProtocolVersion","CipherSuite","TlsPoodle"]
+        self._arguments = ["Sni","ProtocolVersion","CipherSuite","TlsPoodle","PaddingOracle","PaddingOracleIdentificationAfter"]
 
     # to override
     def _worker(self, results):
@@ -46,4 +49,4 @@ class TLSPoodle(TLS_Scanner_base):
         :return: dict
         :rtype: dict
         """
-        return self._obtain_results(results, ["TLS Poodle"])
+        return self._obtain_results(results, ["Padding Oracle"])

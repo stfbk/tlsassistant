@@ -96,15 +96,7 @@ class TLS_Scanner:
         elif kwargs["hostname"] not in self.__cache:
             return {}  # not found
         else:
-            return (
-                self.__cache[kwargs["hostname"]]  # return cache value if
-                if not validate_ip(kwargs["hostname"])  # it's not an IP
-                else {  # else return the IP value
-                    kwargs["hostname"]: self.__cache[
-                        self.__ip_cache[kwargs["hostname"]]
-                    ][kwargs["hostname"]]
-                }
-            )
+            return self.__cache
 
     def __merge(self, x, y) -> dict:
         """

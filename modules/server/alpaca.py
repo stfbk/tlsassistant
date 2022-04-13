@@ -10,7 +10,7 @@ class Alpaca(TLS_Scanner_base):
     """
 
     conf = Parse_configuration_protocols(openssl="3.0.0", protocols={"SSLv3": "-"}) # FIXX?
-    stix = Bundled(mitigation_object=load_mitigation("TLS POODLE")) # FIX
+    stix = Bundled(mitigation_object=load_mitigation("ALPACA")) # FIX
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         """
@@ -25,10 +25,10 @@ class Alpaca(TLS_Scanner_base):
         :return: the result with the mitigations
         :rtype: dict
         """
-        print("Loaded mitigation TLS Poodle")
-        condition = condition and (key == "POODLE_SSL" or key == "fallback_SCSV")
+
+        condition = condition and key == "ALPACA"
         if condition:
-            result["mitigation"] = load_mitigation("TLS POODLE")
+            result["mitigation"] = load_mitigation("ALPACA")
         return result if condition else {}
 
     # to override
@@ -48,4 +48,4 @@ class Alpaca(TLS_Scanner_base):
         :rtype: dict
         """
         print("Alpaca output",results)
-        return self._obtain_results(results, ["POODLE_SSL", "fallback_SCSV"])
+        return self._obtain_results(results, ["ALPACA"])
