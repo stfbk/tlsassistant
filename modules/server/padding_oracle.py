@@ -28,22 +28,22 @@ class PaddingOracle(TLS_Scanner_base):
         condition = condition and key == "Padding Oracle"
         if condition:
             result["mitigation"] = load_mitigation("PADDING ORACLE")
-        # Add vulnerable ciphers to the mitigation 
-        
-        details = result['Details']
-        vulnerable_ciphers = []
-        for cipher in details:
-            if details[cipher]['Result'] != "NOT VULNERABLE":
-                vulnerable_ciphers.append(cipher)
-        
-        vulnerable_ciphers = list(set(vulnerable_ciphers)) # Remove duplicates
+            # Add vulnerable ciphers to the mitigation 
+            
+            details = result['Details']
+            vulnerable_ciphers = []
+            for cipher in details:
+                if details[cipher]['Result'] != "NOT VULNERABLE":
+                    vulnerable_ciphers.append(cipher)
+            
+            vulnerable_ciphers = list(set(vulnerable_ciphers)) # Remove duplicates
 
-        vulnerable_ciphers = [iana2openssl(cipher.split("-",1)[1]) for cipher in vulnerable_ciphers]
-        ciphers = ":!".join(vulnerable_ciphers)
-        # TODO: Check for key error
-        result['mitigation']['Entry']['Mitigation']['Apache'] = result['mitigation']['Entry']['Mitigation']['Apache'].format(vuln_ciphersuites = ciphers) 
-        result['mitigation']['Entry']['Mitigation']['Nginx'] = result['mitigation']['Entry']['Mitigation']['Nginx'].format(vuln_ciphersuites = ciphers) 
-        
+            vulnerable_ciphers = [iana2openssl(cipher.split("-",1)[1]) for cipher in vulnerable_ciphers]
+            ciphers = ":!".join(vulnerable_ciphers)
+            # TODO: Check for key error
+            result['mitigation']['Entry']['Mitigation']['Apache'] = result['mitigation']['Entry']['Mitigation']['Apache'].format(vuln_ciphersuites = ciphers) 
+            result['mitigation']['Entry']['Mitigation']['Nginx'] = result['mitigation']['Entry']['Mitigation']['Nginx'].format(vuln_ciphersuites = ciphers) 
+            
         return result if condition else {}
 
     # to override
