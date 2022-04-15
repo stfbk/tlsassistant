@@ -8,9 +8,10 @@
     "Description": "The Raccoon attack exploits a flaw in the TLS specification which can lead to an attacker being able to compute the pre-master secret in connections which have used a Diffie-Hellman (DH) based ciphersuite. In such a case this would result in the attacker being able to eavesdrop on all encrypted communications sent over that TLS connection.",
     "Mitigation": {
       "Textual": "Using of 'static' DH ciphersuites should be completly avoided. Also reuising the same DHE secret for multiple connections should be avoided.",
-      "Apache": "",
-      "Nginx": ""
+      "Apache": "1. open your Apache configuration file (default: <i>/etc/apache2/sites-available/default-ssl.conf</i>);<br/>2. find the line starting with: <strong>SSLCipherSuite</strong>;<br/>3.Add the string <code>:!kDHr:!kDHd:!kDH</code> at the end.</code>.<br/><br/>N.B. restart the server by typing: <code>sudo service apache2 restart</code>.",
+      "Nginx": "1. In a default situation, you can edit your website configuration <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>);<br/>2. Inside <code>server {{...}}</code> brackets configuration, find <code>ssl_ciphers</code>;<br/>3. Add <code>:!!kDHr:!kDHd:!kDH</code> at the end.<br/><br/><br/>N.B. restart the server by typing: <code>sudo service nginx restart</code>.<br/>"
 
+      
     }
   },
   "#comment": " https://nvd.nist.gov/vuln/detail/CVE-2020-1968 ",

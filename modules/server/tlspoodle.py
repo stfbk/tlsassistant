@@ -34,14 +34,14 @@ class TLSPoodle(TLS_Scanner_base):
     # to override
     def _set_arguments(self):
         """
-        Sets the arguments for the testssl command
+        Sets the arguments for the TLS-Scanner command
         """
         self._arguments = ["Sni","ProtocolVersion","CipherSuite","TlsPoodle"]
 
     # to override
     def _worker(self, results):
         """
-        The worker method, which runs the testssl command
+        The worker method, which runs the TLS-Scanner command
 
         :param results: dict
         :return: dict

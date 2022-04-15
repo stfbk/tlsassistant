@@ -27,7 +27,7 @@ class PaddingOracle(TLS_Scanner_base):
         """
         condition = condition and key == "Padding Oracle"
         if condition:
-            result["mitigation"] = load_mitigation("PADDING ORACLE") # Should we use a different mitigation?
+            result["mitigation"] = load_mitigation("PADDING ORACLE")
         # Add vulnerable ciphers to the mitigation 
         
         details = result['Details']
@@ -41,8 +41,8 @@ class PaddingOracle(TLS_Scanner_base):
         vulnerable_ciphers = [iana2openssl(cipher.split("-",1)[1]) for cipher in vulnerable_ciphers]
         ciphers = ":!".join(vulnerable_ciphers)
         # TODO: Check for key error
-        result['mitigation']['Entry']['Mitigation']['Apache'].format(vuln_ciphersuites = ciphers) 
-        result['mitigation']['Entry']['Mitigation']['Nginx'].format(vuln_ciphersuites = ciphers) 
+        result['mitigation']['Entry']['Mitigation']['Apache'] = result['mitigation']['Entry']['Mitigation']['Apache'].format(vuln_ciphersuites = ciphers) 
+        result['mitigation']['Entry']['Mitigation']['Nginx'] = result['mitigation']['Entry']['Mitigation']['Nginx'].format(vuln_ciphersuites = ciphers) 
         
         return result if condition else {}
 

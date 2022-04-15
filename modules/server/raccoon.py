@@ -4,7 +4,7 @@ from modules.stix.stix_base import Bundled
 from utils.mitigations import load_mitigation
 
 
-class Alpaca(TLS_Scanner_base):
+class Raccoon(TLS_Scanner_base):
     """
     Analysis of the poodle testssl results
     """
@@ -26,9 +26,9 @@ class Alpaca(TLS_Scanner_base):
         :rtype: dict
         """
 
-        condition = condition and key == "ALPACA"
+        condition = condition and key == "Raccoon"
         if condition:
-            result["mitigation"] = load_mitigation("ALPACA")
+            result["mitigation"] = load_mitigation("RACCOON")
         # TODO: If partially mitigated, just say enable ALPN or SNI...
         return result if condition else {}
 
@@ -37,7 +37,7 @@ class Alpaca(TLS_Scanner_base):
         """
         Sets the arguments for the TLS-Scanner command
         """
-        self._arguments = ["Sni","Alpn","Extension","ProtocolVersion","CipherSuite","Alpaca"]
+        self._arguments = ["Sni","Alpn","ProtocolVersion","CipherSuite","DirectRaccoon","RaccoonAttackAfter"]
 
     # to override
     def _worker(self, results):
@@ -48,4 +48,4 @@ class Alpaca(TLS_Scanner_base):
         :return: dict
         :rtype: dict
         """
-        return self._obtain_results(results, ["ALPACA"])
+        return self._obtain_results(results, ["Raccoon"])

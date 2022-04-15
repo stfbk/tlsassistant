@@ -1,0 +1,20 @@
+{
+    "input":[
+       {
+          "name":"hostname",
+          "type":"str",
+          "description":"Hostname to analyze",
+          "required":"True"
+       }
+    ],
+    "description":"This modules runs the vulnerability check for Raccoon.",
+    "path":"modules/server/raccoon.py",
+    "class_name":"Raccoon",
+    "output":[
+       {
+          "name":"results",
+          "type":"dict",
+          "description":"results of the scan"
+       }
+    ]
+ }
