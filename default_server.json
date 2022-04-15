@@ -3,6 +3,7 @@
   "description": "Default server configuration",
   "modules": [
     "3shake",
+    "alpaca",
     "beast",
     "breach",
     "ccs_injection",
@@ -18,12 +19,14 @@
     "lucky13",
     "mitzvah",
     "nomore",
+    "padding_oracle",
     "pfs",
-    "sslpoodle",
     "renegotiation",
     "robot",
     "sloth",
+    "sslpoodle",
     "sweet32",
-    "ticketbleed"
+    "ticketbleed",
+    "tlspoodle"
   ]
 }

@@ -6,7 +6,7 @@ from utils.mitigations import load_mitigation
 
 class TLSPoodle(TLS_Scanner_base):
     """
-    Analysis of the poodle testssl results
+    Analysis of the poodle TLS Scanner results
     """
 
     conf = Parse_configuration_protocols(openssl="3.0.0", protocols={"SSLv3": "-"}) # FIXX?
@@ -28,6 +28,7 @@ class TLSPoodle(TLS_Scanner_base):
         condition = condition and key == "TLS Poodle"
         if condition:
             result["mitigation"] = load_mitigation("TLS POODLE")
+        
         return result if condition else {}
 
     # to override

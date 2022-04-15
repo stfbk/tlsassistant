@@ -90,6 +90,9 @@ class Testssl_base:
         """
         val = Validator([(results, dict), (keys, list)])
         out = {}
+        print("###")
+        print(results)
+        print("###")
         for ip in results:
             for key in keys:
                 val.string(key)
@@ -114,6 +117,9 @@ class Testssl_base:
                         out["key"] = []
                     if key not in out["key"]:
                         out["key"].append(key)
+        print("###")
+        print(out)
+        print("###")
         return out
 
     def run(self, **kwargs):

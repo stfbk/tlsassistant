@@ -29,6 +29,7 @@ class Alpaca(TLS_Scanner_base):
         condition = condition and key == "ALPACA"
         if condition:
             result["mitigation"] = load_mitigation("ALPACA")
+        # TODO: If partially mitigated, just say enable ALPN or SNI...
         return result if condition else {}
 
     # to override

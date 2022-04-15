@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 
 from modules.server.wrappers.tlsscanner import TLS_Scanner
 from utils.mitigations import load_mitigation
@@ -92,47 +93,19 @@ class TLS_Scanner_base:
         :rtype: dict
         """
         val = Validator([(results, dict), (keys, list)])
-        out = {}
-        print()
-        print("tlsscanner_base.py._obtain_results",results, keys)
+        out = defaultdict(dict)
         
         for hostname in results:
             for key in keys:
-                print(results[hostname][key], hostname, key)
-                condition = results[hostname][key]['Result'] != "not vulnerable" and results[hostname][key]['Result'] != "error" and results[hostname][key]['Result'] != "not tested yet"
+                condition = results[hostname][key]['Result'] != "not vulnerable" and results[hostname][key]['Result'] != "error" and results[hostname][key]['Result'] != "not tested yet" and results[hostname][key]['Result'] != "could not test (not vulnerable)"
 
                 conditioned_result = self._set_mitigations(
                     results[hostname][key], key, condition
                 )
 
-                print(results[hostname][key])
-
-        '''
-        for ip in results:
-            for key in keys:
-                val.string(key)
-                if key not in results[ip]:
-                    results[ip][key] = {"finding": "ERROR_NOT_FOUND"}
-                # check for severity != OK or info or warn
-                condition = "severity" in results[ip][key] and (
-                    results[ip][key]["severity"] != "OK"
-                    and results[ip][key]["severity"] != "INFO"
-                    and results[ip][key]["severity"] != "WARN"
-                )
-                conditioned_result = self._set_mitigations(
-                    results[ip][key], key, condition
-                )
                 if conditioned_result:
-                    out = conditioned_result
-                    if "ip" not in out:
-                        out["ip"] = []
-                    if ip not in out["ip"]:
-                        out["ip"].append(ip)
-                    if "key" not in out:
-                        out["key"] = []
-                    if key not in out["key"]:
-                        out["key"].append(key)
-        '''
+                    out[hostname][key] = conditioned_result
+        
         return out
 
     def run(self, **kwargs):
