@@ -3,8 +3,9 @@ from modules.configuration.configuration_base import Config_base
 from utils.logger import Logger
 from utils.type import WebserverType
 from utils.validation import Validator
-from crossplane import parse as nginx_parse
 from apacheconfig import make_loader
+from crossplane import parse as nginx_parse, build as nginx_build
+import ast
 
 
 class Configuration:
@@ -432,25 +433,171 @@ class Configuration:
             online=online,
         )
 
-    def save(self, file_name: str = None):
+    def __rebuild(self, struct, my_payload):
+        """
+        Funzione ricorsiva per generare struttura dati utilizzata dalla libreria `crossplane`
+        dalla nostra struttura custom
+        
+        :param struct: struttura dati custom creata dalla funzione `structure`
+        :type struct: dict
+        :param my_payload: output con modifica della reference a questa list
+        :type my_payload: list
+        """
+        for key, val in struct.items():
+            if type(val) == list:
+                my_payload.append({})
+                index = len(my_payload) - 1
+
+                if len(val) > 0 and type(val[0]) == str: # str degli args
+                    my_payload[index]['directive'] = key
+                    my_payload[index]['args'] = val
+                else: # primo inizio di sottoblocco
+                    max = len(val) - 1
+                    for cont, v in enumerate(val):
+                        if type(v) == list:
+                            # Caso nel cui fosse una lista di liste come direttive multiple con stessa chiave e valori diversi
+                            if len(v) > 0:
+                                my_payload[index]['directive'] = key
+                                my_payload[index]['args'] = v
+                        else:
+                            my_payload[index]['block'] = []
+                            my_payload[index]['directive'] = key
+                            # TODO: Valutare utilizzo di eval
+                            my_payload[index]['args'] = ast.literal_eval(*v) if any(isinstance(el, dict) for el in v.values()) else []
+                            self.__rebuild(v, my_payload[index]['block'])
+
+                        if cont < max: # Se questo è l'ultimo elemento del sottoblocco, non aggiungo nuovo dict vuoto
+                            my_payload.append({})
+                            index = len(my_payload) - 1
+
+            else: # caso speciale args con sottoblocco: type(val) == dict
+                # ogni entry corrisponde ad un nuovo blocco distinto (vedi location)
+                for k, v in val.items():
+                    if any(isinstance(el, list) for el in v):
+                        for entry in v:
+                            my_payload.append({})
+                            i = len(my_payload)-1
+
+                            my_payload[i]['directive'] = k
+                            my_payload[i]['args'] = entry
+                    else:
+                        my_payload.append({})
+                        i = len(my_payload)-1
+
+                        my_payload[i]['directive'] = k
+                        my_payload[i]['args'] = v
+
+    def __rebuild_wrapper(self, struct, my_payload):
+        """
+        Funzione wrapper per ritornare alla struttura della libreria 'crossplane' 
+        dalla struttura personalizzata.
+
+        :param struct: struttura dati custom creata dalla funzione `structure`
+        :type struct: dict
+        :param my_payload: output con modifica della reference a questa list
+        :type my_payload: list
+        """
+        for key, val in struct.items():
+            for entry in val:
+                my_payload.append({})
+                index = len(my_payload) - 1
+                my_payload[index]['directive'] = key
+                my_payload[index]['args'] = []
+                if type(entry) == dict: # sottoblocco incoming
+                    my_payload[index]['block'] = []
+                    self.__rebuild(entry, my_payload[index]['block'])
+                elif type(entry) == list:
+                    my_payload[index]['args'] = entry
+                else:
+                    my_payload[index]['args'] = val
+                    break
+
+    def save(self, file_path: str = None):
         """
         Saves the configuration.
 
-        :param file_name: file name to save, if None, the input file name is used
-        :type file_name: str
-        :default file_name: None
+        :param file_path: file name to save, if None, the input file name is used
+        :type file_path: str
+        :default file_path: None
         """
         self.__logging.info("Saving config file...")
-        if not file_name:
-            path = self.__path
-        else:
-            path = file_name
-        file = Path(path)
-        file.touch()
 
-        options = {
-            'namedblocks': False
-        }
-        with make_loader(**options) as loader:
-            loader.dump(filepath=str(file.absolute()), dct=self.__loaded_conf)
-        self.__logging.info(f"Saved configuration in file {file.absolute()}")
+        if self.__type == WebserverType.APACHE:
+            if not file_path:
+                path = self.__path
+            else:
+                path = file_path
+            file = Path(path)
+            file.touch()
+
+            options = {
+                'namedblocks': False
+            }
+            with make_loader(**options) as loader:
+                loader.dump(filepath=str(file.absolute()), dct=self.__loaded_conf)
+            self.__logging.info(f"Saved configuration in file {file.absolute()}")
+
+        elif self.__type == WebserverType.NGINX:
+            cwd = Path.cwd()
+
+            self_path = Path(self.__path).resolve() # main file path
+            file_path_resolved = None # output file path
+            output_folder = None # output base folder
+            if file_path:
+                file_path_resolved = Path(file_path).resolve()
+                if file_path_resolved == cwd.resolve():
+                    # Check that --apply-fix argument is not the current directory
+                    # TODO: Doesn't check ../* path
+                    file_path_resolved = Path('./nginx.conf').resolve()
+                output_folder = file_path_resolved.parent
+                if output_folder == cwd:
+                    # -f arg is directly a "single" path (ex: -f output) 
+                    # -> folder and main file will have this name -> ./output/output is the ex-"nginx.conf"
+                    output_folder = file_path_resolved
+
+                if output_folder.exists():
+                    if output_folder.is_dir():
+                        self.__logging.warning(f"Folder '{output_folder.absolute()}/' already exists, overwriting files...")
+                    elif output_folder.is_file():
+                        self.__logging.error(f"{output_folder.absolute()} is a file, cannot overwrite it to folder...")
+                        raise NotADirectoryError(f"{output_folder.absolute()} is a file, cannot overwrite it to folder...")
+                else:
+                    self.__logging.debug(f"Folder '{output_folder}/' is not here, creating at {output_folder.absolute()}/")
+                    output_folder.mkdir(parents=True, exist_ok=True)
+            
+
+            for path, val in self.__loaded_conf.items():
+                this_path = Path(path).resolve()
+                file = this_path
+
+                if file_path:
+                    if len(self.__loaded_conf) == 1:
+                        # only one output file, so filename is exactly file_path
+                        file = file_path_resolved
+                    else:
+                        file_name_extension = this_path.stem + ''.join(this_path.suffixes)
+
+                        if self_path == this_path:
+                            # main file needs to be renamed
+                            file_name_extension = file_path_resolved.name
+                            file = output_folder / file_name_extension
+                        else:
+                            sub_folder = this_path.parent.relative_to(self_path.parent) # subtree relative from main file folder
+                            file = output_folder / sub_folder / file_name_extension
+                
+                if not file.parent.exists():
+                    self.__logging.debug(f"Folder '{file.parent}/' is not here, creating at {file.parent.absolute()}/")
+                    file.parent.mkdir(parents=True, exist_ok=True) # Also here to create 'sub_folder'
+                
+                file.touch() # Create the file
+                
+                my_payload = []
+                self.__rebuild_wrapper(val, my_payload)
+                config = nginx_build(my_payload)
+                # print(config)
+                file.write_text(config)
+
+                self.__logging.info(f"Saved configuration in file {file.absolute()}")
+
+        else:
+            raise NotImplementedError
