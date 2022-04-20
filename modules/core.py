@@ -158,7 +158,7 @@ class Core:
         kwargs["to_exclude"] = list(map(str.lower, kwargs["to_exclude"]))
         # set outputfilename if not already set
         if "output" not in kwargs or not kwargs["output"]:  # if not output
-            file_name = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+            file_name = datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")
             fl = str(Path(file_name).absolute()).lower()
         else:
             fl = Path(kwargs["output"])

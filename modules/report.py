@@ -234,7 +234,7 @@ class Report:
                     mode=self.__input_dict["mode"],
                     modules=list(modules.keys()),
                     results=results,
-                    date=datetime.now().replace(microsecond=0),
+                    date=datetime.now().replace(microsecond=0).strftime("%Y-%m-%d_%H%M%S"),
                 )
             )
         self.__logging.debug("Checking if needs pdf...")
