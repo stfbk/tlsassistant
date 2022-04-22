@@ -179,6 +179,7 @@ class Nginx_parse_configuration_ciphers():
         """
         key = self.__key
         v = Validator()
+        ciphers_default = 'HIGH:!aNULL:!MD5'
         backup = vhost[key].copy() if key in vhost else []
         for cipher in self.__ciphers:
             v.string(cipher)
@@ -186,10 +187,10 @@ class Nginx_parse_configuration_ciphers():
                 if len(vhost[key]) == 1:
                     # ssl_ciphers directive has only one argument
                     vhost[key][0] += f":!{cipher.upper()}"
-                else:
-                    vhost[key] = [f'HIGH:!aNULL:!MD5:!{cipher.upper()}']
+                else: # len could be only 0
+                    vhost[key] = [f'{ciphers_default}:!{cipher.upper()}']
             else:
-                vhost[key] = [f'HIGH:!aNULL:!MD5:!{cipher.upper()}']
+                vhost[key] = [f'{ciphers_default}:!{cipher.upper()}']
         
         return {
             "before": f"{key} {backup}" if backup else "",

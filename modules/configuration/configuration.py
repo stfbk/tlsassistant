@@ -610,7 +610,6 @@ class Configuration:
                 my_payload = []
                 self.__rebuild_wrapper(val, my_payload)
                 config = nginx_build(my_payload)
-                # print(config)
                 file.write_text(config)
 
                 self.__logging.info(f"Saved configuration in file {file.absolute()}")
