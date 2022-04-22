@@ -29,7 +29,21 @@ class Alpaca(TLS_Scanner_base):
         condition = condition and key == "ALPACA"
         if condition:
             result["mitigation"] = load_mitigation("ALPACA")
-        # TODO: If partially mitigated, just say enable ALPN or SNI...
+            #  Handle the case if the the vulnerability is partially mitigated
+            details = result["Details"]
+            ext = ""
+            if details["Strict SNI"] == "false":
+                ext = "SNI"
+            
+            if details["Strict ALPN"] == "false":
+                if ext != "":
+                    ext += " and ALPN"  
+                else:
+                    ext = "ALPN" 
+            result['mitigation']['Entry']['Mitigation']['Textual'] = result['mitigation']['Entry']['Mitigation']['Textual'].format(extensions = ext)
+            
+            print("Result", result)
+
         return result if condition else {}
 
     # to override

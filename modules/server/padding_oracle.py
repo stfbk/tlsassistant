@@ -39,7 +39,14 @@ class PaddingOracle(TLS_Scanner_base):
             vulnerable_ciphers = list(set(vulnerable_ciphers)) # Remove duplicates
 
             vulnerable_ciphers = [iana2openssl(cipher.split("-",1)[1]) for cipher in vulnerable_ciphers]
-            ciphers = ":!".join(vulnerable_ciphers)
+
+            ciphers = []
+            for cipher in vulnerable_ciphers:
+                if cipher != "":
+                    ciphers.append(cipher)
+            
+            ciphers = ":!".join(ciphers)
+            
             # TODO: Check for key error
             result['mitigation']['Entry']['Mitigation']['Apache'] = result['mitigation']['Entry']['Mitigation']['Apache'].format(vuln_ciphersuites = ciphers) 
             result['mitigation']['Entry']['Mitigation']['Nginx'] = result['mitigation']['Entry']['Mitigation']['Nginx'].format(vuln_ciphersuites = ciphers) 

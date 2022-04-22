@@ -238,13 +238,7 @@ class TLS_Scanner:
             "Raccoon" : {
                 "Result" : ""
             },
-            "Direct Raccoon" : {
-                "Result" : "",
-                "Details" : {}
-            },
-            "TLS Poodle" : {
-                "Result" : ""
-            }
+            [...]
         }'''
         report = defaultdict(dict)
 
@@ -328,6 +322,11 @@ class TLS_Scanner:
         report["Padding Oracle"]["Details"] = padding_oracle_details
         report["ALPACA"]["Details"] = alpaca_details
         report["Direct Raccoon"]["Details"] = direct_raccoon_details
+        report["Raccoon"]["vulnToRaccoon"] = report["Raccoon"]["Result"]
+        report["Raccoon"]["Result"] = 'vulnerable' if (report["Raccoon"]["Result"] == 'vulnerable' or report["Direct Raccoon"]["Result"] == 'vulnerable') else 'not vulnerable'
+        report["Raccoon"]["vulnToDirectRaccoon"] = report["Direct Raccoon"]["Result"]
+        report["Raccoon"]["Details"] = report["Direct Raccoon"]["Details"]
+        report.pop("Direct Raccoon",None)
         return report
 
     def __scan_hostname(self, hostname: str, args: [str], force: bool, one: bool):
@@ -363,7 +362,12 @@ class TLS_Scanner:
                 if args:
                     logging.debug(f"Scanning with personalized args: {args}")
                     cmd.append("-vulns")
-                    cmd.append(",".join(set(args))) 
+                    aargs = []
+                    # Some vulnerabilities resuse some command arguments, so eliminate duplicates
+                    for a in args:
+                        if a not in aargs:
+                            aargs.append(a)
+                    cmd.append(",".join(args)) 
 
                 output = ""  
                 try:
