@@ -13,6 +13,8 @@ class Nginx_parse_configuration_protocols():
         :type openssl: str
         :param protocols: TLS/SSL protocols to check.
         :type protocols: dict
+        :param openssl_class: OpenSSL class from "super".
+        :type openssl_class: OpenSSL
         """
         self.__openssl = openssl
         self.__protocols = protocols
@@ -126,6 +128,14 @@ class Nginx_parse_configuration_ciphers():
     """
 
     def __init__(self, openssl: str, ciphers: list, openssl_class):
+        """
+        :param openssl: OpenSSL version.
+        :type openssl: str
+        :param ciphers: ciphers to check.
+        :type ciphers: dict
+        :param openssl_class: OpenSSL class from "super".
+        :type openssl_class: OpenSSL
+        """
         self.__openssl = openssl
         self.__ciphers = ciphers
         self.openSSL = openssl_class
@@ -292,6 +302,12 @@ class Nginx_parse_configuration_checks_compression():
     """
 
     def __init__(self, openssl: str, openssl_class):
+        """
+        :param openssl: OpenSSL version.
+        :type openssl: str
+        :param openssl_class: OpenSSL class from "super".
+        :type openssl_class: OpenSSL
+        """
         self.__openssl = openssl
         self.__key = "ssl_compression"
         self.openSSL = openssl_class
@@ -402,7 +418,7 @@ class Nginx_parse_configuration_checks_redirect():
         if key not in vhost:
             vhost[key] = ['301', 'https://$host$request_uri']
         else:
-            # TODO: Verificare quale altro c'è già?
+            # TODO: Check which one is already here?
             pass
         
         return {

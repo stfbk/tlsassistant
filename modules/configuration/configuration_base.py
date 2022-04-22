@@ -108,7 +108,7 @@ class Config_base:
         Dummy condition method.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :returns: True if vhost is vulnerable.
         :rtype: bool
         :raise: NotImplementedError if method is not implemented.
@@ -120,7 +120,7 @@ class Config_base:
         Dummy fix method.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :raise: NotImplementedError if method is not implemented.
         """
         raise NotImplementedError
@@ -130,7 +130,7 @@ class Config_base:
         Dummy empty method.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :returns: True if vhost doesn't have the contextual VirtualHost directive.
         :rtype: bool
         :raise: NotImplementedError if method is not implemented.
@@ -167,7 +167,7 @@ class Parse_configuration_protocols(Config_base):
         Check if vhost doesn't have the contextual directive.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :returns: True if vhost doesn't have the contextual directive.
         :rtype: bool
         """
@@ -179,7 +179,7 @@ class Parse_configuration_protocols(Config_base):
         Check if vhost is using only the TLS version x.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :param version: TLS version to check.
         :type version: int
         :returns: True if vhost is using ONLY the TLS version x.
@@ -193,7 +193,7 @@ class Parse_configuration_protocols(Config_base):
         Fix TLS/SSL protocol bad configuration.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         """
         assert self.__execution_class is not None, "Webserver type not set."
         return self.__execution_class.fix(vhost)
@@ -203,7 +203,7 @@ class Parse_configuration_protocols(Config_base):
         Check if vhost is vulnerable to TLS SSLProtocol bad configuration.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :param openssl: OpenSSL version.
         :type openssl: str
         :param ignore_openssl: Ignore OpenSSL version.
@@ -219,6 +219,8 @@ class Parse_configuration_ciphers(Config_base):
     """
     Check if vhost is vulnerable to misconfigured TLS cipher.
     """
+
+    VHOST_USE = PortType.SSL
 
     def __init__(self, openssl: str, ciphers: list):
         self.__openssl = openssl
@@ -239,7 +241,7 @@ class Parse_configuration_ciphers(Config_base):
         Check if vhost is using ONLY the TLS version x.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :param version: TLS version to check.
         :type version: int
         :returns: True if vhost is using ONLY the TLS version x.
@@ -253,7 +255,7 @@ class Parse_configuration_ciphers(Config_base):
         Check if vhost doesn't have the contextual directive.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :returns: True if vhost doesn't have the contextual directive.
         :rtype: bool
         """
@@ -269,7 +271,7 @@ class Parse_configuration_ciphers(Config_base):
         Check if vhost is vulnerable to misconfigured TLS cipher.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :param openssl: OpenSSL version.
         :type openssl: str
         :param ignore_openssl: Ignore OpenSSL version.
@@ -305,7 +307,7 @@ class Parse_configuration_strict_security(Config_base):
         Check if vhost doesn't have the header directive.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :returns: True if vhost doesn't have the header directive.
         :rtype: bool
         """
@@ -317,7 +319,7 @@ class Parse_configuration_strict_security(Config_base):
         Fix misconfigured TLS strict security in vhost.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         """
         assert self.__execution_class is not None, "Webserver type not set."
         return self.__execution_class.fix(vhost)
@@ -327,7 +329,7 @@ class Parse_configuration_strict_security(Config_base):
         Check if vhost is vulnerable to misconfigured TLS strict security.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :param openssl: OpenSSL version.
         :type openssl: str
         :param ignore_openssl: Ignore OpenSSL version.
@@ -344,7 +346,7 @@ class Parse_configuration_checks_compression(Config_base):
     Check if vhost is vulnerable to misconfigured TLS compression.
 
     :param vhost: VirtualHost object.
-    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :type vhost: dict
     """
 
     VHOST_USE = PortType.NONE
@@ -368,7 +370,7 @@ class Parse_configuration_checks_compression(Config_base):
         Check if vhost is using only a specific version of TLS.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :param version: TLS version.
         :type version: int
         :returns: True if vhost is using only a specific version of TLS.
@@ -382,7 +384,7 @@ class Parse_configuration_checks_compression(Config_base):
         Check if vhost doesn't have the SSLCompression directive.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :returns: True if vhost doesn't have the SSLCompression directive.
         :rtype: bool
         """
@@ -394,7 +396,7 @@ class Parse_configuration_checks_compression(Config_base):
         Fix misconfigured TLS compression in vhost.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         """
         assert self.__execution_class is not None, "Webserver type not set."
         return self.__execution_class.fix(vhost)
@@ -404,7 +406,7 @@ class Parse_configuration_checks_compression(Config_base):
         Check if vhost is vulnerable to misconfigured TLS compression.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :param openssl: OpenSSL version.
         :type openssl: str
         :param ignore_openssl: Ignore OpenSSL version.
@@ -438,7 +440,7 @@ class Parse_configuration_checks_redirect(Config_base):
         Check if vhost doesn't have the RewriteEngine and RewriteRule directives.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :returns: True if vhost doesn't have the RewriteEngine and RewriteRule directives.
         :rtype: bool
         """
@@ -450,7 +452,7 @@ class Parse_configuration_checks_redirect(Config_base):
         Fix misconfigured TLS redirect in vhost.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         """
         assert self.__execution_class is not None, "Webserver type not set."
         return self.__execution_class.fix(vhost)
@@ -460,7 +462,7 @@ class Parse_configuration_checks_redirect(Config_base):
         Check if vhost is vulnerable to misconfigured TLS redirect.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :param openssl: OpenSSL version.
         :type openssl: str
         :param ignore_openssl: Ignore OpenSSL version.
