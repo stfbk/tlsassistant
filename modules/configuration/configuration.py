@@ -46,7 +46,7 @@ class Configuration:
             if "VirtualHost" not in self.__loaded_conf:
                 self.__loaded_conf["VirtualHost"] = []
             loaded_vhost = self.__loaded_conf["VirtualHost"]
-            # loaded_vhost è dict se solo uno presente, lista di dict altrimenti
+            # loaded_vhost is dict if there is only one vhost, list of dict otherwise
             if isinstance(loaded_vhost, list):
                 for vhost in loaded_vhost:
                     if not port or port in list(vhost.keys())[0]:
@@ -57,11 +57,11 @@ class Configuration:
         elif self.__type == WebserverType.NGINX:
             def __gen(conf_server):
                 for server in conf_server:
-                    # Nella struttura custom, se lista di lista allora il blocco server
-                    # contiene più di una direttiva 'listen'
+                    # In our custom structure, if list of lists then server block 
+                    # contains more than one 'listen' directive
                     if any(isinstance(el, list) for el in server['listen']):
                         for _port in server['listen']:
-                            # Assumo che il primo elemento della (sotto)lista sia la porta
+                            # I assume that the first element of (sub)list is the port
                             if not port or port in _port[0]:
                                 yield {_port[0]: server}
                     else:
@@ -148,20 +148,19 @@ class Configuration:
                 if directive_key not in struct:
                     struct[directive_key] = []
                 elif 'block' not in directive: 
-                    # se esiste già questa chiave ma non è un inizio di sottoblocco,
-                    # allora è una lista di lista, ad indicare più direttive con uguale chiave
-                    # ma distinto valore.
-                    # Esempio: 
+                    # if this key already exists, but it's not the start of a subblock,
+                    # then it's a list of lists, to indicate many directive with same key
+                    # but distinct values
+                    # Example: 
                     # {
                     #   listen 80;
                     #   listen 443 ssl;
                     # }
-                    # diventa
+                    # will become
                     #   {'listen': [['80'], ['443', 'ssl']]}
                     if any(isinstance(el, str) for el in struct[directive_key]):
-                        # prima volta che scopro che ci sono più chiavi uguali,
-                        # quindi modifico il valore della chiave in array, e aggiungo 
-                        # ciò che ho attualmente nel loop...
+                        # first time I discover that there are more directive with same key,
+                        # so I change the value of key to an array, and then I add what I have now in the loop
                         struct[directive_key] = [struct[directive_key], directive['args']]
                         special = True
                     elif any(isinstance(el, list) for el in struct[directive_key]):
@@ -173,17 +172,18 @@ class Configuration:
                     index = len(struct[directive_key]) - 1
 
                     if len(directive['args']) != 0:
-                        arg = repr(directive['args']) # repr della lista per argomento di un blocco
-                        struct[directive_key][index][arg] = {} # Sottoblocco con chiave gli argomenti di un blocco, esempio location >>> = /50x.html <<< {...}
+                        arg = repr(directive['args']) # list repr as argument of a block
+                        struct[directive_key][index][arg] = {} # Subblock with key the arguments of a block, for example: location >>> = /50x.html <<< {...}
                         __structure(directive['block'], struct[directive_key][index][arg])
                     else:
                         __structure(directive['block'], struct[directive_key][index])
-                elif not special: # se non è un inizio di sottoblocco e non è già stato elaborato in precedenza
+                elif not special: # if it's not a subblock and has not been already handled before
                     struct[directive_key] = directive['args']
 
         payload = nginx_parse(str(file.absolute()))
     
         if payload['status'] != 'ok' or len(payload['errors']) > 0:
+            self.__logging.error(f"Error parsing nginx config: {payload['errors']}")
             raise Exception(f"Error parsing nginx config: {payload['errors']}")
 
         struct = {}
@@ -192,6 +192,8 @@ class Configuration:
             __structure(file['parsed'], struct[file['file']])
 
             # Remove file if it doesn't have any 'http' or 'server' block
+            # TODO: not robust enough, an include could be expanded with useful directive for us but not included at this point
+            # ie: include snippet/directive/ssl.conf from https://github.com/risan/nginx-config
             if 'http' not in struct[file['file']] and 'server' not in struct[file['file']]:
                 del struct[file['file']]
 
@@ -448,30 +450,30 @@ class Configuration:
                 my_payload.append({})
                 index = len(my_payload) - 1
 
-                if len(val) > 0 and type(val[0]) == str: # str degli args
+                if len(val) > 0 and type(val[0]) == str: # args str
                     my_payload[index]['directive'] = key
                     my_payload[index]['args'] = val
-                else: # primo inizio di sottoblocco
+                else: # first stage of subblock
                     max = len(val) - 1
                     for cont, v in enumerate(val):
                         if type(v) == list:
-                            # Caso nel cui fosse una lista di liste come direttive multiple con stessa chiave e valori diversi
+                            # Case where it's a list of lists as multiple directives with same key and different values
                             if len(v) > 0:
                                 my_payload[index]['directive'] = key
                                 my_payload[index]['args'] = v
                         else:
                             my_payload[index]['block'] = []
                             my_payload[index]['directive'] = key
-                            # TODO: Valutare utilizzo di eval
+                            # TODO: Evaluate use of eval to bring back args as list from a string
                             my_payload[index]['args'] = ast.literal_eval(*v) if any(isinstance(el, dict) for el in v.values()) else []
                             self.__rebuild(v, my_payload[index]['block'])
 
-                        if cont < max: # Se questo è l'ultimo elemento del sottoblocco, non aggiungo nuovo dict vuoto
+                        if cont < max: # If this is the last element of the subblock, don't add a new empty dict
                             my_payload.append({})
                             index = len(my_payload) - 1
 
-            else: # caso speciale args con sottoblocco: type(val) == dict
-                # ogni entry corrisponde ad un nuovo blocco distinto (vedi location)
+            else: # special case where arg has a subblock: type(val) == dict
+                # every entry is a new distinct block (see 'location' for reference)
                 for k, v in val.items():
                     if any(isinstance(el, list) for el in v):
                         for entry in v:
@@ -503,7 +505,7 @@ class Configuration:
                 index = len(my_payload) - 1
                 my_payload[index]['directive'] = key
                 my_payload[index]['args'] = []
-                if type(entry) == dict: # sottoblocco incoming
+                if type(entry) == dict: # subblock incoming
                     my_payload[index]['block'] = []
                     self.__rebuild(entry, my_payload[index]['block'])
                 elif type(entry) == list:
