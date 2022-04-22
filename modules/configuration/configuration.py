@@ -108,6 +108,11 @@ class Configuration:
         else:
             results = self.__load_nginx_conf(file)
 
+        if self.__type == WebserverType.APACHE:
+            self.__logging.set_class_name("Configuration APACHE")
+        elif self.__type == WebserverType.NGINX:
+            self.__logging.set_class_name("Configuration NGINX")
+
         return results
 
     def __load_apache_conf(self, file: Path) -> dict:
