@@ -482,6 +482,15 @@ class Configuration:
 
                             my_payload[i]['directive'] = k
                             my_payload[i]['args'] = entry
+                    elif any(isinstance(el, dict) for el in v):
+                        # this could be an 'if' directive, so let's start again with subblock
+                        my_payload.append({})
+                        i = len(my_payload)-1
+
+                        my_payload[i]['directive'] = k
+                        my_payload[i]['args'] = ast.literal_eval(*v[0].keys())
+                        my_payload[i]['block'] = []
+                        self.__rebuild(v[0], my_payload[i]['block'])
                     else:
                         my_payload.append({})
                         i = len(my_payload)-1
