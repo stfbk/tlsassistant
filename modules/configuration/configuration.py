@@ -572,7 +572,7 @@ class Configuration:
                     elif output_folder.is_file():
                         self.__logging.error(f"{output_folder.absolute()} is a file, cannot overwrite it to folder...")
                         raise NotADirectoryError(f"{output_folder.absolute()} is a file, cannot overwrite it to folder...")
-                else:
+                elif len(self.__loaded_conf) > 1:
                     self.__logging.debug(f"Folder '{output_folder}/' is not here, creating at {output_folder.absolute()}/")
                     output_folder.mkdir(parents=True, exist_ok=True)
             
