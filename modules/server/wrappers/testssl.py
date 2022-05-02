@@ -295,15 +295,10 @@ class Testssl:
                         f"dependencies{sep}{file_name}.json", "r"
                     ) as file:  # load temp file
                         data = file.read()
-                        print("###")
-                        print(data)
                         cache, ip_cache = Parser(json.loads(data)).output()
-                        print(cache, ip_cache)
-                        print("###")
                         self.__update_cache(cache, ip_cache)
                     remove(f"dependencies{sep}{file_name}.json")
         else:
-            print("Not forced", link_sep(hostname)[0], self.__cache)
             if not validate_ip(
                 hostname
             ):  # recursive: if force : false, check if in cache. if not, recursive call

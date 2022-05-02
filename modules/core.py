@@ -105,8 +105,6 @@ class Core:
             stix=stix,
         )
         self.__cache[configuration] = self.__load_configuration(modules)
-        print(self.__cache[configuration])
-        ''''''
         self.__exec(
             type_of_analysis=self.__input_dict["type_of_analysis"],
             hostname_or_path=self.__input_dict["hostname_or_path"],
@@ -627,7 +625,6 @@ class Core:
                     port=port,
                 )
         self.__logging.info(f"Analysis of {hostname_or_path} done.")
-        print("Results", results)
         return loaded_modules, results
         # todo add output attack trees
 

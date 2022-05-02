@@ -389,7 +389,6 @@ class TLS_Scanner:
                 data = {hostname : data}
 
                 cache, ip_cache = Parser(data).output()
-                print(cache)
                 self.__update_cache(cache, ip_cache)
 
         else:
