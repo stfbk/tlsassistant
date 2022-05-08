@@ -4,7 +4,7 @@ from utils.validation import Validator
 from utils.loader import load_class, load_configuration
 from os.path import sep
 from utils.configuration import merge
-
+from utils.configuration import get_aliases
 
 class Parser:
     """
@@ -152,7 +152,18 @@ class Parser:
         """
 
         v = Validator([(data["modules"], list)])
+        aliases = get_aliases()
+        modules = []
         for module in data["modules"]:
+            m = module
+            if module in aliases:
+                for alias in aliases[module]:
+                    if alias not in modules:
+                        modules.append(alias)
+            else:
+                if module not in modules:
+                    modules.append(module)
+        for module in modules:
             mod_data = load_configuration(module)
             mod_path = Path(mod_data["path"])
             self.__cache[mod_path.stem] = (
