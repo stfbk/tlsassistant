@@ -52,7 +52,7 @@ class TLS_Scanner:
         """
         Loads TLS-Scanner variables.
         """
-        self.__tls_scanner = f"dependencies{sep}tls_scanner{sep}TLS-Server-Scanner.jar"
+        self.__tls_scanner = f"dependencies{sep}TLS-Scanner{sep}apps{sep}TLS-Server-Scanner.jar"
         self.__input_dict = {}
 
     def input(self, **kwargs):

@@ -1,4 +1,5 @@
 import asyncio
+from compileall import compile_path
 import json
 import sys
 
@@ -36,6 +37,7 @@ class Install:
         zips = []
         cfgs = []
         apts = []
+        maven_paths = []
         logger.info("Loading dependencies...")
         for dependency in dependencies:  # for each dependency
             if dependency["type"] == "git":  # if it's git
@@ -53,6 +55,9 @@ class Install:
             elif dependency["type"] == "cfg":  # if it's cfg
                 cfgs.append(dependency["url"])  # append it's url to the cfg array
                 logger.debug(f"Added dependency cfg {dependency['url']}")
+            elif dependency["type"] == "compile_maven":  # if it's cfg
+                maven_paths.append(dependency["path"])  # append it's url to the cfg array
+                logger.debug(f"Added dependency compile {dependency['path']}")
             else:  # if not found, throw warning
                 logger.warning(
                     f"Ignoring dependency {dependency['url']}, type {dependency['type']} is not recognized."
@@ -89,8 +94,10 @@ class Install:
         self.install_dependencies("apts", results_apts)  # install the dependencies pkg
         logger.info("Unzipping dependencies...")
         self.install_dependencies("zips", results_zips)  # unzips the zips
+        logger.info("Compiling dependencies...")
+        self.compile_maven_dependencies(maven_paths)  # unzips the zips
         logger.info("Generating Certificates...")
-        self.generate_cert()
+        self.generate_cert()        
         logger.info("All done!")
 
     def generate_cert(self):
@@ -187,6 +194,31 @@ class Install:
             ):  # delete the files .deb and .zip after all.
                 logger.debug(f"Removing file dependencies{sep}{file}")
                 remove(f"dependencies{sep}{file}")
+
+    def compile_maven_dependencies(self, paths):
+
+        for path in paths:
+            logger.info(f"Compiling dependencies{sep}{path}...")
+            f_path = f"./dependencies{sep}{path}"
+            with open(devnull, "w") as null:
+                subprocess.check_call(
+                    [
+                        "mvn",
+                        "clean",
+                        "install",
+                        "-DskipTests=true",
+                    ],
+                    stderr=sys.stderr,
+                    stdout=(
+                        sys.stdout
+                        if logging.getLogger().isEnabledFor(
+                            logging.DEBUG
+                        )  # if the user asked for debug mode, let him see the output.
+                        else null  # else /dev/null
+                    ),
+                    cwd=f_path
+                )
+            
 
     def git_clone(self, url, path=None):
         file_name = self.get_filename(url)
