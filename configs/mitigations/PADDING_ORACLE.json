@@ -7,7 +7,7 @@
       "#comment": " AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:N/A:N ",
       "Description": "During the evaluation of CBC ciphersuites supported by the server, some were found vulnerable to padding oracle attack, meaning that the attacker could with specifcally crafted tls records make the server behave in different ways and observe the response, which could allow to decrypt the communication.",
       "Mitigation": {
-        "Textual": "Ciphersuite that use CBC mode of operation should be avoided. If for some retrocompatibility reason not every CBC cipher can be disabled the following vulnerable ciphers should be disabled: ",
+        "Textual": "Ciphersuite that use CBC mode of operation should be avoided.",
         "Apache": "1. open your Apache configuration file (default: <i>/etc/apache2/sites-available/default-ssl.conf</i>);<br/>2. find the line starting with: <strong>SSLCipherSuite</strong>;<br/>3.Add the string <code>:!{vuln_ciphersuites}</code> at the end. Instead if you wish to disable all CBC mode ciphersuites you can add: <code>:!SHA1:!SHA256:!SHA384</code>.<br/><br/>N.B. restart the server by typing: <code>sudo service apache2 restart</code>.",
         "Nginx": "1. In a default situation, you can edit your website configuration <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>);<br/>2. Inside <code>server {{...}}</code> brackets configuration, find <code>ssl_ciphers</code>;<br/>3. Add the string  <code>:!{vuln_ciphersuites}</code> at the end. Instead if you wish to disable all CBC mode ciphersuites you can add: <code>:!SHA1:!SHA256:!SHA384</code> <br/><br/><br/>N.B. restart the server by typing: <code>sudo service nginx restart</code>.<br/>"
   

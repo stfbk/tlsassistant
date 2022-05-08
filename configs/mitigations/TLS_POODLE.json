@@ -7,7 +7,7 @@
     "#comment": " AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:N/A:N ",
     "Description": "Non-determinism during the decryption of malformed TLS records can induce the server to respond with different behaviours. If an attacker (MITM) can observe these different behaviours, then is able to decrypt the communication.",
     "Mitigation": {
-      "Textual": "Ciphersuite that use CBC mode of operation should be avoided. If for some retrocompatibility reason not every CBC cipher can be disabled the following vulnerable ciphers should be disabled: "
+      "Textual": "Ciphersuite that use CBC mode of operation should be avoided. Run the padding_oracle module to find out what ciphers where found to be vulnerable."
     }
   },
   "#comment": " https://nvd.nist.gov/vuln/detail/CVE-2014-3566 ",
