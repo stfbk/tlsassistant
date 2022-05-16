@@ -9,12 +9,11 @@ class PaddingOracle(TLS_Scanner_base):
     Analysis of the Padding Oracle TLS Scanner results
     """
 
-    conf = Parse_configuration_protocols(openssl="3.0.0", protocols={"SSLv3": "-"}) # FIXX?
-    stix = Bundled(mitigation_object=load_mitigation("PADDING ORACLE")) # FIX
+    stix = Bundled(mitigation_object=load_mitigation("PADDING ORACLE"))
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         """
-        Sets the mitigations for the poodle results
+        Sets the mitigations for the padding oracle results
 
         :param result: the result to set the mitigations in
         :type result: dict
@@ -47,7 +46,6 @@ class PaddingOracle(TLS_Scanner_base):
             
             ciphers = ":!".join(ciphers)
             
-            # TODO: Check for key error
             result['mitigation']['Entry']['Mitigation']['Apache'] = result['mitigation']['Entry']['Mitigation']['Apache'].format(vuln_ciphersuites = ciphers) 
             result['mitigation']['Entry']['Mitigation']['Nginx'] = result['mitigation']['Entry']['Mitigation']['Nginx'].format(vuln_ciphersuites = ciphers) 
             
@@ -56,14 +54,14 @@ class PaddingOracle(TLS_Scanner_base):
     # to override
     def _set_arguments(self):
         """
-        Sets the arguments for the testssl command
+        Sets the arguments for the TLS-Scanner command
         """
         self._arguments = ["Sni","ProtocolVersion","CipherSuite","PaddingOracle","PaddingOracleIdentificationAfter"]
 
     # to override
     def _worker(self, results):
         """
-        The worker method, which runs the testssl command
+        The worker method, which runs the TLS-Scanner command
 
         :param results: dict
         :return: dict

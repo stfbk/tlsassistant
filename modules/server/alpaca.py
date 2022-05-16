@@ -9,12 +9,11 @@ class Alpaca(TLS_Scanner_base):
     Analysis of the poodle testssl results
     """
 
-    conf = Parse_configuration_protocols(openssl="3.0.0", protocols={"SSLv3": "-"}) # FIXX?
-    stix = Bundled(mitigation_object=load_mitigation("ALPACA")) # FIX
+    stix = Bundled(mitigation_object=load_mitigation("ALPACA"))
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         """
-        Sets the mitigations for the poodle results
+        Sets the mitigations for the ALPACA results
 
         :param result: the result to set the mitigations in
         :type result: dict
@@ -41,8 +40,6 @@ class Alpaca(TLS_Scanner_base):
                 else:
                     ext = "ALPN" 
             result['mitigation']['Entry']['Mitigation']['Textual'] = result['mitigation']['Entry']['Mitigation']['Textual'].format(extensions = ext)
-            
-            print("Result", result)
 
         return result if condition else {}
 

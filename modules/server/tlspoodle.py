@@ -9,8 +9,7 @@ class TLSPoodle(TLS_Scanner_base):
     Analysis of the poodle TLS Scanner results
     """
 
-    conf = Parse_configuration_protocols(openssl="3.0.0", protocols={"SSLv3": "-"}) # FIXX?
-    stix = Bundled(mitigation_object=load_mitigation("TLS POODLE")) # FIX
+    stix = Bundled(mitigation_object=load_mitigation("TLS POODLE"))
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         """

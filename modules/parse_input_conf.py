@@ -155,7 +155,6 @@ class Parser:
         aliases = get_aliases()
         modules = []
         for module in data["modules"]:
-            m = module
             if module in aliases:
                 for alias in aliases[module]:
                     if alias not in modules:
