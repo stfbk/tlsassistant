@@ -41,7 +41,6 @@ class MitigationLoader:
         mitigation_name = mitigation_name.replace(" ", "_")
         mitigation_name = mitigation_name.upper()
         mitigation_path = Path(f"configs{sep}mitigations{sep}{mitigation_name}.json")
-        #print(mitigation_path)
         if not mitigation_path.exists():
             if raise_error:
                 raise FileNotFoundError(
