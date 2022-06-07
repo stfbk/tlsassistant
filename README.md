@@ -1,3 +1,5 @@
+<img src="assets/logo.png" alt="logo" style="zoom:35%;" />
+
 # TLSAssistant v2
 
 **TLSAssistant v2** is the (soon-to-be-released) latest version of TLSAssistant. A complete Python redesign performed to convert the standalone analyzer in a modular framework, extensible with new features and thus capable of streamlining the mitigation process of known and newly discovered TLS attacks even for non-expert users.
