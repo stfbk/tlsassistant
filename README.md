@@ -336,6 +336,14 @@ We perform a Single Host analysis on each one of the domains specified in an inp
 ### TLS Configuration and Fixes
 If a configuration file is provided, a WhiteBox analysis is performed by loading the TLS configuration into memory and performing a complete check of all available modules (Step 3b). Otherwise, if a configuration file is provided along with a valid hostname, a singlehost analysis is performed and then the fixes are integrated in the provided TLS configuration. We refer to this analysis as Hybrid: we perform a BlackBox analysis on the hostname and then we apply the fixes on the configuration file.
 
+## External/related projects
+
+- Employed in the context of the industrial collaboration with [IPZS](https://www.ipzs.it)/F&C
+
+- Integrated in the Horizon 2020 [FINSEC project](https://www.finsec-project.eu/)
+
+- Listed as [software of interest](https://developers.italia.it/it/software/stfbk-tlsassistant-e1ccc0) for the Italian Public Administrations
+
 
 ## License
 
