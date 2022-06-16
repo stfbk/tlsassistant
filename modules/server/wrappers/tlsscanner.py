@@ -19,7 +19,7 @@ class Parser:
     def __init__(self, to_parse: dict):
         """
         Init method.
-        :param to_parse: Raw JSON output of testssl.sh, given as a python dict.
+        :param to_parse: Raw JSON output of TLS-Scanner, given as a python dict.
         :type to_parse: dict
         """
         self.__results = to_parse
@@ -27,8 +27,122 @@ class Parser:
         self.__ip_output = {}
         self.__parse()
 
+    def __escape_output(self, output):
+        # Thanks to Stack Overflow
+        # https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
+        ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+        output = ansi_escape.sub('', output)
+        return output
+
     def __parse(self):  # parse method
-        self.__output = self.__results
+        output = self.__escape_output(self.__results)
+        output = output.split("\n")
+        '''
+        report = {
+            "ALPACA":{
+                "Result" : "",
+                "Details" : {},
+            },
+            "Padding Oracle":{
+                "Result" : "",
+                "Details" : {}
+            },
+            "Raccoon" : {
+                "Result" : ""
+            },
+            [...]
+        }'''
+        report = defaultdict(dict)
+
+        alpaca_details = {}
+        padding_oracle_details = {}
+        direct_raccoon_details = {}
+        hostname = ""
+        for i in range(0,len(output)): 
+            if "Report for" in output[i]:
+                hostname = output[i].split(" ")[-1]
+            elif "Attack Vulnerabilities" in output[i]:
+                j = i + 1
+                while output[j] != "------------------------------------------------------------":
+                    j += 1
+                vulns = output[i+2:j-1]    
+                        
+                for vuln in vulns:
+                    vuln,res = vuln.split(" : ",1)  
+                    vuln = vuln.replace("\t","").strip()
+                    report[vuln]["Result"] = res
+                i = j # Skip lines
+            
+            elif "Alpaca Details" in output[i]:
+                j = i + 1
+                while output[j] != "------------------------------------------------------------":
+                    j += 1
+                alpaca_details_temp = output[i+2:j-1]
+                for detail in alpaca_details_temp:                
+                    detail,res = detail.split(" : ",1)
+                    detail = detail.replace("\t","")
+                    if "Strict ALPN" == detail:
+                        alpaca_details["Strict ALPN"] = res
+                    elif "Strict SNI" == detail:
+                        alpaca_details["Strict SNI"] = res
+                    elif "ALPACA Mitigation" == detail:
+                        alpaca_details["ALPACA Mitigation"] = res
+                i = j # Skip lines
+
+            elif "Padding Oracle Details" in output[i] and report["Padding Oracle"]["Result"] == "vulnerable":
+                j = i + 1
+                while output[j] != "------------------------------------------------------------":
+                    j += 1
+                padding_oracle_details_temp = output[i+2:j-1]
+                for detail in padding_oracle_details_temp:
+                    detail = detail.split("|")
+                    name = ('-'.join(detail[0].split("\t")[2:])).strip()                
+                    behaviour_difference = detail[1].strip()
+                    result = detail[2].strip()
+
+                    if "<" in detail[3].strip():
+                        P = float(detail[3].strip()[4:])
+                    else:
+                        P = float(detail[3].strip()[3:])
+                    
+                    padding_oracle_details[name] = {
+                        'Behaviour' : behaviour_difference,
+                        'Result': result,
+                        'Confidence' : P
+                    }
+                i = j # Skip lines
+
+            elif "Direct Raccoon Results" in output[i] and report["Direct Raccoon"]["Result"] == "vulnerable":
+                j = i + 1
+                while output[j] != "------------------------------------------------------------":
+                    j += 1
+                direct_raccoon_details_temp = output[i+2:j-1]
+                for detail in direct_raccoon_details_temp:
+                    detail = detail.split("|")
+                    name = detail[0].replace("\t","-").strip()   
+                    behaviour_difference = detail[1].strip()
+                    result = detail[2].strip()
+                    if "<" in detail[3].strip():
+                        P = float(detail[3].strip()[4:])
+                    else:
+                        P = float(detail[3].strip()[3:])
+                    direct_raccoon_details[name] = {
+                        'Behaviour' : behaviour_difference,
+                        'Result': result,
+                        'Confidence' : P
+                    }
+                i = j # Skip lines
+
+        report["Padding Oracle"]["Details"] = padding_oracle_details
+        report["ALPACA"]["Details"] = alpaca_details
+        report["Direct Raccoon"]["Details"] = direct_raccoon_details
+        report["Raccoon"]["vulnToRaccoon"] = report["Raccoon"]["Result"]
+        report["Raccoon"]["Result"] = 'vulnerable' if (report["Raccoon"]["Result"] == 'vulnerable' or report["Direct Raccoon"]["Result"] == 'vulnerable') else 'not vulnerable'
+        report["Raccoon"]["vulnToDirectRaccoon"] = report["Direct Raccoon"]["Result"]
+        report["Raccoon"]["Details"] = report["Direct Raccoon"]["Details"]
+        report.pop("Direct Raccoon",None)
+
+        self.__output = {hostname : report}
 
 
     def output(self) -> (dict, dict):
@@ -64,11 +178,9 @@ class TLS_Scanner:
         * *hostname* (``str``) --
           The hostname of the website to analyze. Can be an IP or a Name (DNS)
         * *args* (``list of str``) --
-          Raw arguments for testssl.sh executable
+          Raw arguments for TLS-Scanner executable
         * *force* (``bool``) --
           Force rescan by ignoring cached results , Default *False*
-        * *one* (``bool``) --
-          Add ``--IP=one`` to testssl.sh executable calls, default *True*
         * *clean* (``bool``) --
           clear the cache, default *False*
         """
@@ -150,11 +262,9 @@ class TLS_Scanner:
         * *hostname* (``str``) --
           The hostname of the website to analyze. Can be an IP or a Name (DNS)
         * *args* (``list of str``) --
-          Raw arguments for testssl.sh executable
+          Raw arguments for TLS-Scanner executable
         * *force* (``bool``) --
           Force rescan by ignoring cached results , Default *False*
-        * *one* (``bool``) --
-          Add ``--IP=one`` to testssl.sh executable calls, default *True*
         * *clean* (``bool``) --
           clear the cache, default *False*
 
@@ -200,12 +310,10 @@ class TLS_Scanner:
         Scan internal module
         :param hostname: Hostname or IP
         :type hostname: str
-        :param args: Raw args for testssl.sh
+        :param args: Raw args for TLS-Scanner
         :type args: list of str
         :param force: Force the rescan, ignore the cached result.
         :type force: bool
-        :param one: Add '--IP=one' to testssl.sh calls.
-        :type one: bool
         :param clean: Clear the cache.
         :type clean: bool
 
@@ -215,139 +323,18 @@ class TLS_Scanner:
         self.__scan_hostname(hostname, args, force, one)
 
 
-    def __escape_output(self, output):
-        # Thanks to Stack Overflow
-        # https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
-        ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
-        output = ansi_escape.sub('', output)
-        return output
-
-    def __parse_output(self, output: str):
-        output = self.__escape_output(output)
-        output = output.split("\n")
-        '''
-        report = {
-            "ALPACA":{
-                "Result" : "",
-                "Details" : {},
-            },
-            "Padding Oracle":{
-                "Result" : "",
-                "Details" : {}
-            },
-            "Raccoon" : {
-                "Result" : ""
-            },
-            [...]
-        }'''
-        report = defaultdict(dict)
-
-        alpaca_details = {}
-        padding_oracle_details = {}
-        direct_raccoon_details = {}
-
-        for i in range(0,len(output)): 
-            if "Attack Vulnerabilities" in output[i]:
-                j = i + 1
-                while output[j] != "------------------------------------------------------------":
-                    j += 1
-                vulns = output[i+2:j-1]    
-                        
-                for vuln in vulns:
-                    vuln,res = vuln.split(" : ",1)  
-                    vuln = vuln.replace("\t","").strip()
-                    report[vuln]["Result"] = res
-                i = j # Skip lines
-            
-            elif "Alpaca Details" in output[i]:
-                j = i + 1
-                while output[j] != "------------------------------------------------------------":
-                    j += 1
-                alpaca_details_temp = output[i+2:j-1]
-                for detail in alpaca_details_temp:                
-                    detail,res = detail.split(" : ",1)
-                    detail = detail.replace("\t","")
-                    if "Strict ALPN" == detail:
-                        alpaca_details["Strict ALPN"] = res
-                    elif "Strict SNI" == detail:
-                        alpaca_details["Strict SNI"] = res
-                    elif "ALPACA Mitigation" == detail:
-                        alpaca_details["ALPACA Mitigation"] = res
-                i = j # Skip lines
-
-            elif "Padding Oracle Details" in output[i] and report["Padding Oracle"]["Result"] == "vulnerable":
-                j = i + 1
-                while output[j] != "------------------------------------------------------------":
-                    j += 1
-                padding_oracle_details_temp = output[i+2:j-1]
-                for detail in padding_oracle_details_temp:
-                    detail = detail.split("|")
-                    name = ('-'.join(detail[0].split("\t")[2:])).strip()                
-                    behaviour_difference = detail[1].strip()
-                    result = detail[2].strip()
-
-                    if "<" in detail[3].strip():
-                        P = float(detail[3].strip()[4:])
-                    else:
-                        P = float(detail[3].strip()[3:])
-                    
-                    padding_oracle_details[name] = {
-                        'Behaviour' : behaviour_difference,
-                        'Result': result,
-                        'Confidence' : P
-                    }
-                i = j # Skip lines
-
-            elif "Direct Raccoon Results" in output[i] and report["Direct Raccoon"]["Result"] == "vulnerable":
-                j = i + 1
-                while output[j] != "------------------------------------------------------------":
-                    j += 1
-                direct_raccoon_details_temp = output[i+2:j-1]
-                for detail in direct_raccoon_details_temp:
-                    detail = detail.split("|")
-                    name = detail[0].replace("\t","-").strip()   
-                    behaviour_difference = detail[1].strip()
-                    result = detail[2].strip()
-                    if "<" in detail[3].strip():
-                        P = float(detail[3].strip()[4:])
-                    else:
-                        P = float(detail[3].strip()[3:])
-                    direct_raccoon_details[name] = {
-                        'Behaviour' : behaviour_difference,
-                        'Result': result,
-                        'Confidence' : P
-                    }
-                i = j # Skip lines
-
-        report["Padding Oracle"]["Details"] = padding_oracle_details
-        report["ALPACA"]["Details"] = alpaca_details
-        report["Direct Raccoon"]["Details"] = direct_raccoon_details
-        report["Raccoon"]["vulnToRaccoon"] = report["Raccoon"]["Result"]
-        report["Raccoon"]["Result"] = 'vulnerable' if (report["Raccoon"]["Result"] == 'vulnerable' or report["Direct Raccoon"]["Result"] == 'vulnerable') else 'not vulnerable'
-        report["Raccoon"]["vulnToDirectRaccoon"] = report["Direct Raccoon"]["Result"]
-        report["Raccoon"]["Details"] = report["Direct Raccoon"]["Details"]
-        report.pop("Direct Raccoon",None)
-        return report
-
     def __scan_hostname(self, hostname: str, args: [str], force: bool, one: bool):
         """
         Internal module of scan
         :param hostname: Hostname or IP
         :type hostname: str
-        :param args: Raw args for testssl.sh
+        :param args: Raw args for TLS-Scanner
         :type args: list of str
         :param force: Force the rescan, ignore the cached result.
-        :type force: bool
-        :param one: Add '--IP=one' to testssl.sh calls.
         :type one: bool
         """
-        # TODO: Add multihost support
         if force:
-            logging.debug("Starting testssl analysis")
-            file_name = uuid.uuid4().hex
-            logging.debug(
-                f"Scanning {hostname}, saving result to temp file {file_name}"
-            )
+            logging.debug("Starting TLS-Scanner analysis")
             with open(devnull, "w") as null:
                 cmd = [
                     "java",
@@ -371,7 +358,6 @@ class TLS_Scanner:
 
                 output = ""  
                 try:
-                    print(' '.join(cmd))
                     output = subprocess.check_output(
                         cmd,
                         stderr=sys.stderr,
@@ -384,11 +370,7 @@ class TLS_Scanner:
                 except subprocess.CalledProcessError as c:
                     logging.debug(c)
                 
-
-                data = self.__parse_output(output)
-                data = {hostname : data}
-
-                cache, ip_cache = Parser(data).output()
+                cache, ip_cache = Parser(output).output()
                 self.__update_cache(cache, ip_cache)
 
         else:

@@ -13,7 +13,7 @@ class Raccoon(TLS_Scanner_base):
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         """
-        Sets the mitigations for the poodle results
+        Sets the mitigations for the Raccoon results
 
         :param result: the result to set the mitigations in
         :type result: dict
