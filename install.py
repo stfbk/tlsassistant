@@ -1,5 +1,4 @@
 import asyncio
-from compileall import compile_path
 import json
 import sys
 
