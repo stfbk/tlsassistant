@@ -1,13 +1,11 @@
-import json
 import logging
 import re
 import subprocess
 import sys
-import uuid
-from os import devnull, path, remove, sep
+from os import devnull, sep
 from collections import defaultdict
 
-from utils.urls import link_sep, url_strip, validate_ip
+from utils.urls import  url_strip
 from utils.validation import Validator
 
 
