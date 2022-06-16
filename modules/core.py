@@ -14,6 +14,7 @@ from modules.parse_input_conf import Parser
 import datetime
 from enum import Enum
 from modules.report import Report as Report_module
+from utils.configuration import get_aliases
 from utils.urls import link_sep
 from utils.urls import has_wildcard, remove_wildcard
 from utils.subdomain_enumeration import enumerate
@@ -158,6 +159,19 @@ class Core:
             ]
         )
         kwargs["to_exclude"] = list(map(str.lower, kwargs["to_exclude"]))
+
+        tmp_to_exclude = []
+        aliases = get_aliases()
+        for module in kwargs["to_exclude"]:
+            if module in aliases:
+                for alias in aliases[module]:
+                    if alias not in tmp_to_exclude:
+                        tmp_to_exclude.append(alias)
+            else:
+                if module not in tmp_to_exclude:
+                    tmp_to_exclude.append(module)
+        kwargs["to_exclude"] = tmp_to_exclude
+
         # set outputfilename if not already set
         if "output" not in kwargs or not kwargs["output"]:  # if not output
             file_name = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
@@ -348,6 +362,7 @@ class Core:
         :return: preanalysis
         :rtype: dict
         """
+        self.__logging.info(tls_scanner_args)
         if tls_scanner_args and (
             type_of_analysis == self.Analysis.HOST
             or type_of_analysis == self.Analysis.DOMAINS
@@ -355,6 +370,7 @@ class Core:
             self.__logging.debug(
                 f"Starting preanalysis tls_scanner with args {tls_scanner_args}..."
             )
+            self.__logging.info("Running tls-scanner")
             TLS_Scanner().run(
                 hostname=f"{hostname}:{port}",
                 args=tls_scanner_args,
@@ -376,6 +392,7 @@ class Core:
         loaded_arguments = {}
         testssl_args = []
         tls_scanner_args = []
+        self.__logging.info(self.__input_dict["to_exclude"])
         for name, module_args in parsed_configuration.items():
             if name not in self.__input_dict["to_exclude"]:
                 Module, args = module_args
@@ -585,6 +602,7 @@ class Core:
         loaded_modules, loaded_arguments, testssl_args, tls_scanner_args = self.__load_modules(
             parsed_configuration
         )
+        self.__logging.info(tls_scanner_args)
         # preanalysis if needed
         self.__logging.info(f"Running analysis..")
         if type_of_analysis == self.Analysis.CONFIGURATION:
