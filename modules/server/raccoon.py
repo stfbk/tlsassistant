@@ -6,11 +6,10 @@ from utils.iana2openssl import iana2openssl
 
 class Raccoon(TLS_Scanner_base):
     """
-    Analysis of the poodle testssl results
+    Analysis of the Raccoon TLS-Scanner results
     """
 
-    conf = Parse_configuration_protocols(openssl="3.0.0", protocols={"SSLv3": "-"}) # FIXX?
-    stix = Bundled(mitigation_object=load_mitigation("RACCOON")) # FIX
+    stix = Bundled(mitigation_object=load_mitigation("RACCOON"))
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         """

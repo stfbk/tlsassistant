@@ -6,7 +6,7 @@ from utils.mitigations import load_mitigation
 
 class TLSPoodle(TLS_Scanner_base):
     """
-    Analysis of the poodle TLS Scanner results
+    Analysis of the Poodle TLS-Scanner results
     """
 
     stix = Bundled(mitigation_object=load_mitigation("TLS POODLE"))

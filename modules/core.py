@@ -110,8 +110,6 @@ class Core:
             hostname_or_path=self.__input_dict["hostname_or_path"],
             configuration=self.__input_dict["configuration"],
         )
-        
-       
 
     def __string_output_type(self, kwargs_type: Report) -> str:
         """

@@ -96,7 +96,7 @@ class Install:
         logger.info("Compiling dependencies...")
         self.compile_maven_dependencies(maven_paths)  # unzips the zips
         logger.info("Generating Certificates...")
-        self.generate_cert()        
+        self.generate_cert()
         logger.info("All done!")
 
     def generate_cert(self):

@@ -6,7 +6,7 @@ from utils.mitigations import load_mitigation
 
 class Alpaca(TLS_Scanner_base):
     """
-    Analysis of the poodle testssl results
+    Analysis of the ALPACA TLS-Scanner results
     """
 
     stix = Bundled(mitigation_object=load_mitigation("ALPACA"))

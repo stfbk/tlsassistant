@@ -46,7 +46,6 @@ class Parser:
                 result.pop("id", None)  # Remove ID from results
                 result.pop("ip", None)  # Remove IP from results
                 self.__output[site][ip][id] = result  # put the result
-        
 
     def output(self) -> (dict, dict):
         """
@@ -270,7 +269,6 @@ class Testssl:
                     for arg in args:
                         cmd.append(arg)
                 cmd.append(hostname)
-                print(' '.join(cmd))
                 try:
                     subprocess.run(
                         cmd,
