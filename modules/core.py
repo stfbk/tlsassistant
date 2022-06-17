@@ -362,7 +362,6 @@ class Core:
         :return: preanalysis
         :rtype: dict
         """
-        self.__logging.info(tls_scanner_args)
         if tls_scanner_args and (
             type_of_analysis == self.Analysis.HOST
             or type_of_analysis == self.Analysis.DOMAINS
@@ -392,7 +391,6 @@ class Core:
         loaded_arguments = {}
         testssl_args = []
         tls_scanner_args = []
-        self.__logging.info(self.__input_dict["to_exclude"])
         for name, module_args in parsed_configuration.items():
             if name not in self.__input_dict["to_exclude"]:
                 Module, args = module_args
@@ -602,7 +600,6 @@ class Core:
         loaded_modules, loaded_arguments, testssl_args, tls_scanner_args = self.__load_modules(
             parsed_configuration
         )
-        self.__logging.info(tls_scanner_args)
         # preanalysis if needed
         self.__logging.info(f"Running analysis..")
         if type_of_analysis == self.Analysis.CONFIGURATION:

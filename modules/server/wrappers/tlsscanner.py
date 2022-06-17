@@ -281,7 +281,6 @@ class TLS_Scanner:
             force = (
                 self.__input_dict["force"] if "force" in self.__input_dict else False
             )
-            one = self.__input_dict["one"] if "one" in self.__input_dict else True
             clean = (
                 self.__input_dict["clean"] if "clean" in self.__input_dict else False
             )
@@ -290,7 +289,6 @@ class TLS_Scanner:
                     (self.__input_dict["hostname"], str),
                     (args, list),
                     (force, bool),
-                    (one, bool),
                     (clean, bool),
                 ]
             )
@@ -298,12 +296,11 @@ class TLS_Scanner:
                 str(self.__input_dict["hostname"]),
                 args=args,
                 force=force,
-                one=one,
                 clean=clean,
             )
         return self.output(hostname=self.__input_dict["hostname"])
 
-    def __scan(self, hostname: str, args: [str], force: bool, one: bool, clean: bool):
+    def __scan(self, hostname: str, args: [str], force: bool, clean: bool):
         """
         Scan internal module
         :param hostname: Hostname or IP
@@ -318,10 +315,10 @@ class TLS_Scanner:
         """
         if clean:
             self.__clean_cache()
-        self.__scan_hostname(hostname, args, force, one)
+        self.__scan_hostname(hostname, args, force)
 
 
-    def __scan_hostname(self, hostname: str, args: [str], force: bool, one: bool):
+    def __scan_hostname(self, hostname: str, args: [str], force: bool):
         """
         Internal module of scan
         :param hostname: Hostname or IP
@@ -329,7 +326,6 @@ class TLS_Scanner:
         :param args: Raw args for TLS-Scanner
         :type args: list of str
         :param force: Force the rescan, ignore the cached result.
-        :type one: bool
         """
         if force:
             logging.debug("Starting TLS-Scanner analysis")
@@ -374,5 +370,5 @@ class TLS_Scanner:
         else:
             if hostname not in self.__cache:
                 self.__scan_hostname(
-                        hostname, args=args, force=True, one=one
+                        hostname, args=args, force=True
                     )  # with force = True
