@@ -7,11 +7,14 @@
     "#comment": "AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
     "Description": "ALPACA is an application layer protocol content confusion attack, exploiting TLS servers implementing different protocols but using compatible certificates, such as multi-domain or wildcard certificates. Attackers can redirect traffic from one subdomain to another, resulting in a valid TLS session. This breaks the authentication of TLS and cross-protocol attacks may be possible where the behavior of one protocol service may compromise the other at the application layer.",
     "Mitigation": {
-      "Textual": "Enable the TLS Extensions {extensions}."
+      "Textual": "Enable the TLS Extensions {extensions}.",
+      "Apache": "No snippet available",
+      "Nginx": "No snippet available"
 
     }
   },
   "#comment": " https://alpaca-attack.com/ ",
   "#comment1": " https://nvd.nist.gov/vuln/detail/CVE-2021-3618 ",  
+  "#comment2": "https://blog.sion.moe/methods-to-prevent-leaking-websites-origin-server-ip-behind-cdn/",
   "#omit-xml-declaration": "yes"
 }

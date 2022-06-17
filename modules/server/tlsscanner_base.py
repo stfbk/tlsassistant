@@ -97,7 +97,7 @@ class TLS_Scanner_base:
         
         for hostname in results:
             for key in keys:
-                condition = results[hostname][key]['Result'] != "not vulnerable" and results[hostname][key]['Result'] != "error" and results[hostname][key]['Result'] != "not tested yet" and results[hostname][key]['Result'] != "could not test (not vulnerable)"
+                condition = results[hostname][key]['Result'] != "not vulnerable" and results[hostname][key]['Result'] != "error" and results[hostname][key]['Result'] != "not tested yet" and results[hostname][key]['Result'] != "could not test (not vulnerable)" and results[hostname][key]['Result'] != "true"
 
                 conditioned_result = self._set_mitigations(
                     results[hostname][key], key, condition

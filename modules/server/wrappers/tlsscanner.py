@@ -337,7 +337,9 @@ class TLS_Scanner:
                     "-connect",
                     f"{hostname}",
                     "-scanDetail",
-                    "QUICK"
+                    "QUICK",
+                    "-server_name",
+                    f"{hostname.split(':')[0]}",
                 ]
                 
                 if args:
