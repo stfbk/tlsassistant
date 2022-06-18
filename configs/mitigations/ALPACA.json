@@ -16,5 +16,6 @@
   "#comment": " https://alpaca-attack.com/ ",
   "#comment1": " https://nvd.nist.gov/vuln/detail/CVE-2021-3618 ",  
   "#comment2": "https://blog.sion.moe/methods-to-prevent-leaking-websites-origin-server-ip-behind-cdn/",
+  "#comment3": "https://blog.des.no/2020/11/configuring-strict-sni-with-apache-httpd-2-4/",
   "#omit-xml-declaration": "yes"
 }
