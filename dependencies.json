@@ -42,6 +42,11 @@
   {
     "type": "compile_maven",
     "path": "TLS-Scanner"
+  },
+  {
+    "type": "git-submodule",
+    "cmd": "update --init --recursive",
+    "path": "TLS-Scanner"
   }
 
 ]
