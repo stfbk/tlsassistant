@@ -345,11 +345,6 @@ class TLS_Scanner:
                 if args:
                     logging.debug(f"Scanning with personalized args: {args}")
                     cmd.append("-vulns")
-                    aargs = []
-                    # Some vulnerabilities resuse some command arguments, so eliminate duplicates
-                    for a in args:
-                        if a not in aargs:
-                            aargs.append(a)
                     cmd.append(",".join(args)) 
 
                 output = ""  

@@ -266,7 +266,10 @@ class Core:
 
         """
         if self.__is_tls_scanner(module):
-            tls_scanner_args += module._arguments
+            for arg in module._arguments:
+                if arg not in tls_scanner_args:
+                    tls_scanner_args.append(arg)
+            
         return tls_scanner_args
 
     def __conf_analysis(
