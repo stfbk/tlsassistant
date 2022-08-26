@@ -292,7 +292,7 @@ class Nginx_parse_configuration_strict_security():
         is_vulnerable = False
         if self.__key in vhost:
             if any(isinstance(el, list) for el in vhost[self.__key]): # more than one 'add_header' directive
-                is_vulnerable = all([("Strict-Transport-Security" not in vhost) for vhost in vhost[self.__key]])
+                is_vulnerable = all([("Strict-Transport-Security" not in vh) for vh in vhost[self.__key]])
             else:
                 is_vulnerable = "Strict-Transport-Security" not in vhost[self.__key]
 
