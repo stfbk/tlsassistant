@@ -289,9 +289,16 @@ class Nginx_parse_configuration_strict_security():
         :returns: True if vhost is vulnerable to misconfigured TLS strict security.
         :rtype: bool
         """
+        is_vulnerable = False
+        if self.__key in vhost:
+            if any(isinstance(el, list) for el in vhost[self.__key]): # more than one 'add_header' directive
+                is_vulnerable = all([("Strict-Transport-Security" not in vhost) for vhost in vhost[self.__key]])
+            else:
+                is_vulnerable = "Strict-Transport-Security" not in vhost[self.__key]
+
         return (
             self.__key not in vhost
-            or "Strict-Transport-Security" not in vhost[self.__key]
+            or is_vulnerable
         )  # vulnerable if True
 
 class Nginx_parse_configuration_checks_compression():
