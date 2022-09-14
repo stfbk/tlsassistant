@@ -55,6 +55,8 @@ class Core:
         openssl_version=None,
         ignore_openssl=False,
         stix=False,
+        webhook="",
+        prometheus="",
     ):
         """
         :param hostname_or_path: hostname or path to scan
@@ -79,6 +81,10 @@ class Core:
         :type ignore_openssl: bool
         :param stix: generate stix report
         :type stix: bool
+        :param webhook: webhook to send the report to
+        :type webhook: str
+        :param prometheus: prometheus output
+        :type prometheus: str
         """
         if to_exclude is None:
             to_exclude = []
@@ -101,6 +107,8 @@ class Core:
             openssl_version=openssl_version,
             ignore_openssl=ignore_openssl,
             stix=stix,
+            webhook=webhook,
+            prometheus=prometheus,
         )
         self.__cache[configuration] = self.__load_configuration(modules)
         self.__exec(
@@ -153,6 +161,18 @@ class Core:
                     str,
                 ),
                 (kwargs["stix"], bool),
+                (
+                    ""
+                    if "webhook" not in kwargs or not kwargs["webhook"]
+                    else kwargs["webhook"],
+                    str,
+                ),
+                (
+                    ""
+                    if "prometheus" not in kwargs or not kwargs["prometheus"]
+                    else kwargs["prometheus"],
+                    str,
+                ),
             ]
         )
         kwargs["to_exclude"] = list(map(str.lower, kwargs["to_exclude"]))
@@ -397,6 +417,8 @@ class Core:
                 and self.__input_dict["group_by"] == "module"
                 else Report_module.Mode.HOSTS,
                 stix=self.__input_dict["stix"],
+                webhook=self.__input_dict["webhook"],
+                prometheus=self.__input_dict["prometheus"],
             )
         self.__logging.debug("Output generated.")
 

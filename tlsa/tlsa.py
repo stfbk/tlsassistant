@@ -124,6 +124,8 @@ class Tlsa:
                 group_by=args.group_by,
                 apply_fix=args.apply_fix,
                 stix=args.stix,
+                webhook=args.webhook,
+                prometheus=args.prometheus,
             )
         elif args.apk:
             Core(
@@ -135,6 +137,8 @@ class Tlsa:
                 type_of_analysis=Core.Analysis.APK,
                 group_by=args.group_by,
                 stix=args.stix,
+                webhook=args.webhook,
+                prometheus=args.prometheus,
             )
         elif args.domain_file:
             Core(
@@ -146,6 +150,8 @@ class Tlsa:
                 type_of_analysis=Core.Analysis.DOMAINS,
                 group_by=args.group_by,
                 stix=args.stix,
+                webhook=args.webhook,
+                prometheus=args.prometheus,
             )
         elif args.file:
             if isinstance(args.configuration, list):
@@ -164,6 +170,8 @@ class Tlsa:
                 stix=args.stix,
                 openssl_version=args.openssl,
                 ignore_openssl=args.ignore_openssl,
+                webhook=args.webhook,
+                prometheus=args.prometheus,
             )
 
         else:  # must be args.list, unless argparse throws error.

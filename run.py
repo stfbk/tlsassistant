@@ -135,6 +135,24 @@ if __name__ == "__main__":
         help="Generate STIX2 compliant output.",
         default=False,
     )
+    parser.add_argument(
+        "--webhook",
+        dest="webhook",
+        action="store",
+        type=str,
+        nargs="?",
+        default="",
+        help="Add a webhook url to send the results.",
+    )
+    parser.add_argument(
+        "--prometheus",
+        dest="prometheus",
+        action="store",
+        type=str,
+        nargs="?",
+        default="",
+        help="Generate the prometheus output in a default path or in the specified path.",
+    )
     # todo add default aliases configurations for analysis
     # configurations.add_argument()
     args = parser.parse_args()

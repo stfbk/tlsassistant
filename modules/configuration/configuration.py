@@ -176,12 +176,12 @@ class Configuration:
             return True
 
     def __vhost_wrapper(
-            self,
-            modules: dict,
-            online=False,
-            fix=False,
-            openssl: str = None,
-            ignore_openssl: bool = False,
+        self,
+        modules: dict,
+        online=False,
+        fix=False,
+        openssl: str = None,
+        ignore_openssl: bool = False,
     ):
         """
         Wrapper for the vhosts.
@@ -206,7 +206,7 @@ class Configuration:
             for vhost_name, vhost in virtualhost.items():
                 for name, module in modules.items():
                     if self.__is_config_enabled(module) and self.__check_usage(
-                            module, vhost_name
+                        module, vhost_name
                     ):
                         if not online:
                             self.__blackbox(
@@ -227,7 +227,11 @@ class Configuration:
                         self.__logging.debug(
                             f"The module {name} isn't compatible. Skipping..."
                         )
-        return boolean_results if is_executed else {'General rules': boolean_results_global}
+        return (
+            boolean_results
+            if is_executed
+            else {"General rules": boolean_results_global}
+        )
 
     def __hybrid(self, module, name, vhost, vhost_name) -> dict:
         """
@@ -248,16 +252,16 @@ class Configuration:
         return module.conf.fix(vhost)
 
     def __blackbox(
-            self,
-            module,
-            name,
-            fix,
-            vhost,
-            vhost_name,
-            openssl,
-            ignore_openssl,
-            boolean_results,
-            global_value,
+        self,
+        module,
+        name,
+        fix,
+        vhost,
+        vhost_name,
+        openssl,
+        ignore_openssl,
+        boolean_results,
+        global_value,
     ):
         """
         Internal method to check the configuration blackbox.
@@ -366,9 +370,7 @@ class Configuration:
         file = Path(path)
         file.touch()
 
-        options = {
-            'namedblocks': False
-        }
+        options = {"namedblocks": False}
         with make_loader(**options) as loader:
             loader.dump(filepath=str(file.absolute()), dct=self.__loaded_conf)
         self.__logging.info(f"Saved configuration in file {file.absolute()}")
