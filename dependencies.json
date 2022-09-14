@@ -23,9 +23,30 @@
     "type": "zip",
     "url": "https://github.com/drwetter/testssl.sh/archive/3.0.4.zip"
   },
-    {
+  {
     "type": "apt",
     "url": "wkhtmltopdf"
+  },
+  {
+    "type": "git",
+    "url": "https://github.com/IvanValentini/TLS-Scanner"
+  },
+  {
+    "type": "apt",
+    "url": "default-jre"
+  },
+  {
+    "type": "apt",
+    "url": "maven"
+  },
+  {
+    "type": "compile_maven",
+    "path": "TLS-Scanner"
+  },
+  {
+    "type": "git-submodule",
+    "cmd": "update --init --recursive",
+    "path": "TLS-Scanner"
   }
 
 ]

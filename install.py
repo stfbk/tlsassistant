@@ -36,6 +36,8 @@ class Install:
         zips = []
         cfgs = []
         apts = []
+        git_submodules = {}
+        maven_paths = []
         logger.info("Loading dependencies...")
         for dependency in dependencies:  # for each dependency
             if dependency["type"] == "git":  # if it's git
@@ -53,6 +55,12 @@ class Install:
             elif dependency["type"] == "cfg":  # if it's cfg
                 cfgs.append(dependency["url"])  # append it's url to the cfg array
                 logger.debug(f"Added dependency cfg {dependency['url']}")
+            elif dependency["type"] == "compile_maven":  # if it's maven project
+                maven_paths.append(dependency["path"])  # append it's path to the maven array
+                logger.debug(f"Added dependency compile {dependency['path']}")
+            elif dependency["type"] == "git-submodule":  # if it's reporitory submodule
+                git_submodules[dependency["path"]] = dependency["cmd"]
+                logger.debug(f"Added git submodule of {dependency['path']} with command git submodule {dependency['cmd']}")
             else:  # if not found, throw warning
                 logger.warning(
                     f"Ignoring dependency {dependency['url']}, type {dependency['type']} is not recognized."
@@ -80,6 +88,10 @@ class Install:
             self.git_clone(git)  # and clone it
             logger.info(f"{file_name} done.")
 
+        for path in git_submodules:  # for each git submodule,
+            self.git_submodules_init(path,git_submodules[path])  # initialize submodules
+            logger.info(f"Submodules of {path} done.")
+
         logger.info("Installing dependencies...")
         logger.warning(
             "This may take a while... Rerun the tool with -v to see the detailed installation."
@@ -89,6 +101,8 @@ class Install:
         self.install_dependencies("apts", results_apts)  # install the dependencies pkg
         logger.info("Unzipping dependencies...")
         self.install_dependencies("zips", results_zips)  # unzips the zips
+        logger.info("Compiling maven dependencies...")
+        self.compile_maven_dependencies(maven_paths)  # unzips the zips
         logger.info("Generating Certificates...")
         self.generate_cert()
         logger.info("All done!")
@@ -187,6 +201,47 @@ class Install:
             ):  # delete the files .deb and .zip after all.
                 logger.debug(f"Removing file dependencies{sep}{file}")
                 remove(f"dependencies{sep}{file}")
+
+    def compile_maven_dependencies(self, paths):
+
+        for path in paths:
+            logger.info(f"Compiling dependencies{sep}{path}...")
+            f_path = f"./dependencies{sep}{path}"
+            with open(devnull, "w") as null:
+                subprocess.check_call(
+                    [
+                        "mvn",
+                        "clean",
+                        "install",
+                        "-DskipTests=true",
+                    ],
+                    stderr=sys.stderr,
+                    stdout=(
+                        sys.stdout
+                        if logging.getLogger().isEnabledFor(
+                            logging.DEBUG
+                        )  # if the user asked for debug mode, let him see the output.
+                        else null  # else /dev/null
+                    ),
+                    cwd=f_path
+                )
+    
+    def git_submodules_init(self, path, cmd):
+        cmd = ["git", "submodule"] + cmd.split(" ")
+        with open(devnull, "w") as null:
+            subprocess.check_call(
+                cmd,
+                stderr=sys.stderr,
+                stdout=(
+                    sys.stdout
+                    if logging.getLogger().isEnabledFor(
+                        logging.DEBUG
+                    )  # if the user asked for debug mode, let him see the output.
+                    else null  # else /dev/null
+                ),
+                cwd="dependencies/"+path
+            )
+
 
     def git_clone(self, url, path=None):
         file_name = self.get_filename(url)
