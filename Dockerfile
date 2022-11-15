@@ -5,7 +5,7 @@
 
 FROM ubuntu:latest
 
-RUN apt-get update && apt-get install -y git python3-dev python3-pip sudo
+RUN apt-get update && apt-get install -y git python3-dev python3-pip sudo bsdmainutils
 
 RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata keyboard-configuration
 
