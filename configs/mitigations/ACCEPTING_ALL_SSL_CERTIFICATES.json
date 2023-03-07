@@ -4,7 +4,7 @@
     "ExtendedName": "Accepting All SSL Certificates",
     "Description": "The SSLSocket/SSLFactory accepts all certificates or NonValidatingSSLSocketFactory/setDefaultHostnameVerifier/NullHostnameVerifier is present. <br/>       ",
     "Mitigation": {
-      "Textual": "You should set a certificate and properly config this line (or remove it), so nobody can truly use self-signed<br/>                certificates, changing the SSLSocket/SSLFactory to accept trusted certificates or by removing NonValidatingSSLSocketFactory/setDefaultHostnameVerifier/NullHostnameVerifier.<br/>            ",
+      "Textual": "You should set a certificate and properly config this line (or remove it), so nobody can truly use self-signed<br/>                certificates, changing the SSLSocket/SSLFactory to accept trusted certificates or by removing NonValidatingSSLSocketFactory/setDefaultHostnameVerifier/NullHostnameVerifier.<br/>            "
     }
   },
   "#omit-xml-declaration": "yes"
