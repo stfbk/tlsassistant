@@ -6,6 +6,7 @@ from modules.server.testssl_base import Testssl_base
 from modules.server.tlsscanner_base import TLS_Scanner_base 
 from modules.server.wrappers.testssl import Testssl
 from modules.server.wrappers.tlsscanner import TLS_Scanner
+from modules.server.wrappers.testssl import Testssl
 from utils.booleanize import boolean_results
 from utils.logger import Logger
 from utils.colors import Color

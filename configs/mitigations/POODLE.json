@@ -1,0 +1,19 @@
+{
+  "Entry": {
+    "Name": "POODLE",
+    "ExtendedName": "<strong>P</strong>adding <strong>O</strong>racle <strong>O</strong>n <strong>D</strong>owngraded <strong>L</strong>egacy <strong>E</strong>ncryption",
+    "CVE": "2014-3566",
+    "CVSS3": "3.4 (Low)",
+    "#comment": " AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:N/A:N ",
+    "Description": "By exploiting the missing validation of the padding bytes during decryption, an attacker is able to guess the session cookie. The attack is mounted by performing a MITM and requesting a SSLv3 connection between the client and the server. Once accepted, the attack is performed by modifying the padding in order to guess the cookie.",
+    "Mitigation": {
+      "Textual": "Disable SSLv3 protocol support.",
+      "Apache": "1. open your Apache configuration file (default: <i>/etc/apache2/sites-available/default-ssl.conf</i>);<br/>2. search for the line starting with: <strong>SSLProtocol</strong><br/>   - if it contains the substring <code>+SSLv3</code>, remove it;<br/>   - otherwise, add <code>-SSLv3</code> at the end of the line.<br/><br/>N.B. restart the server by typing: <code>sudo service apache2 restart</code>.",
+      "Nginx": "1. In a default situation, you can edit your website configuration <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>);<br/>2. Inside <code>server {...}</code> brackets configuration, find <code>ssl_protocols</code>;<br/>3. Remove <code>SSLv3</code> (if any). Make sure you have atleast another TLS protocol. If you can't find <code>ssl_protocols</code> you should be fine if your NGINX is updated.<br/><br/><br/>N.B. restart the server by typing: <code>sudo service nginx restart</code>.<br/>"
+
+    }
+  },
+  "#comment": " https://nvd.nist.gov/vuln/detail/CVE-2014-3566 ",
+  "#comment1": " https://www.acunetix.com/vulnerabilities/web/the-poodle-attack-sslv3-supported/ ",
+  "#omit-xml-declaration": "yes"
+}

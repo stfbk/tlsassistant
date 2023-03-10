@@ -1,0 +1,20 @@
+{
+   "input":[
+      {
+         "name":"hostname",
+         "type":"str",
+         "description":"Hostname to analyze",
+         "required":"True"
+      }
+   ],
+   "description":"This modules runs the vulnerability check for POODLE.",
+   "path":"modules/server/poodle.py",
+   "class_name":"Poodle",
+   "output":[
+      {
+         "name":"results",
+         "type":"dict",
+         "description":"results of the scan"
+      }
+   ]
+}

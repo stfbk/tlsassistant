@@ -225,7 +225,7 @@ class Install:
                     ),
                     cwd=f_path
                 )
-    
+
     def git_submodules_init(self, path, cmd):
         cmd = ["git", "submodule"] + cmd.split(" ")
         with open(devnull, "w") as null:
