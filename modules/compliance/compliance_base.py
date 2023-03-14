@@ -6,6 +6,13 @@ from utils.loader import load_configuration
 from utils.validation import Validator
 
 
+def convert_signature_algorithm(sig_alg: str) -> str:
+    """
+    This function is needed to convert the input from testssl to make it compatible with the requirements database
+    """
+    pass
+
+
 class Compliance:
     def __init__(self):
         self._input_dict = {}
@@ -33,10 +40,10 @@ class Compliance:
         security_mapping = "security" if security else "legacy"
         if not evaluations:
             raise IndexError("Evaluations list is empty")
-        first_value = self.evaluations_mapping.get(security_mapping, {}).get(evaluations[0].replace("°", ""))
+        first_value = self.evaluations_mapping.get(security_mapping, {}).get(evaluations[0].replace("°", ""), 4)
         best = 0
         for i, el in enumerate(evaluations[1:]):
-            evaluation_value = self.evaluations_mapping.get(security_mapping, {}).get(el.replace("°", ""))
+            evaluation_value = self.evaluations_mapping.get(security_mapping, {}).get(el.replace("°", ""), 4)
             if first_value > evaluation_value:
                 best = i + 1
         # if they have the same value first wins
@@ -126,7 +133,7 @@ class Compliance:
                     if new_version_name[-2] != '.':
                         new_version_name += ".0"
                     protocol_dict[new_version_name] = "not" not in actual_dict["finding"]
-                elif field.startswith("cipher_x"):
+                elif field.startswith("cipher") and "x" in field:
                     if not self._user_configuration.get("CipherSuite"):
                         self._user_configuration["CipherSuite"] = set()
                     value = actual_dict.get("finding", "")
@@ -162,11 +169,19 @@ class Compliance:
                 elif field.startswith("cert_keySize"):
                     if not self._user_configuration.get("KeyLengths"):
                         self._user_configuration["KeyLengths"] = set()
-                    self._user_configuration["KeyLengths"].add(tuple(actual_dict["finding"].split(" ")[:2]))
-                elif field == "PFS_ECDHE_curves":
+                    self._user_configuration["KeyLengths"].update(actual_dict["finding"].split(" ")[:2])
+                elif field[-12:] == "ECDHE_curves":
                     values = actual_dict["finding"].split(" ") if " " in actual_dict["finding"] \
                         else actual_dict["finding"]
                     self._user_configuration["Groups"] = values
+                elif field[-8:] == "sig_algs":
+                    if not self._user_configuration.get("Signature"):
+                        self._user_configuration["Signature"] = set()
+                    finding = actual_dict["finding"]
+                    values = finding.split(" ") if " " in finding else [finding]
+                    values = [sig for sig in values]
+                    self._user_configuration["Signature"].update(values)
+
                 elif field in self.misc_fields:
                     if not self._user_configuration.get("Misc"):
                         self._user_configuration["Misc"] = {}
@@ -189,3 +204,16 @@ class Compliance:
             action = "should be disabled"
         if information_level:
             self._output_dict[sheet][name] = f"{information_level}: {name} {action}"
+
+    def is_enabled(self, config_field, name, entry):
+        field_value = self._user_configuration[config_field]
+        enabled = False
+        if isinstance(field_value, dict):
+            enabled = field_value.get(name, None)
+            if enabled is None:
+                enabled = True if "all" in field_value else False
+        elif field_value and isinstance(field_value, list) and isinstance(field_value[0], list):
+            enabled = entry[:2] in field_value
+        elif isinstance(field_value, list) or isinstance(field_value, set):
+            enabled = name in field_value
+        return enabled

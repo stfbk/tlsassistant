@@ -30,8 +30,7 @@ class ComplianceMany(Compliance):
             tables = []
         actual_evaluation = "<Not mentioned>"
         for sheet in sheets_to_check:
-            config_field = self._database_instance.sheet_mapping.get(sheet)
-            counter = 0
+            counter = 1
             for entry in entries[sheet]:
                 name = entry[name_index]
                 evaluation = entry[evaluation_index]
@@ -39,15 +38,9 @@ class ComplianceMany(Compliance):
                     evaluations = [actual_evaluation, evaluation]
                     best_evaluation = self.evaluation_to_use(evaluations)
                     actual_evaluation = evaluations[best_evaluation]
-                if config_field and counter % len(sheets_to_check[sheet]) == 0:
-                    field_value = self._user_configuration[config_field]
-                    enabled = False
-                    if isinstance(field_value, dict):
-                        enabled = field_value.get(name, None)
-                        if enabled is None:
-                            enabled = True if "all" in field_value else False
-                    elif isinstance(field_value, list):
-                        enabled = name in field_value
+                if sheet and counter == len(sheets_to_check[sheet]):
+                    counter = 0
+                    enabled = self.is_enabled(sheet, name, entry)
                     self.update_result(sheet, name, actual_evaluation, enabled)
                     actual_evaluation = "<Not mentioned>"
                 counter += 1

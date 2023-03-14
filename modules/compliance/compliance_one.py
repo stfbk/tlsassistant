@@ -1,8 +1,6 @@
 from modules.compliance.compliance_base import Compliance
 
 
-kwargs = {"sheets_to_check": {"Extension":{"ANSSI":"", "BSI":""}, "KeyLengths":{"ANSSI":""}, "Misc":{"ANSSI":""}}, "test_ssl":True}
-
 class ComplianceOne(Compliance):
     def _worker(self, sheets_to_check):
         """
@@ -31,14 +29,5 @@ class ComplianceOne(Compliance):
                 if config_field:
                     name = entry[name_index]
                     evaluation = entry[evaluation_index]
-                    field_value = self._user_configuration[config_field]
-                    enabled = False
-                    if isinstance(field_value, dict):
-                        enabled = field_value.get(name, None)
-                        if enabled is None:
-                            enabled = True if "all" in field_value else False
-                    elif field_value and isinstance(field_value, list) and isinstance(field_value[0], tuple):
-                        enabled = entry[:2] in field_value
-                    elif isinstance(field_value, list):
-                        enabled = name in field_value
+                    enabled = self.is_enabled(config_field, name, entry)
                     self.update_result(sheet, name, evaluation, enabled)
