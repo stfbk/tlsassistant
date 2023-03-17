@@ -1,7 +1,6 @@
 from modules.compliance.compliance_base import Compliance
 
 
-# TODO fix this
 class ComplianceMany(Compliance):
     def _worker(self, sheets_to_check):
         """
@@ -15,7 +14,7 @@ class ComplianceMany(Compliance):
             raise ValueError("No configuration provided")
         columns = ["name", "evaluation", "condition"]
         name_index = columns.index("name")
-        evaluation_index = columns.index("evaluation")
+        level_index = columns.index("evaluation")
         entries = {}
         tables = []
         for sheet in sheets_to_check:
@@ -28,19 +27,23 @@ class ComplianceMany(Compliance):
             data = self._database_instance.output(columns)
             entries[sheet] = data
             tables = []
-        actual_evaluation = "<Not mentioned>"
+        # A more fitting name could be current_requirement_level
+        resulting_level = "<Not mentioned>"
         for sheet in sheets_to_check:
             counter = 1
             for entry in entries[sheet]:
                 name = entry[name_index]
-                evaluation = entry[evaluation_index]
-                if evaluation != actual_evaluation:
-                    evaluations = [actual_evaluation, evaluation]
+                entry_level = entry[level_index]
+                if entry_level != resulting_level:
+                    evaluations = [resulting_level, entry_level]
                     best_evaluation = self.evaluation_to_use(evaluations)
-                    actual_evaluation = evaluations[best_evaluation]
+                    resulting_level = evaluations[best_evaluation]
+                # The entries are ordered by name so every time the counter is the same as the number of guidelines to
+                # check it is time to add the entry to the output dictionary.
                 if sheet and counter == len(sheets_to_check[sheet]):
                     counter = 0
                     enabled = self.is_enabled(sheet, name, entry)
-                    self.update_result(sheet, name, actual_evaluation, enabled)
-                    actual_evaluation = "<Not mentioned>"
+                    self.update_result(sheet, name, resulting_level, enabled)
+                    # the resulting level is reset so that it doesn't influence the next element.
+                    resulting_level = "<Not mentioned>"
                 counter += 1

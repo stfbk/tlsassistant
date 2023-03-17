@@ -13,6 +13,17 @@ def convert_signature_algorithm(sig_alg: str) -> str:
     return sig_alg.replace("-", "_").replace("+", "_").lower()
 
 
+class ConditionParser:
+    def __init__(self):
+        self.result = None
+        self.expression = ""
+        self.logical_separators = ["and", "or"]
+        self.instructions = load_configuration("condition_instructions", "configs/compliance/")
+
+    def solve(self):
+        pass
+
+
 class Compliance:
     def __init__(self):
         self._input_dict = {}
@@ -138,17 +149,20 @@ class Compliance:
                     # with a boolean associated to the protocol to know if it is supported or not
                     protocol_dict[new_version_name] = "not" not in actual_dict["finding"]
 
+                # All the ciphers appear in different fields whose form is cipher_%x%
                 elif field.startswith("cipher") and "x" in field:
                     if not self._user_configuration.get("CipherSuite"):
                         self._user_configuration["CipherSuite"] = set()
                     value = actual_dict.get("finding", "")
                     if " " in value:
+                        # Only the last part of the line is the actual cipher
                         value = value.split(" ")[-1]
                         self._user_configuration["CipherSuite"].add(value)
 
                 elif field.startswith("cert_keySize"):
                     if not self._user_configuration.get("KeyLengths"):
                         self._user_configuration["KeyLengths"] = []
+                    # the first two tokens (after doing a space split) are the Algorithm and the keysize
                     self._user_configuration["KeyLengths"].append(actual_dict["finding"].split(" ")[:2])
 
                 elif field == "TLS_extensions":
@@ -161,6 +175,7 @@ class Compliance:
                         extensions_pairs.append(ex.split("/#")[0].lower().replace(" ", "_"))
                     self._user_configuration["Extension"] = extensions_pairs
 
+                # From the certificate signature algorithm is possible to extract both CertificateSignature and Hash
                 elif field.startswith("cert_Algorithm") or field.startswith("cert_signatureAlgorithm"):
                     if not self._user_configuration.get("CertificateSignature"):
                         self._user_configuration["CertificateSignature"] = set()
@@ -170,11 +185,13 @@ class Compliance:
                         tokens = actual_dict["finding"].split(" ")
                         sig_alg = tokens[-1]
                         hash_alg = tokens[0]
+                        # sometimes the hashing algorithm comes first, so they must be switched
                         if sig_alg.startswith("SHA"):
                             sig_alg, hash_alg = hash_alg, sig_alg
                         self._user_configuration["CertificateSignature"].add(sig_alg)
                         self._user_configuration["Hash"].add(hash_alg)
-                # TODO discuss this during the meeting
+
+                # In TLS 1.2 the certificate signatures and hashes are present in the signature algorithms field.
                 elif field[-11:] == "12_sig_algs":
                     if not self._user_configuration.get("CertificateSignature"):
                         self._user_configuration["CertificateSignature"] = set()
@@ -185,12 +202,17 @@ class Compliance:
                     hashes = []
                     signatures = []
                     for el in elements:
+                        # The ones with the '-' inside are the ones for TLS 1.3.
                         if "-" not in el and "+" in el:
+                            # The entries are SigAlg+HashAlg
                             tokens = el.split("+")
                             signatures.append(tokens[0])
                             hashes.append(tokens[1])
                     self._user_configuration["CertificateSignature"].update(signatures)
                     self._user_configuration["Hash"].update(hashes)
+
+                # From TLS 1.3 the signature algorithms are different from the previous versions.
+                # So they are saved in a different field of the configuration dictionary.
                 elif field[-11:] == "13_sig_algs":
                     if not self._user_configuration.get("Signature"):
                         self._user_configuration["Signature"] = set()
@@ -203,15 +225,20 @@ class Compliance:
                     if not self._user_configuration.get("KeyLengths"):
                         self._user_configuration["KeyLengths"] = set()
                     self._user_configuration["KeyLengths"].update(actual_dict["finding"].split(" ")[:2])
+
+                # The supported groups are available as a list in this field
                 elif field[-12:] == "ECDHE_curves":
                     values = actual_dict["finding"].split(" ") if " " in actual_dict["finding"] \
                         else actual_dict["finding"]
                     self._user_configuration["Groups"] = values
 
+                # The transparency field describes how the transparency is handled in each certificate.
+                # https://developer.mozilla.org/en-US/docs/Web/Security/Certificate_Transparency (for the possibilities)
                 elif "transparency" in field:
                     if not self._user_configuration.get("Transparency"):
                         self._user_configuration["Transparency"] = {}
                     config_dict = self._user_configuration["Transparency"]
+                    # the index is basically the certificate number
                     index = len(config_dict)
                     config_dict[index] = actual_dict["finding"]
 
