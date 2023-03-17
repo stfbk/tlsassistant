@@ -20,9 +20,9 @@ class Compliance:
         self._last_data = {}
         self._output_dict = {}
         self._user_configuration = {}
-        self.evaluations_mapping = load_configuration("evaluations_mapping", "configs/modules/compliance/")
-        self.sheet_columns = load_configuration("sheet_columns", "configs/modules/compliance/")
-        self.misc_fields = load_configuration("misc_fields", "configs/modules/compliance/")
+        self.evaluations_mapping = load_configuration("evaluations_mapping", "configs/compliance/")
+        self.sheet_columns = load_configuration("sheet_columns", "configs/compliance/")
+        self.misc_fields = load_configuration("misc_fields", "configs/compliance/")
         self.test_ssl = Testssl()
 
     def evaluation_to_use(self, evaluations, security: bool = True):
@@ -125,14 +125,19 @@ class Compliance:
         for site in test_ssl_output:
             for field in test_ssl_output[site]:
                 actual_dict = test_ssl_output[site][field]
+                # Each protocol has its own field
                 if (field.startswith("SSL") or field.startswith("TLS")) and field[3] != "_":
                     if not self._user_configuration.get("Protocol"):
                         self._user_configuration["Protocol"] = {}
                     protocol_dict = self._user_configuration.get("Protocol")
+                    # Standardization to have it compliant with the database
                     new_version_name = field.replace("_", ".").replace("v", " ").replace("TLS1", "TLS 1")
                     if new_version_name[-2] != '.':
                         new_version_name += ".0"
+                    # The protocols may appear both as supported and not supported, so they are saved in a dictionary
+                    # with a boolean associated to the protocol to know if it is supported or not
                     protocol_dict[new_version_name] = "not" not in actual_dict["finding"]
+
                 elif field.startswith("cipher") and "x" in field:
                     if not self._user_configuration.get("CipherSuite"):
                         self._user_configuration["CipherSuite"] = set()
@@ -140,10 +145,12 @@ class Compliance:
                     if " " in value:
                         value = value.split(" ")[-1]
                         self._user_configuration["CipherSuite"].add(value)
+
                 elif field.startswith("cert_keySize"):
                     if not self._user_configuration.get("KeyLengths"):
                         self._user_configuration["KeyLengths"] = []
                     self._user_configuration["KeyLengths"].append(actual_dict["finding"].split(" ")[:2])
+
                 elif field == "TLS_extensions":
                     entry = actual_dict["finding"]
                     entry = entry.replace("' '", ",").replace("'", "")
@@ -153,6 +160,7 @@ class Compliance:
                         # the [1] is the iana code
                         extensions_pairs.append(ex.split("/#")[0].lower().replace(" ", "_"))
                     self._user_configuration["Extension"] = extensions_pairs
+
                 elif field.startswith("cert_Algorithm") or field.startswith("cert_signatureAlgorithm"):
                     if not self._user_configuration.get("CertificateSignature"):
                         self._user_configuration["CertificateSignature"] = set()
@@ -199,6 +207,13 @@ class Compliance:
                     values = actual_dict["finding"].split(" ") if " " in actual_dict["finding"] \
                         else actual_dict["finding"]
                     self._user_configuration["Groups"] = values
+
+                elif "transparency" in field:
+                    if not self._user_configuration.get("Transparency"):
+                        self._user_configuration["Transparency"] = {}
+                    config_dict = self._user_configuration["Transparency"]
+                    index = len(config_dict)
+                    config_dict[index] = actual_dict["finding"]
 
                 elif field in self.misc_fields:
                     if not self._user_configuration.get("Misc"):
