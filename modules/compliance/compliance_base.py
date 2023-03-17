@@ -10,7 +10,7 @@ def convert_signature_algorithm(sig_alg: str) -> str:
     """
     This function is needed to convert the input from testssl to make it compatible with the requirements database
     """
-    pass
+    return sig_alg.replace("-", "_").replace("+", "_").lower()
 
 
 class Compliance:
@@ -154,18 +154,43 @@ class Compliance:
                         extensions_pairs.append(ex.split("/#")[0].lower().replace(" ", "_"))
                     self._user_configuration["Extension"] = extensions_pairs
                 elif field.startswith("cert_Algorithm") or field.startswith("cert_signatureAlgorithm"):
-                    # TODO make this part more stable, now it may crash
                     if not self._user_configuration.get("CertificateSignature"):
                         self._user_configuration["CertificateSignature"] = set()
                     if not self._user_configuration.get("Hash"):
                         self._user_configuration["Hash"] = set()
-                    tokens = actual_dict["finding"].split(" ")
-                    sig_alg = tokens[-1]
-                    hash_alg = tokens[0]
-                    if sig_alg.startswith("SHA"):
-                        sig_alg, hash_alg = hash_alg, sig_alg
-                    self._user_configuration["CertificateSignature"].add(sig_alg)
-                    self._user_configuration["Hash"].add(hash_alg)
+                    if " " in actual_dict["finding"]:
+                        tokens = actual_dict["finding"].split(" ")
+                        sig_alg = tokens[-1]
+                        hash_alg = tokens[0]
+                        if sig_alg.startswith("SHA"):
+                            sig_alg, hash_alg = hash_alg, sig_alg
+                        self._user_configuration["CertificateSignature"].add(sig_alg)
+                        self._user_configuration["Hash"].add(hash_alg)
+                # TODO discuss this during the meeting
+                elif field[-11:] == "12_sig_algs":
+                    if not self._user_configuration.get("CertificateSignature"):
+                        self._user_configuration["CertificateSignature"] = set()
+                    if not self._user_configuration.get("Hash"):
+                        self._user_configuration["Hash"] = set()
+                    finding = actual_dict["finding"]
+                    elements = finding.split(" ") if " " in finding else [finding]
+                    hashes = []
+                    signatures = []
+                    for el in elements:
+                        if "-" not in el and "+" in el:
+                            tokens = el.split("+")
+                            signatures.append(tokens[0])
+                            hashes.append(tokens[1])
+                    self._user_configuration["CertificateSignature"].update(signatures)
+                    self._user_configuration["Hash"].update(hashes)
+                elif field[-11:] == "13_sig_algs":
+                    if not self._user_configuration.get("Signature"):
+                        self._user_configuration["Signature"] = set()
+                    finding = actual_dict["finding"]
+                    values = finding.split(" ") if " " in finding else [finding]
+                    values = [convert_signature_algorithm(sig) for sig in values]
+                    self._user_configuration["Signature"].update(values)
+
                 elif field.startswith("cert_keySize"):
                     if not self._user_configuration.get("KeyLengths"):
                         self._user_configuration["KeyLengths"] = set()
@@ -174,13 +199,6 @@ class Compliance:
                     values = actual_dict["finding"].split(" ") if " " in actual_dict["finding"] \
                         else actual_dict["finding"]
                     self._user_configuration["Groups"] = values
-                elif field[-8:] == "sig_algs":
-                    if not self._user_configuration.get("Signature"):
-                        self._user_configuration["Signature"] = set()
-                    finding = actual_dict["finding"]
-                    values = finding.split(" ") if " " in finding else [finding]
-                    values = [sig for sig in values]
-                    self._user_configuration["Signature"].update(values)
 
                 elif field in self.misc_fields:
                     if not self._user_configuration.get("Misc"):
@@ -206,6 +224,9 @@ class Compliance:
             self._output_dict[sheet][name] = f"{information_level}: {name} {action}"
 
     def is_enabled(self, config_field, name, entry):
+        """
+        Checks if a field is enabled in the user configuration
+        """
         field_value = self._user_configuration[config_field]
         enabled = False
         if isinstance(field_value, dict):
