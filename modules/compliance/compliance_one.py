@@ -12,9 +12,9 @@ class ComplianceOne(Compliance):
         """
         if not self._user_configuration:
             raise ValueError("No configuration provided")
-        columns = ["name", "evaluation", "condition"]
+        columns = ["name", "level", "condition", "guidelineName"]
         name_index = columns.index("name")
-        evaluation_index = columns.index("evaluation")
+        evaluation_index = columns.index("level")
         for sheet in sheets_to_check:
             # If the sheet isn't in the dictionary then I can use the default value
             columns = self.sheet_columns.get(sheet, columns)
@@ -30,4 +30,4 @@ class ComplianceOne(Compliance):
                     name = entry[name_index]
                     evaluation = entry[evaluation_index]
                     enabled = self.is_enabled(config_field, name, entry)
-                    self.update_result(sheet, name, evaluation, enabled)
+                    self.update_result(sheet, name, evaluation, enabled, entry[-1])
