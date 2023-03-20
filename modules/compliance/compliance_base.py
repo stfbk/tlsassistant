@@ -45,7 +45,7 @@ class Compliance:
         :param security: True if security wins false if legacy wins, default to true
         :type security: bool
         :return: the standard which wins
-        :rtype: bool
+        :rtype: int
         """
         # If an evaluation is not mapped it can be considered as a Not mentioned
         security_mapping = "security" if security else "legacy"
@@ -169,10 +169,11 @@ class Compliance:
                     entry = actual_dict["finding"]
                     entry = entry.replace("' '", ",").replace("'", "")
                     extensions: list = entry.split(",")
-                    extensions_pairs = []
+                    extensions_pairs = {}
                     for ex in extensions:
                         # the [1] is the iana code
-                        extensions_pairs.append(ex.split("/#")[0].lower().replace(" ", "_"))
+                        tokens = ex.split("/#")
+                        extensions_pairs[tokens[1]] = tokens[0].lower().replace(" ", "_")
                     self._user_configuration["Extension"] = extensions_pairs
 
                 # From the certificate signature algorithm is possible to extract both CertificateSignature and Hash
@@ -247,23 +248,23 @@ class Compliance:
                         self._user_configuration["Misc"] = {}
                     self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
 
-    def update_result(self, sheet, name, evaluation, is_enabled):
+    def update_result(self, sheet, name, entry_level, is_enabled, source):
         information_level = None
         action = None
-        if evaluation == "must" and not is_enabled:
+        if entry_level == "must" and not is_enabled:
             information_level = "ERROR"
             action = "has to be enabled"
-        elif evaluation == "must not" and is_enabled:
+        elif entry_level == "must not" and is_enabled:
             information_level = "ERROR"
             action = "has to be disabled"
-        elif evaluation == "recommended" and not is_enabled:
+        elif entry_level == "recommended" and not is_enabled:
             information_level = "ALERT"
             action = "should be enabled"
-        elif evaluation == "not recommended" and is_enabled:
+        elif entry_level == "not recommended" and is_enabled:
             information_level = "ALERT"
             action = "should be disabled"
         if information_level:
-            self._output_dict[sheet][name] = f"{information_level}: {name} {action}"
+            self._output_dict[sheet][name] = f"{information_level}: {action} according to {source}"
 
     def is_enabled(self, config_field, name, entry):
         """
@@ -271,7 +272,10 @@ class Compliance:
         """
         field_value = self._user_configuration[config_field]
         enabled = False
-        if isinstance(field_value, dict):
+        if isinstance(field_value, dict) and isinstance(field_value.get(name), str):
+            # Extensions case
+            enabled = name in field_value.items()
+        elif isinstance(field_value, dict):
             enabled = field_value.get(name, None)
             if enabled is None:
                 enabled = True if "all" in field_value else False
