@@ -1,4 +1,4 @@
 {
-    "SSLProtocol": "Protocols",
-    "SSLCipherSuite": "Cipher Suites"
+    "SSLProtocol": "Protocol",
+    "SSLCipherSuite": "CipherSuite"
 }
