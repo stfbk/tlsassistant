@@ -26,6 +26,7 @@ class ConditionParser:
 
 class Compliance:
     def __init__(self):
+        self._output_file = None
         self._input_dict = {}
         self._database_instance = Database()
         self._last_data = {}
@@ -34,6 +35,7 @@ class Compliance:
         self.evaluations_mapping = load_configuration("evaluations_mapping", "configs/compliance/")
         self.sheet_columns = load_configuration("sheet_columns", "configs/compliance/")
         self.misc_fields = load_configuration("misc_fields", "configs/compliance/")
+        self._validator = Validator()
         self.test_ssl = Testssl()
 
     def evaluation_to_use(self, evaluations, security: bool = True):
@@ -72,10 +74,12 @@ class Compliance:
             * *sheets_to_check* (``dict``) -- of sheets that should be checked in the form: sheet:version_of_protocol
             * *actual_configuration* (``dict``) -- The configuration to check, not needed if generating
             * *test_ssl* (``bool``) -- If true the user_configuration gets generated using testssl data
+            * *output_config* (``str``) -- The path and name of the output file
         """
         actual_configuration = kwargs.get("actual_configuration")
         use_test_ssl = kwargs.get("test_ssl")
-        if actual_configuration and Validator([(actual_configuration, dict)]):
+        output_file = kwargs.get("output_config")
+        if actual_configuration and self._validator.dict(actual_configuration):
             self.prepare_configuration(actual_configuration)
         elif use_test_ssl:
             # test_ssl_output = self.test_ssl.run(**{"hostname": "falconvendor.davita.com"})
@@ -86,7 +90,8 @@ class Compliance:
             with open("testssl_dump.json", 'r') as f:
                 test_ssl_output = json.load(f)
             self.prepare_testssl_output(test_ssl_output)
-
+        elif output_file and self._validator.string(output_file):
+            self._output_file = output_file
         self._input_dict = kwargs
 
     # To override

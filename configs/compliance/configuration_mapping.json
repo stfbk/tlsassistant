@@ -1,4 +1,6 @@
 {
     "SSLProtocol": "Protocol",
-    "SSLCipherSuite": "CipherSuite"
+    "SSLCipherSuite": "CipherSuite",
+    "SSLSessionTickets": {"Extension": "session_ticket"},
+    "SSLUseStapling": {"Extension": "status_request"}
 }

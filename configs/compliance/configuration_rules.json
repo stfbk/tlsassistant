@@ -1,0 +1,32 @@
+{
+  "SSLProtocol": {
+    "enable": "name",
+    "disable": "-name",
+    "separator": " ",
+    "added_negatives": true,
+    "replacements": {
+      " ": "v",
+      ".0": ""
+    }
+  },
+  "SSLCipherSuite": {
+    "enable": "name",
+    "disable": "",
+    "separator": ":",
+    "added_negatives": false,
+    "replacements": {
+      "_": "-",
+      "TLS-": ""
+    }
+  },
+  "SSLSessionTickets": {
+    "enable": "on",
+    "disable": "off",
+    "separator": ""
+  },
+  "SSLUseStapling": {
+    "enable": "on",
+    "disable": "off",
+    "separator": ""
+  }
+}
