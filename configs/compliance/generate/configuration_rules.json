@@ -1,5 +1,5 @@
 {
-  "SSLProtocol": {
+  "ProtocolList": {
     "enable": "name",
     "disable": "-name",
     "separator": " ",
@@ -9,7 +9,7 @@
       ".0": ""
     }
   },
-  "SSLCipherSuite": {
+  "CipherSuiteList": {
     "enable": "name",
     "disable": "",
     "separator": ":",
@@ -19,12 +19,12 @@
       "TLS-": ""
     }
   },
-  "SSLSessionTickets": {
+  "SessionTickets": {
     "enable": "on",
     "disable": "off",
     "separator": ""
   },
-  "SSLUseStapling": {
+  "Stapling": {
     "enable": "on",
     "disable": "off",
     "separator": ""

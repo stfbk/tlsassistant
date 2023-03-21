@@ -1,0 +1,6 @@
+{
+    "ProtocolList": "SSLProtocol",
+    "CipherSuiteList": "SSLCipherSuite",
+    "SessionTickets": "SSLSessionTickets",
+    "Stapling": "SSLUseStapling"
+}

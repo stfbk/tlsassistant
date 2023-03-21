@@ -1,8 +1,11 @@
 import json
 
+from modules.compliance.configuration.apache_configuration import ApacheConfiguration
+from modules.compliance.configuration.nginx_configuration import NginxConfiguration
 from modules.compliance.wrappers.db_reader import Database
 from modules.server.wrappers.testssl import Testssl
 from utils.loader import load_configuration
+from utils.logger import Logger
 from utils.validation import Validator
 
 
@@ -26,11 +29,10 @@ class ConditionParser:
 
 class Compliance:
     def __init__(self):
-        self._config_template = "configs/compliance/apache/template_apache.conf"
         self._apache = True
-        self._config_output = None
         self._input_dict = {}
         self._database_instance = Database()
+        self.__logging = Logger("Compliance module")
         self._last_data = {}
         self._output_dict = {}
         self._user_configuration = {}
@@ -39,9 +41,9 @@ class Compliance:
         self.evaluations_mapping = load_configuration("evaluations_mapping", "configs/compliance/")
         self.sheet_columns = load_configuration("sheet_columns", "configs/compliance/")
         self.misc_fields = load_configuration("misc_fields", "configs/compliance/")
-        self.configuration_mapping = load_configuration("configuration_mapping", "configs/compliance/apache/")
         self._validator = Validator()
         self.test_ssl = Testssl()
+        self._config_class = None
 
     def evaluation_to_use(self, evaluations, security: bool = True):
         """
@@ -77,35 +79,43 @@ class Compliance:
         :Keyword Arguments:
             * *standard* (``list``) -- Guidelines to check against
             * *sheets_to_check* (``dict``) -- of sheets that should be checked in the form: sheet:version_of_protocol
-            * *actual_configuration* (``dict``) -- The configuration to check, not needed if generating
-            * *test_ssl* (``bool``) -- If true the user_configuration gets generated using testssl data
+            * *actual_configuration_path* (``str``) -- The configuration to check, not needed if generating
+            * *hostname* (``str``) -- Hostname on which testssl should be used
             * *config_template* (``str``) -- (Optional) the file that should be used as template
             * *apache* (``bool``) -- Default to True, if false nginx will be used
             * *config_output* (``str``) -- The path and name of the output file
         """
-        actual_configuration = kwargs.get("actual_configuration")
-        use_test_ssl = kwargs.get("test_ssl")
-        input_file = kwargs.get("input_config")
-        use_apache = kwargs.get("apache")
+        actual_configuration = kwargs.get("actual_configuration_path")
+        hostname = kwargs.get("hostname")
+        input_template = kwargs.get("input_config")
+        self._apache = kwargs.get("apache", True)
         output_file = kwargs.get("output_config")
-        if actual_configuration and self._validator.dict(actual_configuration):
-            self.prepare_configuration(actual_configuration)
-        elif use_test_ssl:
-            # test_ssl_output = self.test_ssl.run(**{"hostname": "falconvendor.davita.com"})
-            # with open("dump.json", "w") as f:
-            #     json.dump(test_ssl_output, f, indent=4)
+        if actual_configuration and self._validator.string(actual_configuration):
+            try:
+                self._config_class = ApacheConfiguration(actual_configuration)
+            except Exception as e:
+                self.__logging.debug(
+                    f"Couldn't parse config as apache: {e}\ntrying with nginx..."
+                )
+                self._config_class = NginxConfiguration(actual_configuration)
+            self.prepare_configuration(self._config_class.configuration)
+        elif hostname and self._validator.string(hostname):
+            # test_ssl_output = self.test_ssl.run(**{"hostname": hostname})
 
             # this is temporary
             with open("testssl_dump.json", 'r') as f:
                 test_ssl_output = json.load(f)
             self.prepare_testssl_output(test_ssl_output)
         elif output_file and self._validator.string(output_file):
-            self._config_output = output_file
             # This two parameters are needed only for the configuration generation
-            if input_file and self._validator.string(input_file):
-                self._config_template = input_file
-            if use_apache and self._validator.bool(use_apache):
-                self._apache = use_apache
+            if self._apache:
+                self._config_class = ApacheConfiguration()
+            else:
+                self._config_class = NginxConfiguration()
+            if input_template and self._validator.string(input_template):
+                self._config_class.set_template(input_template)
+            self._config_class.set_out_file(output_file)
+
         self._input_dict = kwargs
 
     # To override
@@ -147,7 +157,7 @@ class Compliance:
                             new_version_name += ".0"
                         tmp_dict[new_version_name] = accepted
                     new_field = tmp_dict
-            field_name = self.configuration_mapping.get(field, field)
+            field_name = self._config_class.reverse_mapping.get(field, field)
             self._user_configuration[field_name] = new_field
 
     def prepare_testssl_output(self, test_ssl_output):
@@ -373,9 +383,11 @@ class Compliance:
 
 class Generator(Compliance):
     """This class only exists to add fields that are needed by the generator to the Compliance class"""
+
     def __init__(self):
         super().__init__()
-        self._configuration_rules = load_configuration("configuration_rules", "configs/compliance/apache")
+        self._configuration_rules = load_configuration("configuration_rules", "configs/compliance/generate/")
+        self._configuration_mapping = load_configuration("configuration_mapping", "configs/compliance/generate/")
 
     # To override
     def _worker(self, sheets_to_check):

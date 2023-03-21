@@ -1,0 +1,6 @@
+{
+    "ProtocolList": "Protocol",
+    "CipherSuiteList": "CipherSuite",
+    "SessionTickets": {"Extension": "session_ticket"},
+    "Stapling": {"Extension": "status_request"}
+}
