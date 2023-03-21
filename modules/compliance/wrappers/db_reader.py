@@ -11,7 +11,6 @@ class Database:
         self.database_file = file
         self.connection = sqlite3.connect(self.database_file)
         self.cursor = self.connection.cursor()
-        self.configuration_mapping = load_configuration("configuration_mapping", "configs/compliance/")
         self.sheet_mapping = load_configuration("sheet_mapping", "configs/compliance/")
 
         # # Retrieve the list of tables from the database

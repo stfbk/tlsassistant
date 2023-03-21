@@ -26,15 +26,20 @@ class ConditionParser:
 
 class Compliance:
     def __init__(self):
-        self._output_file = None
+        self._config_template = "configs/compliance/apache/template_apache.conf"
+        self._apache = True
+        self._config_output = None
         self._input_dict = {}
         self._database_instance = Database()
         self._last_data = {}
         self._output_dict = {}
         self._user_configuration = {}
+        self.entries = {}
+        self.evaluated_entries = {}
         self.evaluations_mapping = load_configuration("evaluations_mapping", "configs/compliance/")
         self.sheet_columns = load_configuration("sheet_columns", "configs/compliance/")
         self.misc_fields = load_configuration("misc_fields", "configs/compliance/")
+        self.configuration_mapping = load_configuration("configuration_mapping", "configs/compliance/apache/")
         self._validator = Validator()
         self.test_ssl = Testssl()
 
@@ -74,10 +79,14 @@ class Compliance:
             * *sheets_to_check* (``dict``) -- of sheets that should be checked in the form: sheet:version_of_protocol
             * *actual_configuration* (``dict``) -- The configuration to check, not needed if generating
             * *test_ssl* (``bool``) -- If true the user_configuration gets generated using testssl data
-            * *output_config* (``str``) -- The path and name of the output file
+            * *config_template* (``str``) -- (Optional) the file that should be used as template
+            * *apache* (``bool``) -- Default to True, if false nginx will be used
+            * *config_output* (``str``) -- The path and name of the output file
         """
         actual_configuration = kwargs.get("actual_configuration")
         use_test_ssl = kwargs.get("test_ssl")
+        input_file = kwargs.get("input_config")
+        use_apache = kwargs.get("apache")
         output_file = kwargs.get("output_config")
         if actual_configuration and self._validator.dict(actual_configuration):
             self.prepare_configuration(actual_configuration)
@@ -91,7 +100,12 @@ class Compliance:
                 test_ssl_output = json.load(f)
             self.prepare_testssl_output(test_ssl_output)
         elif output_file and self._validator.string(output_file):
-            self._output_file = output_file
+            self._config_output = output_file
+            # This two parameters are needed only for the configuration generation
+            if input_file and self._validator.string(input_file):
+                self._config_template = input_file
+            if use_apache and self._validator.bool(use_apache):
+                self._apache = use_apache
         self._input_dict = kwargs
 
     # To override
@@ -133,7 +147,7 @@ class Compliance:
                             new_version_name += ".0"
                         tmp_dict[new_version_name] = accepted
                     new_field = tmp_dict
-            field_name = self._database_instance.configuration_mapping.get(field, field)
+            field_name = self.configuration_mapping.get(field, field)
             self._user_configuration[field_name] = new_field
 
     def prepare_testssl_output(self, test_ssl_output):
@@ -277,15 +291,101 @@ class Compliance:
         """
         field_value = self._user_configuration[config_field]
         enabled = False
-        if isinstance(field_value, dict) and isinstance(field_value.get(name), str):
-            # Extensions case
-            enabled = name in field_value.items()
-        elif isinstance(field_value, dict):
+        if isinstance(field_value, dict) and isinstance(field_value.get(name), bool):
             enabled = field_value.get(name, None)
             if enabled is None:
                 enabled = True if "all" in field_value else False
+        elif isinstance(field_value, dict):
+            # Extensions case
+            enabled = name in field_value.values()
         elif field_value and isinstance(field_value, list) and isinstance(field_value[0], list):
             enabled = entry[:2] in field_value
         elif isinstance(field_value, list) or isinstance(field_value, set):
             enabled = name in field_value
         return enabled
+
+    def _retrieve_entries(self, sheets_to_check, columns):
+        """
+        Given the input dictionary and the list of columns updates the entries field with a dictionary in the form
+        sheet: data. The data is ordered by name
+        """
+        entries = {}
+        tables = []
+        for sheet in sheets_to_check:
+            for guideline in sheets_to_check[sheet]:
+                if not self._output_dict.get(sheet):
+                    self._output_dict[sheet] = {}
+                table_name = self._database_instance.get_table_name(sheet, guideline, sheets_to_check[sheet][guideline])
+                tables.append(table_name)
+            self._database_instance.input(tables, other_filter="ORDER BY name")
+            data = self._database_instance.output(columns)
+            entries[sheet] = data
+            tables = []
+        self.entries = entries
+
+    def _evaluate_entries(self, sheets_to_check, level_index):
+        """
+        This function checks the entries with the same name and chooses which guideline to follow for that entry.
+        The results can be found in the evaluated_entries field. The dictionary will have form:
+        self.evaluated_entries[sheet][count] = {
+                        "name": str, The name of the entry
+                        "level": str, The level that resulted from the evaluation
+                        "source": str The guideline from which the level is deducted
+                    }
+        :param sheets_to_check: The input dictionary
+        :param level_index: The index of the column that contains the requirement level of the entry
+        :type level_index: int
+        """
+        # A more fitting name could be current_requirement_level
+        resulting_level = "<Not mentioned>"
+        for sheet in self.entries:
+            # The total value is used as an index to avoid eventual collisions between equal names in the same sheet
+            total = 0
+            if not self.evaluated_entries.get(sheet):
+                self.evaluated_entries[sheet] = {}
+            counter = 1
+            source_guideline = self.entries[sheet][-1]
+            for entry in self.entries[sheet]:
+                entry_level = entry[level_index]
+                guideline = entry[-1]
+                if entry_level != resulting_level:
+                    levels = [resulting_level, entry_level]
+                    best_level = self.evaluation_to_use(levels)
+                    # if best_level is 0 the source_guideline is the same
+                    if best_level:
+                        source_guideline = guideline
+                    resulting_level = levels[best_level]
+                # The entries are ordered by name so every time the counter is the same as the number of guidelines to
+                # check it is time to add the entry to the output dictionary.
+                if sheet and counter == len(sheets_to_check[sheet]):
+                    counter = 0
+                    # Save it to the dictionary
+                    self.evaluated_entries[sheet][total] = {
+                        "entry": entry,
+                        "level": resulting_level,
+                        "source": source_guideline
+                    }
+                    # the resulting level is reset so that it doesn't influence the next element.
+                    resulting_level = "<Not mentioned>"
+                    total += 1
+                counter += 1
+
+
+class Generator(Compliance):
+    """This class only exists to add fields that are needed by the generator to the Compliance class"""
+    def __init__(self):
+        super().__init__()
+        self._configuration_rules = load_configuration("configuration_rules", "configs/compliance/apache")
+
+    # To override
+    def _worker(self, sheets_to_check):
+        """
+        :param sheets_to_check: dict of sheets that should be checked in the form: sheet:{protocol, version_of_protocol}
+        :type sheets_to_check: dict
+
+        :return: processed results
+        :rtype: dict
+
+        :raise  NotImplementedError:
+        """
+        raise NotImplementedError("This method should be reimplemented")
