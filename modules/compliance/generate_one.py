@@ -1,5 +1,3 @@
-import os.path
-
 from modules.compliance.compliance_base import Generator
 
 
@@ -31,7 +29,4 @@ class GenerateOne(Generator):
             data = self._database_instance.output(columns)
             field_rules = self._configuration_rules.get(field, {})
             self._config_class.add_configuration_for_field(field, field_rules, data, name_index, level_index)
-
-    def output(self):
-        return self._config_class.write_to_file()
 

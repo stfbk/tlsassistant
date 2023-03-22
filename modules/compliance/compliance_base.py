@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from modules.compliance.configuration.apache_configuration import ApacheConfiguration
 from modules.compliance.configuration.nginx_configuration import NginxConfiguration
@@ -81,13 +82,11 @@ class Compliance:
             * *sheets_to_check* (``dict``) -- of sheets that should be checked in the form: sheet:version_of_protocol
             * *actual_configuration_path* (``str``) -- The configuration to check, not needed if generating
             * *hostname* (``str``) -- Hostname on which testssl should be used
-            * *config_template* (``str``) -- (Optional) the file that should be used as template
             * *apache* (``bool``) -- Default to True, if false nginx will be used
             * *config_output* (``str``) -- The path and name of the output file
         """
         actual_configuration = kwargs.get("actual_configuration_path")
         hostname = kwargs.get("hostname")
-        input_template = kwargs.get("input_config")
         self._apache = kwargs.get("apache", True)
         output_file = kwargs.get("output_config")
         if actual_configuration and self._validator.string(actual_configuration):
@@ -107,14 +106,11 @@ class Compliance:
                 test_ssl_output = json.load(f)
             self.prepare_testssl_output(test_ssl_output)
         elif output_file and self._validator.string(output_file):
-            # This two parameters are needed only for the configuration generation
             if self._apache:
                 self._config_class = ApacheConfiguration()
             else:
                 self._config_class = NginxConfiguration()
-            if input_template and self._validator.string(input_template):
-                self._config_class.set_template(input_template)
-            self._config_class.set_out_file(output_file)
+            self._config_class.set_out_file(Path(output_file))
 
         self._input_dict = kwargs
 
@@ -401,3 +397,7 @@ class Generator(Compliance):
         :raise  NotImplementedError:
         """
         raise NotImplementedError("This method should be reimplemented")
+
+    def output(self):
+        return self._config_class.configuration_output()
+

@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from apacheconfig import make_loader
@@ -6,13 +7,15 @@ from modules.compliance.configuration.configuration_base import ConfigurationMak
 
 
 class ApacheConfiguration(ConfigurationMaker):
+
     def __init__(self, file: Path = None):
         super().__init__("apache")
+        self._string_to_add = ""
         if file:
-            self.__load_conf(file)
+            self._load_conf(file)
 
     # Stole this function from Configuration for testing purposes
-    def __load_conf(self, file: Path):
+    def _load_conf(self, file: Path):
         """
         Internal method to load the apache configuration file.
 
@@ -21,6 +24,10 @@ class ApacheConfiguration(ConfigurationMaker):
         """
         with make_loader() as loader:
             self.configuration = loader.load(str(file.absolute()))
+
+    def _load_template(self):
+        with open(self._config_template_path, "r") as f:
+            self._template = f.read()
 
     def add_configuration_for_field(self, field, field_rules, data, name_index, level_index):
         config_field = self.mapping.get(field, None)
@@ -63,3 +70,10 @@ class ApacheConfiguration(ConfigurationMaker):
             tmp_string = tmp_string[:-1]
         if len(tmp_string) != len(config_field) + 1:  # this is to prevent adding a field without any value
             self._string_to_add += "\n" + tmp_string
+
+    def _write_to_file(self):
+        if not os.path.isfile(self._config_template_path):
+            raise FileNotFoundError("Invalid template file")
+
+        with open(self._config_output, "w") as f:
+            f.write(self._template + self._string_to_add)

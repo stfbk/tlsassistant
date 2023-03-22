@@ -1,6 +1,8 @@
+import os
 from pathlib import Path
 
 from crossplane import parse as nginx_parse
+from crossplane import build as nginx_build
 
 from modules.compliance.configuration.configuration_base import ConfigurationMaker
 
@@ -9,10 +11,10 @@ class NginxConfiguration(ConfigurationMaker):
     def __init__(self, file: Path = None):
         super().__init__("nginx")
         if file:
-            self.__load_conf(file)
+            self._load_conf(file)
 
     # Stole this function from Configuration for testing purposes
-    def __load_conf(self, file: Path):
+    def _load_conf(self, file: Path):
         """
         Internal method to load the nginx configuration file.
 
@@ -20,6 +22,8 @@ class NginxConfiguration(ConfigurationMaker):
         :type file: str
         """
         self.configuration = nginx_parse(str(file.absolute()))
+        if self.configuration.get("errors", []):
+            raise ValueError("Invalid nginx config file")
 
     def add_configuration_for_field(self, field, field_rules, data, name_index, level_index):
         config_field = self.mapping.get(field, None)
@@ -27,7 +31,8 @@ class NginxConfiguration(ConfigurationMaker):
         if not config_field:
             # This field isn't available with this configuration
             return
-        tmp_string = "\t" + config_field + " "
+
+        tmp_string = ""
         field_rules = self._specific_rules.get(field, field_rules)
         # the idea is that it is possible to define a custom value to insert like on/off or name to use the name
         # defined in the config file
@@ -58,15 +63,19 @@ class NginxConfiguration(ConfigurationMaker):
 
         if tmp_string and tmp_string[-1] == ":":
             tmp_string = tmp_string[:-1]
-        if len(tmp_string) != len(config_field) + 1:  # this is to prevent adding a field without any value
-            self._string_to_add += "\n" + tmp_string
+        tmp_string = tmp_string.strip()
+        if tmp_string:  # this is to prevent adding a field without any value
+            print(self._template)
+            # The directive gets added at the beginning the http directive
+            self._template["config"][0]["parsed"][1]["block"].insert(0, {"directive": field, "args": [tmp_string]})
 
-    def write_to_file(self):
-        """
-        Loads the template, adds the new text and writes the result to the output_file.
-        This one will also add a final "}" so that user doesn't need to move all the directives inside the server block.
-        :return: a dictionary containing a report of what was added and what not
-        """
+    def _load_template(self):
+        self._load_conf(Path(self._config_template_path))
+        self._template = self.configuration
+
+    def _write_to_file(self):
+        if not os.path.isfile(self._config_template_path):
+            raise FileNotFoundError("Invalid template file")
+
         with open(self._config_output, "w") as f:
-            f.write(self._load_template() + "\n" + self._string_to_add + "}")
-        return self._output_dict.copy()
+            f.write(nginx_build(self._template["config"][0]["parsed"], header=True))

@@ -11,7 +11,7 @@
   },
   "CipherSuiteList": {
     "enable": "name",
-    "disable": "",
+    "disable": "!name",
     "separator": ":",
     "added_negatives": false,
     "replacements": {
