@@ -28,5 +28,10 @@
     "enable": "on",
     "disable": "off",
     "separator": ""
+  },
+  "EarlyData": {
+    "enable": "on",
+    "disable": "off",
+    "separator": ""
   }
 }

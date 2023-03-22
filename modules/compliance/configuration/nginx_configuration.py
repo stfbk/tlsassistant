@@ -28,6 +28,7 @@ class NginxConfiguration(ConfigurationMaker):
     def add_configuration_for_field(self, field, field_rules, data, name_index, level_index):
         config_field = self.mapping.get(field, None)
         self._output_dict[field] = {}
+
         if not config_field:
             # This field isn't available with this configuration
             return
@@ -65,9 +66,16 @@ class NginxConfiguration(ConfigurationMaker):
             tmp_string = tmp_string[:-1]
         tmp_string = tmp_string.strip()
         if tmp_string:  # this is to prevent adding a field without any value
-            print(self._template)
             # The directive gets added at the beginning the http directive
-            self._template["config"][0]["parsed"][1]["block"].insert(0, {"directive": field, "args": [tmp_string]})
+            # the breakdown of the below instruction is:
+            # loaded_template: dictionary
+            # config: list of loaded files (in this case one)
+            # parsed: list of dictionaries that represent directives (1 is the http directive)
+            # block: list of dictionaries that represent directives inside the directive got before
+            # each directive has a directive field for the name and an args (list) one for the params it should have
+            # The args value is a list only containing tmp_string because the params are prepared while reading them.
+            directive_to_add = {"directive": config_field, "args": [tmp_string]}
+            self._template["config"][0]["parsed"][1]["block"].insert(0, directive_to_add)
 
     def _load_template(self):
         self._load_conf(Path(self._config_template_path))
