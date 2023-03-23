@@ -31,6 +31,7 @@ class ConditionParser:
 
 class Compliance:
     def __init__(self):
+        self._custom_guidelines = None
         self._apache = True
         self._input_dict = {}
         self._database_instance = Database()
@@ -50,7 +51,7 @@ class Compliance:
 
         self._config_class = None
         self._database_instance.input(["Guideline"])
-        self._guidelines = [name[0] for name in self._database_instance.output()]
+        self._guidelines = [name[0].upper() for name in self._database_instance.output()]
 
     def level_to_use(self, levels, security: bool = True):
         """
@@ -85,16 +86,18 @@ class Compliance:
 
         :Keyword Arguments:
             * *standard* (``list``) -- Guidelines to check against
-            * *sheets_to_check* (``dict``) -- of sheets that should be checked in the form: sheet:version_of_protocol
+            * *sheets_to_check* (``dict``) -- dictionary of sheets that should be checked in the form: sheet:version_of_protocol
             * *actual_configuration_path* (``str``) -- The configuration to check, not needed if generating
             * *hostname* (``str``) -- Hostname on which testssl should be used
             * *apache* (``bool``) -- Default to True, if false nginx will be used
             * *config_output* (``str``) -- The path and name of the output file
+            * *custom_guidelines* (``dict``) -- dictionary with form: { sheet : {guideline: name: {"level":level}}
         """
         actual_configuration = kwargs.get("actual_configuration_path")
         hostname = kwargs.get("hostname")
         self._apache = kwargs.get("apache", True)
         output_file = kwargs.get("output_config")
+        self._custom_guidelines = kwargs.get("custom_guidelines")
         if actual_configuration and self._validator.string(actual_configuration):
             try:
                 self._config_class = ApacheConfiguration(actual_configuration)
@@ -117,7 +120,6 @@ class Compliance:
             else:
                 self._config_class = NginxConfiguration()
             self._config_class.set_out_file(Path(output_file))
-
         self._input_dict = kwargs
 
     # To override
@@ -305,6 +307,7 @@ class Compliance:
         field_value = self._user_configuration[config_field]
         enabled = False
         if isinstance(field_value, dict) and isinstance(field_value.get(name), bool):
+            # Protocols case
             enabled = field_value.get(name, None)
             if enabled is None:
                 enabled = True if "all" in field_value else False
@@ -328,15 +331,17 @@ class Compliance:
             if not self._output_dict.get(sheet):
                 self._output_dict[sheet] = {}
             for guideline in sheets_to_check[sheet]:
-                table_name = self._database_instance.get_table_name(sheet, guideline, sheets_to_check[sheet][guideline])
-                tables.append(table_name)
+                if guideline.upper() in self._guidelines:
+                    table_name = self._database_instance.get_table_name(sheet, guideline,
+                                                                        sheets_to_check[sheet][guideline])
+                    tables.append(table_name)
             self._database_instance.input(tables, other_filter="ORDER BY name")
             data = self._database_instance.output(columns)
             entries[sheet] = data
             tables = []
         self.entries = entries
 
-    def _evaluate_entries(self, sheets_to_check, level_index):
+    def _evaluate_entries(self, sheets_to_check, columns):
         """
         This function checks the entries with the same name and chooses which guideline to follow for that entry.
         The results can be found in the evaluated_entries field. The dictionary will have form:
@@ -346,21 +351,24 @@ class Compliance:
                         "source": str The guideline from which the level is deducted
                     }
         :param sheets_to_check: The input dictionary
-        :param level_index: The index of the column that contains the requirement level of the entry
-        :type level_index: int
+        :param columns: columns used to retrieve data from database
+        :type columns: list
         """
         # A more fitting name could be current_requirement_level
         resulting_level = "<Not mentioned>"
+        guideline_index = columns.index("guidelineName")
+        level_index = columns.index("level")
+        name_index = columns.index("name")
         for sheet in self.entries:
             # The total value is used as an index to avoid eventual collisions between equal names in the same sheet
             total = 0
             if not self.evaluated_entries.get(sheet):
                 self.evaluated_entries[sheet] = {}
             counter = 1
-            source_guideline = self.entries[sheet][-1]
+            source_guideline = self.entries[sheet][guideline_index]
             for entry in self.entries[sheet]:
                 entry_level = entry[level_index]
-                guideline = entry[-1]
+                guideline = entry[guideline_index]
                 if entry_level != resulting_level:
                     levels = [resulting_level, entry_level]
                     best_level = self.level_to_use(levels)
@@ -370,8 +378,25 @@ class Compliance:
                     resulting_level = levels[best_level]
                 # The entries are ordered by name so every time the counter is the same as the number of guidelines to
                 # check it is time to add the entry to the output dictionary.
-                if sheet and counter == len(sheets_to_check[sheet]):
+                custom_guidelines_list = sheets_to_check[sheet].keys() - self._guidelines
+                if sheet and counter == len(sheets_to_check[sheet]) - len(custom_guidelines_list):
                     counter = 0
+                    name = entry[name_index]
+                    for guideline in custom_guidelines_list:
+                        custom_entry = self._custom_guidelines[sheet][guideline].get(name)
+                        if custom_entry:
+                            levels = [resulting_level, custom_entry["level"]]
+                            guidelines_to_check = list(sheets_to_check[sheet])
+                            # If the custom_guideline appears before the source_guideline (actual guideline from which
+                            # the level was deducted) it has greater priority, so it is necessary to switch them
+                            if guidelines_to_check.index(guideline) < guidelines_to_check.index(source_guideline):
+                                levels = levels[::-1]
+                            best_level = self.level_to_use(levels)
+                            # if best_level is 0 the source_guideline is the best
+                            if best_level:
+                                source_guideline = guideline
+                            resulting_level = levels[best_level]
+
                     # Save it to the dictionary
                     self.evaluated_entries[sheet][total] = {
                         "entry": entry,

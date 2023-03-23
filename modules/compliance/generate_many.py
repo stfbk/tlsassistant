@@ -11,7 +11,7 @@ class GenerateMany(Generator):
         conf_mapping = self._configuration_mapping
         # fill the entries field with the data from the sheets
         self._retrieve_entries(sheets_to_check, columns)
-        self._evaluate_entries(sheets_to_check, level_index)
+        self._evaluate_entries(sheets_to_check, columns)
         for field in conf_mapping:
             if not self._output_dict.get(field):
                 self._output_dict[field] = {}

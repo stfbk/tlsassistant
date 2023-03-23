@@ -14,10 +14,9 @@ class ComplianceMany(Compliance):
             raise ValueError("No configuration provided")
         columns = ["name", "level", "condition", "guidelineName"]
         name_index = columns.index("name")
-        level_index = columns.index("level")
         # fill the entries field with the data from the sheets
         self._retrieve_entries(sheets_to_check, columns)
-        self._evaluate_entries(sheets_to_check, level_index)
+        self._evaluate_entries(sheets_to_check, columns)
         for sheet in self.evaluated_entries:
             for entry_dict in self.evaluated_entries[sheet].values():
                 entry = entry_dict["entry"]
