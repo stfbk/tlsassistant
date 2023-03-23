@@ -5,6 +5,7 @@ from modules.compliance.configuration.apache_configuration import ApacheConfigur
 from modules.compliance.configuration.nginx_configuration import NginxConfiguration
 from modules.compliance.wrappers.db_reader import Database
 from modules.server.wrappers.testssl import Testssl
+from utils.database import get_standardized_level
 from utils.loader import load_configuration
 from utils.logger import Logger
 from utils.validation import Validator
@@ -51,25 +52,25 @@ class Compliance:
         self._database_instance.input(["Guideline"])
         self._guidelines = [name[0] for name in self._database_instance.output()]
 
-    def evaluation_to_use(self, evaluations, security: bool = True):
+    def level_to_use(self, levels, security: bool = True):
         """
         Given two evaluations returns true if the first one wins, false otherwise.
 
-        :param evaluations: list of evaluations to be checked
-        :type evaluations: list
+        :param levels: list of evaluations to be checked
+        :type levels: list
         :param security: True if security wins false if legacy wins, default to true
         :type security: bool
         :return: the standard which wins
         :rtype: int
         """
-        # If an evaluation is not mapped it can be considered as a Not mentioned
+        # If a level is not mapped it can be considered as a Not mentioned
         security_mapping = "security" if security else "legacy"
-        if not evaluations:
-            raise IndexError("Evaluations list is empty")
-        first_value = self.evaluations_mapping.get(security_mapping, {}).get(evaluations[0].replace("°", ""), 4)
+        if not levels:
+            raise IndexError("Levels list is empty")
+        first_value = self.evaluations_mapping.get(security_mapping, {}).get(get_standardized_level(levels[0]), 4)
         best = 0
-        for i, el in enumerate(evaluations[1:]):
-            evaluation_value = self.evaluations_mapping.get(security_mapping, {}).get(el.replace("°", ""), 4)
+        for i, el in enumerate(levels[1:]):
+            evaluation_value = self.evaluations_mapping.get(security_mapping, {}).get(get_standardized_level(el), 4)
             if first_value > evaluation_value:
                 best = i + 1
         # if they have the same value first wins
@@ -281,6 +282,7 @@ class Compliance:
     def update_result(self, sheet, name, entry_level, is_enabled, source):
         information_level = None
         action = None
+        entry_level = get_standardized_level(entry_level)
         if entry_level == "must" and not is_enabled:
             information_level = "ERROR"
             action = "has to be enabled"
@@ -361,7 +363,7 @@ class Compliance:
                 guideline = entry[-1]
                 if entry_level != resulting_level:
                     levels = [resulting_level, entry_level]
-                    best_level = self.evaluation_to_use(levels)
+                    best_level = self.level_to_use(levels)
                     # if best_level is 0 the source_guideline is the same
                     if best_level:
                         source_guideline = guideline
@@ -405,4 +407,3 @@ class Generator(Compliance):
 
     def output(self):
         return self._config_class.configuration_output()
-
