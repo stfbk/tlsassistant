@@ -3,7 +3,7 @@ def get_version_name_for_database(version_name: str):
     version_name = version_name if "Unnamed" not in version_name else ""
     version_name = version_name.strip().title().replace(" ", "").replace("-", "").replace("/", "_").replace("#", "") \
         .strip(".")
-    return version_name
+    return version_name.upper()
 
 
 def get_standard_name_for_database(standard_name):
@@ -19,7 +19,7 @@ def get_standard_name_for_database(standard_name):
             standard_name = tokens[0]
         elif len(tokens) > 2 and "/" in tokens[-1]:
             standard_name = tokens[0] + tokens[-1].replace("/", "_")
-    return standard_name.strip(")")
+    return standard_name.strip(")").upper()
 
 
 def get_standardized_level(level):

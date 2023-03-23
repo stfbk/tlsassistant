@@ -51,6 +51,7 @@ class NginxConfiguration(ConfigurationMaker):
             for replacement in replacements:
                 name = name.replace(replacement, replacements[replacement])
             tmp_string += self._get_string_to_add(field_rules, name, level, field)
+            self._output_dict[field][name]["guideline"] = guideline
 
         if tmp_string and tmp_string[-1] == ":":
             tmp_string = tmp_string[:-1]

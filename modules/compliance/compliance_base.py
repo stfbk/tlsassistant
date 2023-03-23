@@ -43,8 +43,13 @@ class Compliance:
         self.sheet_columns = load_configuration("sheet_columns", "configs/compliance/")
         self.misc_fields = load_configuration("misc_fields", "configs/compliance/")
         self._validator = Validator()
+
+        # This will be removed when integrating the module in the core
         self.test_ssl = Testssl()
+
         self._config_class = None
+        self._database_instance.input(["Guideline"])
+        self._guidelines = [name[0] for name in self._database_instance.output()]
 
     def evaluation_to_use(self, evaluations, security: bool = True):
         """
@@ -318,9 +323,9 @@ class Compliance:
         entries = {}
         tables = []
         for sheet in sheets_to_check:
+            if not self._output_dict.get(sheet):
+                self._output_dict[sheet] = {}
             for guideline in sheets_to_check[sheet]:
-                if not self._output_dict.get(sheet):
-                    self._output_dict[sheet] = {}
                 table_name = self._database_instance.get_table_name(sheet, guideline, sheets_to_check[sheet][guideline])
                 tables.append(table_name)
             self._database_instance.input(tables, other_filter="ORDER BY name")
