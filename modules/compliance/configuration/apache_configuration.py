@@ -29,7 +29,7 @@ class ApacheConfiguration(ConfigurationMaker):
         with open(self._config_template_path, "r") as f:
             self._template = f.read()
 
-    def add_configuration_for_field(self, field, field_rules, data, name_index, level_index):
+    def add_configuration_for_field(self, field, field_rules, data, name_index, level_index, guideline, target=None):
         config_field = self.mapping.get(field, None)
         self._output_dict[field] = {}
 
@@ -39,36 +39,30 @@ class ApacheConfiguration(ConfigurationMaker):
 
         tmp_string = config_field + " "
         field_rules = self._specific_rules.get(field, field_rules)
-        # the idea is that it is possible to define a custom value to insert like on/off or name to use the name
-        # defined in the config file
-        allow_string = field_rules.get("enable", "name")
-        deny_string = field_rules.get("disable", "-name")
-        separator = field_rules.get("separator", " ")
-        # This parameter is needed to avoid having separators even if nothing gets added to deny (like ciphersuites)
-        added_negatives = field_rules.get("added_negatives", False)
-        replacements = field_rules.get("replacements", [])
+
+        field_rules = self._specific_rules.get(field, field_rules)
         for entry in data:
-            added = True
-            name = entry[name_index]
+            if isinstance(entry, dict):
+                name = entry["entry"][name_index]
+                level = entry["level"]
+                guideline = entry["source"]
+            else:
+                name = entry[name_index]
+                level = entry[level_index]
+
+            if target and target != name:
+                continue
+
+            replacements = field_rules.get("replacements", [])
             for replacement in replacements:
                 name = name.replace(replacement, replacements[replacement])
-            if entry[level_index] in ["must", "recommended"]:
-                tmp_string += allow_string.replace("name", name)
-                self._output_dict[field][name] = True
-            elif entry[level_index] in ["must not", "not recommended"]:
-                tmp_string += deny_string.replace("name", name)
-                added = added_negatives
-                self._output_dict[field][name] = False
-            else:
-                added = False
-                self._output_dict[field][name] = False
-
-            if added:
-                tmp_string += separator
+            tmp_string += self._get_string_to_add(field_rules, name, level, field)
+            self._output_dict[field][name]["guideline"] = guideline
 
         if tmp_string and tmp_string[-1] == ":":
             tmp_string = tmp_string[:-1]
-        if len(tmp_string) != len(config_field) + 1:  # this is to prevent adding a field without any value
+        # this check prevents adding a field without any value
+        if len(tmp_string) != len(config_field) + 1:
             self._string_to_add += "\n" + tmp_string
 
     def _write_to_file(self):

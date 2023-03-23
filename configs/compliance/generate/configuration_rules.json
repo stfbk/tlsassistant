@@ -13,7 +13,7 @@
     "enable": "name",
     "disable": "!name",
     "separator": ":",
-    "added_negatives": false,
+    "added_negatives": true,
     "replacements": {
       "_": "-",
       "TLS-": ""

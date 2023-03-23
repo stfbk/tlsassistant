@@ -5,7 +5,7 @@ class GenerateOne(Generator):
     def _worker(self, sheets_to_check):
         if not self._config_class.output_file():
             raise ValueError("No output file path provided")
-        columns = ["name", "level", "condition", "guidelineName"]
+        columns = ["name", "level", "condition"]
         name_index = columns.index("name")
         level_index = columns.index("level")
         conf_mapping = self._configuration_mapping

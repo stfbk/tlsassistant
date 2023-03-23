@@ -20,3 +20,13 @@ def get_standard_name_for_database(standard_name):
         elif len(tokens) > 2 and "/" in tokens[-1]:
             standard_name = tokens[0] + tokens[-1].replace("/", "_")
     return standard_name.strip(")")
+
+
+def get_standardized_level(level):
+    """
+    Takes a level in input and returns it after removing °,* and trailing spaces
+    :param level:
+    :type level: str
+    :return:
+    """
+    return level.replace("*", "").replace("°", "").strip()

@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from utils.database import get_standardized_level
 from utils.loader import load_configuration
 
 
@@ -46,13 +47,15 @@ class ConfigurationMaker:
     def _write_to_file(self):
         raise NotImplementedError("This method should be reimplemented")
 
-    def add_configuration_for_field(self, field, field_rules, data, name_index, level_index):
+    def add_configuration_for_field(self, field, field_rules, data, name_index, level_index, guideline, target=None):
         """
         :param field: the field that should be added (taken from configuration_rules)
-        :param field_rules:
-        :param data:
-        :param name_index:
-        :param level_index:
+        :param field_rules: the rules that should be applied to that field
+        :param data: data from which to gather the field information
+        :param name_index: index of the name column
+        :param level_index: index of the level column
+        :param guideline: the guideline from which the level was deducted
+        :param target: (Optional) if defined only the entry with target name will be used
         :return:
         """
         raise NotImplementedError("This method should be reimplemented")
@@ -60,3 +63,40 @@ class ConfigurationMaker:
     def configuration_output(self):
         self._write_to_file()
         return self._output_dict.copy()
+
+    def _get_string_to_add(self, field_rules, name, level, field):
+        """
+        :param field_rules: set of rules that should be used for this field
+        :type field_rules: dict
+        :param name: name of the element to evaluate
+        :type name: str
+        :param level: level associated with the name
+        :type level: str
+        :param field: Name of the field in the configuration file
+        :type field: str
+        :return: The string that should be added to the configuration
+        :rtype: str
+        """
+        string_to_add = ""
+        added = True
+        allow_string = field_rules.get("enable", "name")
+        deny_string = field_rules.get("disable", "-name")
+        separator = field_rules.get("separator", " ")
+        # This parameter is needed to avoid having separators even if nothing gets added to deny (like ciphersuites)
+        added_negatives = field_rules.get("added_negatives", False)
+        if not self._output_dict.get(field):
+            self._output_dict[field] = {}
+        if get_standardized_level(level) in ["must", "recommended"]:
+            string_to_add += allow_string.replace("name", name)
+            self._output_dict[field][name] = {"added": True}
+        elif get_standardized_level(level) in ["must not", "not recommended"]:
+            string_to_add += deny_string.replace("name", name)
+            added = added_negatives
+            self._output_dict[field][name] = {"added": False}
+        else:
+            added = False
+            self._output_dict[field][name] = {"added": False}
+        if added:
+            string_to_add += separator
+
+        return string_to_add
