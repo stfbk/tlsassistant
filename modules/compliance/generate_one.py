@@ -20,7 +20,7 @@ class GenerateOne(Generator):
             if isinstance(sheet, dict):
                 table_to_search = list(sheet.keys())[0]
                 name_to_search = sheet[table_to_search]
-                query_filter = "WHERE name == \"" + name_to_search + "\""
+                query_filter = "WHERE name LIKE \"" + name_to_search + "\""
                 sheet = table_to_search
             columns = self.sheet_columns.get(sheet, columns)
             # Only the first guideline of each sheet is the interesting one

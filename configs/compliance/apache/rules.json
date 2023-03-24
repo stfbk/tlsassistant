@@ -1,1 +1,8 @@
-{}
+{
+  "DHParams": {
+    "enable": "2048 >> /path/to/cert_chain",
+    "disable": "",
+    "separator": "",
+    "enable_one_time": true
+  }
+}

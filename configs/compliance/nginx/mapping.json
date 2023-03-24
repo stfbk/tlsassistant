@@ -3,5 +3,6 @@
     "CipherSuiteList": "ssl_ciphers",
     "SessionTickets": "ssl_session_tickets",
     "Stapling": "ssl_stapling",
-    "EarlyData": "ssl_early_data"
+    "EarlyData": "ssl_early_data",
+    "DHParams": "ssl_dhparam"
 }

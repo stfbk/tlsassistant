@@ -13,6 +13,7 @@ class ConfigurationMaker:
         self._template = None
         self._config_output = None
         self.configuration = None
+        self._enabled_once = set()
         self._specific_rules = load_configuration("rules", f"configs/compliance/{config_type}/")
 
     def set_out_file(self, output_file):
@@ -55,7 +56,7 @@ class ConfigurationMaker:
         :param name_index: index of the name column
         :param level_index: index of the level column
         :param guideline: the guideline from which the level was deducted
-        :param target: (Optional) if defined only the entry with target name will be used
+        :param target: (Optional) if defined only the entries whose name contains target will be used
         :return:
         """
         raise NotImplementedError("This method should be reimplemented")
@@ -86,7 +87,12 @@ class ConfigurationMaker:
         added_negatives = field_rules.get("added_negatives", False)
         if not self._output_dict.get(field):
             self._output_dict[field] = {}
+        if field in self._enabled_once:
+            return ""
+
         if get_standardized_level(level) in ["must", "recommended"]:
+            if field_rules.get("enable_one_time"):
+                self._enabled_once.add(field)
             string_to_add += allow_string.replace("name", name)
             self._output_dict[field][name] = {"added": True}
         elif get_standardized_level(level) in ["must not", "not recommended"]:

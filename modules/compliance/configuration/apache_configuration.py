@@ -40,7 +40,6 @@ class ApacheConfiguration(ConfigurationMaker):
         tmp_string = config_field + " "
         field_rules = self._specific_rules.get(field, field_rules)
 
-        field_rules = self._specific_rules.get(field, field_rules)
         for entry in data:
             if isinstance(entry, dict):
                 name = entry["entry"][name_index]
@@ -50,14 +49,15 @@ class ApacheConfiguration(ConfigurationMaker):
                 name = entry[name_index]
                 level = entry[level_index]
 
-            if target and target != name:
+            if target and target.replace("*", "") not in name:
                 continue
 
             replacements = field_rules.get("replacements", [])
             for replacement in replacements:
                 name = name.replace(replacement, replacements[replacement])
             tmp_string += self._get_string_to_add(field_rules, name, level, field)
-            self._output_dict[field][name]["guideline"] = guideline
+            if self._output_dict[field].get(name):
+                self._output_dict[field][name]["guideline"] = guideline
 
         if tmp_string and tmp_string[-1] == ":":
             tmp_string = tmp_string[:-1]

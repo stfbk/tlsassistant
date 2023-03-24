@@ -44,14 +44,15 @@ class NginxConfiguration(ConfigurationMaker):
                 name = entry[name_index]
                 level = entry[level_index]
 
-            if target and target != name:
+            if target and target.replace("*", "") not in name:
                 continue
 
             replacements = field_rules.get("replacements", [])
             for replacement in replacements:
                 name = name.replace(replacement, replacements[replacement])
             tmp_string += self._get_string_to_add(field_rules, name, level, field)
-            self._output_dict[field][name]["guideline"] = guideline
+            if self._output_dict[field].get(name):
+                self._output_dict[field][name]["guideline"] = guideline
 
         if tmp_string and tmp_string[-1] == ":":
             tmp_string = tmp_string[:-1]
@@ -65,8 +66,15 @@ class NginxConfiguration(ConfigurationMaker):
             # block: list of dictionaries that represent directives inside the directive got before
             # each directive has a directive field for the name and an args (list) one for the params it should have
             # The args value is a list only containing tmp_string because the params are prepared while reading them.
-            directive_to_add = {"directive": config_field, "args": [tmp_string]}
+            args = tmp_string
+            comment = ""
+            if tmp_string.count("#") == 1:
+                args, comment = tmp_string.split("#")
+            directive_to_add = {"directive": config_field, "args": [args]}
             self._template["config"][0]["parsed"][1]["block"].insert(0, directive_to_add)
+            if comment:
+                directive_to_add = {"directive": "#", "comment": comment}
+                self._template["config"][0]["parsed"][1]["block"].insert(0, directive_to_add)
 
     def _load_template(self):
         self._load_conf(Path(self._config_template_path))

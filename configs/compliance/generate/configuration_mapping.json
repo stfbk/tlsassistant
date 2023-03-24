@@ -3,5 +3,6 @@
     "CipherSuiteList": "CipherSuite",
     "SessionTickets": {"Extension": "session_ticket"},
     "Stapling": {"Extension": "status_request"},
-    "EarlyData": {"Extension": "early_data"}
+    "EarlyData": {"Extension": "early_data"},
+    "DHParams": {"CipherSuite":  "*DH*"}
 }

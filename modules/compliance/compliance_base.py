@@ -107,14 +107,14 @@ class Compliance:
                 )
                 self._config_class = NginxConfiguration(actual_configuration)
             self.prepare_configuration(self._config_class.configuration)
-        elif hostname and self._validator.string(hostname):
+        if hostname and self._validator.string(hostname):
             # test_ssl_output = self.test_ssl.run(**{"hostname": hostname})
 
             # this is temporary
             with open("testssl_dump.json", 'r') as f:
                 test_ssl_output = json.load(f)
             self.prepare_testssl_output(test_ssl_output)
-        elif output_file and self._validator.string(output_file):
+        if output_file and self._validator.string(output_file):
             if self._apache:
                 self._config_class = ApacheConfiguration()
             else:

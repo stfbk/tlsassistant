@@ -33,5 +33,11 @@
     "enable": "on",
     "disable": "off",
     "separator": ""
+  },
+  "DHParams": {
+    "enable": "OVERRIDE THIS RULE",
+    "disable": "",
+    "separator": "",
+    "enable_one_time": true
   }
 }
