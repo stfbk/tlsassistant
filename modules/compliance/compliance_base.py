@@ -1,4 +1,6 @@
+import datetime
 import json
+import re
 from pathlib import Path
 
 from modules.compliance.configuration.apache_configuration import ApacheConfiguration
@@ -19,14 +21,149 @@ def convert_signature_algorithm(sig_alg: str) -> str:
 
 
 class ConditionParser:
-    def __init__(self):
-        self.result = None
+    def __init__(self, user_configuration):
         self.expression = ""
-        self.logical_separators = ["and", "or"]
+        self._logical_separators = ["and", "or"]
+        # simple regex to find all occurrences of the separators
+        self._splitting_regex = "|".join(self._logical_separators)
+        # same as above but also captures the separators
+        self._splitting_capturing_regex = "(" + ")|(".join(self._logical_separators) + ")"
+        self._user_configuration = user_configuration
         self.instructions = load_configuration("condition_instructions", "configs/compliance/")
+        self._custom_functions = CustomFunctions(user_configuration)
+        self._operators = {
+            "and": lambda op1, op2: op1 and op2,
+            "or": lambda op1, op2: op1 or op2,
+        }
 
-    def solve(self):
-        pass
+    @staticmethod
+    def _partial_match_checker(field_value, name):
+        """
+        Iters through field_value to check if name is contained in any of them
+        :param field_value: iterator to search
+        :param name: name to search
+        :return: True if the element is contained in the iterator
+        :rtype: bool
+        """
+        enabled = False
+        for element in field_value:
+            if name in element:
+                enabled = True
+                break
+        return enabled
+
+    @staticmethod
+    def is_enabled(user_configuration, config_field, name: str, entry, partial_match=False):
+        """
+        Checks if a field is enabled in the user configuration
+        :param user_configuration: the configuration in which the data should be searched
+        :param config_field: the field of the configuration containing the target data
+        :param name: the value to search
+        :param entry: the database entry (only the first two elements are checked)
+        :param partial_match: Default to false, if True the
+        :return:
+        """
+        field_value = user_configuration[config_field]
+        enabled = False
+        print(field_value)
+        if isinstance(field_value, dict) and isinstance(field_value.get(name), bool):
+            # Protocols case
+            enabled = field_value.get(name, None)
+            if enabled is None:
+                enabled = True if "all" in field_value else False
+        elif isinstance(field_value, dict):
+            # Extensions and transparency case
+            if name.isnumeric():
+                # Iana code case
+                enabled = name in field_value
+            else:
+                enabled = name in field_value.values()
+            if not enabled and partial_match:
+                enabled = ConditionParser._partial_match_checker(field_value.values(), name)
+        elif field_value and isinstance(field_value, list) and isinstance(field_value[0], list):
+            enabled = entry[:2] in field_value
+        elif isinstance(field_value, list) or isinstance(field_value, set):
+            enabled = name in field_value
+            if not enabled and partial_match:
+                enabled = ConditionParser._partial_match_checker(field_value, name)
+        return enabled
+
+    def input(self, expression):
+        self.expression = expression
+
+    def _closing_parenthesis_index(self, start):
+        count = 0
+        for i, c in enumerate(self.expression[start:]):
+            if c == "(":
+                count += 1
+            elif c == ")":
+                count -= 1
+            if count == 0:
+                return i + start
+
+    def _solve(self, start, finish):
+        to_solve = self.expression[start: finish + 1]
+
+        while "(" in to_solve:
+            # So that I'm sure that there aren't any parenthesis in the way
+            starting_index = to_solve.index("(") + start
+            end_index = self._closing_parenthesis_index(starting_index) - 1
+            replacement = self._solve(starting_index + 1, end_index)
+            to_replace = self.expression[starting_index:end_index + 2]
+            to_solve = to_solve.replace(to_replace, replacement)
+        tokens = re.split(self._splitting_regex, to_solve, flags=re.IGNORECASE)
+        tokens = [token.strip() for token in tokens]
+        for token in tokens:
+            to_solve = to_solve.replace(token, str(self._evaluate_condition(token)))
+        tokens = re.split(self._splitting_capturing_regex, to_solve, flags=re.IGNORECASE)
+        tokens = [token for token in tokens if token]
+        while len(tokens) >= 3:
+            first_instruction = tokens.pop(0).strip() == "True"
+            logical_operation = self._operators[tokens.pop(0).lower()]
+            second_instruction = tokens.pop(0).strip() == "True"
+            result = logical_operation(first_instruction, second_instruction)
+            # After calculating the result it is inserted at the beginning of the tokens list to substitute the three
+            # removed elements
+            tokens.insert(0, str(result))
+        return tokens[0]
+
+    def _evaluate_condition(self, condition):
+        """
+        Evaluates a condition and returns if it is True or False
+        :param condition: condition to evaluate
+        :type condition: str
+        :return: "True" or "False" accordingly
+        :rtype: bool
+        """
+        negation = False
+        if condition[0] == "!":
+            condition = condition[1:]
+            negation = True
+        condition = condition.strip()
+        if condition in ["True", "False"]:
+            return condition
+        if " " not in condition or condition.split(" ")[0] not in self.instructions:
+            # TODO use logging module
+            print("Invalid condition: ", condition, " returning False")
+            return "False"
+        tokens = condition.split(" ")
+        field = tokens[0]
+        to_search = self._prepare_to_search(field, tokens[-1])
+        config_field = self.instructions.get(field)
+        if config_field.startswith("FUNCTION"):
+            assert config_field[8] == " "
+            result = self._custom_functions.__getattribute__(config_field.split(" ")[1])(**{"data":to_search})
+        else:
+            enabled = self.is_enabled(self._user_configuration, config_field, to_search, (None, None), True)
+            result = enabled if not negation else not enabled
+        return result
+
+    @staticmethod
+    def _prepare_to_search(field, to_search):
+        new_to_search = to_search
+        if field == "TLS":
+            new_to_search = "TLS " + to_search.strip()
+        return new_to_search
 
 
 class Compliance:
@@ -45,6 +182,7 @@ class Compliance:
         self.sheet_columns = load_configuration("sheet_columns", "configs/compliance/")
         self.misc_fields = load_configuration("misc_fields", "configs/compliance/")
         self._validator = Validator()
+        self._condition_parser = ConditionParser(self._user_configuration)
 
         # This will be removed when integrating the module in the core
         self.test_ssl = Testssl()
@@ -281,44 +419,24 @@ class Compliance:
                         self._user_configuration["Misc"] = {}
                     self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
 
-    def update_result(self, sheet, name, entry_level, is_enabled, source):
+    def update_result(self, sheet, name, entry_level, enabled, source):
         information_level = None
         action = None
         entry_level = get_standardized_level(entry_level)
-        if entry_level == "must" and not is_enabled:
+        if entry_level == "must" and not enabled:
             information_level = "ERROR"
             action = "has to be enabled"
-        elif entry_level == "must not" and is_enabled:
+        elif entry_level == "must not" and enabled:
             information_level = "ERROR"
             action = "has to be disabled"
-        elif entry_level == "recommended" and not is_enabled:
+        elif entry_level == "recommended" and not enabled:
             information_level = "ALERT"
             action = "should be enabled"
-        elif entry_level == "not recommended" and is_enabled:
+        elif entry_level == "not recommended" and enabled:
             information_level = "ALERT"
             action = "should be disabled"
         if information_level:
             self._output_dict[sheet][name] = f"{information_level}: {action} according to {source}"
-
-    def is_enabled(self, config_field, name, entry):
-        """
-        Checks if a field is enabled in the user configuration
-        """
-        field_value = self._user_configuration[config_field]
-        enabled = False
-        if isinstance(field_value, dict) and isinstance(field_value.get(name), bool):
-            # Protocols case
-            enabled = field_value.get(name, None)
-            if enabled is None:
-                enabled = True if "all" in field_value else False
-        elif isinstance(field_value, dict):
-            # Extensions case
-            enabled = name in field_value.values()
-        elif field_value and isinstance(field_value, list) and isinstance(field_value[0], list):
-            enabled = entry[:2] in field_value
-        elif isinstance(field_value, list) or isinstance(field_value, set):
-            enabled = name in field_value
-        return enabled
 
     def _retrieve_entries(self, sheets_to_check, columns):
         """
@@ -432,3 +550,31 @@ class Generator(Compliance):
 
     def output(self):
         return self._config_class.configuration_output()
+
+
+class CustomFunctions:
+    def __init__(self, user_configuration):
+        self._user_configuration = user_configuration
+        self._validator = Validator()
+
+    # INSERT ALL THE CUSTOM PARSING FUNCTIONS HERE THEY MUST HAVE SIGNATURE:
+    # function(**kwargs) -> bool
+
+    def check_year(self, **kwargs):
+        """
+        :param kwargs: Dictionary of arguments
+        :type kwargs: dict
+        :return: True if the year indicated has already passed
+        :rtype: bool
+        :Keyword Arguments:
+            * *data* (``str``) -- Year to check
+        """
+        year = kwargs.get("data", None)
+        if not year:
+            raise ValueError("No year provided")
+        self._validator.string(year)
+
+        actual_date = datetime.date.today()
+        parsed_date = datetime.datetime.strptime(year+"-12-31", "%Y-%m-%d")
+        return parsed_date.date() > actual_date
+

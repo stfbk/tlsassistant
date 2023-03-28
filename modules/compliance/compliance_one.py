@@ -29,5 +29,5 @@ class ComplianceOne(Compliance):
                 if config_field:
                     name = entry[name_index]
                     evaluation = entry[evaluation_index]
-                    enabled = self.is_enabled(config_field, name, entry)
+                    enabled = self._condition_parser.is_enabled(self._user_configuration, config_field, name, entry)
                     self.update_result(sheet, name, evaluation, enabled, entry[-1])

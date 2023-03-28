@@ -1,5 +1,7 @@
 {
   "EXTENSION": "Extension",
   "CIPHER": "CipherSuite",
-  "TRANSPARENCY": "Transparency"
+  "TRANSPARENCY": "Transparency",
+  "TLS": "Protocol",
+  "YEAR": "FUNCTION check_year"
 }

@@ -14,7 +14,7 @@ class ApacheConfiguration(ConfigurationMaker):
         if file:
             self._load_conf(file)
 
-    # Stole this function from Configuration for testing purposes
+    # Borrowing this function from Configuration for testing purposes
     def _load_conf(self, file: Path):
         """
         Internal method to load the apache configuration file.
