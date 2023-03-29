@@ -13,11 +13,12 @@ class ComplianceOne(Compliance):
         if not self._user_configuration:
             raise ValueError("No configuration provided")
         columns = ["name", "level", "condition", "guidelineName"]
-        name_index = columns.index("name")
-        evaluation_index = columns.index("level")
         for sheet in sheets_to_check:
             # If the sheet isn't in the dictionary then I can use the default value
             columns = self.sheet_columns.get(sheet, columns)
+            name_index = columns.index("name")
+            level_index = columns.index("level")
+            condition_index = columns.index("condition")
             guideline = list(sheets_to_check[sheet].keys())[0]
             if not self._output_dict.get(sheet):
                 self._output_dict[sheet] = {}
@@ -28,6 +29,25 @@ class ComplianceOne(Compliance):
             for entry in data:
                 if config_field:
                     name = entry[name_index]
-                    evaluation = entry[evaluation_index]
+                    level = entry[level_index]
                     enabled = self._condition_parser.is_enabled(self._user_configuration, config_field, name, entry)
-                    self.update_result(sheet, name, evaluation, enabled, entry[-1])
+                    valid_condition = True
+                    condition = entry[condition_index]
+                    if condition:
+                        valid_condition = self._condition_parser.run(condition, enabled)
+                        if self._condition_parser.entry_updates.get("levels"):
+                            levels = self._condition_parser.entry_updates.get("levels")
+                            levels.insert(0, level)
+                            to_use = self.level_to_use(levels)
+                            level = levels[to_use]
+                    has_alternative = self._condition_parser.entry_updates.get("has_alternative")
+                    if has_alternative:
+                        # This is to trigger the output condition
+                        valid_condition = True
+                    self.update_result(sheet, name, level, enabled, entry[-1], valid_condition)
+                    if has_alternative and self._output_dict[sheet].get(name) and \
+                            isinstance(condition, str) and condition.count(" ") > 1:
+                        parts = entry[condition_index].split(" ")
+                        # Tokens[1] is the logical operator
+                        note = f"\nNOTE: {name} {parts[1].upper()} {' '.join(parts[2:])} is needed"
+                        self._output_dict[sheet][name] += note

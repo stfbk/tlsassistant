@@ -31,6 +31,8 @@ class ConditionParser:
         self._user_configuration = user_configuration
         self.instructions = load_configuration("condition_instructions", "configs/compliance/")
         self._custom_functions = CustomFunctions(user_configuration)
+        self.entry_updates = {}
+        self._enabled = None
         self._operators = {
             "and": lambda op1, op2: op1 and op2,
             "or": lambda op1, op2: op1 or op2,
@@ -65,7 +67,6 @@ class ConditionParser:
         """
         field_value = user_configuration[config_field]
         enabled = False
-        print(field_value)
         if isinstance(field_value, dict) and isinstance(field_value.get(name), bool):
             # Protocols case
             enabled = field_value.get(name, None)
@@ -88,8 +89,12 @@ class ConditionParser:
                 enabled = ConditionParser._partial_match_checker(field_value, name)
         return enabled
 
-    def input(self, expression):
-        self.expression = expression
+    @staticmethod
+    def _prepare_to_search(field, to_search):
+        new_to_search = to_search
+        if field == "TLS":
+            new_to_search = "TLS " + to_search.strip()
+        return new_to_search
 
     def _closing_parenthesis_index(self, start):
         count = 0
@@ -142,7 +147,8 @@ class ConditionParser:
         condition = condition.strip()
         if condition in ["True", "False"]:
             return condition
-        if " " not in condition or condition.split(" ")[0] not in self.instructions:
+        if condition not in self.instructions and \
+                (" " not in condition and condition.split(" ")[0] not in self.instructions):
             # TODO use logging module
             print("Invalid condition: ", condition, " returning False")
             return "False"
@@ -152,18 +158,29 @@ class ConditionParser:
         config_field = self.instructions.get(field)
         if config_field.startswith("FUNCTION"):
             assert config_field[8] == " "
-            result = self._custom_functions.__getattribute__(config_field.split(" ")[1])(**{"data":to_search})
+            args = {
+                "data": to_search,
+                "enabled": self._enabled
+            }
+            result = self._custom_functions.__getattribute__(config_field.split(" ")[1])(**args)
         else:
             enabled = self.is_enabled(self._user_configuration, config_field, to_search, (None, None), True)
             result = enabled if not negation else not enabled
         return result
 
-    @staticmethod
-    def _prepare_to_search(field, to_search):
-        new_to_search = to_search
-        if field == "TLS":
-            new_to_search = "TLS " + to_search.strip()
-        return new_to_search
+    def input(self, expression, enabled):
+        self.expression = expression
+        self._enabled = enabled
+
+    def run(self, expression, enabled):
+        if expression:
+            self.input(expression, enabled)
+        return self.output()
+
+    def output(self):
+        self.entry_updates = self._custom_functions.entry_updates
+        self._custom_functions.reset()
+        return self._solve(0, len(self.expression)) == "True"
 
 
 class Compliance:
@@ -414,25 +431,35 @@ class Compliance:
                     index = len(config_dict)
                     config_dict[index] = actual_dict["finding"]
 
+                elif field.startswith("cert_chain_of_trust"):
+                    if not self._user_configuration.get("TrustedCerts"):
+                        self._user_configuration["TrustedCerts"] = {}
+                    config_dict = self._user_configuration["TrustedCerts"]
+                    # the index is basically the certificate number
+                    index = len(config_dict)
+                    config_dict[index] = actual_dict["finding"]
+
                 elif field in self.misc_fields:
                     if not self._user_configuration.get("Misc"):
                         self._user_configuration["Misc"] = {}
                     self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
 
-    def update_result(self, sheet, name, entry_level, enabled, source):
+    def update_result(self, sheet, name, entry_level, enabled, source, valid_condition):
         information_level = None
         action = None
+        if name.startswith("TLS "):
+            print(name, enabled, valid_condition, entry_level)
         entry_level = get_standardized_level(entry_level)
-        if entry_level == "must" and not enabled:
+        if entry_level == "must" and valid_condition and not enabled:
             information_level = "ERROR"
             action = "has to be enabled"
-        elif entry_level == "must not" and enabled:
+        elif entry_level == "must not" and valid_condition and enabled:
             information_level = "ERROR"
             action = "has to be disabled"
-        elif entry_level == "recommended" and not enabled:
+        elif entry_level == "recommended" and valid_condition and not enabled:
             information_level = "ALERT"
             action = "should be enabled"
-        elif entry_level == "not recommended" and enabled:
+        elif entry_level == "not recommended" and valid_condition and enabled:
             information_level = "ALERT"
             action = "should be disabled"
         if information_level:
@@ -495,7 +522,7 @@ class Compliance:
                         source_guideline = guideline
                     resulting_level = levels[best_level]
                 # The entries are ordered by name so every time the counter is the same as the number of guidelines to
-                # check it is time to add the entry to the output dictionary.
+                # check. At this point it is time to add the entry to the output dictionary.
                 custom_guidelines_list = sheets_to_check[sheet].keys() - self._guidelines
                 if sheet and counter == len(sheets_to_check[sheet]) - len(custom_guidelines_list):
                     counter = 0
@@ -556,6 +583,13 @@ class CustomFunctions:
     def __init__(self, user_configuration):
         self._user_configuration = user_configuration
         self._validator = Validator()
+        self._entry_updates = {"levels": []}
+        self._operators = {
+            ">": lambda op1, op2: op1 > op2,
+            "<": lambda op1, op2: op1 < op2,
+            ">=": lambda op1, op2: op1 >= op2,
+            "<=": lambda op1, op2: op1 <= op2,
+        }
 
     # INSERT ALL THE CUSTOM PARSING FUNCTIONS HERE THEY MUST HAVE SIGNATURE:
     # function(**kwargs) -> bool
@@ -575,6 +609,64 @@ class CustomFunctions:
         self._validator.string(year)
 
         actual_date = datetime.date.today()
-        parsed_date = datetime.datetime.strptime(year+"-12-31", "%Y-%m-%d")
+        parsed_date = datetime.datetime.strptime(year + "-12-31", "%Y-%m-%d")
         return parsed_date.date() > actual_date
 
+    def check_vlp(self, **kwargs):
+        result = False
+        for version in range(3):
+            enabled = ConditionParser.is_enabled(self._user_configuration, "Protocol", f"TLS 1.{version}", (None, None))
+            if enabled:
+                result = True
+                self._entry_updates["levels"].append("must not")
+        return result
+
+    def check_ca(self, **kwargs):
+        to_check = kwargs.get("data", None)
+        if not to_check:
+            raise ValueError("No year provided")
+        self._validator.string(to_check)
+        if " " in to_check:
+            tokens = to_check.split(" ")
+            if tokens[0] == "count":
+                count = self._count_ca()
+                op = tokens[1]
+                num = tokens[2]
+                self._validator.int(num)
+                return self._operators[op](count, num)
+            elif tokens[0] == "publicly":
+                certs_trust_dict = self._user_configuration.get("TrustedCerts", {})
+                trusted = True
+                if not certs_trust_dict:
+                    trusted = False
+                for cert in certs_trust_dict:
+                    if certs_trust_dict[cert] != "passed.":
+                        trusted = False
+                return trusted
+
+    def _count_ca(self):
+        cas = set()
+        for field in self._user_configuration:
+            if field.startswith("cert_caIssuers"):
+                cas.add(self._user_configuration[field]["finding"])
+        return len(cas)
+
+    def check_this(self, **kwargs):
+        """
+            :param kwargs: Dictionary of arguments
+            :type kwargs: dict
+            :return: True if the year indicated has already passed
+            :rtype: bool
+            :Keyword Arguments:
+                * *enabled* (``bool``) -- Whether the entry with this condition is enabled or not
+        """
+        enabled = kwargs.get("enabled", False)
+        self._entry_updates["has_alternative"] = True
+        return enabled
+
+    @property
+    def entry_updates(self):
+        return self._entry_updates
+
+    def reset(self):
+        self._entry_updates = {"levels": []}
