@@ -61,7 +61,7 @@ class ConditionParser:
         :param user_configuration: the configuration in which the data should be searched
         :param config_field: the field of the configuration containing the target data
         :param name: the value to search
-        :param entry: the database entry (only the first two elements are checked)
+        :param entry: the database entry (only the first two elements are checked, they are neededd for KeyLengths)
         :param partial_match: Default to false, if True the
         :return:
         """
@@ -82,6 +82,7 @@ class ConditionParser:
             if not enabled and partial_match:
                 enabled = ConditionParser._partial_match_checker(field_value.values(), name)
         elif field_value and isinstance(field_value, list) and isinstance(field_value[0], list):
+            # KeyLengths case
             enabled = entry[:2] in field_value
         elif isinstance(field_value, list) or isinstance(field_value, set):
             enabled = name in field_value
@@ -164,6 +165,8 @@ class ConditionParser:
             }
             result = self._custom_functions.__getattribute__(config_field.split(" ")[1])(**args)
         else:
+            # At the moment there is no need to check if a KeyLength is enabled or not, so It is possible to use
+            # (None, None)
             enabled = self.is_enabled(self._user_configuration, config_field, to_search, (None, None), True)
             result = enabled if not negation else not enabled
         return result
@@ -178,9 +181,10 @@ class ConditionParser:
         return self.output()
 
     def output(self):
-        self.entry_updates = self._custom_functions.entry_updates
+        solution = self._solve(0, len(self.expression)) == "True"
+        self.entry_updates = self._custom_functions.entry_updates.copy()
         self._custom_functions.reset()
-        return self._solve(0, len(self.expression)) == "True"
+        return solution
 
 
 class Compliance:
@@ -447,8 +451,6 @@ class Compliance:
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition):
         information_level = None
         action = None
-        if name.startswith("TLS "):
-            print(name, enabled, valid_condition, entry_level)
         entry_level = get_standardized_level(entry_level)
         if entry_level == "must" and valid_condition and not enabled:
             information_level = "ERROR"
@@ -473,6 +475,7 @@ class Compliance:
         entries = {}
         tables = []
         for sheet in sheets_to_check:
+            columns_to_get = []
             if not self._output_dict.get(sheet):
                 self._output_dict[sheet] = {}
             for guideline in sheets_to_check[sheet]:
@@ -480,8 +483,14 @@ class Compliance:
                     table_name = self._database_instance.get_table_name(sheet, guideline,
                                                                         sheets_to_check[sheet][guideline])
                     tables.append(table_name)
-            self._database_instance.input(tables, other_filter="ORDER BY name")
-            data = self._database_instance.output(columns)
+            for t in tables:
+                for column in columns:
+                    # all the columns are repeated to make easier index access later
+                    columns_to_get.append(f"{t}.{column}")
+
+            join_condition = "ON {first_table}.id == {table}.id".format(first_table=tables[0], table="{table}")
+            self._database_instance.input(tables, join_condition=join_condition)
+            data = self._database_instance.output(columns_to_get)
             entries[sheet] = data
             tables = []
         self.entries = entries
@@ -493,65 +502,99 @@ class Compliance:
         self.evaluated_entries[sheet][count] = {
                         "name": str, The name of the entry
                         "level": str, The level that resulted from the evaluation
-                        "source": str The guideline from which the level is deducted
+                        "source": str, The guideline from which the level is deducted
+                        "enabled": bool, If the entry is enabled in the configuration,
+                        "valid_condition": bool, If the condition is valid or not
+                        "note": str, Eventual note
                     }
         :param sheets_to_check: The input dictionary
         :param columns: columns used to retrieve data from database
         :type columns: list
         """
         # A more fitting name could be current_requirement_level
-        resulting_level = "<Not mentioned>"
         guideline_index = columns.index("guidelineName")
         level_index = columns.index("level")
         name_index = columns.index("name")
+        condition_index = columns.index("condition")
+        # this variable is needed to get the relativa position of the condition in respect of the level
+        level_to_condition_index = condition_index - level_index
+        step = len(columns)
         for sheet in self.entries:
-            # The total value is used as an index to avoid eventual collisions between equal names in the same sheet
-            total = 0
+            entries = self.entries[sheet]
             if not self.evaluated_entries.get(sheet):
                 self.evaluated_entries[sheet] = {}
-            counter = 1
-            source_guideline = self.entries[sheet][guideline_index]
-            for entry in self.entries[sheet]:
-                entry_level = entry[level_index]
-                guideline = entry[guideline_index]
-                if entry_level != resulting_level:
-                    levels = [resulting_level, entry_level]
-                    best_level = self.level_to_use(levels)
-                    # if best_level is 0 the source_guideline is the same
-                    if best_level:
-                        source_guideline = guideline
-                    resulting_level = levels[best_level]
-                # The entries are ordered by name so every time the counter is the same as the number of guidelines to
-                # check. At this point it is time to add the entry to the output dictionary.
-                custom_guidelines_list = sheets_to_check[sheet].keys() - self._guidelines
-                if sheet and counter == len(sheets_to_check[sheet]) - len(custom_guidelines_list):
-                    counter = 0
-                    name = entry[name_index]
-                    for guideline in custom_guidelines_list:
-                        custom_entry = self._custom_guidelines[sheet][guideline].get(name)
-                        if custom_entry:
-                            levels = [resulting_level, custom_entry["level"]]
-                            guidelines_to_check = list(sheets_to_check[sheet])
-                            # If the custom_guideline appears before the source_guideline (actual guideline from which
-                            # the level was deducted) it has greater priority, so it is necessary to switch them
-                            if guidelines_to_check.index(guideline) < guidelines_to_check.index(source_guideline):
-                                levels = levels[::-1]
-                            best_level = self.level_to_use(levels)
-                            # if best_level is 0 the source_guideline is the best
-                            if best_level:
-                                source_guideline = guideline
-                            resulting_level = levels[best_level]
+            custom_guidelines_list = sheets_to_check[sheet].keys() - self._guidelines
+            total = 0
+            for entry in entries:
+                # These three are lists and not a single dictionary because the function level_to_use takes a list
+                conditions = []
+                levels = []
+                # list holding all the notes so that a note gets displayed only if needed
+                notes = []
+                name = entry[name_index]
+                enabled = self._condition_parser.is_enabled(self._user_configuration, sheet, entry[name_index], entry)
 
-                    # Save it to the dictionary
-                    self.evaluated_entries[sheet][total] = {
-                        "entry": entry,
-                        "level": resulting_level,
-                        "source": source_guideline
-                    }
-                    # the resulting level is reset so that it doesn't influence the next element.
-                    resulting_level = "<Not mentioned>"
-                    total += 1
-                counter += 1
+                pos = level_index
+                while pos < len(entry):
+                    level = entry[pos]
+                    condition = entry[pos + level_to_condition_index]
+                    valid_condition = True
+                    notes.append("")
+                    if condition:
+                        valid_condition = self._condition_parser.run(condition, enabled)
+                        if self._condition_parser.entry_updates.get("levels"):
+                            potential_levels = self._condition_parser.entry_updates.get("levels")
+                            potential_levels.insert(0, level)
+                            level = potential_levels[self.level_to_use(potential_levels)]
+                        has_alternative = self._condition_parser.entry_updates.get("has_alternative")
+                        if has_alternative and isinstance(condition, str) and condition.count(" ") > 1:
+                            parts = entry[condition_index].split(" ")
+                            # Tokens[1] is the logical operator
+                            notes[-1] = f"\nNOTE: {name} {parts[1].upper()} {' '.join(parts[2:])} is needed"
+                            # This is to trigger the output condition. This works because I'm assuming that "THIS"
+                            # is only used in a positive (recommended, must) context.
+                            valid_condition = True
+
+                    conditions.append(valid_condition)
+                    levels.append(level)
+                    pos += step
+
+                best_level = self.level_to_use(levels)
+                resulting_level = levels[best_level]
+                condition = conditions[best_level]
+                note = notes[best_level]
+                # if best level is 0 it is the first one
+                source_guideline = entry[guideline_index + step * best_level]
+
+                for guideline in custom_guidelines_list:
+                    custom_entry = self._custom_guidelines[sheet][guideline].get(name)
+                    if custom_entry:
+                        levels = [resulting_level, custom_entry["level"]]
+                        guidelines_to_check = list(sheets_to_check[sheet])
+                        # If the custom_guideline appears before the source_guideline (actual guideline from which
+                        # the level was deducted) it has greater priority, so it is necessary to switch them
+                        if guidelines_to_check.index(guideline) < guidelines_to_check.index(source_guideline):
+                            levels = levels[::-1]
+                        best_level = self.level_to_use(levels)
+                        # if best_level is 0 the source_guideline is the best
+                        if best_level:
+                            source_guideline = guideline
+                        resulting_level = levels[best_level]
+
+                # Custom guidelines don't have notes
+                if source_guideline.upper() not in self._guidelines:
+                    note = ""
+
+                # Save it to the dictionary
+                self.evaluated_entries[sheet][total] = {
+                    "entry": entry,
+                    "level": resulting_level,
+                    "source": source_guideline,
+                    "enabled": enabled,
+                    "valid_condition": condition,
+                    "note": note
+                }
+                total += 1
 
 
 class Generator(Compliance):

@@ -35,27 +35,27 @@ class Database:
         version_name = db_utils.get_version_name_for_database(version)
         return sheet_name + standard_name + version_name
 
-    def get_sheet_name(self, sheet, default_value = None):
+    def get_sheet_name(self, sheet, default_value=None):
         """
         Returns the sheet_name for the sheet, returns None if there isn't a mapping available
         """
         return self.sheet_mapping.get(sheet, default_value)
 
-    def input(self, tables, evaluation="", other_filter=""):
+    def input(self, tables, join_condition="1==1", other_filter=""):
         """
         Set the input parameters
 
         :param: tables -- List of tables from which data should be retrieved
         :type tables: list
-        :param: evaluation -- (Optional) To filter between evaluations
-        :type evaluation: str
+        :param join_condition: Default to 1==1, the condition to apply to the join in case of multiple tables
+        :type join_condition: str
         :param: other_filter -- (Optional) A filter to add to the query the WHERE/AND part will be handled automatically
         :type other_filter: str
         """
         self.__input_dict = {
             "tables": tables,
-            "evaluation": evaluation,
-            "other_filter": other_filter
+            "other_filter": other_filter,
+            "join_condition": join_condition
         }
 
     def output(self, columns="*"):
@@ -64,20 +64,23 @@ class Database:
 
         :param: tables -- List of tables from which data should be retrieved
         :type columns: list
-        :param: evaluation -- (Optional) To filter between evaluations
         """
-        query = ""
-        first = True
-        evaluation = self.__input_dict.get("evaluation")
+        query = f"SELECT {', '.join(columns)} FROM "
+        first = 2
         other_filter = self.__input_dict.get("other_filter")
         for table in self.__input_dict.get("tables", []):
             if first:
-                first = False
+                first -= 1
             else:
-                query += " UNION ALL "
-            query += f"SELECT {','.join(columns)} FROM {table}"
-        if evaluation:
-            query += f" where evaluation = {evaluation}"
+                query += " JOIN "
+            query += table
+            if not first:
+                join_condition = self.__input_dict["join_condition"]
+                if "{table}" in join_condition:
+                    join_condition = join_condition.format(table=table)
+                query += " " + join_condition
+            else:
+                first -= 1
         if other_filter:
             query += " " + other_filter
         self.cursor.execute(query)

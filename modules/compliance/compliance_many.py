@@ -21,5 +21,11 @@ class ComplianceMany(Compliance):
             for entry_dict in self.evaluated_entries[sheet].values():
                 entry = entry_dict["entry"]
                 name = entry[name_index]
-                enabled = self._condition_parser.is_enabled(self._user_configuration, sheet, name, entry)
-                self.update_result(sheet, name, entry_dict["level"], enabled, entry_dict["source"])
+                level = entry_dict["level"]
+                enabled = entry_dict["enabled"]
+                valid_condition = entry_dict["valid_condition"]
+                note = entry_dict["note"]
+
+                self.update_result(sheet, name, level, enabled, entry_dict["source"], valid_condition)
+                if note and self._output_dict[sheet].get(name):
+                    self._output_dict[sheet][name] += entry_dict.get("note")
