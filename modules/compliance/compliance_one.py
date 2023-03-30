@@ -42,9 +42,11 @@ class ComplianceOne(Compliance):
                             level = levels[to_use]
                     has_alternative = self._condition_parser.entry_updates.get("has_alternative")
                     if has_alternative:
-                        # This is to trigger the output condition
+                        # This is to trigger the output condition. This works because I'm assuming that "THIS" is only
+                        # used in a positive (recommended, must) context.
                         valid_condition = True
                     self.update_result(sheet, name, level, enabled, entry[-1], valid_condition)
+
                     if has_alternative and self._output_dict[sheet].get(name) and \
                             isinstance(condition, str) and condition.count(" ") > 1:
                         parts = entry[condition_index].split(" ")
