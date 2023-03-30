@@ -14,6 +14,7 @@ class ConfigurationMaker:
         self._config_output = None
         self.configuration = None
         self._enabled_once = set()
+        self.conditions_to_check = {}
         self._specific_rules = load_configuration("rules", f"configs/compliance/{config_type}/")
 
     def set_out_file(self, output_file):
@@ -48,13 +49,12 @@ class ConfigurationMaker:
     def _write_to_file(self):
         raise NotImplementedError("This method should be reimplemented")
 
-    def add_configuration_for_field(self, field, field_rules, data, name_index, level_index, guideline, target=None):
+    def add_configuration_for_field(self, field, field_rules, data, columns, guideline, target=None):
         """
         :param field: the field that should be added (taken from configuration_rules)
         :param field_rules: the rules that should be applied to that field
         :param data: data from which to gather the field information
-        :param name_index: index of the name column
-        :param level_index: index of the level column
+        :param columns: list of columns used to retrieve data from the database
         :param guideline: the guideline from which the level was deducted
         :param target: (Optional) if defined only the entries whose name contains target will be used
         :return:

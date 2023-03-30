@@ -6,8 +6,6 @@ class GenerateMany(Generator):
         if not self._config_class.output_file():
             raise ValueError("No output file path provided")
         columns = ["name", "level", "condition", "guidelineName"]
-        name_index = columns.index("name")
-        level_index = columns.index("level")
         conf_mapping = self._configuration_mapping
         # fill the entries field with the data from the sheets
         self._retrieve_entries(sheets_to_check, columns)
@@ -28,4 +26,9 @@ class GenerateMany(Generator):
             field_rules = self._configuration_rules.get(field, {})
             # the guideline here is defined as None because it will be defined in the function
             self._config_class.add_configuration_for_field(field, field_rules, self.evaluated_entries[sheet].values(),
-                                                           name_index, level_index, None, target)
+                                                           columns, None, target)
+        for field in self._config_class.conditions_to_check:
+            condition = self._config_class.conditions_to_check[field]
+
+
+

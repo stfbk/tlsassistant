@@ -27,7 +27,8 @@
   "Stapling": {
     "enable": "on",
     "disable": "off",
-    "separator": ""
+    "separator": "",
+    "enable_one_time": true
   },
   "EarlyData": {
     "enable": "on",

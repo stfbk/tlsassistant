@@ -605,6 +605,12 @@ class Generator(Compliance):
         self._configuration_rules = load_configuration("configuration_rules", "configs/compliance/generate/")
         self._configuration_mapping = load_configuration("configuration_mapping", "configs/compliance/generate/")
 
+    def _get_config_name(self, field):
+        name = self._configuration_mapping.get(field, field)
+        if isinstance(name, dict):
+            name = list(name.keys())[0]
+        return name
+
     # To override
     def _worker(self, sheets_to_check):
         """

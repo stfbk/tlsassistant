@@ -29,8 +29,11 @@ class ApacheConfiguration(ConfigurationMaker):
         with open(self._config_template_path, "r") as f:
             self._template = f.read()
 
-    def add_configuration_for_field(self, field, field_rules, data, name_index, level_index, guideline, target=None):
+    def add_configuration_for_field(self, field, field_rules, data, columns, guideline, target=None):
         config_field = self.mapping.get(field, None)
+        name_index = columns.index("name")
+        level_index = columns.index("level")
+        condition_index = columns.index("condition")
         self._output_dict[field] = {}
 
         if not config_field:
@@ -41,13 +44,21 @@ class ApacheConfiguration(ConfigurationMaker):
         field_rules = self._specific_rules.get(field, field_rules)
 
         for entry in data:
+            condition = ""
             if isinstance(entry, dict):
                 name = entry["entry"][name_index]
                 level = entry["level"]
                 guideline = entry["source"]
+                if guideline in entry["entry"]:
+                    guideline_pos = entry["entry"].index(guideline)
+                    # to get the condition for the guideline I calculate guideline's index and then search it near it
+                    step = len(columns)
+                    guideline_counter = guideline_pos // step
+                    condition = entry["entry"][condition_index + guideline_counter * step]
             else:
                 name = entry[name_index]
                 level = entry[level_index]
+                condition = entry[condition_index]
 
             if target and target.replace("*", "") not in name:
                 continue
@@ -57,6 +68,8 @@ class ApacheConfiguration(ConfigurationMaker):
                 name = name.replace(replacement, replacements[replacement])
             tmp_string += self._get_string_to_add(field_rules, name, level, field)
             if self._output_dict[field].get(name):
+                if condition:
+                    self.conditions_to_check[name] = condition
                 self._output_dict[field][name]["guideline"] = guideline
 
         if tmp_string and tmp_string[-1] == ":":
