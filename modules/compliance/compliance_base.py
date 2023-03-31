@@ -65,7 +65,7 @@ class ConditionParser:
         :param partial_match: Default to false, if True the
         :return:
         """
-        field_value = user_configuration[config_field]
+        field_value = user_configuration.get(config_field, None)
         enabled = False
         if isinstance(field_value, dict) and isinstance(field_value.get(name), bool):
             # Protocols case
@@ -544,7 +544,6 @@ class Compliance:
                         valid_condition = self._condition_parser.run(condition, enabled)
                         if self._condition_parser.entry_updates.get("levels"):
                             potential_levels = self._condition_parser.entry_updates.get("levels")
-                            potential_levels.insert(0, level)
                             level = potential_levels[self.level_to_use(potential_levels)]
                         has_alternative = self._condition_parser.entry_updates.get("has_alternative")
                         if has_alternative and isinstance(condition, str) and condition.count(" ") > 1:
@@ -604,12 +603,45 @@ class Generator(Compliance):
         super().__init__()
         self._configuration_rules = load_configuration("configuration_rules", "configs/compliance/generate/")
         self._configuration_mapping = load_configuration("configuration_mapping", "configs/compliance/generate/")
+        self._user_configuration_types = load_configuration("user_conf_types", "configs/compliance/generate/")
+        self._type_converter = {
+            "dict": dict,
+            "list": list,
+            "set": set,
+        }
 
     def _get_config_name(self, field):
-        name = self._configuration_mapping.get(field, field)
+        name = self._configuration_mapping.get(field, None)
         if isinstance(name, dict):
             name = list(name.keys())[0]
         return name
+
+    def _fill_user_configuration(self):
+        assert self._config_class is not None
+        output_dict = self._config_class.output_dict
+        for field in output_dict:
+            config_field = self._get_config_name(field)
+            save_in = self._user_configuration_types.get(config_field)
+            save_in = self._type_converter.get(save_in)
+            current_field = output_dict[field]
+            if config_field and save_in:
+                if self._user_configuration.get(config_field) is None:
+                    self._user_configuration[config_field] = save_in()
+                user_conf_field = self._user_configuration[config_field]
+                if isinstance(user_conf_field, list):
+                    values = [val for val in current_field if current_field[val]["added"]]
+                    user_conf_field.extend(values)
+                elif isinstance(user_conf_field, set):
+                    values = [val for val in current_field if current_field[val]["added"]]
+                    user_conf_field.update(values)
+                elif isinstance(user_conf_field, dict):
+                    for val in current_field:
+                        if config_field == "Protocol":
+                            user_conf_field[val] = current_field[val]["added"]
+                        elif config_field == "Extension":
+                            self._database_instance.input(["Extension"], other_filter=f'WHERE name=="{val}"')
+                            iana_code = self._database_instance.output(["iana_code"])[0][0]
+                            user_conf_field[str(iana_code)] = val
 
     # To override
     def _worker(self, sheets_to_check):
