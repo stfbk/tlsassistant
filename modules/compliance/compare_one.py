@@ -1,7 +1,7 @@
 from modules.compliance.compliance_base import Compliance
 
 
-class ComplianceOne(Compliance):
+class CompareOne(Compliance):
     def _worker(self, sheets_to_check):
         """
         :param sheets_to_check: dict of sheets that should be checked in the form: sheet:{protocol, version_of_protocol}
