@@ -64,13 +64,22 @@ class NginxConfiguration(ConfigurationMaker):
             tmp_string += self._get_string_to_add(field_rules, name, level, field)
             if self._output_dict[field].get(name):
                 if condition:
-                    self.conditions_to_check[name] = condition
+                    index = len(self.conditions_to_check)
+                    self.conditions_to_check[index] = {
+                        "columns": columns,
+                        "data": data,
+                        "expression": condition,
+                        "field": config_field,
+                        "guideline": guideline,
+                        "level": level
+                    }
                 self._output_dict[field][name]["guideline"] = guideline
 
         if tmp_string and tmp_string[-1] == ":":
             tmp_string = tmp_string[:-1]
         tmp_string = tmp_string.strip()
-        if tmp_string:  # this is to prevent adding a field without any value
+        # this is to prevent adding a field without any value
+        if tmp_string:
             # The directive gets added at the beginning of the http directive
             # the breakdown of the below instruction is:
             # loaded_template: dictionary
@@ -88,6 +97,14 @@ class NginxConfiguration(ConfigurationMaker):
             if comment:
                 directive_to_add = {"directive": "#", "comment": comment}
                 self._template["config"][0]["parsed"][1]["block"].insert(0, directive_to_add)
+
+    def remove_field(self, field):
+        to_remove = []
+        for directive in self._template["config"][0]["parsed"][1]["block"]:
+            if directive.get("directive") == field:
+                to_remove.append(directive)
+        for directive in to_remove:
+            del self._template["config"][0]["parsed"][1]["block"][directive]
 
     def _load_template(self):
         self._load_conf(Path(self._config_template_path))

@@ -66,10 +66,18 @@ class ApacheConfiguration(ConfigurationMaker):
             replacements = field_rules.get("replacements", [])
             for replacement in replacements:
                 name = name.replace(replacement, replacements[replacement])
-            tmp_string += self._get_string_to_add(field_rules, name, level, field)
+            tmp_string += self._get_string_to_add(field_rules, name, level, config_field)
             if self._output_dict[field].get(name):
                 if condition:
-                    self.conditions_to_check[name] = condition
+                    index = len(self.conditions_to_check)
+                    self.conditions_to_check[index] = {
+                        "columns": columns,
+                        "data": data,
+                        "expression": condition,
+                        "field": config_field,
+                        "guideline": guideline,
+                        "level": level
+                    }
                 self._output_dict[field][name]["guideline"] = guideline
 
         if tmp_string and tmp_string[-1] == ":":
@@ -77,6 +85,16 @@ class ApacheConfiguration(ConfigurationMaker):
         # this check prevents adding a field without any value
         if len(tmp_string) != len(config_field) + 1:
             self._string_to_add += "\n" + tmp_string
+
+    def remove_field(self, field):
+        lines = self._string_to_add.splitlines()
+        to_remove = []
+        for line in lines:
+            if line.strip().startswith(field):
+                to_remove.append(line)
+        for line in to_remove:
+            lines.remove(line)
+        self._string_to_add = os.sep.join(lines)
 
     def _write_to_file(self):
         if not os.path.isfile(self._config_template_path):

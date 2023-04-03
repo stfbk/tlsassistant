@@ -618,6 +618,8 @@ class Generator(Compliance):
 
     def _fill_user_configuration(self):
         assert self._config_class is not None
+        # reset user_configuration to avoid issues
+        self._user_configuration = {}
         output_dict = self._config_class.output_dict
         for field in output_dict:
             config_field = self._get_config_name(field)
@@ -656,7 +658,34 @@ class Generator(Compliance):
         """
         raise NotImplementedError("This method should be reimplemented")
 
+    def _check_conditions(self):
+        """
+        Checks the conditions and removes/adds fields if needed
+        """
+        conditions_to_check = self._config_class.conditions_to_check
+        for index in conditions_to_check:
+            expression = conditions_to_check[index]["expression"]
+            level = get_standardized_level(conditions_to_check[index]["level"])
+            data = conditions_to_check[index]["data"]
+            columns = conditions_to_check[index]["columns"]
+            guideline = conditions_to_check[index]["guideline"]
+            field = conditions_to_check[index]["field"]
+            enabled = level in ["recommended", "must"]
+            valid_condition = self._condition_parser.run(expression, enabled)
+            field_rules = self._configuration_rules.get(field, {})
+
+            if self._condition_parser.entry_updates.get("levels"):
+                potential_levels = self._condition_parser.entry_updates.get("levels")
+                level = potential_levels[self.level_to_use(potential_levels)]
+            if not valid_condition and enabled:
+                self._config_class.remove_field(field)
+            elif level in ["not recommended", "must not"] and valid_condition:
+                self._config_class.remove_field(field)
+            elif enabled and valid_condition:
+                self._config_class.add_configuration_for_field(field, field_rules, data, columns, guideline)
+
     def output(self):
+        self._check_conditions()
         return self._config_class.configuration_output()
 
 
