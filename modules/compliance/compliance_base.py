@@ -685,6 +685,7 @@ class Generator(Compliance):
                 self._config_class.add_configuration_for_field(field, field_rules, data, columns, guideline)
 
     def output(self):
+        self._fill_user_configuration()
         self._check_conditions()
         return self._config_class.configuration_output()
 

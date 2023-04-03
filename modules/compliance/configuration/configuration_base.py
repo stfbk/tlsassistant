@@ -106,3 +106,7 @@ class ConfigurationMaker:
             string_to_add += separator
 
         return string_to_add
+
+    @property
+    def output_dict(self):
+        return self._output_dict
