@@ -518,6 +518,9 @@ class Compliance:
         condition_index = columns.index("condition")
         # this variable is needed to get the relativa position of the condition in respect of the level
         level_to_condition_index = condition_index - level_index
+        # The entry is composed of all the columns repeated n times, with n being the number of guidelines.
+        # The step is the number of columns. This allows easy data retrieval by doing something like:
+        # "value_index * step * guideline_index" to retrieve data for a specific guideline
         step = len(columns)
         for sheet in self.entries:
             entries = self.entries[sheet]
@@ -539,6 +542,7 @@ class Compliance:
                     level = entry[pos]
                     condition = entry[pos + level_to_condition_index]
                     valid_condition = True
+                    # Add an empty string to the notes so that all the notes are in the same position of their entry
                     notes.append("")
                     if condition:
                         valid_condition = self._condition_parser.run(condition, enabled)
@@ -700,6 +704,7 @@ class CustomFunctions:
             "<": lambda op1, op2: op1 < op2,
             ">=": lambda op1, op2: op1 >= op2,
             "<=": lambda op1, op2: op1 <= op2,
+            "==": lambda op1, op2: op1 == op2
         }
 
     # INSERT ALL THE CUSTOM PARSING FUNCTIONS HERE THEY MUST HAVE SIGNATURE:
@@ -718,6 +723,9 @@ class CustomFunctions:
         if not year:
             raise ValueError("No year provided")
         self._validator.string(year)
+        # This means that the guideline document didn't define a limit to this condition
+        if year[-1] == "+":
+            return True
 
         actual_date = datetime.date.today()
         parsed_date = datetime.datetime.strptime(year + "-12-31", "%Y-%m-%d")
@@ -781,3 +789,92 @@ class CustomFunctions:
 
     def reset(self):
         self._entry_updates = {"levels": []}
+
+
+class AliasParser:
+    def __init__(self):
+        self.__logging = Logger("Compliance module")
+        self._database_instance = Database()
+        self._guidelines = [name[0].upper() for name in self._database_instance.run(["Guideline"])]
+        # simple regex to find and capture all occurrences of the guidelines
+        self._splitting_regex = "(" + ")|(".join(self._guidelines) + ")"
+        self._sheets_versions_dict = {}
+        self._fill_sheets_dict()
+        self._guidelines_versions = {}
+        self._fill_guidelines_versions()
+        self._aliases = load_configuration("alias_mapping", "configs/compliance/alias/")
+        self._default_versions = load_configuration("default_levels", "configs/compliance/alias/")
+
+    def _fill_sheets_dict(self):
+        for table in self._database_instance.table_names:
+            tokens = re.split(self._splitting_regex, table, flags=re.IGNORECASE)
+            tokens = [t for t in tokens if t]
+            # If the length is one or less the table is a general data table.
+            if len(tokens) > 1:
+                sheet = tokens[0]
+                guideline = tokens[1]
+                version = tokens[2] if len(tokens) == 3 else ""
+                if self._sheets_versions_dict.get(sheet) is None:
+                    self._sheets_versions_dict[sheet] = {guideline: set()}
+                if self._sheets_versions_dict[sheet].get(guideline) is None:
+                    self._sheets_versions_dict[sheet][guideline] = set()
+                self._sheets_versions_dict[sheet][guideline].add(version)
+
+    def _fill_guidelines_versions(self):
+        for i, sheet in enumerate(self._sheets_versions_dict):
+            for guideline in self._sheets_versions_dict[sheet]:
+                if self._guidelines_versions.get(guideline) is None:
+                    self._guidelines_versions[guideline] = {}
+                guideline_dict = self._guidelines_versions[guideline]
+                for version in self._sheets_versions_dict[sheet][guideline]:
+                    new_set = True
+                    for index in guideline_dict:
+                        if version.upper() in guideline_dict[index]:
+                            new_set = False
+                    if new_set and version:
+                        if guideline_dict.get(i) is None:
+                            guideline_dict[i] = set()
+                        guideline_dict[i].add(version.upper())
+
+    def is_valid(self, alias):
+        if "_" not in alias and alias.upper() not in self._guidelines:
+            raise ValueError(f"Alias {alias} not valid")
+        tokens = alias.split("_")
+        guideline = tokens[0]
+        if guideline not in self._guidelines_versions:
+            raise ValueError(f"Invalid guideline in alias: {alias}")
+        used_sets = set()
+        for token in tokens[1:]:
+            found = False
+            for index in self._guidelines_versions[guideline]:
+                # If it is an abbreviation get the complete name.
+                token = self._aliases.get(token.upper(), token.upper())
+                if token in self._guidelines_versions[guideline][index] and index not in used_sets:
+                    found = True
+                    used_sets.add(index)
+            if not found:
+                raise ValueError(f"Invalid version {token} for alias: {alias}")
+
+    def get_sheets_to_check(self, aliases):
+        sheets_to_check = {}
+        for alias in aliases:
+            self.is_valid(alias)
+            tokens = alias.split("_")
+            guideline = tokens[0]
+            tokens.append("")
+            for i, sheet in enumerate(self._sheets_versions_dict):
+                if sheets_to_check.get(sheet) is None:
+                    sheets_to_check[sheet] = {}
+                for token in tokens[1:]:
+                    token = token.upper()
+                    # If it is an abbreviation get the complete name.
+                    token = self._aliases.get(token, token)
+                    if sheet + guideline + token in self._database_instance.table_names:
+                        sheets_to_check[sheet][guideline] = token
+                if sheets_to_check[sheet].get(guideline) is None:
+                    version = self._default_versions[sheet].get(guideline)
+                    if version is not None:
+                        sheets_to_check[sheet][guideline] = version
+                    else:
+                        self.__logging.info(f"Skipping {guideline} in {sheet} because no version is available.")
+        return sheets_to_check

@@ -13,9 +13,9 @@ class Database:
         self.cursor = self.connection.cursor()
         self.sheet_mapping = load_configuration("sheet_mapping", "configs/compliance/")
 
-        # # Retrieve the list of tables from the database
-        # self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
-        # self.table_names = [table[0] for table in self.cursor.fetchall()]
+        # Retrieve the list of tables from the database
+        self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        self.table_names = [table[0] for table in self.cursor.fetchall()]
         self.__input_dict = {}
 
     def get_table_name(self, sheet, standard_name, version=""):
@@ -85,3 +85,19 @@ class Database:
             query += " " + other_filter
         self.cursor.execute(query)
         return self.cursor.fetchall()
+
+    def run(self, tables, join_condition="1==1", other_filter="", columns="*"):
+        """
+        Retrieve data from the database
+
+        :param: tables -- List of tables from which data should be retrieved
+        :type tables: list
+        :param join_condition: Default to 1==1, the condition to apply to the join in case of multiple tables
+        :type join_condition: str
+        :param: other_filter -- (Optional) A filter to add to the query the WHERE/AND part will be handled automatically
+        :type other_filter: str
+        :param: tables -- List of tables from which data should be retrieved
+        :type columns: list
+        """
+        self.input(tables, join_condition, other_filter)
+        return self.output(columns)
