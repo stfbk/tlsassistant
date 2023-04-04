@@ -22,6 +22,7 @@ def convert_signature_algorithm(sig_alg: str) -> str:
 
 class ConditionParser:
     def __init__(self, user_configuration):
+        self.__logging = Logger("Condition parser")
         self.expression = ""
         self._logical_separators = ["and", "or"]
         # simple regex to find all occurrences of the separators
@@ -150,8 +151,7 @@ class ConditionParser:
             return condition
         if condition not in self.instructions and \
                 (" " not in condition and condition.split(" ")[0] not in self.instructions):
-            # TODO use logging module
-            print("Invalid condition: ", condition, " returning False")
+            self.__logging.warning("Invalid condition: " + condition + " returning False")
             return "False"
         tokens = condition.split(" ")
         field = tokens[0]
