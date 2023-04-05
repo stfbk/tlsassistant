@@ -41,15 +41,19 @@ class CompareOne(Compliance):
                             to_use = self.level_to_use(levels)
                             level = levels[to_use]
                     has_alternative = self._condition_parser.entry_updates.get("has_alternative")
-                    if has_alternative:
+                    additional_notes = self._condition_parser.entry_updates.get("notes", "")
+                    if has_alternative or additional_notes:
                         # This is to trigger the output condition. This works because I'm assuming that "THIS" is only
                         # used in a positive (recommended, must) context.
                         valid_condition = True
                     self.update_result(sheet, name, level, enabled, entry[-1], valid_condition)
-
-                    if has_alternative and self._output_dict[sheet].get(name) and \
-                            isinstance(condition, str) and condition.count(" ") > 1:
+                    note = ""
+                    if has_alternative and isinstance(condition, str) and condition.count(" ") > 1:
                         parts = entry[condition_index].split(" ")
                         # Tokens[1] is the logical operator
                         note = f"\nNOTE: {name} {parts[1].upper()} {' '.join(parts[2:])} is needed"
+                    if additional_notes:
+                        note += "\nNOTE:"
+                        note += "\n".join(additional_notes)
+                    if self._output_dict[sheet].get(name):
                         self._output_dict[sheet][name] += note

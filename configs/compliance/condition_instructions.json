@@ -7,5 +7,6 @@
   "YEAR": "FUNCTION check_year",
   "VLP": "FUNCTION check_vlp",
   "CA": "FUNCTION check_ca",
-  "THIS": "FUNCTION check_this"
+  "THIS": "FUNCTION check_this",
+  "NOTE": "FUNCTION add_notes"
 }

@@ -151,7 +151,7 @@ class ConditionParser:
             return condition
         if condition not in self.instructions and \
                 (" " not in condition and condition.split(" ")[0] not in self.instructions):
-            self.__logging.warning("Invalid condition: " + condition + " returning False")
+            self.__logging.warning(f"Invalid condition: {condition} in expression: {self.expression}. Returning False")
             return "False"
         tokens = condition.split(" ")
         field = tokens[0]
@@ -161,7 +161,8 @@ class ConditionParser:
             assert config_field[8] == " "
             args = {
                 "data": to_search,
-                "enabled": self._enabled
+                "enabled": self._enabled,
+                "tokens": tokens[1:]
             }
             result = self._custom_functions.__getattribute__(config_field.split(" ")[1])(**args)
         else:
@@ -211,6 +212,7 @@ class Compliance:
         self._config_class = None
         self._database_instance.input(["Guideline"])
         self._guidelines = [name[0].upper() for name in self._database_instance.output()]
+        self._alias_parser = AliasParser()
 
     def level_to_use(self, levels, security: bool = True):
         """
@@ -245,7 +247,7 @@ class Compliance:
 
         :Keyword Arguments:
             * *standard* (``list``) -- Guidelines to check against
-            * *sheets_to_check* (``dict``) -- dictionary of sheets that should be checked in the form: sheet:version_of_protocol
+            * *guidelines_to_check* (``str``) -- string containing the names of the guidelines that should be checked in the form: guideline_version1_version2 in the case of multiple guidelines they should be comma separated
             * *actual_configuration_path* (``str``) -- The configuration to check, not needed if generating
             * *hostname* (``str``) -- Hostname on which testssl should be used
             * *apache* (``bool``) -- Default to True, if false nginx will be used
@@ -296,9 +298,11 @@ class Compliance:
 
     def run(self, **kwargs):
         self.input(**kwargs)
-        sheets_to_check = kwargs.get("sheets_to_check")
-        val = Validator()
-        val.dict(sheets_to_check)
+        guidelines_string = kwargs.get("guidelines_to_check")
+        self._validator.string(guidelines_string)
+        guidelines_list = guidelines_string.split(",") if "," in guidelines_string else [guidelines_string]
+        sheets_to_check = self._alias_parser.get_sheets_to_check(guidelines_list)
+        self._validator.dict(sheets_to_check)
         self._worker(sheets_to_check)
         return self.output()
 
@@ -451,7 +455,7 @@ class Compliance:
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition):
         information_level = None
         action = None
-        entry_level = get_standardized_level(entry_level)
+        entry_level = get_standardized_level(entry_level) if entry_level else None
         if entry_level == "must" and valid_condition and not enabled:
             information_level = "ERROR"
             action = "has to be enabled"
@@ -550,13 +554,17 @@ class Compliance:
                             potential_levels = self._condition_parser.entry_updates.get("levels")
                             level = potential_levels[self.level_to_use(potential_levels)]
                         has_alternative = self._condition_parser.entry_updates.get("has_alternative")
+                        additional_notes = self._condition_parser.entry_updates.get("notes", "")
                         if has_alternative and isinstance(condition, str) and condition.count(" ") > 1:
                             parts = entry[condition_index].split(" ")
                             # Tokens[1] is the logical operator
-                            notes[-1] = f"\nNOTE: {name} {parts[1].upper()} {' '.join(parts[2:])} is needed"
+                            notes[-1] += f"\nNOTE: {name} {parts[1].upper()} {' '.join(parts[2:])} is needed"
                             # This is to trigger the output condition. This works because I'm assuming that "THIS"
                             # is only used in a positive (recommended, must) context.
                             valid_condition = True
+                        if additional_notes:
+                            notes[-1] += "\nNOTE:"
+                            notes[-1] += "\n".join(additional_notes)
 
                     conditions.append(valid_condition)
                     levels.append(level)
@@ -698,7 +706,7 @@ class CustomFunctions:
     def __init__(self, user_configuration):
         self._user_configuration = user_configuration
         self._validator = Validator()
-        self._entry_updates = {"levels": []}
+        self._entry_updates = {"levels": [], "notes": []}
         self._operators = {
             ">": lambda op1, op2: op1 > op2,
             "<": lambda op1, op2: op1 < op2,
@@ -732,13 +740,15 @@ class CustomFunctions:
         return parsed_date.date() > actual_date
 
     def check_vlp(self, **kwargs):
+        status = kwargs.get("data", "").lower() == "true"
         result = False
         for version in range(3):
             enabled = ConditionParser.is_enabled(self._user_configuration, "Protocol", f"TLS 1.{version}", (None, None))
-            if enabled:
+            if enabled and not status:
                 result = True
                 self._entry_updates["levels"].append("must not")
-        return result
+        # This final operation should give True only if both status and result are True or both are False
+        return (result and status) or not (result or status)
 
     def check_ca(self, **kwargs):
         to_check = kwargs.get("data", None)
@@ -783,12 +793,17 @@ class CustomFunctions:
         self._entry_updates["has_alternative"] = True
         return enabled
 
+    def add_notes(self, **kwargs):
+        note = " ".join(kwargs.get("tokens", []))
+        self._entry_updates["notes"].append(note)
+        return True
+
     @property
     def entry_updates(self):
         return self._entry_updates
 
     def reset(self):
-        self._entry_updates = {"levels": []}
+        self._entry_updates = {"levels": [], "notes": []}
 
 
 class AliasParser:
@@ -840,7 +855,7 @@ class AliasParser:
         if "_" not in alias and alias.upper() not in self._guidelines:
             raise ValueError(f"Alias {alias} not valid")
         tokens = alias.split("_")
-        guideline = tokens[0]
+        guideline = tokens[0].upper()
         if guideline not in self._guidelines_versions:
             raise ValueError(f"Invalid guideline in alias: {alias}")
         used_sets = set()
@@ -858,9 +873,10 @@ class AliasParser:
     def get_sheets_to_check(self, aliases):
         sheets_to_check = {}
         for alias in aliases:
+            alias = alias.strip()
             self.is_valid(alias)
             tokens = alias.split("_")
-            guideline = tokens[0]
+            guideline = tokens[0].upper()
             tokens.append("")
             for i, sheet in enumerate(self._sheets_versions_dict):
                 if sheets_to_check.get(sheet) is None:
