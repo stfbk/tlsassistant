@@ -124,6 +124,7 @@ class Tlsa:
                 group_by=args.group_by,
                 apply_fix=args.apply_fix,
                 stix=args.stix,
+                compliance_args = args.compliance_args
             )
         elif args.apk:
             Core(

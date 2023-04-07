@@ -1,4 +1,5 @@
 import datetime
+import itertools
 import json
 import re
 from pathlib import Path
@@ -246,7 +247,6 @@ class Compliance:
         :type kwargs: dict
 
         :Keyword Arguments:
-            * *standard* (``list``) -- Guidelines to check against
             * *guidelines_to_check* (``str``) -- string containing the names of the guidelines that should be checked in the form: guideline_version1_version2 in the case of multiple guidelines they should be comma separated
             * *actual_configuration_path* (``str``) -- The configuration to check, not needed if generating
             * *hostname* (``str``) -- Hostname on which testssl should be used
@@ -819,6 +819,30 @@ class AliasParser:
         self._fill_guidelines_versions()
         self._aliases = load_configuration("alias_mapping", "configs/compliance/alias/")
         self._default_versions = load_configuration("default_levels", "configs/compliance/alias/")
+
+    def list_aliases(self):
+        print("Alias mapping:")
+        for el in self._aliases:
+            print(el, ":", self._aliases[el])
+        import sys
+        sys.exit(0)
+
+    def list_strings(self):
+        print("Valid strings:")
+        for guideline in self._guidelines_versions:
+            sets = [self._guidelines_versions[guideline][k] for k in self._guidelines_versions[guideline]]
+            # this first list comprehension is needed to later check if there are any versions.
+            combinations = [combination for combination in itertools.product(*sets)]
+            if combinations and combinations[0]:
+                print("Strings for guideline: ", guideline)
+                # First I join the output from itertools.product using "_" then I prepend guideline_ to it and in the
+                # end I join all the versions using ","
+                result = ",".join([guideline + "_" + "_".join(combination) for combination in combinations])
+                print(result)
+            else:
+                print("Guideline ", guideline, " doesn't have any special version")
+            print("")
+        print("NOTE: if a version is omitted the default one will be used.")
 
     def _fill_sheets_dict(self):
         for table in self._database_instance.table_names:

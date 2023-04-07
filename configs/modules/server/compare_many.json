@@ -1,0 +1,40 @@
+{
+  "input": [
+    {
+      "name": "guidelines_to_check",
+      "type": "str",
+      "description": "string containing the names of the guidelines that should be checked in the form: guideline1_version1_version2, guideline2_version1",
+      "required": "True"
+    }, {
+      "name": "actual_configuration_path",
+      "type": "str",
+      "description": "The configuration to check",
+      "required": "True"
+    }, {
+      "name": "hostname",
+      "type": "str",
+      "description": "Hostname on which testssl should be used to retrieve the information",
+      "required": "True"
+    }, {
+      "name": "config_output",
+      "type": "str",
+      "description": "The path and name of the output file",
+      "required": "False"
+    }, {
+      "name": "custom_guidelines",
+      "type": "dict",
+      "description": "dictionary with form: { sheet : {guideline: name: {\"level\":level}}",
+      "required": "False"
+    }
+  ],
+  "description": "This modules runs the compliance check against multiple guidelines.",
+  "path": "modules/compliance/compare_many.py",
+  "class_name": "CompareMany",
+  "output": [
+    {
+      "name": "results",
+      "type": "dict",
+      "description": "results of the scan"
+    }
+  ]
+}
