@@ -29,4 +29,7 @@ def get_standardized_level(level):
     :type level: str
     :return:
     """
-    return level.replace("*", "").replace("°", "").strip()
+    if isinstance(level, str):
+        return level.replace("*", "").replace("°", "").strip()
+    else:
+        return ""

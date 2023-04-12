@@ -5,7 +5,7 @@ from utils.loader import load_configuration
 
 
 class Database:
-    database_file = "requirements.db"
+    database_file = "configs/compliance/requirements.db"
 
     def __init__(self, file: str = database_file):
         self.database_file = file
