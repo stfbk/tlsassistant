@@ -1,17 +1,17 @@
 {
     "Protocol": {
-        "NIST": "GOVERNMENTONLY",
-        "BSI": "",
+        "NIST": "CUSTOMERFACING",
+        "BSI": "CUSTOMERFACING",
         "ANSSI": "",
         "AGID": "",
-        "MOZILLA": ""
+        "MOZILLA": "INTERMEDIATE"
     },
     "CipherSuite": {
-        "NIST": "1",
-        "BSI": "",
+        "NIST": "PREFERRED1",
+        "BSI": "PREFERRED1",
         "ANSSI": "",
-        "MOZILLA": "",
-        "AGID": ""
+        "MOZILLA": "INTERMEDIATE",
+        "AGID": "INTERMEDIATE"
     },
     "Extension": {
         "NIST": "",
@@ -23,8 +23,8 @@
         "NIST": "",
         "BSI": "",
         "ANSSI": "",
-        "MOZILLA": "",
-        "AGID": ""
+        "MOZILLA": "INTERMEDIATE",
+        "AGID": "INTERMEDIATE"
     },
     "Hash": {
         "NIST": "",
@@ -42,15 +42,15 @@
     },
     "Groups": {
         "NIST": "",
-        "BSI": "",
+        "BSI": "CUSTOMERFACING",
         "ANSSI": "",
-        "MOZILLA": "",
-        "AGID": ""
+        "MOZILLA": "INTERMEDIATE",
+        "AGID": "INTERMEDIATE"
     },
     "KeyLengths": {
         "ANSSI": "",
-        "MOZILLA": "",
-        "AGID": "",
+        "MOZILLA": "INTERMEDIATE",
+        "AGID": "INTERMEDIATE",
         "NIST": "",
         "BSI": ""
     },

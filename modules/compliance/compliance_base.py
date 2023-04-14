@@ -158,7 +158,7 @@ class ConditionParser:
         field = tokens[0]
         to_search = self._prepare_to_search(field, tokens[-1])
         config_field = self.instructions.get(field)
-        if config_field.startswith("FUNCTION"):
+        if config_field and config_field.startswith("FUNCTION"):
             assert config_field[8] == " "
             args = {
                 "data": to_search,
