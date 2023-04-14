@@ -167,6 +167,7 @@ if __name__ == "__main__":
             cur.executemany(sql_query, values)
             conn.commit()
             values = []
+
             # Start of guideline specific part
             requirements_columns = get_requirements_columns(guidelines_dataframe, sheet)
             guidelines_columns_count = get_columns_count_for_guideline(guidelines_dataframe)
@@ -244,11 +245,11 @@ if __name__ == "__main__":
                 entries = values_dict[table]
 
                 # This is to prevent the "this or X" condition to appear in tables that don't need it
-                # this "if" checks if the guideline has multiple versions for this sheet
+                # this condition checks if the guideline has multiple versions for this sheet
                 if table.startswith("Protocol") and table[len("Protocol"):] not in [g.upper() for g in guidelines]:
                     for entry in entries:
                         entry = entries[entry]
-                        # Since the problem is a condition it only verifies if there are four elements.
+                        # Since the problem is a condition, and it only verifies if there are four elements.
                         # Last element is the condition
                         # Second to last is the level
                         if len(entry) > 3 and pd.notna(entry[-1]):
@@ -265,7 +266,7 @@ if __name__ == "__main__":
                         if len(entry) < table_columns_count:
                             entry.insert(0, index)
                         # Every remaining column is filled with None
-                        if len(entry) < table_columns_count:
+                        while len(entry) < table_columns_count:
                             entry.append(None)
                         values_groups[table].append(tuple(entry))
             for table in values_groups:

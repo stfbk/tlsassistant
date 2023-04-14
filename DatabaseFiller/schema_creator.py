@@ -5,15 +5,12 @@ from typing import TextIO, Dict
 
 import pandas as pd
 
-from utils.configs import sheets_mapping, additional_keys, different_templates
+from utils.configs import sheets_mapping, additional_keys, different_templates, RANDOM_STRING, GUIDELINE_BLOCKS, \
+    TEMPLATE_FILE
 from utils.filler_utils import split_sheet, get_requirements_columns, get_version_name_for_database, \
     get_guideline_name_for_database
 
 # IMPORTANT NOTE "sheet" means the original file name, "sheet_name" is the mapped one
-
-TEMPLATE_FILE = "schema_generator/template.prisma"
-GUIDELINE_BLOCKS = 13
-RANDOM_STRING = "7WJsEz"
 
 # This dict is filled during the initialization
 additional_templates = {}

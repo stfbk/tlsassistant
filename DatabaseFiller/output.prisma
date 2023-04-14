@@ -1,1018 +1,1237 @@
 datasource db {
-    provider = "sqlite"
-    url      = "file:requirements.db"
+  provider = "sqlite"
+  url      = "file:requirements.db"
 }
 
 // COMMON DATA
 model TlsVersion {
-    version Float                 @id
-    ExtTls  TlsVersionExtension[]
-    Hash    Hash[]
+  version Float                 @id
+  ExtTls  TlsVersionExtension[]
+  Hash    Hash[]
 }
 
 model Guideline {
-    name             String             @id
-    updated_at       String
-    
-    
+  name       String @id
+  updated_at String
+
+
+
+  ProtocolNISTGOVERNMENTONLY              ProtocolNISTGOVERNMENTONLY[]
+  ProtocolNISTCUSTOMERFACING              ProtocolNISTCUSTOMERFACING[]
+  ProtocolNIST1_1_2024GOVERNMENTONLY      ProtocolNIST1_1_2024GOVERNMENTONLY[]
+  ProtocolNIST1_1_2024CUSTOMERFACING      ProtocolNIST1_1_2024CUSTOMERFACING[]
+  ProtocolBSIFEDERALAPPLICATIONS          ProtocolBSIFEDERALAPPLICATIONS[]
+  ProtocolBSICUSTOMERFACING               ProtocolBSICUSTOMERFACING[]
+  ProtocolANSSI                           ProtocolANSSI[]
+  ProtocolAGID                            ProtocolAGID[]
+  ProtocolMOZILLAMODERN                   ProtocolMOZILLAMODERN[]
+  ProtocolMOZILLAINTERMEDIATE             ProtocolMOZILLAINTERMEDIATE[]
+  ProtocolMOZILLAOLD                      ProtocolMOZILLAOLD[]
+  CipherSuiteNISTPREFERRED1               CipherSuiteNISTPREFERRED1[]
+  CipherSuiteNISTPREFERRED2               CipherSuiteNISTPREFERRED2[]
+  CipherSuiteNISTPREFERRED3               CipherSuiteNISTPREFERRED3[]
+  CipherSuiteBSIPREFERRED1                CipherSuiteBSIPREFERRED1[]
+  CipherSuiteBSIFEDERALREQ                CipherSuiteBSIFEDERALREQ[]
+  CipherSuiteANSSI                        CipherSuiteANSSI[]
+  CipherSuiteMOZILLAMODERN                CipherSuiteMOZILLAMODERN[]
+  CipherSuiteMOZILLAINTERMEDIATE          CipherSuiteMOZILLAINTERMEDIATE[]
+  CipherSuiteMOZILLAOLD                   CipherSuiteMOZILLAOLD[]
+  CipherSuiteAGIDMODERN                   CipherSuiteAGIDMODERN[]
+  CipherSuiteAGIDINTERMEDIATE             CipherSuiteAGIDINTERMEDIATE[]
+  CipherSuiteAGIDOLD                      CipherSuiteAGIDOLD[]
+  ExtensionNIST                           ExtensionNIST[]
+  ExtensionBSI                            ExtensionBSI[]
+  ExtensionANSSI                          ExtensionANSSI[]
+  ExtensionAGID                           ExtensionAGID[]
+  CertificateSignatureNIST                CertificateSignatureNIST[]
+  CertificateSignatureBSI                 CertificateSignatureBSI[]
+  CertificateSignatureANSSI               CertificateSignatureANSSI[]
+  CertificateSignatureMOZILLAMODERN       CertificateSignatureMOZILLAMODERN[]
+  CertificateSignatureMOZILLAINTERMEDIATE CertificateSignatureMOZILLAINTERMEDIATE[]
+  CertificateSignatureMOZILLAOLD          CertificateSignatureMOZILLAOLD[]
+  CertificateSignatureAGIDMODERN          CertificateSignatureAGIDMODERN[]
+  CertificateSignatureAGIDINTERMEDIATE    CertificateSignatureAGIDINTERMEDIATE[]
+  CertificateSignatureAGIDOLD             CertificateSignatureAGIDOLD[]
+  HashNIST                                HashNIST[]
+  HashBSI                                 HashBSI[]
+  HashANSSI                               HashANSSI[]
+  HashMOZILLAMODERN                       HashMOZILLAMODERN[]
+  HashMOZILLAINTERMEDIATE                 HashMOZILLAINTERMEDIATE[]
+  HashMOZILLAOLD                          HashMOZILLAOLD[]
+  HashAGIDMODERN                          HashAGIDMODERN[]
+  HashAGIDINTERMEDIATE                    HashAGIDINTERMEDIATE[]
+  HashAGIDOLD                             HashAGIDOLD[]
+  SignatureNIST                           SignatureNIST[]
+  SignatureBSICLIENT_SERVERSIGNATURES     SignatureBSICLIENT_SERVERSIGNATURES[]
+  SignatureBSIINCERTIFICATES              SignatureBSIINCERTIFICATES[]
+  SignatureANSSI                          SignatureANSSI[]
+  SignatureMOZILLAMODERN                  SignatureMOZILLAMODERN[]
+  SignatureMOZILLAINTERMEDIATE            SignatureMOZILLAINTERMEDIATE[]
+  SignatureMOZILLAOLD                     SignatureMOZILLAOLD[]
+  SignatureAGIDMODERN                     SignatureAGIDMODERN[]
+  SignatureAGIDINTERMEDIATE               SignatureAGIDINTERMEDIATE[]
+  SignatureAGIDOLD                        SignatureAGIDOLD[]
+  GroupsNIST                              GroupsNIST[]
+  GroupsBSIFEDERALAPPLICATIONS            GroupsBSIFEDERALAPPLICATIONS[]
+  GroupsBSICUSTOMERFACING                 GroupsBSICUSTOMERFACING[]
+  GroupsANSSI                             GroupsANSSI[]
+  GroupsMOZILLAMODERN                     GroupsMOZILLAMODERN[]
+  GroupsMOZILLAINTERMEDIATE               GroupsMOZILLAINTERMEDIATE[]
+  GroupsMOZILLAOLD                        GroupsMOZILLAOLD[]
+  GroupsAGIDMODERN                        GroupsAGIDMODERN[]
+  GroupsAGIDINTERMEDIATE                  GroupsAGIDINTERMEDIATE[]
+  GroupsAGIDOLD                           GroupsAGIDOLD[]
+  KeyLengthsNIST                          KeyLengthsNIST[]
+  KeyLengthsBSI                           KeyLengthsBSI[]
+  KeyLengthsANSSI                         KeyLengthsANSSI[]
+  KeyLengthsMOZILLAMODERN                 KeyLengthsMOZILLAMODERN[]
+  KeyLengthsMOZILLAINTERMEDIATE           KeyLengthsMOZILLAINTERMEDIATE[]
+  KeyLengthsMOZILLAOLD                    KeyLengthsMOZILLAOLD[]
+  KeyLengthsAGIDMODERN                    KeyLengthsAGIDMODERN[]
+  KeyLengthsAGIDINTERMEDIATE              KeyLengthsAGIDINTERMEDIATE[]
+  KeyLengthsAGIDOLD                       KeyLengthsAGIDOLD[]
+  CertificateNIST                         CertificateNIST[]
+  CertificateBSI                          CertificateBSI[]
+  CertificateANSSI                        CertificateANSSI[]
+  CertificateMOZILLA                      CertificateMOZILLA[]
+  MiscNIST                                MiscNIST[]
+  MiscBSI                                 MiscBSI[]
+  MiscAGID                                MiscAGID[]
 }
 
 // GENERAL DATA
 model CipherSuite {
-    name          String  @id
-    iana_code    String
-    applicability String  @default("")
-    signature     String? @default("")
+  name                           String                           @id
+  iana_code                      String
+  applicability                  String                           @default("")
+  signature                      String?                          @default("")
+  CipherSuiteNISTPREFERRED1      CipherSuiteNISTPREFERRED1[]
+  CipherSuiteNISTPREFERRED2      CipherSuiteNISTPREFERRED2[]
+  CipherSuiteNISTPREFERRED3      CipherSuiteNISTPREFERRED3[]
+  CipherSuiteBSIPREFERRED1       CipherSuiteBSIPREFERRED1[]
+  CipherSuiteBSIFEDERALREQ       CipherSuiteBSIFEDERALREQ[]
+  CipherSuiteANSSI               CipherSuiteANSSI[]
+  CipherSuiteMOZILLAMODERN       CipherSuiteMOZILLAMODERN[]
+  CipherSuiteMOZILLAINTERMEDIATE CipherSuiteMOZILLAINTERMEDIATE[]
+  CipherSuiteMOZILLAOLD          CipherSuiteMOZILLAOLD[]
+  CipherSuiteAGIDMODERN          CipherSuiteAGIDMODERN[]
+  CipherSuiteAGIDINTERMEDIATE    CipherSuiteAGIDINTERMEDIATE[]
+  CipherSuiteAGIDOLD             CipherSuiteAGIDOLD[]
 }
 
 model Extension {
-    name                String                @id
-    iana_code          String
-    TlsVersionExtension TlsVersionExtension[]
+  name                String                @id
+  iana_code           String
+  TlsVersionExtension TlsVersionExtension[]
+  ExtensionNIST       ExtensionNIST[]
+  ExtensionBSI        ExtensionBSI[]
+  ExtensionANSSI      ExtensionANSSI[]
+  ExtensionAGID       ExtensionAGID[]
 }
 
 model Groups {
-    name               String  @id
-    iana_code         String
-    supported_security String?
+  name                         String                         @id
+  iana_code                    String
+  supported_security           String?
+  GroupsNIST                   GroupsNIST[]
+  GroupsBSIFEDERALAPPLICATIONS GroupsBSIFEDERALAPPLICATIONS[]
+  GroupsBSICUSTOMERFACING      GroupsBSICUSTOMERFACING[]
+  GroupsANSSI                  GroupsANSSI[]
+  GroupsMOZILLAMODERN          GroupsMOZILLAMODERN[]
+  GroupsMOZILLAINTERMEDIATE    GroupsMOZILLAINTERMEDIATE[]
+  GroupsMOZILLAOLD             GroupsMOZILLAOLD[]
+  GroupsAGIDMODERN             GroupsAGIDMODERN[]
+  GroupsAGIDINTERMEDIATE       GroupsAGIDINTERMEDIATE[]
+  GroupsAGIDOLD                GroupsAGIDOLD[]
 }
 
 model Protocol {
-    name String @id
+  name                               String                               @id
+  ProtocolNISTGOVERNMENTONLY         ProtocolNISTGOVERNMENTONLY[]
+  ProtocolNISTCUSTOMERFACING         ProtocolNISTCUSTOMERFACING[]
+  ProtocolNIST1_1_2024GOVERNMENTONLY ProtocolNIST1_1_2024GOVERNMENTONLY[]
+  ProtocolNIST1_1_2024CUSTOMERFACING ProtocolNIST1_1_2024CUSTOMERFACING[]
+  ProtocolBSIFEDERALAPPLICATIONS     ProtocolBSIFEDERALAPPLICATIONS[]
+  ProtocolBSICUSTOMERFACING          ProtocolBSICUSTOMERFACING[]
+  ProtocolANSSI                      ProtocolANSSI[]
+  ProtocolAGID                       ProtocolAGID[]
+  ProtocolMOZILLAMODERN              ProtocolMOZILLAMODERN[]
+  ProtocolMOZILLAINTERMEDIATE        ProtocolMOZILLAINTERMEDIATE[]
+  ProtocolMOZILLAOLD                 ProtocolMOZILLAOLD[]
 }
 
 model Hash {
-    name        String     @id
-    iana_code   String
-    tls_version Float
-    TlsVersion  TlsVersion @relation(fields: [tls_version], references: [version])
+  name                    String                    @id
+  iana_code               String
+  tls_version             Float
+  TlsVersion              TlsVersion                @relation(fields: [tls_version], references: [version])
+  HashNIST                HashNIST[]
+  HashBSI                 HashBSI[]
+  HashANSSI               HashANSSI[]
+  HashMOZILLAMODERN       HashMOZILLAMODERN[]
+  HashMOZILLAINTERMEDIATE HashMOZILLAINTERMEDIATE[]
+  HashMOZILLAOLD          HashMOZILLAOLD[]
+  HashAGIDMODERN          HashAGIDMODERN[]
+  HashAGIDINTERMEDIATE    HashAGIDINTERMEDIATE[]
+  HashAGIDOLD             HashAGIDOLD[]
 }
 
 model CertificateSignature {
-    name        String @id
-    iana_code   String
-    tls_version String
+  name                                    String                                    @id
+  iana_code                               String
+  tls_version                             String
+  CertificateSignatureNIST                CertificateSignatureNIST[]
+  CertificateSignatureBSI                 CertificateSignatureBSI[]
+  CertificateSignatureANSSI               CertificateSignatureANSSI[]
+  CertificateSignatureMOZILLAMODERN       CertificateSignatureMOZILLAMODERN[]
+  CertificateSignatureMOZILLAINTERMEDIATE CertificateSignatureMOZILLAINTERMEDIATE[]
+  CertificateSignatureMOZILLAOLD          CertificateSignatureMOZILLAOLD[]
+  CertificateSignatureAGIDMODERN          CertificateSignatureAGIDMODERN[]
+  CertificateSignatureAGIDINTERMEDIATE    CertificateSignatureAGIDINTERMEDIATE[]
+  CertificateSignatureAGIDOLD             CertificateSignatureAGIDOLD[]
+}
+
+model Certificate {
+  name               String               @id
+  CertificateNIST    CertificateNIST[]
+  CertificateBSI     CertificateBSI[]
+  CertificateANSSI   CertificateANSSI[]
+  CertificateMOZILLA CertificateMOZILLA[]
 }
 
 model Misc {
-    name String @id
+  name     String     @id
+  MiscNIST MiscNIST[]
+  MiscBSI  MiscBSI[]
+  MiscAGID MiscAGID[]
 }
 
 model KeyLengths {
-    field_name       String
-    name             String
-    length           Int
-    
+  field_name String
+  name       String
+  length     Int
 
-    @@id([name, length])
+
+  @@id([name, length])
+  KeyLengthsNIST                KeyLengthsNIST[]
+  KeyLengthsBSI                 KeyLengthsBSI[]
+  KeyLengthsANSSI               KeyLengthsANSSI[]
+  KeyLengthsMOZILLAMODERN       KeyLengthsMOZILLAMODERN[]
+  KeyLengthsMOZILLAINTERMEDIATE KeyLengthsMOZILLAINTERMEDIATE[]
+  KeyLengthsMOZILLAOLD          KeyLengthsMOZILLAOLD[]
+  KeyLengthsAGIDMODERN          KeyLengthsAGIDMODERN[]
+  KeyLengthsAGIDINTERMEDIATE    KeyLengthsAGIDINTERMEDIATE[]
+  KeyLengthsAGIDOLD             KeyLengthsAGIDOLD[]
 }
 
 model Signature {
-    name       String @id
-    iana_code String
-    version    String
+  name                                String                                @id
+  iana_code                           String
+  version                             String
+  SignatureNIST                       SignatureNIST[]
+  SignatureBSICLIENT_SERVERSIGNATURES SignatureBSICLIENT_SERVERSIGNATURES[]
+  SignatureBSIINCERTIFICATES          SignatureBSIINCERTIFICATES[]
+  SignatureANSSI                      SignatureANSSI[]
+  SignatureMOZILLAMODERN              SignatureMOZILLAMODERN[]
+  SignatureMOZILLAINTERMEDIATE        SignatureMOZILLAINTERMEDIATE[]
+  SignatureMOZILLAOLD                 SignatureMOZILLAOLD[]
+  SignatureAGIDMODERN                 SignatureAGIDMODERN[]
+  SignatureAGIDINTERMEDIATE           SignatureAGIDINTERMEDIATE[]
+  SignatureAGIDOLD                    SignatureAGIDOLD[]
 }
 
 // SPECIAL TABLES
 model TlsVersionExtension {
-    TlsVersion     TlsVersion @relation(fields: [version], references: [version])
-    version        Float
-    extension      Extension  @relation(fields: [extension_name], references: [name])
-    extension_name String
+  TlsVersion     TlsVersion @relation(fields: [version], references: [version])
+  version        Float
+  extension      Extension  @relation(fields: [extension_name], references: [name])
+  extension_name String
 
-    @@id([version, extension_name])
+  @@id([version, extension_name])
 }
 
 // Guidelines tables
 model ProtocolNISTGOVERNMENTONLY {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Protocol         Protocol     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Protocol      Protocol  @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model ProtocolNISTCUSTOMERFACING {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Protocol         Protocol     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Protocol      Protocol  @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model ProtocolNIST1_1_2024GOVERNMENTONLY {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Protocol         Protocol     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Protocol      Protocol  @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model ProtocolNIST1_1_2024CUSTOMERFACING {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Protocol         Protocol     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Protocol      Protocol  @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model ProtocolBSIFEDERALAPPLICATIONS {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Protocol         Protocol     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Protocol      Protocol  @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model ProtocolBSICUSTOMERFACING {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Protocol         Protocol     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Protocol      Protocol  @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model ProtocolANSSI {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Protocol         Protocol     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Protocol      Protocol  @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model ProtocolAGID {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Protocol         Protocol     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Protocol      Protocol  @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model ProtocolMOZILLAMODERN {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Protocol         Protocol     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Protocol      Protocol  @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model ProtocolMOZILLAINTERMEDIATE {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Protocol         Protocol     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Protocol      Protocol  @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model ProtocolMOZILLAOLD {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Protocol         Protocol     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Protocol      Protocol  @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CipherSuiteNISTPREFERRED1 {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CipherSuite         CipherSuite     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  CipherSuite   CipherSuite @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?     @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CipherSuiteNISTPREFERRED2 {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CipherSuite         CipherSuite     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  CipherSuite   CipherSuite @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?     @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CipherSuiteNISTPREFERRED3 {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CipherSuite         CipherSuite     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  CipherSuite   CipherSuite @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?     @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CipherSuiteBSIPREFERRED1 {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CipherSuite         CipherSuite     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  CipherSuite   CipherSuite @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?     @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CipherSuiteBSIFEDERALREQ {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CipherSuite         CipherSuite     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  CipherSuite   CipherSuite @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?     @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CipherSuiteANSSI {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CipherSuite         CipherSuite     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  CipherSuite   CipherSuite @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?     @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CipherSuiteMOZILLAMODERN {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CipherSuite         CipherSuite     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  CipherSuite   CipherSuite @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?     @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CipherSuiteMOZILLAINTERMEDIATE {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CipherSuite         CipherSuite     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  CipherSuite   CipherSuite @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?     @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CipherSuiteMOZILLAOLD {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CipherSuite         CipherSuite     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  CipherSuite   CipherSuite @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?     @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CipherSuiteAGIDMODERN {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CipherSuite         CipherSuite     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  CipherSuite   CipherSuite @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?     @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CipherSuiteAGIDINTERMEDIATE {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CipherSuite         CipherSuite     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  CipherSuite   CipherSuite @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?     @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CipherSuiteAGIDOLD {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CipherSuite         CipherSuite     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  CipherSuite   CipherSuite @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?     @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model ExtensionNIST {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Extension         Extension     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Extension     Extension @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model ExtensionBSI {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Extension         Extension     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Extension     Extension @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model ExtensionANSSI {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Extension         Extension     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Extension     Extension @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model ExtensionAGID {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Extension         Extension     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Extension     Extension @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CertificateSignatureNIST {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CertificateSignature         CertificateSignature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CertificateSignatureBSI {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CertificateSignature         CertificateSignature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CertificateSignatureANSSI {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CertificateSignature         CertificateSignature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CertificateSignatureMOZILLAMODERN {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CertificateSignature         CertificateSignature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CertificateSignatureMOZILLAINTERMEDIATE {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CertificateSignature         CertificateSignature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CertificateSignatureMOZILLAOLD {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CertificateSignature         CertificateSignature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CertificateSignatureAGIDMODERN {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CertificateSignature         CertificateSignature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CertificateSignatureAGIDINTERMEDIATE {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CertificateSignature         CertificateSignature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model CertificateSignatureAGIDOLD {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    CertificateSignature         CertificateSignature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model HashNIST {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Hash         Hash     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model HashBSI {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Hash         Hash     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model HashANSSI {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Hash         Hash     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model HashMOZILLAMODERN {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Hash         Hash     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model HashMOZILLAINTERMEDIATE {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Hash         Hash     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model HashMOZILLAOLD {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Hash         Hash     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model HashAGIDMODERN {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Hash         Hash     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model HashAGIDINTERMEDIATE {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Hash         Hash     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model HashAGIDOLD {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Hash         Hash     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model SignatureNIST {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Signature         Signature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model SignatureBSICLIENT_SERVERSIGNATURES {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Signature         Signature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model SignatureBSIINCERTIFICATES {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Signature         Signature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model SignatureANSSI {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Signature         Signature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model SignatureMOZILLAMODERN {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Signature         Signature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model SignatureMOZILLAINTERMEDIATE {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Signature         Signature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model SignatureMOZILLAOLD {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Signature         Signature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model SignatureAGIDMODERN {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Signature         Signature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model SignatureAGIDINTERMEDIATE {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Signature         Signature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model SignatureAGIDOLD {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Signature         Signature     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model GroupsNIST {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Groups         Groups     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Groups        Groups    @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model GroupsBSIFEDERALAPPLICATIONS {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Groups         Groups     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Groups        Groups    @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model GroupsBSICUSTOMERFACING {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Groups         Groups     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Groups        Groups    @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model GroupsANSSI {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Groups         Groups     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Groups        Groups    @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model GroupsMOZILLAMODERN {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Groups         Groups     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Groups        Groups    @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model GroupsMOZILLAINTERMEDIATE {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Groups         Groups     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Groups        Groups    @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model GroupsMOZILLAOLD {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Groups         Groups     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Groups        Groups    @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model GroupsAGIDMODERN {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Groups         Groups     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Groups        Groups    @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model GroupsAGIDINTERMEDIATE {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Groups         Groups     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Groups        Groups    @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model GroupsAGIDOLD {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Groups         Groups     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Groups        Groups    @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model KeyLengthsNIST {
-    id            Int
-    guideline     Guideline  @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
-    name          String
-    length        Int
-    level         String?
-    condition     String?    @default("")
+  id            Int
+  guideline     Guideline  @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
+  name          String
+  length        Int
+  level         String?
+  condition     String?    @default("")
 
-    @@id([id, name, length])
+  @@id([id, name, length])
 }
 
 model KeyLengthsBSI {
-    id            Int
-    guideline     Guideline  @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
-    name          String
-    length        Int
-    level         String?
-    condition     String?    @default("")
+  id            Int
+  guideline     Guideline  @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
+  name          String
+  length        Int
+  level         String?
+  condition     String?    @default("")
 
-    @@id([id, name, length])
+  @@id([id, name, length])
 }
 
 model KeyLengthsANSSI {
-    id            Int
-    guideline     Guideline  @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
-    name          String
-    length        Int
-    level         String?
-    condition     String?    @default("")
+  id            Int
+  guideline     Guideline  @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
+  name          String
+  length        Int
+  level         String?
+  condition     String?    @default("")
 
-    @@id([id, name, length])
+  @@id([id, name, length])
 }
 
 model KeyLengthsMOZILLAMODERN {
-    id            Int
-    guideline     Guideline  @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
-    name          String
-    length        Int
-    level         String?
-    condition     String?    @default("")
+  id            Int
+  guideline     Guideline  @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
+  name          String
+  length        Int
+  level         String?
+  condition     String?    @default("")
 
-    @@id([id, name, length])
+  @@id([id, name, length])
 }
 
 model KeyLengthsMOZILLAINTERMEDIATE {
-    id            Int
-    guideline     Guideline  @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
-    name          String
-    length        Int
-    level         String?
-    condition     String?    @default("")
+  id            Int
+  guideline     Guideline  @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
+  name          String
+  length        Int
+  level         String?
+  condition     String?    @default("")
 
-    @@id([id, name, length])
+  @@id([id, name, length])
 }
 
 model KeyLengthsMOZILLAOLD {
-    id            Int
-    guideline     Guideline  @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
-    name          String
-    length        Int
-    level         String?
-    condition     String?    @default("")
+  id            Int
+  guideline     Guideline  @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
+  name          String
+  length        Int
+  level         String?
+  condition     String?    @default("")
 
-    @@id([id, name, length])
+  @@id([id, name, length])
 }
 
 model KeyLengthsAGIDMODERN {
-    id            Int
-    guideline     Guideline  @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
-    name          String
-    length        Int
-    level         String?
-    condition     String?    @default("")
+  id            Int
+  guideline     Guideline  @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
+  name          String
+  length        Int
+  level         String?
+  condition     String?    @default("")
 
-    @@id([id, name, length])
+  @@id([id, name, length])
 }
 
 model KeyLengthsAGIDINTERMEDIATE {
-    id            Int
-    guideline     Guideline  @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
-    name          String
-    length        Int
-    level         String?
-    condition     String?    @default("")
+  id            Int
+  guideline     Guideline  @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
+  name          String
+  length        Int
+  level         String?
+  condition     String?    @default("")
 
-    @@id([id, name, length])
+  @@id([id, name, length])
 }
 
 model KeyLengthsAGIDOLD {
-    id            Int
-    guideline     Guideline  @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
-    name          String
-    length        Int
-    level         String?
-    condition     String?    @default("")
+  id            Int
+  guideline     Guideline  @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
+  name          String
+  length        Int
+  level         String?
+  condition     String?    @default("")
 
-    @@id([id, name, length])
+  @@id([id, name, length])
+}
+
+model CertificateNIST {
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Certificate   Certificate @relation(fields: [name], references: [name])
+  name          String
+  level         String      @default("<Not mentioned>")
+  critical      String      @default("no")
+  condition     String?     @default("")
+
+  @@id([id, name])
+}
+
+model CertificateBSI {
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Certificate   Certificate @relation(fields: [name], references: [name])
+  name          String
+  level         String      @default("<Not mentioned>")
+  critical      String      @default("no")
+  condition     String?     @default("")
+
+  @@id([id, name])
+}
+
+model CertificateANSSI {
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Certificate   Certificate @relation(fields: [name], references: [name])
+  name          String
+  level         String      @default("<Not mentioned>")
+  critical      String      @default("no")
+  condition     String?     @default("")
+
+  @@id([id, name])
+}
+
+model CertificateMOZILLA {
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Certificate   Certificate @relation(fields: [name], references: [name])
+  name          String
+  level         String      @default("<Not mentioned>")
+  critical      String      @default("no")
+  condition     String?     @default("")
+
+  @@id([id, name])
 }
 
 model MiscNIST {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Misc         Misc     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Misc          Misc      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model MiscBSI {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Misc         Misc     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Misc          Misc      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }
 
 model MiscAGID {
-    id            Int
-    guideline     Guideline @relation(fields: [guidelineName], references: [name])
-    guidelineName String
-    Misc         Misc     @relation(fields: [name], references: [name])
-    name          String
-    level         String? // put level as Nullable (it would be considered not mentioned)
-    condition     String?   @default("")
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Misc          Misc      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
 
-    @@id([id, name])
+  @@id([id, name])
 }

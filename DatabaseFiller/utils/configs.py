@@ -1,3 +1,19 @@
+# schema creator configs
+TEMPLATE_FILE = "schema_generator/template.prisma"
+GUIDELINE_BLOCKS = 14
+RANDOM_STRING = "7WJsEz"
+
+# If the sheet has vertically merged cells in the name column add it here
+has_merged_names = ["Key lengths"]
+
+# list of sheet_names that need a different template, order is important
+different_templates = ["KeyLengths", "Certificate"]
+
+# The syntax for this is: Sheet: list of keys
+# it is assumed that a field with the same name of the key was added using the additional_fields dict
+additional_keys = {
+}
+
 guidelines = {
     "NIST": "",
     "ANSSI": "",
@@ -24,7 +40,7 @@ sheets_mapping = {
     "Hash Algorithm": "Hash",
     "Certificate Signature": "CertificateSignature",
     "Key lengths": "KeyLengths",
-    # "Certificate": None, at the moment the certificate table doesn't exist
+    "Certificate": "Certificate",  # at the moment the certificate table doesn't exist
     "Misc": "Misc"
 }
 
@@ -46,15 +62,4 @@ sheet_columns = {
 converters = {
     # this function is needed to avoid having iana codes in the form 0.0
     ('IANA', 'Unnamed: 1_level_1'): lambda x: str(int(x)) if isinstance(x, float) else str(x)
-}
-
-# If the sheet has vertically merged cells in the name column add it here
-has_merged_names = ["Key lengths"]
-
-# list of sheet_names that need a different template, order is important
-different_templates = ["KeyLengths"]
-
-# The syntax for this is: Sheet: list of keys
-# it is assumed that a field with the same name of the key was added using the additional_fields dict
-additional_keys = {
 }
