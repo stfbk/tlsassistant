@@ -327,6 +327,14 @@ class Compliance:
             field_name = self._config_class.reverse_mapping.get(field, field)
             self._user_configuration[field_name] = new_field
 
+    @staticmethod
+    def find_cert_index(field: str):
+        if "#" in field:
+            # the last char is a > so it gets removed
+            return field.split("#")[:-1]
+        else:
+            return "1"
+
     def prepare_testssl_output(self, test_ssl_output):
 
         for site in test_ssl_output:
@@ -355,12 +363,6 @@ class Compliance:
                         value = value.split(" ")[-1]
                         self._user_configuration["CipherSuite"].add(value)
 
-                elif field.startswith("cert_keySize"):
-                    if not self._user_configuration.get("KeyLengths"):
-                        self._user_configuration["KeyLengths"] = []
-                    # the first two tokens (after doing a space split) are the Algorithm and the keysize
-                    self._user_configuration["KeyLengths"].append(actual_dict["finding"].split(" ")[:2])
-
                 elif field == "TLS_extensions":
                     entry = actual_dict["finding"]
                     entry = entry.replace("' '", ",").replace("'", "")
@@ -378,6 +380,8 @@ class Compliance:
                         self._user_configuration["CertificateSignature"] = set()
                     if not self._user_configuration.get("Hash"):
                         self._user_configuration["Hash"] = set()
+                    if not self._user_configuration.get("Certificates_SigAlg_KeyAlg"):
+                        self._user_configuration["Certificates_SigAlg_KeyAlg"] = {}
                     if " " in actual_dict["finding"]:
                         tokens = actual_dict["finding"].split(" ")
                         sig_alg = tokens[-1]
@@ -387,6 +391,23 @@ class Compliance:
                             sig_alg, hash_alg = hash_alg, sig_alg
                         self._user_configuration["CertificateSignature"].add(sig_alg)
                         self._user_configuration["Hash"].add(hash_alg)
+                        cert_index = self.find_cert_index(field)
+                        if not self._user_configuration["Certificates_SigAlg_KeyAlg"].get(cert_index):
+                            self._user_configuration["Certificates_SigAlg_KeyAlg"][cert_index] = {}
+                        self._user_configuration["Certificates_SigAlg_KeyAlg"][cert_index]["SigAlg"] = sig_alg
+
+                elif field.startswith("cert_keySize"):
+                    if not self._user_configuration.get("KeyLengths"):
+                        self._user_configuration["KeyLengths"] = []
+                    if not self._user_configuration.get("Certificates_SigAlg_KeyAlg"):
+                        self._user_configuration["Certificates_SigAlg_KeyAlg"] = {}
+                    # the first two tokens (after doing a space split) are the Key Algorithm and its key size
+                    element_to_add = actual_dict["finding"].split(" ")[:2]
+                    self._user_configuration["KeyLengths"].append(element_to_add)
+                    cert_index = self.find_cert_index(field)
+                    if not self._user_configuration["Certificates_SigAlg_KeyAlg"].get(cert_index):
+                        self._user_configuration["Certificates_SigAlg_KeyAlg"][cert_index] = {}
+                    self._user_configuration["Certificates_SigAlg_KeyAlg"][cert_index]["KeyAlg"] = element_to_add[0]
 
                 # In TLS 1.2 the certificate signatures and hashes are present in the signature algorithms field.
                 elif field[-11:] == "12_sig_algs":
@@ -417,11 +438,6 @@ class Compliance:
                     values = finding.split(" ") if " " in finding else [finding]
                     values = [convert_signature_algorithm(sig) for sig in values]
                     self._user_configuration["Signature"].update(values)
-
-                elif field.startswith("cert_keySize"):
-                    if not self._user_configuration.get("KeyLengths"):
-                        self._user_configuration["KeyLengths"] = set()
-                    self._user_configuration["KeyLengths"].update(actual_dict["finding"].split(" ")[:2])
 
                 # The supported groups are available as a list in this field
                 elif field[-12:] == "ECDHE_curves":
@@ -470,6 +486,8 @@ class Compliance:
             action = "should be disabled"
         if information_level:
             self._output_dict[sheet][name] = f"{information_level}: {action} according to {source}"
+        else:
+            self._output_dict[sheet][name] = ""
 
     def _retrieve_entries(self, sheets_to_check, columns):
         """
@@ -784,7 +802,7 @@ class CustomFunctions:
         """
             :param kwargs: Dictionary of arguments
             :type kwargs: dict
-            :return: True if the year indicated has already passed
+            :return: True if either the one calling or the other is enabled
             :rtype: bool
             :Keyword Arguments:
                 * *enabled* (``bool``) -- Whether the entry with this condition is enabled or not
@@ -796,6 +814,33 @@ class CustomFunctions:
     def add_notes(self, **kwargs):
         note = " ".join(kwargs.get("tokens", []))
         self._entry_updates["notes"].append(note)
+        return True
+
+    def check_key_type(self, **kwargs):
+        """
+            :param kwargs: Dictionary of arguments
+            :type kwargs: dict
+            :return: True always
+            :rtype: bool
+            :Keyword Arguments:
+                * *data* (``str``) -- The name of the algorithm that is using the condition
+        """
+        note = ""
+        alg = kwargs.get("data", "").lower()
+        valid_pairs = [["ECDSA", "ECDH"], ["DSA", "DH"]]
+        recommend_dsa = False
+        for cert in self._user_configuration["Certificates_SigAlg_KeyAlg"]:
+            cert_data = self._user_configuration["Certificates_SigAlg_KeyAlg"][cert]
+            data_pair = [cert_data["SigAlg"], cert_data["KeyAlg"]]
+            if cert_data["KeyAlg"] == "DH":
+                recommend_dsa = True
+            if data_pair[0].lower() == alg and data_pair[0] != data_pair[1] and data_pair not in valid_pairs:
+                note = f"The certificate with index {cert} isn't compliant with the guideline because it is signed " \
+                       f"with an algorithm that isn't consistent with the public key"
+        if note:
+            self._entry_updates["notes"].append(note)
+        if recommend_dsa:
+            self._entry_updates["levels"].append("recommended")
         return True
 
     @property

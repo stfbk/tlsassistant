@@ -8,5 +8,6 @@
   "VLP": "FUNCTION check_vlp",
   "CA": "FUNCTION check_ca",
   "THIS": "FUNCTION check_this",
-  "NOTE": "FUNCTION add_notes"
+  "NOTE": "FUNCTION add_notes",
+  "CHECK_KEY_TYPE": "FUNCTION check_key_type"
 }

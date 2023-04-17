@@ -55,5 +55,5 @@ class CompareOne(Compliance):
                     if additional_notes:
                         note += "\nNOTE:"
                         note += "\n".join(additional_notes)
-                    if self._output_dict[sheet].get(name):
+                    if self._output_dict[sheet].get(name) is not None:
                         self._output_dict[sheet][name] += note

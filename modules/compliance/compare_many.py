@@ -27,5 +27,5 @@ class CompareMany(Compliance):
                 note = entry_dict["note"]
 
                 self.update_result(sheet, name, level, enabled, entry_dict["source"], valid_condition)
-                if note and self._output_dict[sheet].get(name):
+                if note and self._output_dict[sheet].get(name) is not None:
                     self._output_dict[sheet][name] += entry_dict.get("note")
