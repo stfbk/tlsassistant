@@ -22,14 +22,15 @@ def convert_signature_algorithm(sig_alg: str) -> str:
 
 
 class ConditionParser:
+    _logical_separators = ["and", "or"]
+    # simple regex to find all occurrences of the separators
+    _splitting_regex = "|".join(_logical_separators)
+    # same as above but also captures the separators
+    _splitting_capturing_regex = "(" + ")|(".join(_logical_separators) + ")"
+
     def __init__(self, user_configuration):
         self.__logging = Logger("Condition parser")
         self.expression = ""
-        self._logical_separators = ["and", "or"]
-        # simple regex to find all occurrences of the separators
-        self._splitting_regex = "|".join(self._logical_separators)
-        # same as above but also captures the separators
-        self._splitting_capturing_regex = "(" + ")|(".join(self._logical_separators) + ")"
         self._user_configuration = user_configuration
         self.instructions = load_configuration("condition_instructions", "configs/compliance/")
         self._custom_functions = CustomFunctions(user_configuration)
@@ -57,23 +58,39 @@ class ConditionParser:
         return enabled
 
     @staticmethod
-    def is_enabled(user_configuration, config_field, name: str, entry, partial_match=False):
+    def is_enabled(user_configuration, config_field, name: str, entry, partial_match=False, condition=""):
         """
         Checks if a field is enabled in the user configuration
         :param user_configuration: the configuration in which the data should be searched
         :param config_field: the field of the configuration containing the target data
         :param name: the value to search
-        :param entry: the database entry (only the first two elements are checked, they are neededd for KeyLengths)
+        :param entry: the database entry (only the first two elements are checked, they are needed for KeyLengths)
         :param partial_match: Default to false, if True the
+        :param condition: Default to "", the condition that the field has.
+        :type condition: str
         :return:
         """
         field_value = user_configuration.get(config_field, None)
+        check_first = 0
+
+        if condition:
+            conditions = re.split(ConditionParser._splitting_regex, condition, flags=re.IGNORECASE)
+            for condition in conditions:
+                condition = condition.strip()
+                if condition.startswith("CHECK_ONLY_FIRST") and " " in condition:
+                    check_first = condition.split(" ")[1]
+                    if check_first.isdecimal():
+                        check_first = int(check_first)
+                    # If the condition value isn't a number it doesn't become an int and the validator gives the error.
+                    Validator().int(check_first)
+
         enabled = False
         if isinstance(field_value, dict) and isinstance(field_value.get(name), bool):
             # Protocols case
             enabled = field_value.get(name, None)
             if enabled is None:
                 enabled = True if "all" in field_value else False
+
         elif isinstance(field_value, dict):
             # Extensions and transparency case
             if name.isnumeric():
@@ -83,13 +100,20 @@ class ConditionParser:
                 enabled = name in field_value.values()
             if not enabled and partial_match:
                 enabled = ConditionParser._partial_match_checker(field_value.values(), name)
-        elif field_value and isinstance(field_value, list) and isinstance(field_value[0], list):
+
+        elif field_value and isinstance(field_value, set) and isinstance(list(field_value)[0], tuple):
             # KeyLengths case
             enabled = entry[:2] in field_value
+            if not enabled and check_first:
+                for field in field_value:
+                    if field[0] == entry[0] and str(field[1])[:check_first] == str(entry[1])[:check_first]:
+                        enabled = True
+
         elif isinstance(field_value, list) or isinstance(field_value, set):
             enabled = name in field_value
             if not enabled and partial_match:
                 enabled = ConditionParser._partial_match_checker(field_value, name)
+
         return enabled
 
     @staticmethod
@@ -398,12 +422,12 @@ class Compliance:
 
                 elif field.startswith("cert_keySize"):
                     if not self._user_configuration.get("KeyLengths"):
-                        self._user_configuration["KeyLengths"] = []
+                        self._user_configuration["KeyLengths"] = set()
                     if not self._user_configuration.get("Certificates_SigAlg_KeyAlg"):
                         self._user_configuration["Certificates_SigAlg_KeyAlg"] = {}
                     # the first two tokens (after doing a space split) are the Key Algorithm and its key size
                     element_to_add = actual_dict["finding"].split(" ")[:2]
-                    self._user_configuration["KeyLengths"].append(element_to_add)
+                    self._user_configuration["KeyLengths"].add(tuple(element_to_add))
                     cert_index = self.find_cert_index(field)
                     if not self._user_configuration["Certificates_SigAlg_KeyAlg"].get(cert_index):
                         self._user_configuration["Certificates_SigAlg_KeyAlg"][cert_index] = {}
@@ -498,6 +522,7 @@ class Compliance:
         tables = []
         for sheet in sheets_to_check:
             columns_to_get = []
+            columns_to_use = self.sheet_columns.get(sheet, {"columns": columns})["columns"]
             if not self._output_dict.get(sheet):
                 self._output_dict[sheet] = {}
             for guideline in sheets_to_check[sheet]:
@@ -506,7 +531,7 @@ class Compliance:
                                                                         sheets_to_check[sheet][guideline])
                     tables.append(table_name)
             for t in tables:
-                for column in columns:
+                for column in columns_to_use:
                     # all the columns are repeated to make easier index access later
                     columns_to_get.append(f"{t}.{column}")
 
@@ -517,7 +542,7 @@ class Compliance:
             tables = []
         self.entries = entries
 
-    def _evaluate_entries(self, sheets_to_check, columns):
+    def _evaluate_entries(self, sheets_to_check, original_columns):
         """
         This function checks the entries with the same name and chooses which guideline to follow for that entry.
         The results can be found in the evaluated_entries field. The dictionary will have form:
@@ -533,18 +558,22 @@ class Compliance:
         :param columns: columns used to retrieve data from database
         :type columns: list
         """
-        # A more fitting name could be current_requirement_level
-        guideline_index = columns.index("guidelineName")
-        level_index = columns.index("level")
-        name_index = columns.index("name")
-        condition_index = columns.index("condition")
-        # this variable is needed to get the relativa position of the condition in respect of the level
-        level_to_condition_index = condition_index - level_index
         # The entry is composed of all the columns repeated n times, with n being the number of guidelines.
         # The step is the number of columns. This allows easy data retrieval by doing something like:
         # "value_index * step * guideline_index" to retrieve data for a specific guideline
-        step = len(columns)
         for sheet in self.entries:
+            columns = self.sheet_columns.get(sheet, {"columns": original_columns})["columns"]
+            guideline_index = columns.index("guidelineName")
+            # A more fitting name could be current_requirement_level
+            level_index = columns.index("level")
+            name_index = columns.index("name")
+            condition_index = columns.index("condition")
+            # this variable is needed to get the relative position of the condition in respect of the level
+            level_to_condition_index = condition_index - level_index
+            # this variable is needed to get the relative position of the guideline in respect of the level
+            level_to_guideline_index = guideline_index - level_index
+            step = len(columns)
+
             entries = self.entries[sheet]
             if not self.evaluated_entries.get(sheet):
                 self.evaluated_entries[sheet] = {}
@@ -557,16 +586,20 @@ class Compliance:
                 # list holding all the notes so that a note gets displayed only if needed
                 notes = []
                 name = entry[name_index]
-                enabled = self._condition_parser.is_enabled(self._user_configuration, sheet, entry[name_index], entry)
 
                 pos = level_index
+                field_is_enabled_in_guideline = {}
                 while pos < len(entry):
                     level = entry[pos]
                     condition = entry[pos + level_to_condition_index]
+                    guideline = entry[pos + level_to_guideline_index]
+
                     valid_condition = True
                     # Add an empty string to the notes so that all the notes are in the same position of their entry
                     notes.append("")
                     if condition:
+                        enabled = self._condition_parser.is_enabled(self._user_configuration, sheet, entry[name_index],
+                                                                    entry, condition=condition)
                         valid_condition = self._condition_parser.run(condition, enabled)
                         if self._condition_parser.entry_updates.get("levels"):
                             potential_levels = self._condition_parser.entry_updates.get("levels")
@@ -574,7 +607,7 @@ class Compliance:
                         has_alternative = self._condition_parser.entry_updates.get("has_alternative")
                         additional_notes = self._condition_parser.entry_updates.get("notes", "")
                         if has_alternative and isinstance(condition, str) and condition.count(" ") > 1:
-                            parts = entry[condition_index].split(" ")
+                            parts = condition.split(" ")
                             # Tokens[1] is the logical operator
                             notes[-1] += f"\nNOTE: {name} {parts[1].upper()} {' '.join(parts[2:])} is needed"
                             # This is to trigger the output condition. This works because I'm assuming that "THIS"
@@ -583,9 +616,13 @@ class Compliance:
                         if additional_notes:
                             notes[-1] += "\nNOTE:"
                             notes[-1] += "\n".join(additional_notes)
+                    else:
+                        enabled = self._condition_parser.is_enabled(self._user_configuration, sheet, entry[name_index],
+                                                                    entry)
 
                     conditions.append(valid_condition)
                     levels.append(level)
+                    field_is_enabled_in_guideline[guideline] = enabled
                     pos += step
 
                 best_level = self.level_to_use(levels)
@@ -619,7 +656,7 @@ class Compliance:
                     "entry": entry,
                     "level": resulting_level,
                     "source": source_guideline,
-                    "enabled": enabled,
+                    "enabled": field_is_enabled_in_guideline[source_guideline],
                     "valid_condition": condition,
                     "note": note
                 }
@@ -843,6 +880,10 @@ class CustomFunctions:
             self._entry_updates["levels"].append("recommended")
         return True
 
+    @staticmethod
+    def always_true(**kwargs):
+        return True
+
     @property
     def entry_updates(self):
         return self._entry_updates
@@ -863,7 +904,7 @@ class AliasParser:
         self._guidelines_versions = {}
         self._fill_guidelines_versions()
         self._aliases = load_configuration("alias_mapping", "configs/compliance/alias/")
-        self._default_versions = load_configuration("default_levels", "configs/compliance/alias/")
+        self._default_versions = load_configuration("default_versions", "configs/compliance/alias/")
 
     def list_aliases(self):
         print("Alias mapping:")

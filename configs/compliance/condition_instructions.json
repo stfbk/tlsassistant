@@ -9,5 +9,6 @@
   "CA": "FUNCTION check_ca",
   "THIS": "FUNCTION check_this",
   "NOTE": "FUNCTION add_notes",
-  "CHECK_KEY_TYPE": "FUNCTION check_key_type"
+  "CHECK_KEY_TYPE": "FUNCTION check_key_type",
+  "CHECK_ONLY_FIRST": "FUNCTION always_true"
 }

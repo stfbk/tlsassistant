@@ -35,7 +35,7 @@
     },
     "Signature": {
         "NIST": "",
-        "BSI": "",
+        "BSI": "CLIENT_SERVERSIGNATURES",
         "ANSSI": "",
         "MOZILLA": "",
         "AGID": ""

@@ -12,11 +12,12 @@ class CompareOne(Compliance):
         """
         if not self._user_configuration:
             raise ValueError("No configuration provided")
-        columns = ["name", "level", "condition", "guidelineName"]
         for sheet in sheets_to_check:
+            columns = ["name", "level", "condition", "guidelineName"]
             # If the sheet isn't in the dictionary then I can use the default value
-            columns = self.sheet_columns.get(sheet, columns)
+            columns = self.sheet_columns.get(sheet, {"columns": columns})["columns"]
             name_index = columns.index("name")
+            name_columns = self.sheet_columns.get(sheet, {}).get("name_columns", [name_index])
             level_index = columns.index("level")
             condition_index = columns.index("condition")
             guideline = list(sheets_to_check[sheet].keys())[0]
@@ -30,9 +31,10 @@ class CompareOne(Compliance):
                 if config_field:
                     name = entry[name_index]
                     level = entry[level_index]
-                    enabled = self._condition_parser.is_enabled(self._user_configuration, config_field, name, entry)
-                    valid_condition = True
                     condition = entry[condition_index]
+                    enabled = self._condition_parser.is_enabled(self._user_configuration, config_field, name,
+                                                                entry, condition=condition)
+                    valid_condition = True
                     if condition:
                         valid_condition = self._condition_parser.run(condition, enabled)
                         if self._condition_parser.entry_updates.get("levels"):
@@ -46,6 +48,8 @@ class CompareOne(Compliance):
                         # This is to trigger the output condition. This works because I'm assuming that "THIS" is only
                         # used in a positive (recommended, must) context.
                         valid_condition = True
+                    # if it has multiple name_columns they get only shown in the output
+                    name = "_".join([str(entry[i]) for i in name_columns])
                     self.update_result(sheet, name, level, enabled, entry[-1], valid_condition)
                     note = ""
                     if has_alternative and isinstance(condition, str) and condition.count(" ") > 1:
