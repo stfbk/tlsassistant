@@ -6,6 +6,7 @@ from pathlib import Path
 
 from modules.compliance.configuration.apache_configuration import ApacheConfiguration
 from modules.compliance.configuration.nginx_configuration import NginxConfiguration
+from modules.compliance.wrappers.certificateparser import CertificateParser
 from modules.compliance.wrappers.db_reader import Database
 from modules.server.wrappers.testssl import Testssl
 from utils.database import get_standardized_level
@@ -230,14 +231,12 @@ class Compliance:
         self.misc_fields = load_configuration("misc_fields", "configs/compliance/")
         self._validator = Validator()
         self._condition_parser = ConditionParser(self._user_configuration)
-
-        # This will be removed when integrating the module in the core
         self.test_ssl = Testssl()
-
         self._config_class = None
         self._database_instance.input(["Guideline"])
         self._guidelines = [name[0].upper() for name in self._database_instance.output()]
         self._alias_parser = AliasParser()
+        self._certificate_parser = CertificateParser()
 
     def level_to_use(self, levels, security: bool = True):
         """
@@ -404,8 +403,8 @@ class Compliance:
                         self._user_configuration["CertificateSignature"] = set()
                     if not self._user_configuration.get("Hash"):
                         self._user_configuration["Hash"] = set()
-                    if not self._user_configuration.get("Certificates_SigAlg_KeyAlg"):
-                        self._user_configuration["Certificates_SigAlg_KeyAlg"] = {}
+                    if not self._user_configuration.get("CertificateData"):
+                        self._user_configuration["CertificateData"] = {}
                     if " " in actual_dict["finding"]:
                         tokens = actual_dict["finding"].split(" ")
                         sig_alg = tokens[-1]
@@ -416,22 +415,22 @@ class Compliance:
                         self._user_configuration["CertificateSignature"].add(sig_alg)
                         self._user_configuration["Hash"].add(hash_alg)
                         cert_index = self.find_cert_index(field)
-                        if not self._user_configuration["Certificates_SigAlg_KeyAlg"].get(cert_index):
-                            self._user_configuration["Certificates_SigAlg_KeyAlg"][cert_index] = {}
-                        self._user_configuration["Certificates_SigAlg_KeyAlg"][cert_index]["SigAlg"] = sig_alg
+                        if not self._user_configuration["CertificateData"].get(cert_index):
+                            self._user_configuration["CertificateData"][cert_index] = {}
+                        self._user_configuration["CertificateData"][cert_index]["SigAlg"] = sig_alg
 
                 elif field.startswith("cert_keySize"):
                     if not self._user_configuration.get("KeyLengths"):
                         self._user_configuration["KeyLengths"] = set()
-                    if not self._user_configuration.get("Certificates_SigAlg_KeyAlg"):
-                        self._user_configuration["Certificates_SigAlg_KeyAlg"] = {}
+                    if not self._user_configuration.get("CertificateData"):
+                        self._user_configuration["CertificateData"] = {}
                     # the first two tokens (after doing a space split) are the Key Algorithm and its key size
                     element_to_add = actual_dict["finding"].split(" ")[:2]
                     self._user_configuration["KeyLengths"].add(tuple(element_to_add))
                     cert_index = self.find_cert_index(field)
-                    if not self._user_configuration["Certificates_SigAlg_KeyAlg"].get(cert_index):
-                        self._user_configuration["Certificates_SigAlg_KeyAlg"][cert_index] = {}
-                    self._user_configuration["Certificates_SigAlg_KeyAlg"][cert_index]["KeyAlg"] = element_to_add[0]
+                    if not self._user_configuration["CertificateData"].get(cert_index):
+                        self._user_configuration["CertificateData"][cert_index] = {}
+                    self._user_configuration["CertificateData"][cert_index]["KeyAlg"] = element_to_add[0]
 
                 # In TLS 1.2 the certificate signatures and hashes are present in the signature algorithms field.
                 elif field[-11:] == "12_sig_algs":
@@ -487,10 +486,19 @@ class Compliance:
                     index = len(config_dict)
                     config_dict[index] = actual_dict["finding"]
 
+                elif field == "cert" or re.match(r"cert <cert#\d+>", field):
+                    if not self._user_configuration.get("CertificateData"):
+                        self._user_configuration["CertificateData"] = {}
+                    cert_index = self.find_cert_index(field)
+                    cert_data = self._certificate_parser.run(actual_dict["finding"])
+                    for entry in cert_data:
+                        self._user_configuration["CertificateData"][cert_index][entry] = cert_data[entry]
+
                 elif field in self.misc_fields:
                     if not self._user_configuration.get("Misc"):
                         self._user_configuration["Misc"] = {}
                     self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
+
 
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition):
         information_level = None
@@ -866,8 +874,8 @@ class CustomFunctions:
         alg = kwargs.get("data", "").lower()
         valid_pairs = [["ECDSA", "ECDH"], ["DSA", "DH"]]
         recommend_dsa = False
-        for cert in self._user_configuration["Certificates_SigAlg_KeyAlg"]:
-            cert_data = self._user_configuration["Certificates_SigAlg_KeyAlg"][cert]
+        for cert in self._user_configuration["CertificateData"]:
+            cert_data = self._user_configuration["CertificateData"][cert]
             data_pair = [cert_data["SigAlg"], cert_data["KeyAlg"]]
             if cert_data["KeyAlg"] == "DH":
                 recommend_dsa = True

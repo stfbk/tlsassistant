@@ -1,5 +1,5 @@
 {
-    "44.236.48.31": {
+    "44.235.246.155": {
         "service": {
             "port": "443",
             "severity": "INFO",
@@ -294,12 +294,12 @@
         "FS_TLS12_sig_algs": {
             "port": "443",
             "severity": "LOW",
-            "finding": "RSA-PSS+SHA256 RSA-PSS+SHA384 RSA-PSS+SHA512 RSA+SHA256 RSA+SHA384 RSA+SHA512 RSA+SHA224 RSA+SHA1"
+            "finding": "RSA-PSS-RSAE+SHA256 RSA-PSS-RSAE+SHA384 RSA-PSS-RSAE+SHA512 RSA+SHA256 RSA+SHA384 RSA+SHA512 RSA+SHA224 RSA+SHA1"
         },
         "FS_TLS13_sig_algs": {
             "port": "443",
             "severity": "INFO",
-            "finding": "RSA-PSS+SHA256 RSA-PSS+SHA384 RSA-PSS+SHA512"
+            "finding": "RSA-PSS-RSAE+SHA256 RSA-PSS-RSAE+SHA384 RSA-PSS-RSAE+SHA512"
         },
         "TLS_extensions": {
             "port": "443",
@@ -424,7 +424,7 @@
         "cert_expirationStatus": {
             "port": "443",
             "severity": "OK",
-            "finding": "67 >= 30 days"
+            "finding": "32 >= 30 days"
         },
         "cert_notBefore": {
             "port": "443",
@@ -569,7 +569,7 @@
         "HTTP_headerTime": {
             "port": "443",
             "severity": "INFO",
-            "finding": "1678787795"
+            "finding": "1681805592"
         },
         "HSTS_time": {
             "port": "443",
@@ -1014,7 +1014,7 @@
         "scanTime": {
             "port": "443",
             "severity": "INFO",
-            "finding": "303"
+            "finding": "293"
         }
     }
 }
