@@ -130,7 +130,18 @@ class Parser:
                         'Confidence' : P
                     }
                 i = j # Skip lines
-
+        if "Raccoon" not in report:
+            report["Raccoon"]={}
+        if "Result" not in report["Raccoon"]:
+            report["Raccoon"]["Result"] = "not vulnerable"
+        if "Direct Raccoon" not in report:
+            report["Direct Raccoon"]={}
+        if "Result" not in report["Direct Raccoon"]:
+            report["Direct Raccoon"]["Result"] = "not vulnerable"
+        if "Details" not in report["Direct Raccoon"]:
+            report["Direct Raccoon"]["Details"] = {}
+        
+        
         report["Padding Oracle"]["Details"] = padding_oracle_details
         report["ALPACA"]["Details"] = alpaca_details
         report["Direct Raccoon"]["Details"] = direct_raccoon_details
