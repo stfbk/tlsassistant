@@ -103,7 +103,16 @@ class Tlsa:
                 f"default{'_android.json' if args.apk else '_server.json'}"
             )
         config_or_modules = args.configuration
-
+        if args.compliance_args:
+            assert "guideline" in args.compliance_args, "Guideline Argument Missing!"
+            all_args=args.compliance_args.copy()
+            comp_one_or_many="compare_one" if "," not in all_args['guideline'] else "compare_many"
+            gen_one_or_many="generate_one" if "," not in all_args['guideline'] else "generate_many"
+            args.compliance_args={
+                comp_one_or_many:all_args,
+                gen_one_or_many:all_args
+            }
+            
         if args.apply_fix or args.file:
             # checks for openssl and ignore-openssl flag
             if not args.ignore_openssl and not args.openssl:

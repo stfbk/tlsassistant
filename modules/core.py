@@ -461,7 +461,11 @@ class Core:
         for name, module in loaded_modules.items():
             if hostname_or_path_type not in loaded_arguments[name]:
                 loaded_arguments[name][hostname_or_path_type] = hostname_or_path
-            args = loaded_arguments[name]
+            args={}
+            if self.__input_dict['compliance_args'] and name in self.__input_dict['compliance_args']: # if we are not checking compliance
+                args = self.__input_dict['compliance_args'][name]
+            
+            args.update(loaded_arguments[name])
             if type_of_analysis != self.Analysis.APK:  # server analysis
                 args["port"] = port  # set the port
             self.__logging.info(f"{Color.CBEIGE}Running {name} module...")

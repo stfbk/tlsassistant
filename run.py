@@ -13,7 +13,7 @@ class ComplianceAction(argparse.Action):
         if not isinstance(namespace.__getattribute__(self.dest), dict):
             namespace.__setattr__(self.dest, {})
         dictionary = namespace.__getattribute__(self.dest)
-        dictionary[option_string.strip("-")] = values
+        dictionary[option_string.strip("-")] = values[0]
 
 
 if __name__ == "__main__":
@@ -164,7 +164,7 @@ if __name__ == "__main__":
         "--apache",
         type=bool,
         nargs=1,
-        action="append",
+        action=ComplianceAction,
         default=True,
         dest="compliance_args",
         help="Default to True. If True the output configuration will have apache syntax, if false nginx will be used."

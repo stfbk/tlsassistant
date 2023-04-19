@@ -277,6 +277,7 @@ class Compliance:
             * *config_output* (``str``) -- The path and name of the output file
             * *custom_guidelines* (``dict``) -- dictionary with form: { sheet : {guideline: name: {"level":level}}
         """
+        print(kwargs)
         actual_configuration = kwargs.get("actual_configuration_path")
         hostname = kwargs.get("hostname")
         self._apache = kwargs.get("apache", True)
@@ -297,7 +298,7 @@ class Compliance:
             # this is temporary
             with open("testssl_dump.json", 'r') as f:
                 test_ssl_output = json.load(f)
-            self.prepare_testssl_output(test_ssl_output)
+            self.prepare_testssl_output(test_ssl_output) 
         if output_file and self._validator.string(output_file):
             if self._apache:
                 self._config_class = ApacheConfiguration()
@@ -887,6 +888,8 @@ class CustomFunctions:
         valid_pairs = [["ECDSA", "ECDH"], ["DSA", "DH"]]
         recommend_dsa = False
         for cert in self._user_configuration["CertificateData"]:
+            if cert.startswith("int"):
+                continue
             cert_data = self._user_configuration["CertificateData"][cert]
             data_pair = [cert_data["SigAlg"], cert_data["KeyAlg"]]
             if cert_data["KeyAlg"] == "DH":
@@ -894,6 +897,7 @@ class CustomFunctions:
             if data_pair[0].lower() == alg and data_pair[0] != data_pair[1] and data_pair not in valid_pairs:
                 note = f"The certificate with index {cert} isn't compliant with the guideline because it is signed " \
                        f"with an algorithm that isn't consistent with the public key"
+
         if note:
             self._entry_updates["notes"].append(note)
         if recommend_dsa:
