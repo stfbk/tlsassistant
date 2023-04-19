@@ -354,7 +354,7 @@ class Compliance:
     def find_cert_index(field: str):
         if "#" in field:
             # the last char is a > so it gets removed
-            return field.split("#")[:-1]
+            return field.split("#")[-1].strip(">")
         else:
             return "1"
 
@@ -490,6 +490,19 @@ class Compliance:
                     if not self._user_configuration.get("CertificateData"):
                         self._user_configuration["CertificateData"] = {}
                     cert_index = self.find_cert_index(field)
+                    if not self._user_configuration["CertificateData"].get(cert_index):
+                        self._user_configuration["CertificateData"][cert_index] = {}
+                    cert_data = self._certificate_parser.run(actual_dict["finding"])
+                    for entry in cert_data:
+                        self._user_configuration["CertificateData"][cert_index][entry] = cert_data[entry]
+
+                elif field == "intermediate_cert" or re.match(r"intermediate_cert <#\d+>", field):
+                    if not self._user_configuration.get("CertificateData"):
+                        self._user_configuration["CertificateData"] = {}
+                    cert_index = self.find_cert_index(field)
+                    cert_index = "int_" + cert_index
+                    if not self._user_configuration["CertificateData"].get(cert_index):
+                        self._user_configuration["CertificateData"][cert_index] = {}
                     cert_data = self._certificate_parser.run(actual_dict["finding"])
                     for entry in cert_data:
                         self._user_configuration["CertificateData"][cert_index][entry] = cert_data[entry]
@@ -498,7 +511,6 @@ class Compliance:
                     if not self._user_configuration.get("Misc"):
                         self._user_configuration["Misc"] = {}
                     self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
-
 
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition):
         information_level = None
