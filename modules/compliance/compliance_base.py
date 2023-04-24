@@ -322,7 +322,7 @@ class Compliance:
 
     def run(self, **kwargs):
         self.input(**kwargs)
-        guidelines_string = kwargs.get("guidelines_to_check")
+        guidelines_string = kwargs.get("guideline")
         self._validator.string(guidelines_string)
         guidelines_list = guidelines_string.split(",") if "," in guidelines_string else [guidelines_string]
         sheets_to_check = self._alias_parser.get_sheets_to_check(guidelines_list)
@@ -331,6 +331,7 @@ class Compliance:
         return self.output()
 
     def output(self):
+        print(self._output_dict)
         return self._output_dict.copy()
 
     def prepare_configuration(self, actual_configuration):

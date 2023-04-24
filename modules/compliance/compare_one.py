@@ -13,9 +13,9 @@ class CompareOne(Compliance):
         if not self._user_configuration:
             raise ValueError("No configuration provided")
         for sheet in sheets_to_check:
-            columns = ["name", "level", "condition", "guidelineName"]
+            columns_orig = ["name", "level", "condition", "guidelineName"]
             # If the sheet isn't in the dictionary then I can use the default value
-            columns = self.sheet_columns.get(sheet, {"columns": columns})["columns"]
+            columns = self.sheet_columns.get(sheet, {"columns": columns_orig})["columns"]
             name_index = columns.index("name")
             name_columns = self.sheet_columns.get(sheet, {}).get("name_columns", [name_index])
             level_index = columns.index("level")
