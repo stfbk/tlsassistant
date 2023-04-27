@@ -1,13 +1,13 @@
 # schema creator configs
 TEMPLATE_FILE = "schema_generator/template.prisma"
-GUIDELINE_BLOCKS = 14
+GUIDELINE_BLOCKS = 15
 RANDOM_STRING = "7WJsEz"
 
 # If the sheet has vertically merged cells in the name column add it here
 has_merged_names = ["Key lengths"]
 
 # list of sheet_names that need a different template, order is important
-different_templates = ["KeyLengths", "Certificate"]
+different_templates = ["KeyLengths", "CertificateExtensions"]
 
 # The syntax for this is: Sheet: list of keys
 # it is assumed that a field with the same name of the key was added using the additional_fields dict
@@ -40,7 +40,8 @@ sheets_mapping = {
     "Hash Algorithm": "Hash",
     "Certificate Signature": "CertificateSignature",
     "Key lengths": "KeyLengths",
-    "Certificate": "Certificate",  # at the moment the certificate table doesn't exist
+    "Certificate": "Certificate",
+    "Certificate Extensions": "CertificateExtensions",
     "Misc": "Misc"
 }
 

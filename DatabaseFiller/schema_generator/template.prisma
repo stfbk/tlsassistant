@@ -11,11 +11,11 @@ model TlsVersion {
 }
 
 model Guideline {
-  name              String              @id
-  updated_at        String
-  KeyLengths7WJsEz  KeyLengths7WJsEz[]
-  Sheet7WJsEz       Sheet7WJsEz[]
-  Certificate7WJsEz Certificate7WJsEz[]
+  name                        String                        @id
+  updated_at                  String
+  KeyLengths7WJsEz            KeyLengths7WJsEz[]
+  Sheet7WJsEz                 Sheet7WJsEz[]
+  CertificateExtensions7WJsEz CertificateExtensions7WJsEz[]
 }
 
 // GENERAL DATA
@@ -59,6 +59,10 @@ model Certificate {
   name String @id
 }
 
+model CertificateExtensions {
+  name String @id
+}
+
 model Misc {
   name String @id
 }
@@ -91,11 +95,11 @@ model TlsVersionExtension {
 // TEMPLATE DATA
 
 model Sheet {
-  name              String              @id
-  iana_code         String
-  version           String
-  Sheet7WJsEz       Sheet7WJsEz[]
-  Certificate7WJsEz Certificate7WJsEz[]
+  name                        String                        @id
+  iana_code                   String
+  version                     String
+  Sheet7WJsEz                 Sheet7WJsEz[]
+  CertificateExtensions7WJsEz CertificateExtensions7WJsEz[]
 }
 
 model Sheet7WJsEz {
@@ -123,7 +127,7 @@ model KeyLengths7WJsEz {
   @@id([id, name, length])
 }
 
-model Certificate7WJsEz {
+model CertificateExtensions7WJsEz {
   id            Int
   guideline     Guideline @relation(fields: [guidelineName], references: [name])
   guidelineName String

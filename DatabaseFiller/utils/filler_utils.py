@@ -35,7 +35,7 @@ def get_requirements_columns(requirements_df: pd.DataFrame, sheet_name: str) -> 
         if not result_dict.get(col[0]):
             result_dict[col[0]] = []
         val = row_dict[col]
-        if val[0] in levels_mapping.values():
+        if get_standardized_level(val[0]) in levels_mapping.values():
             result_dict[col[0]].append(col[1])
             for val in also_add:
                 if not result_dict.get(val):
@@ -130,3 +130,15 @@ def get_first_col_for_guideline(df: pd.DataFrame, guideline: str):
 
 def get_column(df: pd.DataFrame, index: int):
     return df.iloc[:, index]
+
+def get_standardized_level(level):
+    """
+    Takes a level in input and returns it after removing °,* and trailing spaces
+    :param level:
+    :type level: str
+    :return:
+    """
+    if isinstance(level, str):
+        return level.replace("*", "").replace("°", "").strip()
+    else:
+        return ""

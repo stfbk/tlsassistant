@@ -82,5 +82,5 @@ def generate_template(df: Dict[str, pd.DataFrame]):
 
 
 if __name__ == "__main__":
-    dataframe = pd.read_excel("./guidelines.xlsx", header=[0, 1], sheet_name=None)
+    dataframe = pd.read_excel("./guidelines.xlsx", header=[0, 1], sheet_name=list(sheets_mapping.keys()))
     generate_template(dataframe)

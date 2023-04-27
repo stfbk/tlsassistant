@@ -43,34 +43,6 @@ model Guideline {
   ExtensionBSI                            ExtensionBSI[]
   ExtensionANSSI                          ExtensionANSSI[]
   ExtensionAGID                           ExtensionAGID[]
-  CertificateSignatureNIST                CertificateSignatureNIST[]
-  CertificateSignatureBSI                 CertificateSignatureBSI[]
-  CertificateSignatureANSSI               CertificateSignatureANSSI[]
-  CertificateSignatureMOZILLAMODERN       CertificateSignatureMOZILLAMODERN[]
-  CertificateSignatureMOZILLAINTERMEDIATE CertificateSignatureMOZILLAINTERMEDIATE[]
-  CertificateSignatureMOZILLAOLD          CertificateSignatureMOZILLAOLD[]
-  CertificateSignatureAGIDMODERN          CertificateSignatureAGIDMODERN[]
-  CertificateSignatureAGIDINTERMEDIATE    CertificateSignatureAGIDINTERMEDIATE[]
-  CertificateSignatureAGIDOLD             CertificateSignatureAGIDOLD[]
-  HashNIST                                HashNIST[]
-  HashBSI                                 HashBSI[]
-  HashANSSI                               HashANSSI[]
-  HashMOZILLAMODERN                       HashMOZILLAMODERN[]
-  HashMOZILLAINTERMEDIATE                 HashMOZILLAINTERMEDIATE[]
-  HashMOZILLAOLD                          HashMOZILLAOLD[]
-  HashAGIDMODERN                          HashAGIDMODERN[]
-  HashAGIDINTERMEDIATE                    HashAGIDINTERMEDIATE[]
-  HashAGIDOLD                             HashAGIDOLD[]
-  SignatureNIST                           SignatureNIST[]
-  SignatureBSICLIENT_SERVERSIGNATURES     SignatureBSICLIENT_SERVERSIGNATURES[]
-  SignatureBSIINCERTIFICATES              SignatureBSIINCERTIFICATES[]
-  SignatureANSSI                          SignatureANSSI[]
-  SignatureMOZILLAMODERN                  SignatureMOZILLAMODERN[]
-  SignatureMOZILLAINTERMEDIATE            SignatureMOZILLAINTERMEDIATE[]
-  SignatureMOZILLAOLD                     SignatureMOZILLAOLD[]
-  SignatureAGIDMODERN                     SignatureAGIDMODERN[]
-  SignatureAGIDINTERMEDIATE               SignatureAGIDINTERMEDIATE[]
-  SignatureAGIDOLD                        SignatureAGIDOLD[]
   GroupsNIST                              GroupsNIST[]
   GroupsBSIFEDERALAPPLICATIONS            GroupsBSIFEDERALAPPLICATIONS[]
   GroupsBSICUSTOMERFACING                 GroupsBSICUSTOMERFACING[]
@@ -81,8 +53,36 @@ model Guideline {
   GroupsAGIDMODERN                        GroupsAGIDMODERN[]
   GroupsAGIDINTERMEDIATE                  GroupsAGIDINTERMEDIATE[]
   GroupsAGIDOLD                           GroupsAGIDOLD[]
+  SignatureNIST                           SignatureNIST[]
+  SignatureBSICLIENT_SERVERSIGNATURES     SignatureBSICLIENT_SERVERSIGNATURES[]
+  SignatureANSSI                          SignatureANSSI[]
+  SignatureMOZILLAMODERN                  SignatureMOZILLAMODERN[]
+  SignatureMOZILLAINTERMEDIATE            SignatureMOZILLAINTERMEDIATE[]
+  SignatureMOZILLAOLD                     SignatureMOZILLAOLD[]
+  SignatureAGIDMODERN                     SignatureAGIDMODERN[]
+  SignatureAGIDINTERMEDIATE               SignatureAGIDINTERMEDIATE[]
+  SignatureAGIDOLD                        SignatureAGIDOLD[]
+  HashNIST                                HashNIST[]
+  HashBSI                                 HashBSI[]
+  HashANSSI                               HashANSSI[]
+  HashMOZILLAMODERN                       HashMOZILLAMODERN[]
+  HashMOZILLAINTERMEDIATE                 HashMOZILLAINTERMEDIATE[]
+  HashMOZILLAOLD                          HashMOZILLAOLD[]
+  HashAGIDMODERN                          HashAGIDMODERN[]
+  HashAGIDINTERMEDIATE                    HashAGIDINTERMEDIATE[]
+  HashAGIDOLD                             HashAGIDOLD[]
+  CertificateSignatureNIST                CertificateSignatureNIST[]
+  CertificateSignatureBSI                 CertificateSignatureBSI[]
+  CertificateSignatureANSSI               CertificateSignatureANSSI[]
+  CertificateSignatureMOZILLAMODERN       CertificateSignatureMOZILLAMODERN[]
+  CertificateSignatureMOZILLAINTERMEDIATE CertificateSignatureMOZILLAINTERMEDIATE[]
+  CertificateSignatureMOZILLAOLD          CertificateSignatureMOZILLAOLD[]
+  CertificateSignatureAGIDMODERN          CertificateSignatureAGIDMODERN[]
+  CertificateSignatureAGIDINTERMEDIATE    CertificateSignatureAGIDINTERMEDIATE[]
+  CertificateSignatureAGIDOLD             CertificateSignatureAGIDOLD[]
   KeyLengthsNIST                          KeyLengthsNIST[]
   KeyLengthsBSI                           KeyLengthsBSI[]
+  KeyLengthsBSI1_1_2024                   KeyLengthsBSI1_1_2024[]
   KeyLengthsANSSI                         KeyLengthsANSSI[]
   KeyLengthsMOZILLAMODERN                 KeyLengthsMOZILLAMODERN[]
   KeyLengthsMOZILLAINTERMEDIATE           KeyLengthsMOZILLAINTERMEDIATE[]
@@ -91,9 +91,12 @@ model Guideline {
   KeyLengthsAGIDINTERMEDIATE              KeyLengthsAGIDINTERMEDIATE[]
   KeyLengthsAGIDOLD                       KeyLengthsAGIDOLD[]
   CertificateNIST                         CertificateNIST[]
-  CertificateBSI                          CertificateBSI[]
   CertificateANSSI                        CertificateANSSI[]
   CertificateMOZILLA                      CertificateMOZILLA[]
+  CertificateExtensionsNIST               CertificateExtensionsNIST[]
+  CertificateExtensionsBSI                CertificateExtensionsBSI[]
+  CertificateExtensionsANSSI              CertificateExtensionsANSSI[]
+  CertificateExtensionsMOZILLA            CertificateExtensionsMOZILLA[]
   MiscNIST                                MiscNIST[]
   MiscBSI                                 MiscBSI[]
   MiscAGID                                MiscAGID[]
@@ -194,9 +197,16 @@ model CertificateSignature {
 model Certificate {
   name               String               @id
   CertificateNIST    CertificateNIST[]
-  CertificateBSI     CertificateBSI[]
   CertificateANSSI   CertificateANSSI[]
   CertificateMOZILLA CertificateMOZILLA[]
+}
+
+model CertificateExtensions {
+  name                         String                         @id
+  CertificateExtensionsNIST    CertificateExtensionsNIST[]
+  CertificateExtensionsBSI     CertificateExtensionsBSI[]
+  CertificateExtensionsANSSI   CertificateExtensionsANSSI[]
+  CertificateExtensionsMOZILLA CertificateExtensionsMOZILLA[]
 }
 
 model Misc {
@@ -215,6 +225,7 @@ model KeyLengths {
   @@id([name, length])
   KeyLengthsNIST                KeyLengthsNIST[]
   KeyLengthsBSI                 KeyLengthsBSI[]
+  KeyLengthsBSI1_1_2024         KeyLengthsBSI1_1_2024[]
   KeyLengthsANSSI               KeyLengthsANSSI[]
   KeyLengthsMOZILLAMODERN       KeyLengthsMOZILLAMODERN[]
   KeyLengthsMOZILLAINTERMEDIATE KeyLengthsMOZILLAINTERMEDIATE[]
@@ -230,7 +241,6 @@ model Signature {
   version                             String
   SignatureNIST                       SignatureNIST[]
   SignatureBSICLIENT_SERVERSIGNATURES SignatureBSICLIENT_SERVERSIGNATURES[]
-  SignatureBSIINCERTIFICATES          SignatureBSIINCERTIFICATES[]
   SignatureANSSI                      SignatureANSSI[]
   SignatureMOZILLAMODERN              SignatureMOZILLAMODERN[]
   SignatureMOZILLAINTERMEDIATE        SignatureMOZILLAINTERMEDIATE[]
@@ -575,342 +585,6 @@ model ExtensionAGID {
   @@id([id, name])
 }
 
-model CertificateSignatureNIST {
-  id                   Int
-  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
-  guidelineName        String
-  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
-  name                 String
-  level                String? // put level as Nullable (it would be considered not mentioned)
-  condition            String?              @default("")
-
-  @@id([id, name])
-}
-
-model CertificateSignatureBSI {
-  id                   Int
-  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
-  guidelineName        String
-  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
-  name                 String
-  level                String? // put level as Nullable (it would be considered not mentioned)
-  condition            String?              @default("")
-
-  @@id([id, name])
-}
-
-model CertificateSignatureANSSI {
-  id                   Int
-  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
-  guidelineName        String
-  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
-  name                 String
-  level                String? // put level as Nullable (it would be considered not mentioned)
-  condition            String?              @default("")
-
-  @@id([id, name])
-}
-
-model CertificateSignatureMOZILLAMODERN {
-  id                   Int
-  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
-  guidelineName        String
-  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
-  name                 String
-  level                String? // put level as Nullable (it would be considered not mentioned)
-  condition            String?              @default("")
-
-  @@id([id, name])
-}
-
-model CertificateSignatureMOZILLAINTERMEDIATE {
-  id                   Int
-  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
-  guidelineName        String
-  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
-  name                 String
-  level                String? // put level as Nullable (it would be considered not mentioned)
-  condition            String?              @default("")
-
-  @@id([id, name])
-}
-
-model CertificateSignatureMOZILLAOLD {
-  id                   Int
-  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
-  guidelineName        String
-  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
-  name                 String
-  level                String? // put level as Nullable (it would be considered not mentioned)
-  condition            String?              @default("")
-
-  @@id([id, name])
-}
-
-model CertificateSignatureAGIDMODERN {
-  id                   Int
-  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
-  guidelineName        String
-  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
-  name                 String
-  level                String? // put level as Nullable (it would be considered not mentioned)
-  condition            String?              @default("")
-
-  @@id([id, name])
-}
-
-model CertificateSignatureAGIDINTERMEDIATE {
-  id                   Int
-  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
-  guidelineName        String
-  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
-  name                 String
-  level                String? // put level as Nullable (it would be considered not mentioned)
-  condition            String?              @default("")
-
-  @@id([id, name])
-}
-
-model CertificateSignatureAGIDOLD {
-  id                   Int
-  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
-  guidelineName        String
-  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
-  name                 String
-  level                String? // put level as Nullable (it would be considered not mentioned)
-  condition            String?              @default("")
-
-  @@id([id, name])
-}
-
-model HashNIST {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Hash          Hash      @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model HashBSI {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Hash          Hash      @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model HashANSSI {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Hash          Hash      @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model HashMOZILLAMODERN {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Hash          Hash      @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model HashMOZILLAINTERMEDIATE {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Hash          Hash      @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model HashMOZILLAOLD {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Hash          Hash      @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model HashAGIDMODERN {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Hash          Hash      @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model HashAGIDINTERMEDIATE {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Hash          Hash      @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model HashAGIDOLD {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Hash          Hash      @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model SignatureNIST {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Signature     Signature @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model SignatureBSICLIENT_SERVERSIGNATURES {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Signature     Signature @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model SignatureBSIINCERTIFICATES {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Signature     Signature @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model SignatureANSSI {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Signature     Signature @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model SignatureMOZILLAMODERN {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Signature     Signature @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model SignatureMOZILLAINTERMEDIATE {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Signature     Signature @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model SignatureMOZILLAOLD {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Signature     Signature @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model SignatureAGIDMODERN {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Signature     Signature @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model SignatureAGIDINTERMEDIATE {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Signature     Signature @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
-model SignatureAGIDOLD {
-  id            Int
-  guideline     Guideline @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Signature     Signature @relation(fields: [name], references: [name])
-  name          String
-  level         String? // put level as Nullable (it would be considered not mentioned)
-  condition     String?   @default("")
-
-  @@id([id, name])
-}
-
 model GroupsNIST {
   id            Int
   guideline     Guideline @relation(fields: [guidelineName], references: [name])
@@ -1031,6 +705,330 @@ model GroupsAGIDOLD {
   @@id([id, name])
 }
 
+model SignatureNIST {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model SignatureBSICLIENT_SERVERSIGNATURES {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model SignatureANSSI {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model SignatureMOZILLAMODERN {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model SignatureMOZILLAINTERMEDIATE {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model SignatureMOZILLAOLD {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model SignatureAGIDMODERN {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model SignatureAGIDINTERMEDIATE {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model SignatureAGIDOLD {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Signature     Signature @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model HashNIST {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model HashBSI {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model HashANSSI {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model HashMOZILLAMODERN {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model HashMOZILLAINTERMEDIATE {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model HashMOZILLAOLD {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model HashAGIDMODERN {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model HashAGIDINTERMEDIATE {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model HashAGIDOLD {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Hash          Hash      @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model CertificateSignatureNIST {
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
+
+  @@id([id, name])
+}
+
+model CertificateSignatureBSI {
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
+
+  @@id([id, name])
+}
+
+model CertificateSignatureANSSI {
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
+
+  @@id([id, name])
+}
+
+model CertificateSignatureMOZILLAMODERN {
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
+
+  @@id([id, name])
+}
+
+model CertificateSignatureMOZILLAINTERMEDIATE {
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
+
+  @@id([id, name])
+}
+
+model CertificateSignatureMOZILLAOLD {
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
+
+  @@id([id, name])
+}
+
+model CertificateSignatureAGIDMODERN {
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
+
+  @@id([id, name])
+}
+
+model CertificateSignatureAGIDINTERMEDIATE {
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
+
+  @@id([id, name])
+}
+
+model CertificateSignatureAGIDOLD {
+  id                   Int
+  guideline            Guideline            @relation(fields: [guidelineName], references: [name])
+  guidelineName        String
+  CertificateSignature CertificateSignature @relation(fields: [name], references: [name])
+  name                 String
+  level                String? // put level as Nullable (it would be considered not mentioned)
+  condition            String?              @default("")
+
+  @@id([id, name])
+}
+
 model KeyLengthsNIST {
   id            Int
   guideline     Guideline  @relation(fields: [guidelineName], references: [name])
@@ -1045,6 +1043,19 @@ model KeyLengthsNIST {
 }
 
 model KeyLengthsBSI {
+  id            Int
+  guideline     Guideline  @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  KeyLengths    KeyLengths @relation(fields: [name, length], references: [name, length])
+  name          String
+  length        Int
+  level         String?
+  condition     String?    @default("")
+
+  @@id([id, name, length])
+}
+
+model KeyLengthsBSI1_1_2024 {
   id            Int
   guideline     Guideline  @relation(fields: [guidelineName], references: [name])
   guidelineName String
@@ -1154,21 +1165,7 @@ model CertificateNIST {
   guidelineName String
   Certificate   Certificate @relation(fields: [name], references: [name])
   name          String
-  level         String      @default("<Not mentioned>")
-  critical      String      @default("no")
-  condition     String?     @default("")
-
-  @@id([id, name])
-}
-
-model CertificateBSI {
-  id            Int
-  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
-  guidelineName String
-  Certificate   Certificate @relation(fields: [name], references: [name])
-  name          String
-  level         String      @default("<Not mentioned>")
-  critical      String      @default("no")
+  level         String? // put level as Nullable (it would be considered not mentioned)
   condition     String?     @default("")
 
   @@id([id, name])
@@ -1180,8 +1177,7 @@ model CertificateANSSI {
   guidelineName String
   Certificate   Certificate @relation(fields: [name], references: [name])
   name          String
-  level         String      @default("<Not mentioned>")
-  critical      String      @default("no")
+  level         String? // put level as Nullable (it would be considered not mentioned)
   condition     String?     @default("")
 
   @@id([id, name])
@@ -1193,9 +1189,60 @@ model CertificateMOZILLA {
   guidelineName String
   Certificate   Certificate @relation(fields: [name], references: [name])
   name          String
-  level         String      @default("<Not mentioned>")
-  critical      String      @default("no")
+  level         String? // put level as Nullable (it would be considered not mentioned)
   condition     String?     @default("")
+
+  @@id([id, name])
+}
+
+model CertificateExtensionsNIST {
+  id                    Int
+  guideline             Guideline             @relation(fields: [guidelineName], references: [name])
+  guidelineName         String
+  CertificateExtensions CertificateExtensions @relation(fields: [name], references: [name])
+  name                  String
+  level                 String                @default("<Not mentioned>")
+  critical              String                @default("no")
+  condition             String?               @default("")
+
+  @@id([id, name])
+}
+
+model CertificateExtensionsBSI {
+  id                    Int
+  guideline             Guideline             @relation(fields: [guidelineName], references: [name])
+  guidelineName         String
+  CertificateExtensions CertificateExtensions @relation(fields: [name], references: [name])
+  name                  String
+  level                 String                @default("<Not mentioned>")
+  critical              String                @default("no")
+  condition             String?               @default("")
+
+  @@id([id, name])
+}
+
+model CertificateExtensionsANSSI {
+  id                    Int
+  guideline             Guideline             @relation(fields: [guidelineName], references: [name])
+  guidelineName         String
+  CertificateExtensions CertificateExtensions @relation(fields: [name], references: [name])
+  name                  String
+  level                 String                @default("<Not mentioned>")
+  critical              String                @default("no")
+  condition             String?               @default("")
+
+  @@id([id, name])
+}
+
+model CertificateExtensionsMOZILLA {
+  id                    Int
+  guideline             Guideline             @relation(fields: [guidelineName], references: [name])
+  guidelineName         String
+  CertificateExtensions CertificateExtensions @relation(fields: [name], references: [name])
+  name                  String
+  level                 String                @default("<Not mentioned>")
+  critical              String                @default("no")
+  condition             String?               @default("")
 
   @@id([id, name])
 }

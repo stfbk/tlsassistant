@@ -8,7 +8,8 @@ from utils.filler_utils import get_requirements_columns, get_columns_count_for_g
     get_version_name_for_database, get_guideline_name_for_database, is_double_guideline, get_first_col_for_guideline, \
     get_column
 
-dataframe = pd.read_excel("guidelines.xlsx", header=[0, 1], sheet_name=None, converters=converters, dtype=str)
+dataframe = pd.read_excel("guidelines.xlsx", header=[0, 1], sheet_name=list(sheets_mapping.keys()),
+                          converters=converters, dtype=str)
 
 sheet_with_extra_table = {
     "TLS extensions": ("applies to version", "TlsVersionExtension")
@@ -226,14 +227,17 @@ if __name__ == "__main__":
 
                     elif pd.notna(header[1]) and \
                             get_first_col_for_guideline(guidelines_dataframe, header[0]) != header[1]:
-                        # update all the lists of the same guideline
+                        # update all the lists of the same guideline with the condition
                         for t_name in values_dict:
-                            if t_name.startswith(sheet_mapped + header[0]):
-                                values_dict[t_name][row[0]].append(content)
+                            guideline_db_name = get_guideline_name_for_database(header[0])
+                            # this is needed only for the case of KeyLengthsBSI and KeyLengths BSI (from ...)
+                            has_valid_underscore = "_" in guideline_db_name and "_" in t_name
+                            if t_name.startswith(sheet_mapped + guideline_db_name):
+                                if "_" not in t_name or has_valid_underscore:
+                                    values_dict[t_name][row[0]].append(content)
                     if is_double_guideline(header[0]):
                         for other_guideline in header[0].split("+")[1:]:
-                            other_name = get_guideline_name_for_database(
-                                other_guideline)
+                            other_name = get_guideline_name_for_database(other_guideline)
                             other_table = sheet_mapped + other_name + version_name
                             values_dict[other_table] = values_dict[table_name]
 
