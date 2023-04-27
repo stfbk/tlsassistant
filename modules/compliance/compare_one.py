@@ -52,7 +52,7 @@ class CompareOne(Compliance):
                     name = "_".join([str(entry[i]) for i in name_columns])
                     self.update_result(sheet, name, level, enabled, entry[-1], valid_condition)
                     note = ""
-                    if has_alternative and isinstance(condition, str) and condition.count(" ") > 1:
+                    if has_alternative and not enabled and isinstance(condition, str) and condition.count(" ") > 1:
                         parts = entry[condition_index].split(" ")
                         # Tokens[1] is the logical operator
                         note = f"\nNOTE: {name} {parts[1].upper()} {' '.join(parts[2:])} is needed"

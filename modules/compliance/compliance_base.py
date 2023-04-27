@@ -3,6 +3,7 @@ import itertools
 import json
 import re
 from pathlib import Path
+import pprint
 
 from modules.compliance.configuration.apache_configuration import ApacheConfiguration
 from modules.compliance.configuration.nginx_configuration import NginxConfiguration
@@ -72,18 +73,10 @@ class ConditionParser:
         :return:
         """
         field_value = user_configuration.get(config_field, None)
-        check_first = 0
+        check_first = None
 
         if condition:
-            conditions = re.split(ConditionParser._splitting_regex, condition, flags=re.IGNORECASE)
-            for condition in conditions:
-                condition = condition.strip()
-                if condition.startswith("CHECK_ONLY_FIRST") and " " in condition:
-                    check_first = condition.split(" ")[1]
-                    if check_first.isdecimal():
-                        check_first = int(check_first)
-                    # If the condition value isn't a number it doesn't become an int and the validator gives the error.
-                    Validator().int(check_first)
+            check_first = ConditionParser.get_check_first(condition)
 
         enabled = False
         if isinstance(field_value, dict) and isinstance(field_value.get(name), bool):
@@ -114,6 +107,8 @@ class ConditionParser:
             enabled = name in field_value
             if not enabled and partial_match:
                 enabled = ConditionParser._partial_match_checker(field_value, name)
+            if not enabled and check_first:
+                enabled = name[:check_first] in field_value
 
         return enabled
 
@@ -123,6 +118,20 @@ class ConditionParser:
         if field == "TLS":
             new_to_search = "TLS " + to_search.strip()
         return new_to_search
+
+    @staticmethod
+    def get_check_first(condition: str):
+        check_first = None
+        conditions = re.split(ConditionParser._splitting_regex, condition, flags=re.IGNORECASE)
+        for condition in conditions:
+            condition = condition.strip()
+            if condition.startswith("CHECK_ONLY_FIRST") and " " in condition:
+                check_first = condition.split(" ")[1]
+                if check_first.isdecimal():
+                    check_first = int(check_first)
+                # If the condition value isn't a number it doesn't become an int and the validator gives the error.
+                Validator().int(check_first)
+        return check_first
 
     def _closing_parenthesis_index(self, start):
         count = 0
@@ -146,8 +155,9 @@ class ConditionParser:
             to_solve = to_solve.replace(to_replace, replacement)
         tokens = re.split(self._splitting_regex, to_solve, flags=re.IGNORECASE)
         tokens = [token.strip() for token in tokens]
-        for token in tokens:
-            to_solve = to_solve.replace(token, str(self._evaluate_condition(token)))
+        for i, token in enumerate(tokens):
+            next_token = tokens[i+1] if i < len(tokens)-1 else None
+            to_solve = to_solve.replace(token, str(self._evaluate_condition(token, next_token)))
         tokens = re.split(self._splitting_capturing_regex, to_solve, flags=re.IGNORECASE)
         tokens = [token for token in tokens if token]
         while len(tokens) >= 3:
@@ -160,7 +170,7 @@ class ConditionParser:
             tokens.insert(0, str(result))
         return tokens[0]
 
-    def _evaluate_condition(self, condition):
+    def _evaluate_condition(self, condition, next_condition = None):
         """
         Evaluates a condition and returns if it is True or False
         :param condition: condition to evaluate
@@ -188,7 +198,8 @@ class ConditionParser:
             args = {
                 "data": to_search,
                 "enabled": self._enabled,
-                "tokens": tokens[1:]
+                "tokens": tokens[1:],
+                "next_condition": next_condition
             }
             result = self._custom_functions.__getattribute__(config_field.split(" ")[1])(**args)
         else:
@@ -237,6 +248,8 @@ class Compliance:
         self._guidelines = [name[0].upper() for name in self._database_instance.output()]
         self._alias_parser = AliasParser()
         self._certificate_parser = CertificateParser()
+        self._cert_sig_algs = [el[0] for el in self._database_instance.run(tables=["CertificateSignature"],
+                                                                           columns=["name"])]
 
     def level_to_use(self, levels, security: bool = True):
         """
@@ -277,7 +290,6 @@ class Compliance:
             * *config_output* (``str``) -- The path and name of the output file
             * *custom_guidelines* (``dict``) -- dictionary with form: { sheet : {guideline: name: {"level":level}}
         """
-        print(kwargs)
         actual_configuration = kwargs.get("actual_configuration_path")
         hostname = kwargs.get("hostname")
         self._apache = kwargs.get("apache", True)
@@ -322,7 +334,7 @@ class Compliance:
 
     def run(self, **kwargs):
         self.input(**kwargs)
-        guidelines_string = kwargs.get("guideline")
+        guidelines_string = kwargs.get("guidelines")
         self._validator.string(guidelines_string)
         guidelines_list = guidelines_string.split(",") if "," in guidelines_string else [guidelines_string]
         sheets_to_check = self._alias_parser.get_sheets_to_check(guidelines_list)
@@ -331,8 +343,28 @@ class Compliance:
         return self.output()
 
     def output(self):
-        print(self._output_dict)
+        # pprint.pprint(self._output_dict)
         return self._output_dict.copy()
+
+    def _add_certificate_signature_algorithm(self, alg):
+        """
+        Adds the passed algorithm to the CertificateSignature field after parsing it.
+        :param alg: the algorithm to add
+        :return: a list containing the parsed algorithms
+        """
+        to_return = []
+        if not self._user_configuration.get("CertificateSignature"):
+            self._user_configuration["CertificateSignature"] = set()
+        if isinstance(alg, str):
+            alg = [alg]
+
+        for sig_alg in alg:
+            sig_alg = sig_alg.replace("RSASSA-PSS", "RSA")
+            if sig_alg.lower() not in self._cert_sig_algs:
+                sig_alg = "anonymous"
+            to_return.append(sig_alg)
+            self._user_configuration["CertificateSignature"].add(sig_alg.lower())
+        return to_return
 
     def prepare_configuration(self, actual_configuration):
         for field in actual_configuration:
@@ -401,12 +433,10 @@ class Compliance:
 
                 # From the certificate signature algorithm is possible to extract both CertificateSignature and Hash
                 elif field.startswith("cert_Algorithm") or field.startswith("cert_signatureAlgorithm"):
-                    if not self._user_configuration.get("CertificateSignature"):
-                        self._user_configuration["CertificateSignature"] = set()
                     if not self._user_configuration.get("Hash"):
                         self._user_configuration["Hash"] = set()
-                    if not self._user_configuration.get("CertificateData"):
-                        self._user_configuration["CertificateData"] = {}
+                    if not self._user_configuration.get("Certificate"):
+                        self._user_configuration["Certificate"] = {}
                     if " " in actual_dict["finding"]:
                         tokens = actual_dict["finding"].split(" ")
                         sig_alg = tokens[-1]
@@ -414,30 +444,28 @@ class Compliance:
                         # sometimes the hashing algorithm comes first, so they must be switched
                         if sig_alg.startswith("SHA"):
                             sig_alg, hash_alg = hash_alg, sig_alg
-                        self._user_configuration["CertificateSignature"].add(sig_alg)
+                        sig_alg = self._add_certificate_signature_algorithm(sig_alg)[0]
                         self._user_configuration["Hash"].add(hash_alg)
                         cert_index = self.find_cert_index(field)
-                        if not self._user_configuration["CertificateData"].get(cert_index):
-                            self._user_configuration["CertificateData"][cert_index] = {}
-                        self._user_configuration["CertificateData"][cert_index]["SigAlg"] = sig_alg
+                        if not self._user_configuration["Certificate"].get(cert_index):
+                            self._user_configuration["Certificate"][cert_index] = {}
+                        self._user_configuration["Certificate"][cert_index]["SigAlg"] = sig_alg
 
                 elif field.startswith("cert_keySize"):
                     if not self._user_configuration.get("KeyLengths"):
                         self._user_configuration["KeyLengths"] = set()
-                    if not self._user_configuration.get("CertificateData"):
-                        self._user_configuration["CertificateData"] = {}
+                    if not self._user_configuration.get("Certificate"):
+                        self._user_configuration["Certificate"] = {}
                     # the first two tokens (after doing a space split) are the Key Algorithm and its key size
                     element_to_add = actual_dict["finding"].split(" ")[:2]
                     self._user_configuration["KeyLengths"].add(tuple(element_to_add))
                     cert_index = self.find_cert_index(field)
-                    if not self._user_configuration["CertificateData"].get(cert_index):
-                        self._user_configuration["CertificateData"][cert_index] = {}
-                    self._user_configuration["CertificateData"][cert_index]["KeyAlg"] = element_to_add[0]
+                    if not self._user_configuration["Certificate"].get(cert_index):
+                        self._user_configuration["Certificate"][cert_index] = {}
+                    self._user_configuration["Certificate"][cert_index]["KeyAlg"] = element_to_add[0]
 
                 # In TLS 1.2 the certificate signatures and hashes are present in the signature algorithms field.
                 elif field[-11:] == "12_sig_algs":
-                    if not self._user_configuration.get("CertificateSignature"):
-                        self._user_configuration["CertificateSignature"] = set()
                     if not self._user_configuration.get("Hash"):
                         self._user_configuration["Hash"] = set()
                     finding = actual_dict["finding"]
@@ -449,9 +477,9 @@ class Compliance:
                         if "-" not in el and "+" in el:
                             # The entries are SigAlg+HashAlg
                             tokens = el.split("+")
-                            signatures.append(tokens[0])
+                            signatures.append(tokens[0].replace("RSASSA-PSS", "RSA").lower())
                             hashes.append(tokens[1])
-                    self._user_configuration["CertificateSignature"].update(signatures)
+                    self._add_certificate_signature_algorithm(signatures)
                     self._user_configuration["Hash"].update(hashes)
 
                 # From TLS 1.3 the signature algorithms are different from the previous versions.
@@ -489,25 +517,25 @@ class Compliance:
                     config_dict[index] = actual_dict["finding"]
 
                 elif field == "cert" or re.match(r"cert <cert#\d+>", field):
-                    if not self._user_configuration.get("CertificateData"):
-                        self._user_configuration["CertificateData"] = {}
+                    if not self._user_configuration.get("Certificate"):
+                        self._user_configuration["Certificate"] = {}
                     cert_index = self.find_cert_index(field)
-                    if not self._user_configuration["CertificateData"].get(cert_index):
-                        self._user_configuration["CertificateData"][cert_index] = {}
+                    if not self._user_configuration["Certificate"].get(cert_index):
+                        self._user_configuration["Certificate"][cert_index] = {}
                     cert_data = self._certificate_parser.run(actual_dict["finding"])
                     for entry in cert_data:
-                        self._user_configuration["CertificateData"][cert_index][entry] = cert_data[entry]
+                        self._user_configuration["Certificate"][cert_index][entry] = cert_data[entry]
 
                 elif field == "intermediate_cert" or re.match(r"intermediate_cert <#\d+>", field):
-                    if not self._user_configuration.get("CertificateData"):
-                        self._user_configuration["CertificateData"] = {}
+                    if not self._user_configuration.get("Certificate"):
+                        self._user_configuration["Certificate"] = {}
                     cert_index = self.find_cert_index(field)
                     cert_index = "int_" + cert_index
-                    if not self._user_configuration["CertificateData"].get(cert_index):
-                        self._user_configuration["CertificateData"][cert_index] = {}
+                    if not self._user_configuration["Certificate"].get(cert_index):
+                        self._user_configuration["Certificate"][cert_index] = {}
                     cert_data = self._certificate_parser.run(actual_dict["finding"])
                     for entry in cert_data:
-                        self._user_configuration["CertificateData"][cert_index][entry] = cert_data[entry]
+                        self._user_configuration["Certificate"][cert_index][entry] = cert_data[entry]
 
                 elif field in self.misc_fields:
                     if not self._user_configuration.get("Misc"):
@@ -867,7 +895,15 @@ class CustomFunctions:
                 * *enabled* (``bool``) -- Whether the entry with this condition is enabled or not
         """
         enabled = kwargs.get("enabled", False)
-        self._entry_updates["has_alternative"] = True
+        second_condition = kwargs.get("next_condition", " ")
+        field, name = second_condition.split(" ")
+        # only the first two fields of the entry matter, and entry is only needed for key lengths
+        entry_data = name.split(",") if "," in name else (None, None)
+        second_enabled = ConditionParser.is_enabled(self._user_configuration, field, name, entry_data,
+                                                    partial_match=True)
+        print(enabled, second_enabled, name)
+        enabled = second_enabled or enabled
+        self._entry_updates["has_alternative"] = enabled
         return enabled
 
     def add_notes(self, **kwargs):
@@ -888,10 +924,10 @@ class CustomFunctions:
         alg = kwargs.get("data", "").lower()
         valid_pairs = [["ECDSA", "ECDH"], ["DSA", "DH"]]
         recommend_dsa = False
-        for cert in self._user_configuration["CertificateData"]:
+        for cert in self._user_configuration["Certificate"]:
             if cert.startswith("int"):
                 continue
-            cert_data = self._user_configuration["CertificateData"][cert]
+            cert_data = self._user_configuration["Certificate"][cert]
             data_pair = [cert_data["SigAlg"], cert_data["KeyAlg"]]
             if cert_data["KeyAlg"] == "DH":
                 recommend_dsa = True
