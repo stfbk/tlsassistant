@@ -91,6 +91,7 @@ model Guideline {
   KeyLengthsAGIDINTERMEDIATE              KeyLengthsAGIDINTERMEDIATE[]
   KeyLengthsAGIDOLD                       KeyLengthsAGIDOLD[]
   CertificateNIST                         CertificateNIST[]
+  CertificateBSI                          CertificateBSI[]
   CertificateANSSI                        CertificateANSSI[]
   CertificateMOZILLA                      CertificateMOZILLA[]
   CertificateExtensionsNIST               CertificateExtensionsNIST[]
@@ -197,6 +198,7 @@ model CertificateSignature {
 model Certificate {
   name               String               @id
   CertificateNIST    CertificateNIST[]
+  CertificateBSI     CertificateBSI[]
   CertificateANSSI   CertificateANSSI[]
   CertificateMOZILLA CertificateMOZILLA[]
 }
@@ -1160,6 +1162,18 @@ model KeyLengthsAGIDOLD {
 }
 
 model CertificateNIST {
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Certificate   Certificate @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?     @default("")
+
+  @@id([id, name])
+}
+
+model CertificateBSI {
   id            Int
   guideline     Guideline   @relation(fields: [guidelineName], references: [name])
   guidelineName String

@@ -1,12 +1,15 @@
 {
-  "Protocol": "dict",
-  "CipherSuite": "set",
-  "Groups": "list",
+  "Certificate": "dict",
+  "CertificateExtensions": "dict",
   "CertificateSignature": "set",
-  "Hash": "set",
-  "Signature": "set",
+  "CipherSuite": "set",
   "Extension": "dict",
-  "KeyLengths": "list",
+  "Groups": "list",
+  "Hash": "set",
+  "KeyLengths": "set",
+  "Misc": "dict",
+  "Protocol": "dict",
+  "Signature": "set",
   "TrustedCerts": "dict",
   "Transparency": "dict"
 }

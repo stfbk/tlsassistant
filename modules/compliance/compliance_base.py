@@ -3,7 +3,6 @@ import itertools
 import json
 import re
 from pathlib import Path
-import pprint
 
 from modules.compliance.configuration.apache_configuration import ApacheConfiguration
 from modules.compliance.configuration.nginx_configuration import NginxConfiguration
@@ -156,7 +155,7 @@ class ConditionParser:
         tokens = re.split(self._splitting_regex, to_solve, flags=re.IGNORECASE)
         tokens = [token.strip() for token in tokens]
         for i, token in enumerate(tokens):
-            next_token = tokens[i+1] if i < len(tokens)-1 else None
+            next_token = tokens[i + 1] if i < len(tokens) - 1 else None
             to_solve = to_solve.replace(token, str(self._evaluate_condition(token, next_token)))
         tokens = re.split(self._splitting_capturing_regex, to_solve, flags=re.IGNORECASE)
         tokens = [token for token in tokens if token]
@@ -170,7 +169,7 @@ class ConditionParser:
             tokens.insert(0, str(result))
         return tokens[0]
 
-    def _evaluate_condition(self, condition, next_condition = None):
+    def _evaluate_condition(self, condition, next_condition=None):
         """
         Evaluates a condition and returns if it is True or False
         :param condition: condition to evaluate
@@ -250,6 +249,12 @@ class Compliance:
         self._certificate_parser = CertificateParser()
         self._cert_sig_algs = [el[0] for el in self._database_instance.run(tables=["CertificateSignature"],
                                                                            columns=["name"])]
+        self._user_configuration_types = load_configuration("user_conf_types", "configs/compliance/generate/")
+        self._type_converter = {
+            "dict": dict,
+            "list": list,
+            "set": set,
+        }
 
     def level_to_use(self, levels, security: bool = True):
         """
@@ -310,7 +315,7 @@ class Compliance:
             # this is temporary
             with open("testssl_dump.json", 'r') as f:
                 test_ssl_output = json.load(f)
-            self.prepare_testssl_output(test_ssl_output) 
+            self.prepare_testssl_output(test_ssl_output)
         if output_file and self._validator.string(output_file):
             if self._apache:
                 self._config_class = ApacheConfiguration()
@@ -353,8 +358,6 @@ class Compliance:
         :return: a list containing the parsed algorithms
         """
         to_return = []
-        if not self._user_configuration.get("CertificateSignature"):
-            self._user_configuration["CertificateSignature"] = set()
         if isinstance(alg, str):
             alg = [alg]
 
@@ -393,27 +396,27 @@ class Compliance:
             return "1"
 
     def prepare_testssl_output(self, test_ssl_output):
+        # all the necessary field are initialized here
+        for field in self._user_configuration_types:
+            data_structure = self._user_configuration_types.get(field)
+            # this final step is needed to convert from string to data_structure
+            self._user_configuration[field] = self._type_converter.get(data_structure, dict)()
 
         for site in test_ssl_output:
             for field in test_ssl_output[site]:
                 actual_dict = test_ssl_output[site][field]
                 # Each protocol has its own field
                 if (field.startswith("SSL") or field.startswith("TLS")) and field[3] != "_":
-                    if not self._user_configuration.get("Protocol"):
-                        self._user_configuration["Protocol"] = {}
-                    protocol_dict = self._user_configuration.get("Protocol")
                     # Standardization to have it compliant with the database
                     new_version_name = field.replace("_", ".").replace("v", " ").replace("TLS1", "TLS 1")
                     if new_version_name[-2] != '.':
                         new_version_name += ".0"
                     # The protocols may appear both as supported and not supported, so they are saved in a dictionary
                     # with a boolean associated to the protocol to know if it is supported or not
-                    protocol_dict[new_version_name] = "not" not in actual_dict["finding"]
+                    self._user_configuration["Protocol"][new_version_name] = "not" not in actual_dict["finding"]
 
                 # All the ciphers appear in different fields whose form is cipher_%x%
                 elif field.startswith("cipher") and "x" in field:
-                    if not self._user_configuration.get("CipherSuite"):
-                        self._user_configuration["CipherSuite"] = set()
                     value = actual_dict.get("finding", "")
                     if " " in value:
                         # Only the last part of the line is the actual cipher
@@ -433,10 +436,6 @@ class Compliance:
 
                 # From the certificate signature algorithm is possible to extract both CertificateSignature and Hash
                 elif field.startswith("cert_Algorithm") or field.startswith("cert_signatureAlgorithm"):
-                    if not self._user_configuration.get("Hash"):
-                        self._user_configuration["Hash"] = set()
-                    if not self._user_configuration.get("Certificate"):
-                        self._user_configuration["Certificate"] = {}
                     if " " in actual_dict["finding"]:
                         tokens = actual_dict["finding"].split(" ")
                         sig_alg = tokens[-1]
@@ -452,10 +451,6 @@ class Compliance:
                         self._user_configuration["Certificate"][cert_index]["SigAlg"] = sig_alg
 
                 elif field.startswith("cert_keySize"):
-                    if not self._user_configuration.get("KeyLengths"):
-                        self._user_configuration["KeyLengths"] = set()
-                    if not self._user_configuration.get("Certificate"):
-                        self._user_configuration["Certificate"] = {}
                     # the first two tokens (after doing a space split) are the Key Algorithm and its key size
                     element_to_add = actual_dict["finding"].split(" ")[:2]
                     self._user_configuration["KeyLengths"].add(tuple(element_to_add))
@@ -466,8 +461,6 @@ class Compliance:
 
                 # In TLS 1.2 the certificate signatures and hashes are present in the signature algorithms field.
                 elif field[-11:] == "12_sig_algs":
-                    if not self._user_configuration.get("Hash"):
-                        self._user_configuration["Hash"] = set()
                     finding = actual_dict["finding"]
                     elements = finding.split(" ") if " " in finding else [finding]
                     hashes = []
@@ -485,8 +478,6 @@ class Compliance:
                 # From TLS 1.3 the signature algorithms are different from the previous versions.
                 # So they are saved in a different field of the configuration dictionary.
                 elif field[-11:] == "13_sig_algs":
-                    if not self._user_configuration.get("Signature"):
-                        self._user_configuration["Signature"] = set()
                     finding = actual_dict["finding"]
                     values = finding.split(" ") if " " in finding else [finding]
                     values = [convert_signature_algorithm(sig) for sig in values]
@@ -501,45 +492,33 @@ class Compliance:
                 # The transparency field describes how the transparency is handled in each certificate.
                 # https://developer.mozilla.org/en-US/docs/Web/Security/Certificate_Transparency (for the possibilities)
                 elif "transparency" in field:
-                    if not self._user_configuration.get("Transparency"):
-                        self._user_configuration["Transparency"] = {}
-                    config_dict = self._user_configuration["Transparency"]
                     # the index is basically the certificate number
-                    index = len(config_dict)
-                    config_dict[index] = actual_dict["finding"]
+                    index = self.find_cert_index(field)
+                    self._user_configuration["Transparency"][index] = actual_dict["finding"]
 
                 elif field.startswith("cert_chain_of_trust"):
-                    if not self._user_configuration.get("TrustedCerts"):
-                        self._user_configuration["TrustedCerts"] = {}
-                    config_dict = self._user_configuration["TrustedCerts"]
                     # the index is basically the certificate number
-                    index = len(config_dict)
-                    config_dict[index] = actual_dict["finding"]
+                    index = self.find_cert_index(field)
+                    self._user_configuration["TrustedCerts"][index] = actual_dict["finding"]
 
-                elif field == "cert" or re.match(r"cert <cert#\d+>", field):
-                    if not self._user_configuration.get("Certificate"):
-                        self._user_configuration["Certificate"] = {}
+                elif (field == "cert" or re.match(r"cert <cert#\d+>", field)) or \
+                        (field == "intermediate_cert" or re.match(r"intermediate_cert <#\d+>", field)):
+
                     cert_index = self.find_cert_index(field)
+                    if field.startswith("int"):
+                        cert_index = "int_" + cert_index
                     if not self._user_configuration["Certificate"].get(cert_index):
                         self._user_configuration["Certificate"][cert_index] = {}
+                    if not self._user_configuration["CertificateExtensions"].get(cert_index):
+                        self._user_configuration["CertificateExtensions"][cert_index] = {}
                     cert_data = self._certificate_parser.run(actual_dict["finding"])
                     for entry in cert_data:
-                        self._user_configuration["Certificate"][cert_index][entry] = cert_data[entry]
-
-                elif field == "intermediate_cert" or re.match(r"intermediate_cert <#\d+>", field):
-                    if not self._user_configuration.get("Certificate"):
-                        self._user_configuration["Certificate"] = {}
-                    cert_index = self.find_cert_index(field)
-                    cert_index = "int_" + cert_index
-                    if not self._user_configuration["Certificate"].get(cert_index):
-                        self._user_configuration["Certificate"][cert_index] = {}
-                    cert_data = self._certificate_parser.run(actual_dict["finding"])
-                    for entry in cert_data:
-                        self._user_configuration["Certificate"][cert_index][entry] = cert_data[entry]
+                        if entry == "Extensions":
+                            self._user_configuration["CertificateExtensions"][cert_index] = cert_data[entry]
+                        else:
+                            self._user_configuration["Certificate"][cert_index][entry] = cert_data[entry]
 
                 elif field in self.misc_fields:
-                    if not self._user_configuration.get("Misc"):
-                        self._user_configuration["Misc"] = {}
                     self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
 
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition):
@@ -720,12 +699,6 @@ class Generator(Compliance):
         super().__init__()
         self._configuration_rules = load_configuration("configuration_rules", "configs/compliance/generate/")
         self._configuration_mapping = load_configuration("configuration_mapping", "configs/compliance/generate/")
-        self._user_configuration_types = load_configuration("user_conf_types", "configs/compliance/generate/")
-        self._type_converter = {
-            "dict": dict,
-            "list": list,
-            "set": set,
-        }
 
     def _get_config_name(self, field):
         name = self._configuration_mapping.get(field, None)
@@ -817,8 +790,12 @@ class CustomFunctions:
             "<": lambda op1, op2: op1 < op2,
             ">=": lambda op1, op2: op1 >= op2,
             "<=": lambda op1, op2: op1 <= op2,
-            "==": lambda op1, op2: op1 == op2
+            "==": lambda op1, op2: op1 == op2,
+            "!=": lambda op1, op2: op1 != op2,
+            "in": lambda op1, op2: op1 in op2,
+            "not in": lambda op1, op2: op1 not in op2,
         }
+        self._operators_regex = "(" + ")|(".join(self._operators.keys()) + ")"
 
     # INSERT ALL THE CUSTOM PARSING FUNCTIONS HERE THEY MUST HAVE SIGNATURE:
     # function(**kwargs) -> bool
@@ -896,12 +873,13 @@ class CustomFunctions:
         """
         enabled = kwargs.get("enabled", False)
         second_condition = kwargs.get("next_condition", " ")
-        field, name = second_condition.split(" ")
+        tokens = second_condition.split(" ")
+        field = tokens[0]
+        name = " ".join(tokens[1:])
         # only the first two fields of the entry matter, and entry is only needed for key lengths
         entry_data = name.split(",") if "," in name else (None, None)
         second_enabled = ConditionParser.is_enabled(self._user_configuration, field, name, entry_data,
                                                     partial_match=True)
-        print(enabled, second_enabled, name)
         enabled = second_enabled or enabled
         self._entry_updates["has_alternative"] = enabled
         return enabled
@@ -940,6 +918,58 @@ class CustomFunctions:
         if recommend_dsa:
             self._entry_updates["levels"].append("recommended")
         return True
+
+    def check_value(self, **kwargs):
+        tokens = kwargs.get("tokens", [])
+        config_field = tokens.pop(0)
+        tokens_string = " ".join(tokens)
+        tokens = re.split(self._operators_regex, tokens_string)
+        tokens = [t.strip() for t in tokens if t]
+        value = tokens[0]
+        operator = tokens[1]
+        name = "".join(tokens[2:])
+        # if there is a "[" and a corresponding "]" then the text inside is a level of a dictionary
+        levels = re.findall(r"\[(.*?)]", name)
+        if not levels:
+            levels = [name]
+        field = self._user_configuration.get(config_field, {})
+        last_level = [levels[-1]] if "," not in levels[-1] else levels[-1].split(",")
+        last_level = map(str.strip, last_level)
+        # used the in because in this way is easier to edit if needed
+        if config_field in ["Certificate", "CertificateExtensions"]:
+            result = True
+            for cert in field:
+                for level in last_level:
+                    levels[-1] = level
+                    # I pass to the function that gets the value the certificate dictionary as field
+                    configuration_value = self._get_configuration_field(field.get(cert, {}), levels)
+                    reason = f"field {level} is missing" if not configuration_value else f"{value} {operator} {name}"
+                    partial_result = self._operators[operator](value, str(configuration_value))
+                    if not partial_result or len(configuration_value) == 0:
+                        self._entry_updates["notes"].append(f"Certificate {cert} failed check, reason: {reason}")
+                    result = result and partial_result
+        else:
+            result = True
+            for level in last_level:
+                levels[-1] = level
+                configuration_value = self._get_configuration_field(field, levels)
+                partial_result = self._operators[operator](value, str(configuration_value))
+                if not partial_result:
+                    self._entry_updates["notes"].append(f"Failed check {name} {operator} {value} for {config_field}")
+                result = result and partial_result
+        return result
+
+    @staticmethod
+    def _get_configuration_field(field, levels):
+        for level in levels:
+            field = field.get(level, {})
+        return field
+
+    def check_dict_value(self, **kwargs):
+        self.check_value(**kwargs)
+
+    def check_year_in_days(self, **kwargs):
+        print(kwargs)
 
     @staticmethod
     def always_true(**kwargs):

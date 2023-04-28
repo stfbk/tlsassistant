@@ -54,6 +54,18 @@
         "NIST": "",
         "BSI": ""
     },
+    "Certificate": {
+        "NIST": "",
+        "BSI": "",
+        "AGID": "",
+        "MOZILLA": ""
+    },
+    "CertificateExtensions": {
+        "NIST": "",
+        "BSI": "",
+        "AGID": "",
+        "MOZILLA": ""
+    },
     "Misc": {
         "NIST": "",
         "BSI": "",
