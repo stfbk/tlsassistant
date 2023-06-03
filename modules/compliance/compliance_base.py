@@ -1,6 +1,6 @@
 import datetime
 import itertools
-import json
+import pprint
 import re
 from pathlib import Path
 
@@ -12,6 +12,7 @@ from modules.server.wrappers.testssl import Testssl
 from utils.database import get_standardized_level
 from utils.loader import load_configuration
 from utils.logger import Logger
+from utils.prune import pruner
 from utils.validation import Validator
 
 
@@ -59,7 +60,8 @@ class ConditionParser:
         return enabled
 
     @staticmethod
-    def is_enabled(user_configuration, config_field, name: str, entry, partial_match=False, condition=""):
+    def is_enabled(user_configuration, config_field, name: str, entry, partial_match=False, condition="",
+                   certificate_index="1"):
         """
         Checks if a field is enabled in the user configuration
         :param user_configuration: the configuration in which the data should be searched
@@ -69,6 +71,8 @@ class ConditionParser:
         :param partial_match: Default to false, if True the
         :param condition: Default to "", the condition that the field has.
         :type condition: str
+        :param certificate_index: Default to "1", the certificate to check
+        :type certificate_index: str
         :return:
         """
         field_value = user_configuration.get(config_field, None)
@@ -83,6 +87,12 @@ class ConditionParser:
             enabled = field_value.get(name, None)
             if enabled is None:
                 enabled = True if "all" in field_value else False
+
+        elif isinstance(field_value, dict) and field_value.get("1"):
+            # Certificate case
+            cert_data = field_value.get(certificate_index, {})
+            enabled = name in cert_data
+            print(cert_data, name)
 
         elif isinstance(field_value, dict):
             # Extensions and transparency case
@@ -228,6 +238,8 @@ class Compliance:
     def __init__(self):
         self._custom_guidelines = None
         self._apache = True
+        # legacy vs security level switch
+        self._security = True
         self._input_dict = {}
         self._database_instance = Database()
         self.__logging = Logger("Compliance module")
@@ -256,19 +268,17 @@ class Compliance:
             "set": set,
         }
 
-    def level_to_use(self, levels, security: bool = True):
+    def level_to_use(self, levels):
         """
         Given two evaluations returns true if the first one wins, false otherwise.
 
         :param levels: list of evaluations to be checked
         :type levels: list
-        :param security: True if security wins false if legacy wins, default to true
-        :type security: bool
         :return: the standard which wins
         :rtype: int
         """
         # If a level is not mapped it can be considered as a Not mentioned
-        security_mapping = "security" if security else "legacy"
+        security_mapping = "security" if self._security else "legacy"
         if not levels:
             raise IndexError("Levels list is empty")
         first_value = self.evaluations_mapping.get(security_mapping, {}).get(get_standardized_level(levels[0]), 4)
@@ -276,6 +286,7 @@ class Compliance:
         for i, el in enumerate(levels[1:]):
             evaluation_value = self.evaluations_mapping.get(security_mapping, {}).get(get_standardized_level(el), 4)
             if first_value > evaluation_value:
+                # +1 is needed because the first element is ignored
                 best = i + 1
         # if they have the same value first wins
         return best
@@ -298,8 +309,17 @@ class Compliance:
         actual_configuration = kwargs.get("actual_configuration_path")
         hostname = kwargs.get("hostname")
         self._apache = kwargs.get("apache", True)
+        self._security = kwargs.get("security", True)
         output_file = kwargs.get("output_config")
         self._custom_guidelines = kwargs.get("custom_guidelines")
+        guidelines_string = kwargs.get("guidelines")
+
+        # guidelines evaluation
+        self._validator.string(guidelines_string)
+        guidelines_list = guidelines_string.split(",") if "," in guidelines_string else [guidelines_string]
+        sheets_to_check = self._alias_parser.get_sheets_to_check(guidelines_list)
+        self._validator.dict(sheets_to_check)
+
         if actual_configuration and self._validator.string(actual_configuration):
             try:
                 self._config_class = ApacheConfiguration(actual_configuration)
@@ -309,12 +329,9 @@ class Compliance:
                 )
                 self._config_class = NginxConfiguration(actual_configuration)
             self.prepare_configuration(self._config_class.configuration)
-        if hostname and self._validator.string(hostname):
-            # test_ssl_output = self.test_ssl.run(**{"hostname": hostname})
+        if hostname and self._validator.string(hostname) and hostname != "placeholder":
+            test_ssl_output = self.test_ssl.run(**{"hostname": hostname, "one": True})
 
-            # this is temporary
-            with open("testssl_dump.json", 'r') as f:
-                test_ssl_output = json.load(f)
             self.prepare_testssl_output(test_ssl_output)
         if output_file and self._validator.string(output_file):
             if self._apache:
@@ -323,6 +340,7 @@ class Compliance:
                 self._config_class = NginxConfiguration()
             self._config_class.set_out_file(Path(output_file))
         self._input_dict = kwargs
+        self._input_dict["sheets_to_check"] = sheets_to_check
 
     # To override
     def _worker(self, sheets_to_check):
@@ -339,16 +357,11 @@ class Compliance:
 
     def run(self, **kwargs):
         self.input(**kwargs)
-        guidelines_string = kwargs.get("guidelines")
-        self._validator.string(guidelines_string)
-        guidelines_list = guidelines_string.split(",") if "," in guidelines_string else [guidelines_string]
-        sheets_to_check = self._alias_parser.get_sheets_to_check(guidelines_list)
-        self._validator.dict(sheets_to_check)
-        self._worker(sheets_to_check)
+        self._worker(self._input_dict["sheets_to_check"])
         return self.output()
 
     def output(self):
-        # pprint.pprint(self._output_dict)
+        pprint.pp(pruner(self._output_dict))
         return self._output_dict.copy()
 
     def _add_certificate_signature_algorithm(self, alg):
@@ -400,6 +413,7 @@ class Compliance:
         for field in self._user_configuration_types:
             data_structure = self._user_configuration_types.get(field)
             # this final step is needed to convert from string to data_structure
+            # by using a dict is possible avoid using eval
             self._user_configuration[field] = self._type_converter.get(data_structure, dict)()
 
         for site in test_ssl_output:
@@ -470,6 +484,7 @@ class Compliance:
                         if "-" not in el and "+" in el:
                             # The entries are SigAlg+HashAlg
                             tokens = el.split("+")
+                            # RSASSA-PSS is a subset of RSA
                             signatures.append(tokens[0].replace("RSASSA-PSS", "RSA").lower())
                             hashes.append(tokens[1])
                     self._add_certificate_signature_algorithm(signatures)
@@ -799,6 +814,7 @@ class CustomFunctions:
 
     # INSERT ALL THE CUSTOM PARSING FUNCTIONS HERE THEY MUST HAVE SIGNATURE:
     # function(**kwargs) -> bool
+    # kwargs are defined in the _evaluate_condition method of the ConditionParser class.
 
     def check_year(self, **kwargs):
         """
@@ -969,7 +985,8 @@ class CustomFunctions:
         self.check_value(**kwargs)
 
     def check_year_in_days(self, **kwargs):
-        print(kwargs)
+        # todo implement this
+        return True
 
     @staticmethod
     def always_true(**kwargs):
@@ -1020,6 +1037,8 @@ class AliasParser:
                 print("Guideline ", guideline, " doesn't have any special version")
             print("")
         print("NOTE: if a version is omitted the default one will be used.")
+        import sys
+        sys.exit(0)
 
     def _fill_sheets_dict(self):
         for table in self._database_instance.table_names:
@@ -1075,6 +1094,11 @@ class AliasParser:
         sheets_to_check = {}
         for alias in aliases:
             alias = alias.strip()
+            if alias == "list":
+                # print the list. The function terminates the program
+                self.list_strings()
+            if alias == "aliases":
+                self.list_aliases()
             self.is_valid(alias)
             tokens = alias.split("_")
             guideline = tokens[0].upper()

@@ -45,6 +45,7 @@ class Core:
         APK = 1
         DOMAINS = 2
         CONFIGURATION = 3
+        COMPLIANCE = 4
 
     def __init__(
         self,

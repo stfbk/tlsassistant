@@ -9,11 +9,15 @@ class ComplianceAction(argparse.Action):
     def __init__(self, option_strings, dest, nargs=None, **kwargs):
         super().__init__(option_strings, dest, nargs, **kwargs)
 
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(self, parser, namespace, values, option_string=""):
         if not isinstance(namespace.__getattribute__(self.dest), dict):
             namespace.__setattr__(self.dest, {})
+        converters = {
+            "false": False,
+            "true": True
+        }
         dictionary = namespace.__getattribute__(self.dest)
-        dictionary[option_string.strip("-")] = values[0]
+        dictionary[option_string.strip("-")] = converters.get(values[0].lower(), values[0])
 
 
 if __name__ == "__main__":
@@ -150,7 +154,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--guideline",
+        "--guidelines",
         type=str,
         nargs=1,
         action=ComplianceAction,
@@ -162,12 +166,30 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--apache",
-        type=bool,
+        type=str,
         nargs=1,
         action=ComplianceAction,
         default=True,
         dest="compliance_args",
         help="Default to True. If True the output configuration will have apache syntax, if false nginx will be used."
+    )
+    parser.add_argument(
+        "--security",
+        type=str,
+        nargs=1,
+        action=ComplianceAction,
+        default=True,
+        dest="compliance_args",
+        help="Default to True. If False the legacy level priority will be used"
+    )
+
+    parser.add_argument(
+        "--output_config",
+        type=str,
+        nargs=1,
+        action=ComplianceAction,
+        dest="compliance_args",
+        help="Where to save the output configuration file, only needed for generate one/many"
     )
 
     # todo add default aliases configurations for analysis
