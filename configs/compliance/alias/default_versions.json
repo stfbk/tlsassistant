@@ -30,15 +30,15 @@
         "NIST": "",
         "BSI": "",
         "ANSSI": "",
-        "MOZILLA": "",
-        "AGID": ""
+        "MOZILLA": "INTERMEDIATE",
+        "AGID": "INTERMEDIATE"
     },
     "Signature": {
         "NIST": "",
         "BSI": "CLIENT_SERVERSIGNATURES",
         "ANSSI": "",
-        "MOZILLA": "",
-        "AGID": ""
+        "MOZILLA": "INTERMEDIATE",
+        "AGID": "INTERMEDIATE"
     },
     "Groups": {
         "NIST": "",
@@ -57,13 +57,13 @@
     "Certificate": {
         "NIST": "",
         "BSI": "",
-        "AGID": "",
+        "ANSSI": "",
         "MOZILLA": ""
     },
     "CertificateExtensions": {
         "NIST": "",
         "BSI": "",
-        "AGID": "",
+        "ANSSI": "",
         "MOZILLA": ""
     },
     "Misc": {
