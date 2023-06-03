@@ -236,10 +236,17 @@ if __name__ == "__main__":
                                 if "_" not in t_name or has_valid_underscore:
                                     values_dict[t_name][row[0]].append(content)
                     if is_double_guideline(header[0]):
-                        for other_guideline in header[0].split("+")[1:]:
+                        tokens = header[0].split("+")
+                        base_guideline = tokens[0].replace("(", "").strip()
+                        for other_guideline in tokens[1:]:
                             other_name = get_guideline_name_for_database(other_guideline)
                             other_table = sheet_mapped + other_name + version_name
                             values_dict[other_table] = values_dict[table_name]
+                            for el in values_dict[other_table]:
+                                # Update the guideline name
+                                for i, entry in enumerate(values_dict[other_table][el]):
+                                    if isinstance(entry, str) and entry.upper() == base_guideline:
+                                        values_dict[other_table][el][i] = other_name
 
             # Convert all the data into tuples to add them to the database and group them by guideline name
             values_groups = {}
