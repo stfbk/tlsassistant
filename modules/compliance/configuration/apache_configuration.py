@@ -4,6 +4,8 @@ from pathlib import Path
 from apacheconfig import make_loader
 
 from modules.compliance.configuration.configuration_base import ConfigurationMaker
+from modules.configuration.configuration import Configuration
+from utils.type import WebserverType
 
 
 class ApacheConfiguration(ConfigurationMaker):
@@ -22,8 +24,7 @@ class ApacheConfiguration(ConfigurationMaker):
         :param file: path to the configuration file
         :type file: str
         """
-        with make_loader() as loader:
-            self.configuration = loader.load(str(file.absolute()))
+        self.configuration = Configuration(path=str(file), type_=WebserverType.APACHE).get_conf()
 
     def _load_template(self):
         with open(self._config_template_path, "r") as f:

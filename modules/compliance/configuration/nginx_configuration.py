@@ -5,6 +5,8 @@ from crossplane import build as nginx_build
 from crossplane import parse as nginx_parse
 
 from modules.compliance.configuration.configuration_base import ConfigurationMaker
+from modules.configuration.configuration import Configuration
+from utils.type import WebserverType
 
 
 class NginxConfiguration(ConfigurationMaker):
@@ -21,9 +23,7 @@ class NginxConfiguration(ConfigurationMaker):
         :param file: path to the configuration file
         :type file: str
         """
-        self.configuration = nginx_parse(str(file.absolute()))
-        if self.configuration.get("errors", []):
-            raise ValueError("Invalid nginx config file")
+        self.configuration = Configuration(path=str(file), type_=WebserverType.NGINX, process=False).get_conf()
 
     def add_configuration_for_field(self, field, field_rules, data, columns, guideline, target=None):
         config_field = self.mapping.get(field, None)

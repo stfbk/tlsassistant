@@ -13,7 +13,7 @@ class Configuration:
     Apache/Nginx configuration file parser
     """
 
-    def __init__(self, path: str, type_: WebserverType = WebserverType.AUTO, port=None):
+    def __init__(self, path: str, type_: WebserverType = WebserverType.AUTO, port=None,process=True):
         """
         :param path: path to the configuration file
         :type path: str
@@ -21,16 +21,21 @@ class Configuration:
         :type type_: WebserverType
         :param port: port to use for the check.
         :type port: str
+        :param process: Nginx only, if false the loaded configuration is returned without further processing
+        :type process: bool
         """
         Validator([(path, str), (type_, WebserverType), (port if port else "", str)])
         self.__path = path
         self.__type = type_
         self.__port = port
         self.__logging = Logger("Configuration APACHE/NGINX")
-        self.__loaded_conf = self.__load_conf(path)
+        self.__loaded_conf = self.__load_conf(path, process)
 
     def get_path(self):
         return self.__path
+
+    def get_conf(self):
+        return self.__loaded_conf.copy()
 
     def __obtain_vhost(self, port=None):
         """
@@ -76,14 +81,16 @@ class Configuration:
                     for http in conf['http']:
                         if 'server' in http:
                             yield from __gen(http['server'])
-            
 
-    def __load_conf(self, path) -> dict:
+
+    def __load_conf(self, path, process=True) -> dict:
         """
         Load the configuration file.
 
         :param path: path to the configuration file
         :type path: str
+        :param process: Nginx only, if false the loaded configuration is returned without further processing
+        :type process: bool
         :return: loaded configuration
         :rtype: dict
         """
@@ -106,7 +113,7 @@ class Configuration:
         elif self.__type == WebserverType.APACHE:
             results = self.__load_apache_conf(file)
         else:
-            results = self.__load_nginx_conf(file)
+            results = self.__load_nginx_conf(file, process)
 
         if self.__type == WebserverType.APACHE:
             self.__logging.set_class_name("Configuration APACHE")
@@ -127,12 +134,14 @@ class Configuration:
         with make_loader() as loader:
             return loader.load(str(file.absolute()))
 
-    def __load_nginx_conf(self, file: Path) -> dict:
+    def __load_nginx_conf(self, file: Path, process=True) -> dict:
         """
         Internal method to load the nginx configuration file.
 
         :param file: path to the configuration file
         :type file: str
+        :param process: If false the loaded configuration is returned without further processing
+        :type process: bool
         :return: loaded configuration
         :rtype: dict
         """
@@ -152,7 +161,7 @@ class Configuration:
 
                 if directive_key not in struct:
                     struct[directive_key] = []
-                elif 'block' not in directive: 
+                elif 'block' not in directive:
                     # if this key already exists, but it's not the start of a subblock,
                     # then it's a list of lists, to indicate many directive with same key
                     # but distinct values
@@ -186,21 +195,22 @@ class Configuration:
                     struct[directive_key] = directive['args']
 
         payload = nginx_parse(str(file.absolute()))
-    
+
         if payload['status'] != 'ok' or len(payload['errors']) > 0:
             self.__logging.error(f"Error parsing nginx config: {payload['errors']}")
             raise Exception(f"Error parsing nginx config: {payload['errors']}")
+        struct = payload
+        if process:
+            struct = {}
+            for file in payload['config']:
+                struct[file['file']] = {}
+                __structure(file['parsed'], struct[file['file']])
 
-        struct = {}
-        for file in payload['config']:
-            struct[file['file']] = {};
-            __structure(file['parsed'], struct[file['file']])
-
-            # Remove file if it doesn't have any 'http' or 'server' block
-            # TODO: not robust enough, an include could be expanded with useful directive for us but not included at this point
-            # ie: include snippet/directive/ssl.conf from https://github.com/risan/nginx-config
-            if 'http' not in struct[file['file']] and 'server' not in struct[file['file']]:
-                del struct[file['file']]
+                # Remove file if it doesn't have any 'http' or 'server' block
+                # TODO: not robust enough, an include could be expanded with useful directive for us but not included at this point
+                # ie: include snippet/directive/ssl.conf from https://github.com/risan/nginx-config
+                if 'http' not in struct[file['file']] and 'server' not in struct[file['file']]:
+                    del struct[file['file']]
 
         return struct
 
@@ -235,8 +245,8 @@ class Configuration:
                     module,
                     name,
                     fix=False,
-                    vhost=self.__loaded_conf 
-                            if self.__type == WebserverType.APACHE 
+                    vhost=self.__loaded_conf
+                            if self.__type == WebserverType.APACHE
                             else next(val['http'][0] for file, val in self.__loaded_conf.items() if 'http' in val),
                     vhost_name="global",
                     openssl=openssl,
@@ -373,7 +383,7 @@ class Configuration:
         self.__logging.debug(f"Analyzing vulnerability {name} in vhost {vhost_name}..")
         if vhost_name not in boolean_results:
             boolean_results[vhost_name] = {}
-        
+
         module.conf.set_webserver(self.__type)
 
         is_empty = module.conf.is_empty(vhost)
@@ -580,7 +590,7 @@ class Configuration:
                 elif len(self.__loaded_conf) > 1:
                     self.__logging.debug(f"Folder '{output_folder}/' is not here, creating at {output_folder.absolute()}/")
                     output_folder.mkdir(parents=True, exist_ok=True)
-            
+
 
             for path, val in self.__loaded_conf.items():
                 this_path = Path(path).resolve()
@@ -600,13 +610,13 @@ class Configuration:
                         else:
                             sub_folder = this_path.parent.relative_to(self_path.parent) # subtree relative from main file folder
                             file = output_folder / sub_folder / file_name_extension
-                
+
                 if not file.parent.exists():
                     self.__logging.debug(f"Folder '{file.parent}/' is not here, creating at {file.parent.absolute()}/")
                     file.parent.mkdir(parents=True, exist_ok=True) # Also here to create 'sub_folder'
-                
+
                 file.touch() # Create the file
-                
+
                 my_payload = []
                 self.__rebuild_wrapper(val, my_payload)
                 config = nginx_build(my_payload)
