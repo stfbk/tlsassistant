@@ -6,6 +6,7 @@ from modules.server.testssl_base import Testssl_base
 from modules.server.tlsscanner_base import TLS_Scanner_base 
 from modules.server.wrappers.testssl import Testssl
 from modules.server.wrappers.tlsscanner import TLS_Scanner
+from modules.server.wrappers.testssl import Testssl
 from utils.booleanize import boolean_results
 from utils.logger import Logger
 from utils.colors import Color
@@ -44,6 +45,7 @@ class Core:
         APK = 1
         DOMAINS = 2
         CONFIGURATION = 3
+        COMPLIANCE = 4
 
     def __init__(
         self,
@@ -58,6 +60,7 @@ class Core:
         openssl_version=None,
         ignore_openssl=False,
         stix=False,
+        compliance_args=None
     ):
         """
         :param hostname_or_path: hostname or path to scan
@@ -82,6 +85,8 @@ class Core:
         :type ignore_openssl: bool
         :param stix: generate stix report
         :type stix: bool
+        :param compliance_args: arguments for compliance module
+        :type compliance_args: dict
         """
         if to_exclude is None:
             to_exclude = []
@@ -104,6 +109,7 @@ class Core:
             openssl_version=openssl_version,
             ignore_openssl=ignore_openssl,
             stix=stix,
+            compliance_args=compliance_args
         )
         self.__cache[configuration] = self.__load_configuration(modules)
         self.__exec(
@@ -191,6 +197,9 @@ class Core:
                 kwargs["output_type"] = self.Report.RAW
             else:
                 kwargs["output_type"] = self.Report.HTML  # or default HTML
+
+        if kwargs["compliance_args"] is None:
+            kwargs["compliance_args"] = {}
 
         ext = self.__string_output_type(kwargs["output_type"])  # tostring
 
@@ -318,7 +327,7 @@ class Core:
         return results
 
     def __preanalysis_testssl(
-        self, testssl_args: list, type_of_analysis: Analysis, hostname: str, port: str
+        self, testssl_args: list, type_of_analysis: Analysis, hostname: str, port: str, full_analysis: bool
     ):
         """
         Preanalysis of testssl
@@ -331,6 +340,8 @@ class Core:
         :type hostname: str
         :param port: port to use
         :type port: str
+        :param full_analysis: if true a complete analysis is performed
+        :type full_analysis: bool
         :return: preanalysis
         :rtype: dict
         """
@@ -338,6 +349,8 @@ class Core:
             type_of_analysis == self.Analysis.HOST
             or type_of_analysis == self.Analysis.DOMAINS
         ):
+            if full_analysis:
+                testssl_args = []
             self.__logging.debug(
                 f"Starting preanalysis testssl with args {testssl_args}..."
             )
@@ -449,7 +462,11 @@ class Core:
         for name, module in loaded_modules.items():
             if hostname_or_path_type not in loaded_arguments[name]:
                 loaded_arguments[name][hostname_or_path_type] = hostname_or_path
-            args = loaded_arguments[name]
+            args={}
+            if self.__input_dict['compliance_args'] and name in self.__input_dict['compliance_args']: # if we are not checking compliance
+                args = self.__input_dict['compliance_args'][name]
+            
+            args.update(loaded_arguments[name])
             if type_of_analysis != self.Analysis.APK:  # server analysis
                 args["port"] = port  # set the port
             self.__logging.info(f"{Color.CBEIGE}Running {name} module...")
@@ -613,8 +630,13 @@ class Core:
                 ignore_openssl=self.__input_dict["ignore_openssl"],
             )  # TODO: better output report
         else:
+            full_analysis = False
+            for module in loaded_modules:
+                if module.startswith("compare"):
+                    # A full analysis is needed with these modules
+                    full_analysis = True
             self.__preanalysis_testssl(
-                testssl_args, type_of_analysis, hostname_or_path, port
+                testssl_args, type_of_analysis, hostname_or_path, port, full_analysis
             )
 
             self.__preanalysis_tls_scanner(

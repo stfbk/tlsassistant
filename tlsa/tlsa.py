@@ -1,14 +1,14 @@
 import logging
-from pathlib import Path
-
-from utils.logger import Logger
-from utils.colors import Color
-from utils.loader import load_configuration
-from utils.configuration import pretty
-from utils.loader import load_list_of_domains
-from modules.core import Core
 from os import listdir
 from os.path import isfile, join, sep
+from pathlib import Path
+
+from modules.core import Core
+from utils.colors import Color
+from utils.configuration import pretty
+from utils.loader import load_configuration
+from utils.loader import load_list_of_domains
+from utils.logger import Logger
 
 
 class Tlsa:
@@ -103,7 +103,16 @@ class Tlsa:
                 f"default{'_android.json' if args.apk else '_server.json'}"
             )
         config_or_modules = args.configuration
-
+        if args.compliance_args:
+            assert "guidelines" in args.compliance_args, "Guideline Argument Missing!"
+            all_args=args.compliance_args.copy()
+            comp_one_or_many="compare_one" if "," not in all_args['guidelines'] else "compare_many"
+            gen_one_or_many="generate_one" if "," not in all_args['guidelines'] else "generate_many"
+            args.compliance_args={
+                comp_one_or_many:all_args,
+                gen_one_or_many:all_args
+            }
+            
         if args.apply_fix or args.file:
             # checks for openssl and ignore-openssl flag
             if not args.ignore_openssl and not args.openssl:
@@ -124,6 +133,7 @@ class Tlsa:
                 group_by=args.group_by,
                 apply_fix=args.apply_fix,
                 stix=args.stix,
+                compliance_args=args.compliance_args
             )
         elif args.apk:
             Core(
@@ -164,6 +174,21 @@ class Tlsa:
                 stix=args.stix,
                 openssl_version=args.openssl,
                 ignore_openssl=args.ignore_openssl,
+            )
+        elif any(module in ["generate_one", "generate_many"] for module in args.configuration):
+            Core(
+                hostname_or_path="placeholder",
+                configuration=config_or_modules,
+                output=args.output,
+                output_type=self.__to_report_type(args.output_type),
+                type_of_analysis=Core.Analysis.COMPLIANCE,
+                to_exclude=args.exclude,
+                group_by=args.group_by,
+                apply_fix=args.apply_fix,
+                stix=args.stix,
+                openssl_version=args.openssl,
+                ignore_openssl=args.ignore_openssl,
+                compliance_args=args.compliance_args
             )
 
         else:  # must be args.list, unless argparse throws error.

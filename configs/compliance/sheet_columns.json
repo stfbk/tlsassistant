@@ -1,0 +1,6 @@
+{
+  "KeyLengths":{
+    "columns" : ["name", "length", "level", "condition", "guidelineName"],
+    "name_columns": [0, 1]
+  }
+}

@@ -1,0 +1,62 @@
+{
+    "Protocol": {
+        "NIST": "",
+        "BSI": "",
+        "ANSSI": "",
+        "AGID": "",
+        "MOZILLA": ""
+    },
+    "CipherSuite": {
+        "NIST": "",
+        "BSI": "",
+        "ANSSI": "",
+        "MOZILLA": "",
+        "AGID": ""
+    },
+    "Extension": {
+        "NIST": "",
+        "BSI": "",
+        "ANSSI": "",
+        "AGID": ""
+    },
+    "CertificateSignature": {
+        "NIST": "",
+        "BSI": "",
+        "ANSSI": "",
+        "MOZILLA": "",
+        "AGID": ""
+    },
+    "Hash": {
+        "NIST": "",
+        "BSI": "",
+        "ANSSI": "",
+        "MOZILLA": "",
+        "AGID": ""
+    },
+    "Signature": {
+        "NIST": "",
+        "BSI": "",
+        "ANSSI": "",
+        "MOZILLA": "",
+        "AGID": ""
+    },
+    "Groups": {
+        "NIST": "",
+        "BSI": "",
+        "ANSSI": "",
+        "MOZILLA": "",
+        "AGID": ""
+    },
+    "KeyLengths": {
+        "ANSSI": "",
+        "MOZILLA": "",
+        "AGID": "",
+        "NIST": "",
+        "BSI": ""
+    },
+    "Misc": {
+        "NIST": "",
+        "BSI": "",
+        "AGID": ""
+    }
+}

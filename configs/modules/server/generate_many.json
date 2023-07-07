@@ -1,0 +1,35 @@
+{
+  "input": [
+    {
+      "name": "guidelines_to_check",
+      "type": "str",
+      "description": "string containing the name of the guideline that should be used to generate in the form: guideline_version1_version2",
+      "required": "True"
+    }, {
+      "name": "apache",
+      "type": "str",
+      "description": "Configuration type for generator. Default to True (apache), if false nginx will be used",
+      "required": "False"
+    }, {
+      "name": "config_output",
+      "type": "str",
+      "description": "The path and name of the output file",
+      "required": "False"
+    }, {
+      "name": "custom_guidelines",
+      "type": "dict",
+      "description": "dictionary with form: { sheet : {guideline: name: {\"level\":level}}",
+      "required": "False"
+    }
+  ],
+  "description": "This modules generates a configuration file after multiple guidelines.",
+  "path": "modules/compliance/generate_many.py",
+  "class_name": "GenerateMany",
+  "output": [
+    {
+      "name": "results",
+      "type": "dict",
+      "description": "results of the scan"
+    }
+  ]
+}
