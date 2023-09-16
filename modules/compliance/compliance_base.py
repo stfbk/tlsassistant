@@ -1031,7 +1031,7 @@ class AliasParser:
                 print("Strings for guideline: ", guideline)
                 # First I join the output from itertools.product using "_" then I prepend guideline_ to it and in the
                 # end I join all the versions using ","
-                result = ",".join([guideline + "_" + "_".join(combination) for combination in combinations])
+                result = ",".join([guideline + "-" + "-".join(combination) for combination in combinations])
                 print(result)
             else:
                 print("Guideline ", guideline, " doesn't have any special version")
@@ -1074,7 +1074,7 @@ class AliasParser:
     def is_valid(self, alias):
         if "_" not in alias and alias.upper() not in self._guidelines:
             raise ValueError(f"Alias {alias} not valid")
-        tokens = alias.split("_")
+        tokens = alias.split("-")
         guideline = tokens[0].upper()
         if guideline not in self._guidelines_versions:
             raise ValueError(f"Invalid guideline in alias: {alias}")
@@ -1118,4 +1118,10 @@ class AliasParser:
                         sheets_to_check[sheet][guideline] = version
                     else:
                         self.__logging.info(f"Skipping {guideline} in {sheet} because no version is available.")
+        to_remove = set()
+        for sheet in sheets_to_check.keys():
+            if not sheets_to_check[sheet].keys():
+                to_remove.add(sheet)
+        for sheet in to_remove:
+            del sheets_to_check[sheet]
         return sheets_to_check
