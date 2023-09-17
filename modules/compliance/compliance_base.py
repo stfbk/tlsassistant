@@ -1029,7 +1029,7 @@ class AliasParser:
             combinations = [combination for combination in itertools.product(*sets)]
             if combinations and combinations[0]:
                 print("Strings for guideline: ", guideline)
-                # First I join the output from itertools.product using "_" then I prepend guideline_ to it and in the
+                # First I join the output from itertools.product using "-" then I prepend guideline_ to it and in the
                 # end I join all the versions using ","
                 result = ",".join([guideline + "-" + "-".join(combination) for combination in combinations])
                 print(result)
@@ -1072,7 +1072,7 @@ class AliasParser:
                         guideline_dict[i].add(version.upper())
 
     def is_valid(self, alias):
-        if "_" not in alias and alias.upper() not in self._guidelines:
+        if "-" not in alias and alias.upper() not in self._guidelines:
             raise ValueError(f"Alias {alias} not valid")
         tokens = alias.split("-")
         guideline = tokens[0].upper()
@@ -1100,7 +1100,7 @@ class AliasParser:
             if alias == "aliases":
                 self.list_aliases()
             self.is_valid(alias)
-            tokens = alias.split("_")
+            tokens = alias.split("-")
             guideline = tokens[0].upper()
             tokens.append("")
             for i, sheet in enumerate(self._sheets_versions_dict):
