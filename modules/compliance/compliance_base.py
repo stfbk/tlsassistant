@@ -121,8 +121,6 @@ class Compliance:
             self.prepare_configuration(self._config_class.configuration)
         if hostname and self._validator.string(hostname) and hostname != "placeholder":
             test_ssl_output = self.test_ssl.run(**{"hostname": hostname, "one": True})
-            #with open("unitn.json", "r") as f:
-             #   test_ssl_output = json.load(f)
             self.prepare_testssl_output(test_ssl_output)
 
         if output_file and self._validator.string(output_file):

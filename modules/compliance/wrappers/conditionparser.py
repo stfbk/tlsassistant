@@ -1,4 +1,5 @@
 import datetime
+import pprint
 import re
 
 from utils.loader import load_configuration
@@ -76,7 +77,6 @@ class ConditionParser:
             # Certificate case
             cert_data = field_value.get(certificate_index, {})
             enabled = name in cert_data
-            print(cert_data, name)
 
         elif isinstance(field_value, dict):
             # Extensions and transparency case
@@ -407,8 +407,19 @@ class CustomFunctions:
         self.check_value(**kwargs)
 
     def check_year_in_days(self, **kwargs):
-        # todo implement this
-        return True
+        for cert in self._user_configuration["Certificate"]:
+            if cert.startswith("int"):
+                continue
+            cert_data = self._user_configuration["Certificate"][cert]
+            validity = cert_data["validity"]
+            data = kwargs.get("data", None)
+            if not data:
+                raise ValueError("No amount of years provided")
+            if not data.isnumeric():
+                raise ValueError("Amount of years must be a number")
+            years = int(data)
+            days = years * 365
+            return validity.days < days
 
     @staticmethod
     def always_true(**kwargs):
