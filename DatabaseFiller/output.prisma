@@ -43,6 +43,7 @@ model Guideline {
   ExtensionBSI                            ExtensionBSI[]
   ExtensionANSSI                          ExtensionANSSI[]
   ExtensionAGID                           ExtensionAGID[]
+  ExtensionMOZILLA                        ExtensionMOZILLA[]
   GroupsNIST                              GroupsNIST[]
   GroupsBSIFEDERALAPPLICATIONS            GroupsBSIFEDERALAPPLICATIONS[]
   GroupsBSICUSTOMERFACING                 GroupsBSICUSTOMERFACING[]
@@ -131,6 +132,7 @@ model Extension {
   ExtensionBSI        ExtensionBSI[]
   ExtensionANSSI      ExtensionANSSI[]
   ExtensionAGID       ExtensionAGID[]
+  ExtensionMOZILLA    ExtensionMOZILLA[]
 }
 
 model Groups {
@@ -576,6 +578,18 @@ model ExtensionANSSI {
 }
 
 model ExtensionAGID {
+  id            Int
+  guideline     Guideline @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  Extension     Extension @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?   @default("")
+
+  @@id([id, name])
+}
+
+model ExtensionMOZILLA {
   id            Int
   guideline     Guideline @relation(fields: [guidelineName], references: [name])
   guidelineName String
