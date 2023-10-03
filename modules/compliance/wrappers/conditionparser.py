@@ -1,5 +1,4 @@
 import datetime
-import pprint
 import re
 
 from utils.loader import load_configuration
@@ -13,10 +12,12 @@ class ConditionParser:
     _splitting_regex = "|".join(_logical_separators)
     # same as above but also captures the separators
     _splitting_capturing_regex = "(" + ")|(".join(_logical_separators) + ")"
+    _sheet_mapping = load_configuration("sheet_mapping", "configs/compliance/")
+    __logging = Logger("Condition parser")
+
     # mapping from field indicator used in the conditions to the field of the configuration dictionary
 
     def __init__(self, user_configuration):
-        self.__logging = Logger("Condition parser")
         self.expression = ""
         self._user_configuration = user_configuration
         self.instructions = load_configuration("condition_instructions", "configs/compliance/")
@@ -102,14 +103,23 @@ class ConditionParser:
                 enabled = ConditionParser._partial_match_checker(field_value, name)
             if not enabled and check_first:
                 enabled = name[:check_first] in field_value
+        else:
+            ConditionParser.__logging.warning(f"Invalid field: {config_field}, for name: {name}")
         return enabled
 
     @staticmethod
     def _prepare_to_search(field, to_search):
         new_to_search = to_search
-        if field == "TLS":
+        if field.lower().startswith("protocol"):
             new_to_search = "TLS " + to_search.strip()
         return new_to_search
+
+    @staticmethod
+    def prepare_field(field):
+        # this step is needed for the upper-case letters
+        field = field.replace("Certificate", "Certificate ").title()
+        field = field.replace(" ", "")
+        return ConditionParser._sheet_mapping.get(field, field)
 
     @staticmethod
     def get_check_first(condition: str):
@@ -184,7 +194,7 @@ class ConditionParser:
         tokens = condition.split(" ")
         field = tokens[0]
         to_search = self._prepare_to_search(field, tokens[-1])
-        config_field = self.instructions.get(field)
+        config_field = self.instructions.get(field.upper())
         if config_field and config_field.startswith("FUNCTION"):
             assert config_field[8] == " "
             args = {
@@ -194,6 +204,9 @@ class ConditionParser:
                 "next_condition": next_condition
             }
             result = self._custom_functions.__getattribute__(config_field.split(" ")[1])(**args)
+        elif config_field is None:
+            self.__logging.warning(f"Invalid field: {field} in expression: {self.expression}. Returning False")
+            result = False
         else:
             # At the moment there is no need to check if a KeyLength is enabled or not, so It is possible to use
             # (None, None)
@@ -312,14 +325,17 @@ class CustomFunctions:
         enabled = kwargs.get("enabled", False)
         second_condition = kwargs.get("next_condition", " ")
         tokens = second_condition.split(" ")
-        field = tokens[0]
+        field = tokens[0].title()
         name = " ".join(tokens[1:])
         # only the first two fields of the entry matter, and entry is only needed for key lengths
         entry_data = name.split(",") if "," in name else (None, None)
+        # The field must be prepared
+        field = ConditionParser.prepare_field(field)
         second_enabled = ConditionParser.is_enabled(self._user_configuration, field, name, entry_data,
                                                     partial_match=True)
         enabled = second_enabled or enabled
         self._entry_updates["has_alternative"] = enabled
+        self._entry_updates["is_enabled"] = enabled
         return enabled
 
     def add_notes(self, **kwargs):
