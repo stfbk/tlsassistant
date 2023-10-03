@@ -255,17 +255,31 @@ if __name__ == "__main__":
                 table_columns_count = len(cur.execute(f"PRAGMA table_info({table})").fetchall())
                 entries = values_dict[table]
 
-                # This is to prevent the "this or X" condition to appear in tables that don't need it
-                # this condition checks if the guideline has multiple versions for this sheet
-                if table.startswith("Protocol") and table[len("Protocol"):] not in [g.upper() for g in guidelines]:
-                    for entry in entries:
-                        entry = entries[entry]
-                        # Since the problem is a condition, and it only verifies if there are four elements.
-                        # Last element is the condition
-                        # Second to last is the level
-                        if len(entry) > 3 and pd.notna(entry[-1]):
-                            if entry[-2][-1] != "°":
+                # # This is to prevent the "this or X" condition to appear in tables that don't need it
+                # # this condition checks if the guideline has multiple versions for this sheet
+                # if table.startswith("Protocol") and table[len("Protocol"):] not in [g.upper() for g in guidelines]:
+                #     for entry in entries:
+                #         entry = entries[entry]
+                #         # Since the problem is a condition, and it only verifies if there are four elements.
+                #         # Last element is the condition
+                #         # Second to last is the level
+                #         print(entry)
+                #         if len(entry) > 3 and pd.notna(entry[-1]):
+                #             if entry[-2][-1] != "°":
+                #                 entry[-1] = None
+                last_level = None
+
+                # This is to prevent the "this or X" condition to appear in tables that don't need it, only works
+                # for the case of Protocol sheet and only if the conditions are in adjacent lines
+                if table.startswith("Protocol"):
+                    for index, entry in entries.items():
+                        # skip first element
+                        if index == 0:
+                            continue
+                        if len(entry) > 3 and pd.notna(entry[-1]) and pd.notna(entries[index-1][-1]):
+                            if entry[-2] != entries[index-1][-2]:
                                 entry[-1] = None
+                                entries[index-1][-1] = None
 
                 if not values_groups.get(table):
                     values_groups[table] = []
