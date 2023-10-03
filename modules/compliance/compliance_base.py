@@ -32,7 +32,7 @@ class Compliance:
         self._security = True
         self._input_dict = {}
         self._database_instance = Database()
-        self.__logging = Logger("Compliance module")
+        self._logging = Logger("Compliance module")
         self._last_data = {}
         self._output_dict = {}
         self._user_configuration = {}
@@ -114,7 +114,7 @@ class Compliance:
             try:
                 self._config_class = ApacheConfiguration(actual_configuration)
             except Exception as e:
-                self.__logging.debug(
+                self._logging.debug(
                     f"Couldn't parse config as apache: {e}\ntrying with nginx..."
                 )
                 self._config_class = NginxConfiguration(actual_configuration)
@@ -352,7 +352,7 @@ class Compliance:
         Given the input dictionary and the list of columns updates the entries field with a dictionary in the form
         sheet: data. The data is ordered by name
         """
-        self.__logging.info("Retrieving entries from database")
+        self._logging.info("Retrieving entries from database")
         entries = {}
         tables = []
         for sheet in sheets_to_check:
@@ -436,12 +436,14 @@ class Compliance:
                         enabled = self._condition_parser.is_enabled(self._user_configuration, sheet, entry[name_index],
                                                                     entry, condition=condition)
                         valid_condition = self._condition_parser.run(condition, enabled)
+                        enabled = self._condition_parser.entry_updates.get("is_enabled", enabled)
+                        self._logging.debug(f"Condition: {condition} - enabled: {enabled}")
                         if self._condition_parser.entry_updates.get("levels"):
                             potential_levels = self._condition_parser.entry_updates.get("levels")
                             level = potential_levels[self.level_to_use(potential_levels)]
                         has_alternative = self._condition_parser.entry_updates.get("has_alternative")
                         additional_notes = self._condition_parser.entry_updates.get("notes", "")
-                        if has_alternative and isinstance(condition, str) and condition.count(" ") > 1:
+                        if has_alternative and not enabled and isinstance(condition, str) and condition.count(" ") > 1:
                             parts = condition.split(" ")
                             # Tokens[1] is the logical operator
                             notes[-1] += f"\nNOTE: {name} {parts[1].upper()} {' '.join(parts[2:])} is needed"

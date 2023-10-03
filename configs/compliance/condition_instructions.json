@@ -1,4 +1,5 @@
 {
+  "PROTOCOLS": "Protocol",
   "EXTENSION": "Extension",
   "CIPHER": "CipherSuite",
   "TRANSPARENCY": "Transparency",

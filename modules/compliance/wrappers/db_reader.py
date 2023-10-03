@@ -2,6 +2,7 @@ import sqlite3
 
 import utils.database as db_utils
 from utils.loader import load_configuration
+from utils.logger import Logger
 
 
 class Database:
@@ -17,6 +18,7 @@ class Database:
         self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
         self.table_names = [table[0] for table in self.cursor.fetchall()]
         self.__input_dict = {}
+        self._logging = Logger("Database wrapper")
 
     def get_table_name(self, sheet, standard_name, version=""):
         """
@@ -84,6 +86,7 @@ class Database:
         if other_filter:
             query += " " + other_filter
         self.cursor.execute(query)
+        self._logging.debug(query)
         return self.cursor.fetchall()
 
     def run(self, tables, join_condition="1==1", other_filter="", columns="*"):
