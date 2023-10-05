@@ -63,7 +63,7 @@ class CompareOne(Compliance):
                     name = "_".join([str(entry[i]) for i in name_columns])
                     self.update_result(sheet, name, level, enabled, entry[-1], valid_condition)
                     if additional_notes:
-                        note += "\nNOTE:"
+                        note += "\nNOTE: "
                         note += "\n".join(additional_notes)
                     if self._output_dict[sheet].get(name) is not None:
                         self._output_dict[sheet][name] += note

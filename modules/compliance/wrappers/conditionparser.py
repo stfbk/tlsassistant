@@ -7,7 +7,7 @@ from utils.validation import Validator
 
 
 class ConditionParser:
-    _logical_separators = ["and", "or"]
+    _logical_separators = [" and ", " or "]
     # simple regex to find all occurrences of the separators
     _splitting_regex = "|".join(_logical_separators)
     # same as above but also captures the separators
@@ -164,7 +164,7 @@ class ConditionParser:
         tokens = [token for token in tokens if token]
         while len(tokens) >= 3:
             first_instruction = tokens.pop(0).strip() == "True"
-            logical_operation = self._operators[tokens.pop(0).lower()]
+            logical_operation = self._operators[tokens.pop(0).lower().strip()]
             second_instruction = tokens.pop(0).strip() == "True"
             result = logical_operation(first_instruction, second_instruction)
             # After calculating the result it is inserted at the beginning of the tokens list to substitute the three
@@ -206,6 +206,7 @@ class ConditionParser:
             result = self._custom_functions.__getattribute__(config_field.split(" ")[1])(**args)
         elif config_field is None:
             self.__logging.warning(f"Invalid field: {field} in expression: {self.expression}. Returning False")
+            self.__logging.debug(f"Tokens: {tokens}")
             result = False
         else:
             # At the moment there is no need to check if a KeyLength is enabled or not, so It is possible to use
