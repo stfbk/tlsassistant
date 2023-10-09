@@ -1,9 +1,13 @@
 {
+  "PROTOCOLS": "Protocol",
   "EXTENSION": "Extension",
   "CIPHER": "CipherSuite",
   "TRANSPARENCY": "Transparency",
+  "GROUPS": "Groups",
   "TLS": "Protocol",
   "CERTSIG": "CertificateSignature",
+  "CERTIFICATESIGNATURE": "CertificateSignature",
+  "CERTIFICATEEXTENSIONS": "CertificateExtensions",
   "YEAR": "FUNCTION check_year",
   "YEARS": "FUNCTION check_year_in_days",
   "VLP": "FUNCTION check_vlp",
@@ -12,5 +16,6 @@
   "NOTE": "FUNCTION add_notes",
   "CHECK_KEY_TYPE": "FUNCTION check_key_type",
   "CHECK_ONLY_FIRST": "FUNCTION always_true",
-  "VALUE": "FUNCTION check_value"
+  "VALUE": "FUNCTION check_value",
+  "VERIFY_SCSV": "FUNCTION verify_scsv"
 }
