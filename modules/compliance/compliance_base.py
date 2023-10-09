@@ -291,7 +291,7 @@ class Compliance:
                 # The supported groups are available as a list in this field
                 elif field[-12:] == "ECDHE_curves":
                     values = actual_dict["finding"].split(" ") if " " in actual_dict["finding"] \
-                        else actual_dict["finding"]
+                        else [actual_dict["finding"]]
                     self._user_configuration["Groups"] = values
 
                 # The transparency field describes how the transparency is handled in each certificate.
@@ -325,6 +325,8 @@ class Compliance:
 
                 elif field in self.misc_fields:
                     self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
+                elif field == "fallback_SCSV":
+                    self._user_configuration["fallback_SCSV"] = actual_dict["finding"]
 
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition):
         information_level = None

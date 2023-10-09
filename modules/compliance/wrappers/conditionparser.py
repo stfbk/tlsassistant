@@ -74,7 +74,9 @@ class ConditionParser:
             if enabled is None:
                 enabled = True if "all" in field_value else False
 
-        elif isinstance(field_value, dict) and field_value.get("1"):
+        # the extensions are saved using their IANA id as key in the dictionary, so I have to check that "1" is a dict
+        elif isinstance(field_value, dict) and field_value.get("1") and \
+                isinstance(field_value["1"], dict):
             # Certificate case
             cert_data = field_value.get(certificate_index, {})
             enabled = name in cert_data
@@ -110,7 +112,7 @@ class ConditionParser:
     @staticmethod
     def _prepare_to_search(field, to_search):
         new_to_search = to_search
-        if field.lower().startswith("protocol"):
+        if field.lower().startswith("protocol") or field.lower().startswith("tls"):
             new_to_search = "TLS " + to_search.strip()
         return new_to_search
 
@@ -437,6 +439,12 @@ class CustomFunctions:
             years = int(data)
             days = years * 365
             return validity.days < days
+
+    def verify_scsv(self, **kwargs):
+        scsv_finding = self._user_configuration.get("fallback_SCSV", "")
+        enabled = "offered" in scsv_finding and "not" not in scsv_finding
+        self._entry_updates["is_enabled"] = enabled
+        return True
 
     @staticmethod
     def always_true(**kwargs):
