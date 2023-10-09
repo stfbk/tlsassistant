@@ -47,7 +47,7 @@ class CompareOne(Compliance):
 
                     has_alternative = self._condition_parser.entry_updates.get("has_alternative")
                     additional_notes = self._condition_parser.entry_updates.get("notes", "")
-
+                    self._condition_parser.entry_updates = {}
                     note = ""
                     if has_alternative and not enabled and isinstance(condition, str) and\
                             condition.count(" ") > 1:
