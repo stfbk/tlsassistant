@@ -38,7 +38,7 @@ class CompareOne(Compliance):
                     if condition:
                         valid_condition = self._condition_parser.run(condition, enabled)
                         enabled = self._condition_parser.entry_updates.get("is_enabled", enabled)
-                        self._logging.debug(f"Condition: {condition} - enabled: {enabled}")
+                        self._logging.debug(f"Condition: {condition} - enabled: {enabled} - valid_condition: {valid_condition}" )
                         if self._condition_parser.entry_updates.get("levels"):
                             levels = self._condition_parser.entry_updates.get("levels")
                             levels.insert(0, level)
@@ -47,23 +47,26 @@ class CompareOne(Compliance):
 
                     has_alternative = self._condition_parser.entry_updates.get("has_alternative")
                     additional_notes = self._condition_parser.entry_updates.get("notes", "")
+                    conditional_notes = self.add_conditional_notes(enabled, valid_condition)
                     self._condition_parser.entry_updates = {}
                     note = ""
-                    if has_alternative and not enabled and isinstance(condition, str) and\
+                    if has_alternative and not enabled and isinstance(condition, str) and \
                             condition.count(" ") > 1:
                         parts = entry[condition_index].split(" ")
                         # Tokens[1] is the logical operator
                         note = f"\nNOTE: {name} {parts[1].upper()} {' '.join(parts[2:])} is needed"
-
-                    if has_alternative or additional_notes:
-                        # This is to trigger the output condition. This works because I'm assuming that "THIS" is only
-                        # used in a positive (recommended, must) context.
                         valid_condition = True
+
+                    # if has_alternative or additional_notes:
+                    #     # This is to trigger the output condition. This works because I'm assuming that "THIS" is only
+                    #     # used in a positive (recommended, must) context.
+                    #     valid_condition = True
                     # if it has multiple name_columns they get only shown in the output
                     name = "_".join([str(entry[i]) for i in name_columns])
                     self.update_result(sheet, name, level, enabled, entry[-1], valid_condition)
                     if additional_notes:
                         note += "\nNOTE: "
                         note += "\n".join(additional_notes)
+                    note += conditional_notes
                     if self._output_dict[sheet].get(name) is not None:
                         self._output_dict[sheet][name] += note

@@ -276,7 +276,7 @@ class Compliance:
                             tokens = el.split("+")
                             # RSASSA-PSS is a subset of RSA
                             signatures.append(tokens[0].replace("RSASSA-PSS", "RSA").lower())
-                            hashes.append(tokens[1])
+                            hashes.append(tokens[1].lower())
                     self._add_certificate_signature_algorithm(signatures)
                     self._user_configuration["Hash"].update(hashes)
 
@@ -292,6 +292,8 @@ class Compliance:
                 elif field[-12:] == "ECDHE_curves":
                     values = actual_dict["finding"].split(" ") if " " in actual_dict["finding"] \
                         else [actual_dict["finding"]]
+                    # secp256r1 is the same as prime256v1, it also happens with the 192 version
+                    values = [re.sub(r"prime(\d+)v1", r"secp\1r1", val) for val in values]
                     self._user_configuration["Groups"] = values
 
                 # The transparency field describes how the transparency is handled in each certificate.
@@ -348,6 +350,24 @@ class Compliance:
             self._output_dict[sheet][name] = f"{information_level}: {action} according to {source}"
         else:
             self._output_dict[sheet][name] = ""
+
+    def add_conditional_notes(self, enabled, valid_condition):
+        conditional_notes = "\nNOTE: "
+        for entry in self._condition_parser.entry_updates.keys():
+            if entry.startswith("note_"):
+                notes = self._condition_parser.entry_updates.get(entry)
+                note_type = entry.split("_")[1]
+                if note_type == "enabled" and enabled:
+                    conditional_notes += "\n".join(notes)
+                elif note_type == "disabled" and not enabled:
+                    conditional_notes += "\n".join(notes)
+                elif note_type == "true" and valid_condition:
+                    conditional_notes += "\n".join(notes)
+                elif note_type == "false" and not valid_condition:
+                    conditional_notes += "\n".join(notes)
+        if len(conditional_notes) == 7:
+            conditional_notes = ""
+        return conditional_notes
 
     def _retrieve_entries(self, sheets_to_check, columns):
         """
@@ -439,12 +459,14 @@ class Compliance:
                                                                     entry, condition=condition)
                         valid_condition = self._condition_parser.run(condition, enabled)
                         enabled = self._condition_parser.entry_updates.get("is_enabled", enabled)
-                        self._logging.debug(f"Condition: {condition} - enabled: {enabled}")
+                        self._logging.debug(f"Condition: {condition} - enabled: {enabled} - valid: {valid_condition}")
                         if self._condition_parser.entry_updates.get("levels"):
                             potential_levels = self._condition_parser.entry_updates.get("levels")
                             level = potential_levels[self.level_to_use(potential_levels)]
                         has_alternative = self._condition_parser.entry_updates.get("has_alternative")
                         additional_notes = self._condition_parser.entry_updates.get("notes", "")
+                        conditional_notes = self.add_conditional_notes(enabled, valid_condition)
+                        notes[-1] += conditional_notes
                         if has_alternative and not enabled and isinstance(condition, str) and condition.count(" ") > 1:
                             parts = condition.split(" ")
                             # Tokens[1] is the logical operator
@@ -455,6 +477,7 @@ class Compliance:
                         if additional_notes:
                             notes[-1] += "\nNOTE:"
                             notes[-1] += "\n".join(additional_notes)
+
                     else:
                         enabled = self._condition_parser.is_enabled(self._user_configuration, sheet, entry[name_index],
                                                                     entry)

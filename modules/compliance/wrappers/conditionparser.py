@@ -7,11 +7,18 @@ from utils.validation import Validator
 
 
 class ConditionParser:
+    _instructions = load_configuration("condition_instructions", "configs/compliance/")
+    _instructions_keys = '|'.join(_instructions.keys())
     _logical_separators = [" and ", " or "]
+    # this string ensures that the logical_separators are only matched if they are followed by a valid instruction
+    _concatenation_string = f"(?={_instructions_keys}|True|False)"
+    regex_separators = []
+    for el in _logical_separators:
+        regex_separators.append(el + _concatenation_string)
     # simple regex to find all occurrences of the separators
-    _splitting_regex = "|".join(_logical_separators)
+    _splitting_regex = "|".join(regex_separators)
     # same as above but also captures the separators
-    _splitting_capturing_regex = "(" + ")|(".join(_logical_separators) + ")"
+    _splitting_capturing_regex = "(" + ")|(".join(regex_separators) + ")"
     _sheet_mapping = load_configuration("sheet_mapping", "configs/compliance/")
     __logging = Logger("Condition parser")
 
@@ -20,7 +27,6 @@ class ConditionParser:
     def __init__(self, user_configuration):
         self.expression = ""
         self._user_configuration = user_configuration
-        self.instructions = load_configuration("condition_instructions", "configs/compliance/")
         self._custom_functions = CustomFunctions(user_configuration)
         self.entry_updates = {}
         self._enabled = None
@@ -100,6 +106,9 @@ class ConditionParser:
                         enabled = True
 
         elif isinstance(field_value, list) or isinstance(field_value, set):
+            if "/" in name:
+                # Groups case
+                name = name.split("/")[0].strip()
             enabled = name in field_value
             if not enabled and partial_match:
                 enabled = ConditionParser._partial_match_checker(field_value, name)
@@ -149,13 +158,14 @@ class ConditionParser:
 
     def _solve(self, start, finish):
         to_solve = self.expression[start: finish + 1]
-
+        self.__logging.debug(f"Expression to solve: {to_solve}")
         while "(" in to_solve:
             # So that I'm sure that there aren't any parenthesis in the way
             starting_index = to_solve.index("(") + start
             end_index = self._closing_parenthesis_index(starting_index) - 1
             replacement = self._solve(starting_index + 1, end_index)
             to_replace = self.expression[starting_index:end_index + 2]
+            start += len(to_replace) - len(replacement)
             to_solve = to_solve.replace(to_replace, replacement)
         tokens = re.split(self._splitting_regex, to_solve, flags=re.IGNORECASE)
         tokens = [token.strip() for token in tokens]
@@ -189,21 +199,22 @@ class ConditionParser:
         condition = condition.strip()
         if condition in ["True", "False"]:
             return condition
-        if condition not in self.instructions and \
-                (" " not in condition and condition.split(" ")[0] not in self.instructions):
+        if condition not in self._instructions and \
+                (" " not in condition and condition.split(" ")[0] not in self._instructions):
             self.__logging.warning(f"Invalid condition: {condition} in expression: {self.expression}. Returning False")
             return "False"
         tokens = condition.split(" ")
         field = tokens[0]
         to_search = self._prepare_to_search(field, tokens[-1])
-        config_field = self.instructions.get(field.upper())
+        config_field = self._instructions.get(field.upper())
         if config_field and config_field.startswith("FUNCTION"):
             assert config_field[8] == " "
             args = {
                 "data": to_search,
                 "enabled": self._enabled,
                 "tokens": tokens[1:],
-                "next_condition": next_condition
+                "next_condition": next_condition,
+                "original_text": field.upper()
             }
             result = self._custom_functions.__getattribute__(config_field.split(" ")[1])(**args)
         elif config_field is None:
@@ -249,6 +260,7 @@ class CustomFunctions:
             "not in": lambda op1, op2: op1 not in op2,
         }
         self._operators_regex = "(" + ")|(".join(self._operators.keys()) + ")"
+        self._logger = Logger("Custom functions")
 
     # INSERT ALL THE CUSTOM PARSING FUNCTIONS HERE THEY MUST HAVE SIGNATURE:
     # function(**kwargs) -> bool
@@ -334,16 +346,30 @@ class CustomFunctions:
         entry_data = name.split(",") if "," in name else (None, None)
         # The field must be prepared
         field = ConditionParser.prepare_field(field)
-        second_enabled = ConditionParser.is_enabled(self._user_configuration, field, name, entry_data,
-                                                    partial_match=True)
+        if ";" in name:
+            names = name.split(";")
+            second_enabled = any(
+                [ConditionParser.is_enabled(self._user_configuration, field, name, entry_data, partial_match=True) for
+                 name in names])
+        else:
+            second_enabled = ConditionParser.is_enabled(self._user_configuration, field, name, entry_data,
+                                                        partial_match=True)
         enabled = second_enabled or enabled
-        self._entry_updates["has_alternative"] = enabled
+        self._entry_updates["has_alternative"] = True
         self._entry_updates["is_enabled"] = enabled
         return enabled
 
     def add_notes(self, **kwargs):
         note = " ".join(kwargs.get("tokens", []))
-        self._entry_updates["notes"].append(note)
+        note_type = kwargs.get("original_text", "").lower()
+        if not note_type or note_type == "note":
+            self._logger.warning(f"No note type provided for note: `{note}`")
+        elif note_type == "note_always":
+            self._entry_updates["notes"].append(note)
+        else:
+            if not self._entry_updates.get(note_type):
+                self._entry_updates[note_type] = []
+            self._entry_updates[note_type].append(note)
         return True
 
     def check_key_type(self, **kwargs):
@@ -402,8 +428,10 @@ class CustomFunctions:
                     configuration_value = self._get_configuration_field(field.get(cert, {}), levels)
                     reason = f"field {level} is missing" if not configuration_value else f"{value} {operator} {name}"
                     partial_result = self._operators[operator](value, str(configuration_value))
-                    if not partial_result or len(configuration_value) == 0:
-                        self._entry_updates["notes"].append(f"Certificate {cert} failed check, reason: {reason}")
+                    for key in self.entry_updates.keys():
+                        if key.startswith("note"):
+                            for i, entry in enumerate(self.entry_updates[key]):
+                                self._entry_updates[key][i] = entry.replace("{cert}", cert).replace("{reason}", reason)
                     result = result and partial_result
         else:
             result = True
@@ -411,8 +439,11 @@ class CustomFunctions:
                 levels[-1] = level
                 configuration_value = self._get_configuration_field(field, levels)
                 partial_result = self._operators[operator](value, str(configuration_value))
-                if not partial_result:
-                    self._entry_updates["notes"].append(f"Failed check {name} {operator} {value} for {config_field}")
+                reason = f"Failed check {name} {operator} {value} for {config_field}"
+                for key in self.entry_updates.keys():
+                    if key.startswith("note"):
+                        for i, entry in enumerate(self.entry_updates[key]):
+                            self._entry_updates[key][i] = entry.replace("{reason}", reason)
                 result = result and partial_result
         return result
 
