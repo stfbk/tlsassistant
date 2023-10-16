@@ -5,7 +5,7 @@
   },
   {
     "type": "cfg",
-    "url": "https://chromium.googlesource.com/chromium/src/net/+/master/http/transport_security_state_static.json?format=TEXT"
+    "url": "https://chromium.googlesource.com/chromium/src/net/+/main/http/transport_security_state_static.json?format=TEXT"
   },
   {
     "type": "cfg",

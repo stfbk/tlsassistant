@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="assets/css/styles.min.css">
 </head>
 
+{% set ns = namespace(accordion_count=0) %}
 <body>
     <header class="header-blue" style="color: var(--bs-blue);background: #0068b4;">
         <nav class="navbar navbar-dark navbar-expand-md navigavtion-clean-search">
@@ -123,16 +124,17 @@
                         {% endif %}
                         {% if 'raw' in results[host][module] %}
                         <div class="card" style="border-style: none;padding: 2px;margin: 0px;">
-                            <div class="accordion" role="tablist" id="accordion-1"
+                            {%set ns.accordion_count = ns.accordion_count + 1%}
+                            <div class="accordion" role="tablist" id="accordion-{{ns.accordion_count}}"
                                 style="border-width: 3px;border-radius: 0px,0px,3px,3px;">
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" role="tab"><button class="accordion-button collapsed"
-                                            data-bs-toggle="collapse" data-bs-target="#accordion-1 .item-1"
-                                            aria-expanded="false" aria-controls="accordion-1 .item-1"
+                                            data-bs-toggle="collapse" data-bs-target="#accordion-{{ns.accordion_count}} .item-1"
+                                            aria-expanded="false" aria-controls="accordion-{{ns.accordion_count}} .item-1"
                                             style="border-style: solid;border-color: #8db53d;font-weight: bold;font-family: Roboto, sans-serif;color: #000000;">RAW
                                             Output</button></h2>
                                     <div class="accordion-collapse collapse item-1" role="tabpanel"
-                                        data-bs-parent="#accordion-1"
+                                        data-bs-parent="#accordion-{{ns.accordion_count}}"
                                         style="border-style: solid;border-color: #0068b4;border-top-style: none;border-bottom-style: none;height: 200px;">
                                         <div class="accordion-body"><textarea onclick="this.focus();this.select()"
                                                 style="max-width: 100%;min-width: 100%;width: 100%;height: 150px;min-height: 0px;max-height: none;border-radius: 3px;font-family: 'Roboto Mono', monospace;background: #f5faff;color: #0068b4;border-width: 3px;border-color: #0068b4;border-top-style: none;border-right-color: #acd5fe;border-bottom-style: none;border-left-color: #acd5fe;padding: 12px;margin: 0px;font-size: 13px;margin-top: 10px;"
