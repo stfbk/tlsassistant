@@ -7,9 +7,15 @@ from utils.loader import load_configuration
 from utils.configuration import pretty
 from utils.loader import load_list_of_domains
 from modules.core import Core
+from utils.type import WebserverType
 from os import listdir
 from os.path import isfile, join, sep
 
+config_types_mapping = {
+    "apache": WebserverType.APACHE,
+    "nginx": WebserverType.NGINX,
+    "auto": WebserverType.AUTO
+}
 
 class Tlsa:
     def __init__(self, args):
@@ -103,6 +109,8 @@ class Tlsa:
                 f"default{'_android.json' if args.apk else '_server.json'}"
             )
         config_or_modules = args.configuration
+        if args.config_type:
+            args.config_type = config_types_mapping.get(args.config_type.lower(), WebserverType.AUTO)
 
         if args.apply_fix or args.file:
             # checks for openssl and ignore-openssl flag
@@ -124,6 +132,7 @@ class Tlsa:
                 group_by=args.group_by,
                 apply_fix=args.apply_fix,
                 stix=args.stix,
+                config_type=args.config_type
             )
         elif args.apk:
             Core(
@@ -135,6 +144,7 @@ class Tlsa:
                 type_of_analysis=Core.Analysis.APK,
                 group_by=args.group_by,
                 stix=args.stix,
+                config_type = args.config_type
             )
         elif args.domain_file:
             Core(
@@ -146,6 +156,7 @@ class Tlsa:
                 type_of_analysis=Core.Analysis.DOMAINS,
                 group_by=args.group_by,
                 stix=args.stix,
+                config_type=args.config_type
             )
         elif args.file:
             if isinstance(args.configuration, list):
@@ -164,6 +175,7 @@ class Tlsa:
                 stix=args.stix,
                 openssl_version=args.openssl,
                 ignore_openssl=args.ignore_openssl,
+                config_type=args.config_type
             )
 
         else:  # must be args.list, unless argparse throws error.

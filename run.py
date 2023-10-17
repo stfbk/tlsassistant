@@ -135,6 +135,13 @@ if __name__ == "__main__":
         help="Generate STIX2 compliant output.",
         default=False,
     )
+    parser.add_argument(
+        "--config_type",
+        action="store",
+        help="Define the type of configuration to analyze.",
+        choices=["apache", "nginx", "auto"],
+        default="auto",
+    )
     # todo add default aliases configurations for analysis
     # configurations.add_argument()
     args = parser.parse_args()

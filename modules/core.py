@@ -17,6 +17,7 @@ from modules.report import Report as Report_module
 from utils.configuration import get_aliases
 from utils.urls import link_sep
 from utils.urls import has_wildcard, remove_wildcard
+from utils.type import WebserverType
 from utils.subdomain_enumeration import enumerate
 
 
@@ -58,6 +59,7 @@ class Core:
         openssl_version=None,
         ignore_openssl=False,
         stix=False,
+        config_type=WebserverType.AUTO
     ):
         """
         :param hostname_or_path: hostname or path to scan
@@ -104,6 +106,7 @@ class Core:
             openssl_version=openssl_version,
             ignore_openssl=ignore_openssl,
             stix=stix,
+            config_type=config_type
         )
         self.__cache[configuration] = self.__load_configuration(modules)
         self.__exec(
@@ -156,6 +159,7 @@ class Core:
                     str,
                 ),
                 (kwargs["stix"], bool),
+                (kwargs["config_type"], WebserverType)
             ]
         )
         kwargs["to_exclude"] = list(map(str.lower, kwargs["to_exclude"]))
@@ -280,6 +284,7 @@ class Core:
         ignore_openssl=False,
         online=False,
         port=None,
+        config_type=WebserverType.AUTO
     ) -> dict:
         """
         Analize the configuration file
@@ -296,10 +301,12 @@ class Core:
         :type online: bool
         :param port: port to use for the connection
         :type port: int
+        :param config_type: web-server configuration type
+        :type config_type: WebserverType
         :return: configuration
         :rtype: dict
         """
-        conf = Configuration(path, port=port)
+        conf = Configuration(path, port=port, type_=config_type)
         if self.__input_dict["apply_fix"] != "":
             results = conf.fix(
                 loaded_modules,
@@ -611,6 +618,7 @@ class Core:
                 loaded_modules=loaded_modules,
                 openssl_version=self.__input_dict["openssl_version"],
                 ignore_openssl=self.__input_dict["ignore_openssl"],
+                config_type=self.__input_dict["config_type"]
             )  # TODO: better output report
         else:
             self.__preanalysis_testssl(
@@ -639,6 +647,7 @@ class Core:
                     openssl_version=self.__input_dict["openssl_version"],
                     ignore_openssl=self.__input_dict["ignore_openssl"],
                     port=port,
+                    config_type=self.__input_dict["config_type"]
                 )
         self.__logging.info(f"Analysis of {hostname_or_path} done.")
         return loaded_modules, results

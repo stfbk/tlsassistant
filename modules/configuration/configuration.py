@@ -97,6 +97,10 @@ class Configuration:
             try:
                 results = self.__load_apache_conf(file)
                 self.__type = WebserverType.APACHE
+                if "server" in results.keys():
+                    self.__type = WebserverType.NGINX
+                    self.__logging.info("Detected `server` directive, configuration will be considered of type NGINX")
+                    results = self.__load_nginx_conf(file)
             except Exception as e:
                 self.__logging.debug(
                     f"Couldn't parse config as apache: {e}\ntrying with nginx..."
@@ -189,6 +193,7 @@ class Configuration:
     
         if payload['status'] != 'ok' or len(payload['errors']) > 0:
             self.__logging.error(f"Error parsing nginx config: {payload['errors']}")
+            self.__logging.info("Try adding a 'http' block to your nginx.conf file")
             raise Exception(f"Error parsing nginx config: {payload['errors']}")
 
         struct = {}
