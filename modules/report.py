@@ -1,21 +1,22 @@
+from datetime import datetime
+from distutils.dir_util import copy_tree as cp
 from enum import Enum
 from os import mkdir
+from os.path import sep
+from pathlib import Path
+from pprint import pformat
 
 import requests as requests
-
-from modules.stix.stix import Stix
-from utils.validation import Validator, rec_search_key
-from utils import output
-from datetime import datetime
-from os.path import sep
-from utils.logger import Logger
-from requests.structures import CaseInsensitiveDict
 from jinja2 import Environment, FileSystemLoader
-from pathlib import Path
+from requests.structures import CaseInsensitiveDict
+
+from modules.server.webserver_type import WebserverType
+from modules.stix.stix import Stix
+from utils import output
 from utils.globals import version
-from distutils.dir_util import copy_tree as cp
+from utils.logger import Logger
 from utils.prune import pruner
-from pprint import pformat
+from utils.validation import Validator, rec_search_key
 
 
 class Report:
@@ -282,16 +283,26 @@ class Report:
             self.__input_dict["results"]
         )  # obtain results removing loaded_modules
         results = pruner(results)  # prune empty results
+        # get webserver types
+        webserver_types = WebserverType().output()
         # now, we want to divide raw from mitigations
         for hostname in results:
+            webserver_type = webserver_types.get(hostname, "").title()
             for module in results[hostname]:
                 raw = results[hostname][module].copy()
                 if "mitigation" in raw:
                     del raw["mitigation"]
                 for mitigation in rec_search_key(
-                    "mitigation", results[hostname][module]
+                        "mitigation", results[hostname][module]
                 ):
                     if mitigation is not None:
+                        # remove the other mitigation types
+                        if webserver_type in mitigation.get("Entry", {}).get("Mitigation", {}):
+                            # Remove all the mitigations that don't apply to this configuration
+                            to_remove = [el for el in mitigation["Entry"]["Mitigation"] if
+                                         el not in ["Textual", webserver_type]]
+                            for element in to_remove:
+                                del mitigation["Entry"]["Mitigation"][element]
                         results[hostname][
                             module
                         ] = (

@@ -4,6 +4,7 @@ from pathlib import Path
 from modules.configuration.configuration import Configuration
 from modules.server.testssl_base import Testssl_base
 from modules.server.wrappers.testssl import Testssl
+from modules.server.webserver_type import WebserverType
 from utils.booleanize import boolean_results
 from utils.logger import Logger
 from utils.colors import Color
@@ -322,6 +323,13 @@ class Core:
             )
             self.__logging.debug(f"Preanalysis testssl done.")
 
+    def __preanalysis_webserver_type(self, hostname):
+        self.__logging.debug(
+            f"Starting preanalysis webserver type for {hostname}..."
+        )
+        WebserverType().run(**{"hosts": [hostname]})
+
+
     def __load_modules(self, parsed_configuration: dict) -> (dict, dict, list):
         """
         Loads the modules
@@ -555,6 +563,9 @@ class Core:
         else:
             self.__preanalysis_testssl(
                 testssl_args, type_of_analysis, hostname_or_path, port
+            )
+            self.__preanalysis_webserver_type(
+                hostname_or_path
             )
 
             results = self.__run_analysis(
