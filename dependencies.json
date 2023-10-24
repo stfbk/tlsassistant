@@ -23,9 +23,16 @@
     "type": "zip",
     "url": "https://github.com/drwetter/testssl.sh/archive/3.0.4.zip"
   },
-    {
+  {
     "type": "apt",
-    "url": "wkhtmltopdf"
+    "url": "libcairo2-dev"
+  },
+  {
+    "type": "pip",
+    "url": "z3c.rml==4.4.0"
+  },
+  {
+    "type": "zip",
+    "url": "https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-unhinted.zip"
   }
-
 ]

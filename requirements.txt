@@ -6,7 +6,6 @@ crossplane==0.5.7
 tlslite-ng==0.8.0-alpha40
 jsonmerge==1.8.0
 markdown2==2.4.0
-pdfkit==0.6.1
 Jinja2==3.0.2
 stix2==3.0.1
 stix2-patterns==1.3.2

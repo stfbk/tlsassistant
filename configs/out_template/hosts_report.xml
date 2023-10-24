@@ -1,0 +1,98 @@
+<!DOCTYPE document SYSTEM "rml_1_0.dtd">
+<document>
+    <docinit>
+        <registerTTFont faceName="Roboto" fileName="fonts/roboto/Roboto-Regular.ttf" />
+        <registerTTFont faceName="Roboto Bold" fileName="fonts/roboto/Roboto-Bold.ttf" />
+        <registerTTFont faceName="Roboto Italic" fileName="fonts/roboto/Roboto-Italic.ttf" />
+        <registerTTFont faceName="Roboto Bold Italic" fileName="fonts/roboto/Roboto-BoldItalic.ttf" />
+    </docinit>
+    <template pagesize="(595, 842)" leftMargin="72" showBoundary="0">
+        <pageTemplate id="main">
+            <pageGraphics>
+                <!-- Header -->
+                <setFont name="Roboto Bold" size="18"/>
+                <drawRightString x="323" y="780">TLSAssistant</drawRightString>
+                <setFont name="Roboto Bold Italic" size="12"/>
+                <drawRightString x="523" y="800">Version {{version}}</drawRightString>
+                <setFont name="Roboto Bold Italic" size="36"/>
+                <image x="30" y="750" file="assets/pdf/FBK_Cybersecurity_colour.png" width = "150" height = "70"/>
+                <setFont name="Roboto" size="20"/>
+            </pageGraphics>
+            <frame id="first" x1="70" y1="150" width="455" height="570"/>
+            <pageGraphics>
+                <!-- Footer -->
+                <image x="222" y = "30" file="assets/img/ST.png" width = "150" height = "65"/>
+            </pageGraphics>
+        </pageTemplate>
+        <pageTemplate id="standard">
+            <frame id="second_frame" x1="70" y1="150" width="455" height="570"/>
+        </pageTemplate>
+    </template>
+    <stylesheet>
+        <blockTableStyle id="report">
+            <lineStyle start="0,0" stop="-1,-1" kind="GRID" thickness="0.25" colorName="black"/>
+            <blockFont start="0,0" stop="-1,-1" name="Roboto" size="12"/>
+            <!-- <blockTopPadding length="0.1cm" start="0,0" stop="-1,1"/>
+                <blockBottomPadding length="0.25cm" start="0,0" stop="-1,1"/> 
+                <blockLeftPadding length="0.1cm" start="0,0" stop="-1,1"/> 
+                <blockRightPadding length="0.1cm" start="0,0" stop="-1,1"/>  -->
+            <blockValign start = "0,0" stop = "-1,-1" value="MIDDLE"/>
+            <blockAlignment start = "0,0" stop = "-1,-1" value="CENTER"/>
+        </blockTableStyle>
+    </stylesheet>
+    <story>
+        <setNextTemplate name="standard"/>
+{%if results%}
+        <h1>Recap</h1>
+        <para fontName="Roboto"></para>
+        <blockTable style="report">
+            <tr> 
+                <td>Hostname / Modules: </td>
+    {% for host in results %}
+                <td>{{host}}</td>
+    {% endfor %}
+            </tr>
+    {% for module in modules %}
+            <tr>
+                <td>{{module}}</td>
+        {% for host in results %}
+                <td>
+                {% if results[host][module] %}
+                    <para fontName="Roboto Bold" textColor="red">Potentially Vulnerable</para>
+                {% else %}
+                    <para fontName="Roboto Bold">Not Vulnerable</para>
+                {% endif %}
+                </td>
+        {% endfor %}
+            </tr>
+    {% endfor %}
+        </blockTable>
+        <nextFrame/>
+{%endif%}
+        <h1>Detailed Results</h1>
+{%if results%}
+        <para fontName="Roboto">{{date}}</para>
+        <para> Modules: 
+        {% for module in  modules%} {{module}} {%endfor%}
+        </para>
+        {% for host in results %}
+            <para alignment="center" fontSize="18" spaceBefore="15"> {{host}} </para>
+            {% for module in modules %}
+                {% if results[host][module] %}
+                    <para alignment="left" fontSize="15" spaceBefore="12">{{module}}</para>
+                    <para alignment="left" fontSize="12" spaceBefore="5"> {{results[host][module]["Name"]}} </para>
+                    <para alignment="left" fontSize="12" spaceBefore="5"> {{results[host][module]["Description"]}} </para>
+                    <h4>Mitigation</h4>  
+                    {% for key,mitigation in results[host][module]['Mitigation'].items() %}
+                    <h5>
+                        <strong>{{key}}</strong>
+                    </h5>
+                    <para fontName="Roboto">{{mitigation}}</para>
+                    {% endfor %}
+                {% endif %}
+            {%endfor%}
+        {%endfor%}
+        
+{%endif%}
+    </story>
+</document>
