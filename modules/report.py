@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from distutils.dir_util import copy_tree as cp
 from enum import Enum
@@ -12,11 +13,11 @@ from requests.structures import CaseInsensitiveDict
 
 from modules.server.webserver_type import WebserverType
 from modules.stix.stix import Stix
-from utils import output
 from utils.globals import version
 from utils.logger import Logger
 from utils.prune import pruner
 from utils.validation import Validator, rec_search_key
+from z3c.rml import rml2pdf
 
 
 class Report:
@@ -120,7 +121,7 @@ class Report:
         return out
 
     def __jinja2__report(
-        self, mode: Mode, results: dict, modules: list, date: datetime.date
+        self, mode: Mode, results: dict, modules: list, date: datetime.date, rml: bool = False
     ):
         """
         Generates the report using jinja2.
@@ -133,18 +134,21 @@ class Report:
         :type modules: list
         :param date: Date of the scan.
         :type date: datetime.date
+        :param rml: Whether to apply jinja2 to rml files or not.
+        :type rml: bool
         """
         self.__logging.debug(f"Generating report in jinja2..")
         fsl = FileSystemLoader(searchpath=self.__template_dir)
         env = Environment(loader=fsl)
+        file_extension = "xml" if rml else "html"
         to_process = {"version": version, "date": date, "modules": modules}
         if mode == self.Mode.MODULES:
             self.__logging.info(f"Generating modules report..")
-            template = env.get_template(f"modules_report.html")
+            template = env.get_template(f"modules_report.{file_extension}")
             to_process["results"] = self.__modules_report_formatter(results, modules)
         elif mode == self.Mode.HOSTS:
             self.__logging.info(f"Generating hosts report..")
-            template = env.get_template(f"hosts_report.html")
+            template = env.get_template(f"hosts_report.{file_extension}")
             to_process["results"] = self.__hosts_report_formatter(results)
         else:
             raise ValueError(f"Unknown mode: {mode}")
@@ -309,6 +313,12 @@ class Report:
                             mitigation.copy()
                         )  # i'm expecting only one mitigation per module, is it ok?
                 results[hostname][module]["raw"] = raw
+        use_rml = False
+        if self.__path.suffix.lower() == ".pdf":
+            self.__logging.debug("Using jinja2 to generate RML...")
+            use_rml = True
+            output_path = f"{output_file.absolute().parent}{sep}{output_file.stem}.rml"
+
         with open(output_path, "w") as f:
             f.write(
                 self.__jinja2__report(
@@ -316,14 +326,24 @@ class Report:
                     modules=list(modules.keys()),
                     results=results,
                     date=datetime.now().replace(microsecond=0),
+                    rml=use_rml
                 )
             )
-        self.__logging.debug("Checking if needs pdf...")
 
+        self.__logging.debug("Checking if needs pdf...")
         if self.__path.suffix.lower() == ".pdf":
-            output_path = f"{output_file.absolute().parent}{sep}{output_file.stem}.pdf"
-            self.__logging.debug("Starting HTML to PDF...")
-            output.html_to_pdf(str(output_file.absolute()), output_path)
+            self.__logging.debug("Converting to PDF...")
+            try:
+                xml_path = output_path
+                output_path = output_path[:-4] + ".pdf"
+                rml2pdf.go(xml_path, output_path[:-4] + ".pdf")
+            except Exception as e:
+                self.__logging.error(f"Error converting to PDF: {e}")
+                self.__logging.debug("Dumping results used by jinja to file")
+                with open(output_path+"-dump.txt", "w") as f:
+                    json.dump(results, f, indent=2)
+
+
         self.__logging.info(f"Report generated at {output_path}")
 
         self.__logging.debug("Checks if needs stix...")

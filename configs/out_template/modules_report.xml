@@ -1,27 +1,27 @@
 <!DOCTYPE document SYSTEM "rml_1_0.dtd">
 <document>
     <docinit>
-        <registerTTFont faceName="Roboto" fileName="fonts/roboto/Roboto-Regular.ttf" />
-        <registerTTFont faceName="Roboto Bold" fileName="fonts/roboto/Roboto-Bold.ttf" />
-        <registerTTFont faceName="Roboto Italic" fileName="fonts/roboto/Roboto-Italic.ttf" />
-        <registerTTFont faceName="Roboto Bold Italic" fileName="fonts/roboto/Roboto-BoldItalic.ttf" />
+        <registerTTFont faceName="Roboto" fileName="dependencies/roboto-unhinted/Roboto-Regular.ttf" />
+        <registerTTFont faceName="Roboto Bold" fileName="dependencies/roboto-unhinted/Roboto-Bold.ttf" />
+        <registerTTFont faceName="Roboto Italic" fileName="dependencies/roboto-unhinted/Roboto-Italic.ttf" />
+        <registerTTFont faceName="Roboto Bold Italic" fileName="dependencies/roboto-unhinted/Roboto-BoldItalic.ttf" />
     </docinit>
     <template pagesize="(595, 842)" leftMargin="72" showBoundary="0">
         <pageTemplate id="main">
             <pageGraphics>
                 <!-- Header -->
                 <setFont name="Roboto Bold" size="18"/>
-                <drawRightString x="323" y="780">TLSAssistant</drawRightString>
+                <drawRightString x="345" y="780">TLSAssistant</drawRightString>
                 <setFont name="Roboto Bold Italic" size="12"/>
                 <drawRightString x="523" y="800">Version {{version}}</drawRightString>
                 <setFont name="Roboto Bold Italic" size="36"/>
-                <image x="30" y="750" file="assets/pdf/FBK_Cybersecurity_colour.png" width = "150" height = "70"/>
+                <image x="30" y="750" file="configs/out_template/assets/pdf/FBK_Cybersecurity_colour.png" width = "150" height = "70"/>
                 <setFont name="Roboto" size="20"/>
             </pageGraphics>
             <frame id="first" x1="70" y1="150" width="455" height="570"/>
             <pageGraphics>
                 <!-- Footer -->
-                <image x="222" y = "30" file="assets/img/ST.png" width = "150" height = "65"/>
+                <image x="222" y = "30" file="configs/out_template/assets/img/ST.png" width = "150" height = "65"/>
             </pageGraphics>
         </pageTemplate>
         <pageTemplate id="standard">
