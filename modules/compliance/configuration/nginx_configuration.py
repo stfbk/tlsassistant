@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 from crossplane import build as nginx_build
-from crossplane import parse as nginx_parse
 
 from modules.compliance.configuration.configuration_base import ConfigurationMaker
 from modules.configuration.configuration import Configuration
@@ -38,43 +37,9 @@ class NginxConfiguration(ConfigurationMaker):
 
         tmp_string = ""
         field_rules = self._specific_rules.get(field, field_rules)
-        for entry in data:
-            condition = ""
-            if isinstance(entry, dict):
-                name = entry["entry"][name_index]
-                level = entry["level"]
-                guideline = entry["source"]
-                if guideline in entry["entry"]:
-                    guideline_pos = entry["entry"].index(guideline)
-                    # to get the condition for the guideline I calculate guideline's index and then search it near it
-                    step = len(columns)
-                    guideline_counter = guideline_pos // step
-                    condition = entry["entry"][condition_index + guideline_counter * step]
-            else:
-                name = entry[name_index]
-                level = entry[level_index]
-                condition = entry[condition_index]
-
-            if target and target.replace("*", "") not in name:
-                continue
-
-            replacements = field_rules.get("replacements", [])
-            for replacement in replacements:
-                name = name.replace(replacement, replacements[replacement])
-            tmp_string += self._get_string_to_add(field_rules, name, level, field)
-            if self._output_dict[field].get(name):
-                if condition:
-                    index = len(self.conditions_to_check)
-                    self.conditions_to_check[index] = {
-                        "columns": columns,
-                        "data": data,
-                        "expression": condition,
-                        "field": config_field,
-                        "guideline": guideline,
-                        "level": level
-                    }
-                self._output_dict[field][name]["guideline"] = guideline
-
+        tmp_string = self._prepare_field_string(tmp_string, field, field_rules, name_index, level_index,
+                                                condition_index,
+                                                columns, data, config_field, guideline, target)
         if tmp_string and tmp_string[-1] == ":":
             tmp_string = tmp_string[:-1]
         tmp_string = tmp_string.strip()
@@ -92,19 +57,29 @@ class NginxConfiguration(ConfigurationMaker):
             comment = ""
             if tmp_string.count("#") == 1:
                 args, comment = tmp_string.split("#")
-            directive_to_add = {"directive": config_field, "args": [args]}
+            args = self._perform_post_actions(field_rules, args)
+            if not isinstance(args, list):
+                args = [args]
+            directive_to_add = {"directive": config_field, "args": args}
             self._template["config"][0]["parsed"][1]["block"].insert(0, directive_to_add)
             if comment:
                 directive_to_add = {"directive": "#", "comment": comment}
                 self._template["config"][0]["parsed"][1]["block"].insert(0, directive_to_add)
 
-    def remove_field(self, field):
+    def remove_field(self, field, name=None):
         to_remove = []
         for directive in self._template["config"][0]["parsed"][1]["block"]:
             if directive.get("directive") == field:
                 to_remove.append(directive)
         for directive in to_remove:
-            del self._template["config"][0]["parsed"][1]["block"][directive]
+            found = False
+            if name:
+                for i, element in enumerate(directive["args"]):
+                    if name in element:
+                        directive["args"][i] = element.replace(name, "")
+                        found = True
+            if not found:
+                self._template["config"][0]["parsed"][1]["block"].remove(directive)
 
     def _load_template(self):
         self._load_conf(Path(self._config_template_path))

@@ -69,7 +69,6 @@ class ConditionParser:
         """
         field_value = user_configuration.get(config_field, None)
         check_first = None
-
         if condition:
             check_first = ConditionParser.get_check_first(condition)
 
@@ -115,7 +114,7 @@ class ConditionParser:
             if not enabled and check_first:
                 enabled = name[:check_first] in field_value
         else:
-            ConditionParser.__logging.warning(f"Invalid field: {config_field}, for name: {name}")
+            ConditionParser.__logging.warning(f"Invalid field: {config_field} for name: {name}")
         return enabled
 
     @staticmethod

@@ -51,6 +51,7 @@ class Compliance:
         self._certificate_parser = CertificateParser()
         self._cert_sig_algs = [el[0] for el in self._database_instance.run(tables=["CertificateSignature"],
                                                                            columns=["name"])]
+        self._ciphers_converter = load_configuration("openssl_to_iana", "configs/compliance/")
         self._user_configuration_types = load_configuration("user_conf_types", "configs/compliance/generate/")
         self._type_converter = {
             "dict": dict,
@@ -121,6 +122,10 @@ class Compliance:
             self.prepare_configuration(self._config_class.configuration)
         if hostname and self._validator.string(hostname) and hostname != "placeholder":
             test_ssl_output = self.test_ssl.run(**{"hostname": hostname, "one": True})
+            # with open(f"testssl_output-{hostname}.json", "r") as f:
+            #     test_ssl_output = json.load(f)
+            with open(f"testssl_output-{hostname}.json", "w") as f:
+                json.dump(test_ssl_output, f, indent=4)
             self.prepare_testssl_output(test_ssl_output)
 
         if output_file and self._validator.string(output_file):
@@ -225,7 +230,19 @@ class Compliance:
                     if " " in value:
                         # Only the last part of the line is the actual cipher
                         value = value.split(" ")[-1]
+                        value = self._ciphers_converter.get(value, value)
                         self._user_configuration["CipherSuite"].add(value)
+
+                elif field == "FS_ciphers":
+                    value = actual_dict.get("finding", "")
+                    if " " in value:
+                        for cipher in value.split(" "):
+                            # Only the last part of the line is the actual cipher
+                            cipher = self._ciphers_converter.get(cipher, cipher)
+                            self._user_configuration["CipherSuite"].add(cipher)
+                    else:
+                        cipher = self._ciphers_converter.get(value, value)
+                        self._user_configuration["CipherSuite"].add(cipher)
 
                 elif field == "TLS_extensions":
                     entry = actual_dict["finding"]
@@ -329,6 +346,7 @@ class Compliance:
                     self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
                 elif field == "fallback_SCSV":
                     self._user_configuration["fallback_SCSV"] = actual_dict["finding"]
+        print(self._user_configuration["CipherSuite"])
 
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition):
         information_level = None
@@ -562,7 +580,10 @@ class Generator(Compliance):
                 elif isinstance(user_conf_field, dict):
                     for val in current_field:
                         if config_field == "Protocol":
-                            user_conf_field[val] = current_field[val]["added"]
+                            new_val = val.replace("v", " ")
+                            if len(new_val) < 6:
+                                new_val += ".0"
+                            user_conf_field[new_val] = current_field[val]["added"]
                         elif config_field == "Extension":
                             self._database_instance.input(["Extension"], other_filter=f'WHERE name=="{val}"')
                             iana_code = self._database_instance.output(["iana_code"])[0][0]
@@ -594,21 +615,22 @@ class Generator(Compliance):
             guideline = conditions_to_check[index]["guideline"]
             field = conditions_to_check[index]["field"]
             enabled = level in ["recommended", "must"]
+            name = conditions_to_check[index]["name"]
             valid_condition = self._condition_parser.run(expression, enabled)
             field_rules = self._configuration_rules.get(field, {})
-
             if self._condition_parser.entry_updates.get("levels"):
                 potential_levels = self._condition_parser.entry_updates.get("levels")
                 level = potential_levels[self.level_to_use(potential_levels)]
             if not valid_condition and enabled:
-                self._config_class.remove_field(field)
+                self._config_class.remove_field(field, name)
             elif level in ["not recommended", "must not"] and valid_condition:
-                self._config_class.remove_field(field)
+                self._config_class.remove_field(field, name)
             elif enabled and valid_condition:
                 self._config_class.add_configuration_for_field(field, field_rules, data, columns, guideline)
 
     def output(self):
         self._fill_user_configuration()
+        self._condition_parser = ConditionParser(self._user_configuration)
         self._check_conditions()
         return self._config_class.configuration_output()
 

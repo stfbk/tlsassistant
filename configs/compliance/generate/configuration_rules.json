@@ -11,12 +11,12 @@
   },
   "CipherSuiteList": {
     "enable": "name",
-    "disable": "!name",
+    "disable": "",
     "separator": ":",
-    "added_negatives": true,
-    "replacements": {
-      "_": "-",
-      "TLS-": ""
+    "added_negatives": false,
+    "post_actions": {
+      "convert_ciphers": "",
+      "prepend": "-ALL:"
     }
   },
   "SessionTickets": {

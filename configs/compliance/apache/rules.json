@@ -1,4 +1,27 @@
 {
+  "ProtocolList": {
+    "enable": "+name",
+    "disable": "-name",
+    "separator": " ",
+    "added_negatives": true,
+    "replacements": {
+      " ": "v",
+      ".0": ""
+    }
+  },
+  "CipherSuiteList": {
+    "enable": "name",
+    "disable": "",
+    "separator": ":",
+    "added_negatives": false,
+    "post_actions": {
+      "convert_ciphers": "",
+      "prepend_after": {
+        "string": "-ALL:",
+        "separator": " "
+      }
+    }
+  },
   "DHParams": {
     "enable": "2048 >> /path/to/cert_chain",
     "disable": "",

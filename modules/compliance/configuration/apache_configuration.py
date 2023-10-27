@@ -43,48 +43,13 @@ class ApacheConfiguration(ConfigurationMaker):
 
         tmp_string = config_field + " "
         field_rules = self._specific_rules.get(field, field_rules)
-
-        for entry in data:
-            condition = ""
-            if isinstance(entry, dict):
-                name = entry["entry"][name_index]
-                level = entry["level"]
-                guideline = entry["source"]
-                if guideline in entry["entry"]:
-                    guideline_pos = entry["entry"].index(guideline)
-                    # to get the condition for the guideline I calculate guideline's index and then search it near it
-                    step = len(columns)
-                    guideline_counter = guideline_pos // step
-                    condition = entry["entry"][condition_index + guideline_counter * step]
-            else:
-                name = entry[name_index]
-                level = entry[level_index]
-                condition = entry[condition_index]
-
-            if target and target.replace("*", "") not in name:
-                continue
-
-            replacements = field_rules.get("replacements", [])
-            for replacement in replacements:
-                name = name.replace(replacement, replacements[replacement])
-            tmp_string += self._get_string_to_add(field_rules, name, level, config_field)
-            if self._output_dict[field].get(name):
-                if condition:
-                    index = len(self.conditions_to_check)
-                    self.conditions_to_check[index] = {
-                        "columns": columns,
-                        "data": data,
-                        "expression": condition,
-                        "field": config_field,
-                        "guideline": guideline,
-                        "level": level
-                    }
-                self._output_dict[field][name]["guideline"] = guideline
-
+        tmp_string = self._prepare_field_string(tmp_string, field, field_rules, name_index, level_index, condition_index,
+                                                columns, data, config_field, guideline, target)
         if tmp_string and tmp_string[-1] == ":":
             tmp_string = tmp_string[:-1]
         # this check prevents adding a field without any value
         if len(tmp_string) != len(config_field) + 1:
+            tmp_string = self._perform_post_actions(field_rules, tmp_string)
             self._string_to_add += "\n" + tmp_string
 
     def remove_field(self, field):

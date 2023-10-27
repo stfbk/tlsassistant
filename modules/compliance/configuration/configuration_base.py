@@ -2,6 +2,7 @@ from pathlib import Path
 
 from utils.database import get_standardized_level
 from utils.loader import load_configuration
+from utils.validation import Validator
 
 
 class ConfigurationMaker:
@@ -16,6 +17,7 @@ class ConfigurationMaker:
         self._enabled_once = set()
         self.conditions_to_check = {}
         self._specific_rules = load_configuration("rules", f"configs/compliance/{config_type}/")
+        self._actions = Actions()
 
     def set_out_file(self, output_file):
         """
@@ -107,6 +109,124 @@ class ConfigurationMaker:
 
         return string_to_add
 
+    def _prepare_field_string(self, tmp_string, field, field_rules, name_index, level_index, condition_index, columns, data,
+                              config_field, guideline, target):
+        for entry in data:
+            condition = ""
+            if isinstance(entry, dict):
+                name = entry["entry"][name_index]
+                level = entry["level"]
+                guideline = entry["source"]
+                if guideline in entry["entry"]:
+                    guideline_pos = entry["entry"].index(guideline)
+                    # to get the condition for the guideline I calculate guideline's index and then search it near it
+                    step = len(columns)
+                    guideline_counter = guideline_pos // step
+                    condition = entry["entry"][condition_index + guideline_counter * step]
+            else:
+                name = entry[name_index]
+                level = entry[level_index]
+                condition = entry[condition_index]
+
+            if target and target.replace("*", "") not in name:
+                continue
+
+            replacements = field_rules.get("replacements", [])
+            for replacement in replacements:
+                name = name.replace(replacement, replacements[replacement])
+            tmp_string += self._get_string_to_add(field_rules, name, level, field)
+            if self._output_dict[field].get(name):
+                if condition:
+                    index = len(self.conditions_to_check)
+                    self.conditions_to_check[index] = {
+                        "columns": columns,
+                        "data": data,
+                        "expression": condition,
+                        "field": config_field,
+                        "guideline": guideline,
+                        "level": level,
+                        "name": name,
+                    }
+                self._output_dict[field][name]["guideline"] = guideline
+        return tmp_string
+
+    def _perform_post_actions(self, field_rules, actual_string):
+        if field_rules.get("post_actions", None):
+            for action in field_rules["post_actions"]:
+                arguments = field_rules["post_actions"][action]
+                actual_string = self._actions.__getattribute__(action)(**{"value": actual_string, "arguments": arguments})
+        return actual_string
+
     @property
     def output_dict(self):
         return self._output_dict
+
+# This class is used to define the actions that can be taken after a field has been prepared and before it gets added to
+# the configuration file. The actions are defined in the configuration_rules file using the post_actions key with value
+# a list of actions to take, the function_name and the arguments are separated by a blank space ` `.
+class Actions:
+    def __init__(self):
+        self.validator = Validator()
+        self._ciphers_converter = load_configuration("iana_to_openssl", "configs/compliance/")
+    def split(self, **kwargs) -> list:
+        """
+        :param kwargs: Dictionary of arguments
+        :type kwargs: dict
+        :return: True if the year indicated has already passed
+        :rtype: bool
+        :Keyword Arguments:
+            * *value* (``str``) -- String to split
+            * *arguments* (``str``) -- Separator to use
+        """
+        value = kwargs.get("value", None)
+        separator = kwargs.get("arguments", None)
+        self.validator.string(value)
+        self.validator.string(separator)
+        return [v for v in value.split(separator) if v]
+
+    def convert_ciphers(self, **kwargs) -> str:
+        """
+        :param kwargs: Dictionary of arguments
+        :type kwargs: dict
+        :return: the list of converted ciphers
+        :rtype: str
+        :Keyword Arguments:
+            * *value* (``str``) -- String to convert
+        """
+        string = kwargs.get("value", None)
+        self.validator.string(string)
+        for cipher in self._ciphers_converter:
+            if self._ciphers_converter[cipher]:
+                string = string.replace(cipher, self._ciphers_converter[cipher])
+        return string
+
+    def prepend(self, **kwargs):
+        """
+        :param kwargs: Dictionary of arguments
+        :type kwargs: dict
+        :return: the string with -
+        :rtype: str
+        :Keyword Arguments:
+            * *value* (``str``) -- String to convert
+        """
+        string = kwargs.get("value", None)
+        other_string = kwargs.get("arguments", None)
+        self.validator.string(string)
+        self.validator.string(other_string)
+        return other_string + string
+
+    def prepend_after(self, **kwargs):
+        string = kwargs.get("value", None)
+        arguments = kwargs.get("arguments", None)
+        self.validator.string(string)
+        self.validator.dict(arguments)
+        other_string = kwargs["arguments"].get("string", None)
+        separator = kwargs["arguments"].get("separator", None)
+        self.validator.string(other_string)
+        self.validator.string(separator)
+        if separator in string:
+            parts = string.split(separator, 1)
+            parts[1] = other_string + parts[1]
+            string = separator.join(parts)
+        return string
+

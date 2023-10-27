@@ -1,4 +1,17 @@
 {
+  "ProtocolList": {
+    "enable": "name",
+    "disable": "",
+    "separator": ":",
+    "added_negatives": false,
+    "replacements": {
+      " ": "v",
+      ".0": ""
+    },
+    "post_actions": {
+      "split": ":"
+    }
+  },
   "DHParams": {
     "enable": "/path/to/dhparam# To use the directive below you have to run openssl dhparam 2048 >> /path/to/dhparam",
     "disable": "",
