@@ -122,6 +122,8 @@ class Compliance:
             self.prepare_configuration(self._config_class.configuration)
         if hostname and self._validator.string(hostname) and hostname != "placeholder":
             test_ssl_output = self.test_ssl.run(**{"hostname": hostname, "one": True})
+            # with open(f"testssl_output-{hostname}.json", "r") as f:
+            #     test_ssl_output = json.load(f)
             failed = 0
             for key in test_ssl_output:
                 if test_ssl_output[key].get("scanProblem") and test_ssl_output[key]["scanProblem"].get(
@@ -130,8 +132,6 @@ class Compliance:
                     self._logging.warning(f"Testssl failed to perform the analysis on {key}")
             if failed == len(test_ssl_output):
                 raise ValueError("Testssl failed to perform the analysis on all the hosts")
-            # with open(f"testssl_output-{hostname}.json", "r") as f:
-            #     test_ssl_output = json.load(f)
             with open(f"testssl_output-{hostname}.json", "w") as f:
                 json.dump(test_ssl_output, f, indent=4)
             self.prepare_testssl_output(test_ssl_output)
@@ -333,7 +333,7 @@ class Compliance:
                     index = self.find_cert_index(field)
                     self._user_configuration["TrustedCerts"][index] = actual_dict["finding"]
 
-                elif (field == "cert" or re.match(r"cert <cert#\d+>", field)) or \
+                elif (field == "cert" or re.match(r"cert <(?:cert|hostCert)#\d+>", field)) or \
                         (field == "intermediate_cert" or re.match(r"intermediate_cert <#\d+>", field)):
 
                     cert_index = self.find_cert_index(field)
@@ -354,7 +354,6 @@ class Compliance:
                     self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
                 elif field == "fallback_SCSV":
                     self._user_configuration["fallback_SCSV"] = actual_dict["finding"]
-        print(self._user_configuration["CipherSuite"])
 
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition):
         information_level = None
