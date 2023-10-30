@@ -122,6 +122,14 @@ class Compliance:
             self.prepare_configuration(self._config_class.configuration)
         if hostname and self._validator.string(hostname) and hostname != "placeholder":
             test_ssl_output = self.test_ssl.run(**{"hostname": hostname, "one": True})
+            failed = 0
+            for key in test_ssl_output:
+                if test_ssl_output[key].get("scanProblem") and test_ssl_output[key]["scanProblem"].get(
+                        "severity") == "FATAL":
+                    failed += 1
+                    self._logging.warning(f"Testssl failed to perform the analysis on {key}")
+            if failed == len(test_ssl_output):
+                raise ValueError("Testssl failed to perform the analysis on all the hosts")
             # with open(f"testssl_output-{hostname}.json", "r") as f:
             #     test_ssl_output = json.load(f)
             with open(f"testssl_output-{hostname}.json", "w") as f:
