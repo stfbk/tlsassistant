@@ -38,6 +38,7 @@ class Install:
         apts = []
         git_submodules = {}
         maven_paths = []
+        python3_scripts = []
         logger.info("Loading dependencies...")
         for dependency in dependencies:  # for each dependency
             if dependency["type"] == "git":  # if it's git
@@ -61,6 +62,9 @@ class Install:
             elif dependency["type"] == "git-submodule":  # if it's reporitory submodule
                 git_submodules[dependency["path"]] = dependency["cmd"]
                 logger.debug(f"Added git submodule of {dependency['path']} with command git submodule {dependency['cmd']}")
+            elif dependency["type"] == "python3":
+                python3_scripts.append(dependency["path"])
+                logger.debug(f"Added dependency python3 {dependency['path']}")
             else:  # if not found, throw warning
                 logger.warning(
                     f"Ignoring dependency {dependency['url']}, type {dependency['type']} is not recognized."
@@ -100,6 +104,7 @@ class Install:
         self.install_dependencies("pkgs", results_pkgs)  # install the dependencies pkg
         self.install_dependencies("apts", results_apts)  # install the dependencies pkg
         logger.info("Unzipping dependencies...")
+        self.install_dependencies("python3", python3_scripts)
         self.install_dependencies("zips", results_zips)  # unzips the zips
         logger.info("Compiling maven dependencies...")
         self.compile_maven_dependencies(maven_paths)  # unzips the zips
@@ -173,6 +178,24 @@ class Install:
                             "install",
                             "-y",
                             f"{f_path if type == 'pkgs' else file}",
+                        ],
+                        stderr=sys.stderr,
+                        stdout=(
+                            sys.stdout
+                            if logging.getLogger().isEnabledFor(
+                                logging.DEBUG
+                            )  # if the user asked for debug mode, let him see the output.
+                            else null  # else /dev/null
+                        ),
+                    )
+            elif type == "python3":
+                logger.debug(f"Executing python3 script {file}")
+                f_path = file
+                with open(devnull, "w") as null:
+                    subprocess.check_call(
+                        [
+                            "python3",
+                            f_path,
                         ],
                         stderr=sys.stderr,
                         stdout=(
