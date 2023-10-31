@@ -4,5 +4,6 @@
     "SessionTickets": "ssl_session_tickets",
     "Stapling": "ssl_stapling",
     "EarlyData": "ssl_early_data",
-    "DHParams": "ssl_dhparam"
+    "DHParams": "ssl_dhparam",
+    "Groups": "ssl_ecdh_curve"
 }

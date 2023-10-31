@@ -200,6 +200,22 @@ class Actions:
                 string = string.replace(cipher, self._ciphers_converter[cipher])
         return string
 
+    def convert_groups(self, **kwargs) -> str:
+        """
+        :param kwargs: Dictionary of arguments
+        :type kwargs: dict
+        :return: the list of converted groups
+        :rtype: str
+        :Keyword Arguments:
+            * *value* (``str``) -- String to convert
+        """
+        string = kwargs.get("value", None)
+        self.validator.string(string)
+        for group in string.split(":"):
+            if "/" in group:
+                string = string.replace(group, group.split("/")[0].strip())
+        return string
+
     def prepend(self, **kwargs):
         """
         :param kwargs: Dictionary of arguments

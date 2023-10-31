@@ -11,7 +11,7 @@ class ConditionParser:
     _instructions_keys = '|'.join(_instructions.keys())
     _logical_separators = [" and ", " or "]
     # this string ensures that the logical_separators are only matched if they are followed by a valid instruction
-    _concatenation_string = f"(?={_instructions_keys}|True|False)"
+    _concatenation_string = f"(?={_instructions_keys}|True|False|!)"
     regex_separators = []
     for el in _logical_separators:
         regex_separators.append(el + _concatenation_string)
@@ -240,6 +240,7 @@ class ConditionParser:
         solution = self._solve(0, len(self.expression)) == "True"
         self.entry_updates = self._custom_functions.entry_updates.copy()
         self._custom_functions.reset()
+        self.__logging.debug("Solution: " + str(solution))
         return solution
 
 

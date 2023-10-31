@@ -40,5 +40,14 @@
     "disable": "",
     "separator": "",
     "enable_one_time": true
+  },
+  "Groups": {
+    "enable": "name",
+    "disable": "",
+    "separator": ":",
+    "added_negatives": false,
+    "post_actions": {
+      "convert_groups": ""
+    }
   }
 }
