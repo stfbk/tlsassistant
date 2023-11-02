@@ -201,6 +201,7 @@ class Actions:
         return string
 
     def convert_groups(self, **kwargs) -> str:
+        # TODO add to report a message stating that this directive is not supported by OpenSSL prior to 1.0.2
         """
         :param kwargs: Dictionary of arguments
         :type kwargs: dict

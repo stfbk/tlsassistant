@@ -282,6 +282,7 @@ class Compliance:
                 elif field.startswith("cert_keySize"):
                     # the first two tokens (after doing a space split) are the Key Algorithm and its key size
                     element_to_add = actual_dict["finding"].split(" ")[:2]
+                    element_to_add[1] = int(element_to_add[1])
                     self._user_configuration["KeyLengths"].add(tuple(element_to_add))
                     cert_index = self.find_cert_index(field)
                     if not self._user_configuration["Certificate"].get(cert_index):
