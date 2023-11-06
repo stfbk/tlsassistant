@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 
 from crossplane import build as nginx_build
@@ -54,10 +55,7 @@ class NginxConfiguration(ConfigurationMaker):
             # each directive has a directive field for the name and an args (list) one for the params it should have
             # The args value is a list only containing tmp_string because the params are prepared while reading them.
             args = tmp_string
-            comment = ""
-            if tmp_string.count("#") == 1:
-                args, comment = tmp_string.split("#")
-            args = self._perform_post_actions(field_rules, args)
+            args, comment = self._perform_post_actions(field_rules, args, guideline)
             if not isinstance(args, list):
                 args = [args]
             directive_to_add = {"directive": config_field, "args": args}
@@ -77,6 +75,7 @@ class NginxConfiguration(ConfigurationMaker):
                 for i, element in enumerate(directive["args"]):
                     if name in element:
                         directive["args"][i] = element.replace(name, "")
+                        directive["args"][i] = re.sub("::*", ":", directive["args"][i])
                         found = True
             if not found:
                 self._template["config"][0]["parsed"][1]["block"].remove(directive)

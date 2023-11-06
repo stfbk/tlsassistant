@@ -23,9 +23,15 @@
     }
   },
   "DHParams": {
-    "enable": "2048 >> /path/to/cert_chain",
+    "enable": " ",
     "disable": "",
     "separator": "",
-    "enable_one_time": true
+    "enable_one_time": true,
+    "post_actions": {
+      "comment": "You should run `openssl dhparam {} >> /path/to/cert_chain`",
+      "comment_format": {
+        "0": "dhparam"
+      }
+    }
   }
 }

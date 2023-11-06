@@ -3,6 +3,7 @@ from pathlib import Path
 from utils.database import get_standardized_level
 from utils.loader import load_configuration
 from utils.validation import Validator
+from modules.compliance.wrappers.db_reader import Database
 
 
 class ConfigurationMaker:
@@ -150,12 +151,19 @@ class ConfigurationMaker:
                 self._output_dict[field][name]["guideline"] = guideline
         return tmp_string
 
-    def _perform_post_actions(self, field_rules, actual_string):
+    def _perform_post_actions(self, field_rules, actual_string, guideline):
+        comment = ""
         if field_rules.get("post_actions", None):
             for action in field_rules["post_actions"]:
                 arguments = field_rules["post_actions"][action]
-                actual_string = self._actions.__getattribute__(action)(**{"value": actual_string, "arguments": arguments})
-        return actual_string
+                if action.startswith("comment"):
+                    comment = self._actions.__getattribute__(action)(**{"value": comment, "arguments": arguments,
+                                                                        "guideline": guideline,
+                                                                        "actual_string": actual_string})
+                else:
+                    actual_string = self._actions.__getattribute__(action)(**{"value": actual_string,
+                                                                              "arguments": arguments})
+        return actual_string, comment
 
     @property
     def output_dict(self):
@@ -168,6 +176,7 @@ class Actions:
     def __init__(self):
         self.validator = Validator()
         self._ciphers_converter = load_configuration("iana_to_openssl", "configs/compliance/")
+        self._database = Database()
     def split(self, **kwargs) -> list:
         """
         :param kwargs: Dictionary of arguments
@@ -221,7 +230,7 @@ class Actions:
         """
         :param kwargs: Dictionary of arguments
         :type kwargs: dict
-        :return: the string with -
+        :return: the string with arguments prepended
         :rtype: str
         :Keyword Arguments:
             * *value* (``str``) -- String to convert
@@ -246,4 +255,58 @@ class Actions:
             parts[1] = other_string + parts[1]
             string = separator.join(parts)
         return string
+
+    def comment(self, **kwargs):
+        """
+        :param kwargs: Dictionary of arguments
+        :type kwargs: dict
+        :return: the value of the arguments concatenated to the actual comment string
+        :rtype: str
+        """
+        string = kwargs.get("value", None)
+        arguments = kwargs.get("arguments", None)
+        self.validator.string(string)
+        self.validator.string(arguments)
+        return string + arguments
+
+    def comment_format(self, **kwargs):
+        """
+        :param kwargs: Dictionary of arguments
+        :type kwargs: dict
+        :return: the formatted comment string
+        :rtype: str
+        :Keyword Arguments:
+            * *value* (``str``) -- String to format
+            * *arguments* (``str``) -- Dictionary of arguments with form position: function_name
+            * *guideline* (``str``) -- Guideline from which to get the information
+        """
+        string = kwargs.get("value", None)
+        arguments = kwargs.get("arguments", None)
+        guideline = kwargs.get("guideline", None)
+        self.validator.string(string)
+        self.validator.dict(arguments)
+        self.validator.string(guideline)
+        format_values = [""*len(arguments)]
+        for position in arguments:
+            format_values[int(position)] = self.__getattribute__(arguments[position])(**{"value": string,
+                                                                                         "guideline": guideline})
+        return string.format(*format_values)
+
+    def dhparam(self, **kwargs):
+        """
+        :param kwargs: Dictionary of arguments
+        :type kwargs: dict
+        :return: the dhparam length for the guideline
+        :rtype: str
+        :Keyword Arguments:
+            * *value* (``str``) -- String to format
+            * *guideline* (``str``) -- Guideline from which to get the information
+        """
+        guideline = kwargs.get("guideline", None)
+        self.validator.string(guideline)
+        values = self._database.run([guideline], columns=["length", "level"],
+                                    other_filter="WHERE name = \"DH\" AND (level = \"must\" OR level = \"recommended\")")
+        value = values[-1][0]
+        return value
+
 

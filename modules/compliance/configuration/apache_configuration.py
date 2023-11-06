@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 
 from apacheconfig import make_loader
@@ -37,10 +38,9 @@ class ApacheConfiguration(ConfigurationMaker):
         condition_index = columns.index("condition")
         self._output_dict[field] = {}
 
-        if not config_field:
+        if config_field is None:
             # This field isn't available with this configuration
             return
-
         tmp_string = config_field + " "
         field_rules = self._specific_rules.get(field, field_rules)
         tmp_string = self._prepare_field_string(tmp_string, field, field_rules, name_index, level_index, condition_index,
@@ -49,18 +49,24 @@ class ApacheConfiguration(ConfigurationMaker):
             tmp_string = tmp_string[:-1]
         # this check prevents adding a field without any value
         if len(tmp_string) != len(config_field) + 1:
-            tmp_string = self._perform_post_actions(field_rules, tmp_string)
-            self._string_to_add += "\n" + tmp_string
+            tmp_string, comment = self._perform_post_actions(field_rules, tmp_string, guideline)
+            if comment:
+                comment = "#" + comment
+            self._string_to_add += "\n" + comment + tmp_string
 
-    def remove_field(self, field):
+    def remove_field(self, field, name):
         lines = self._string_to_add.splitlines()
         to_remove = []
-        for line in lines:
+        for i, line in enumerate(lines):
             if line.strip().startswith(field):
-                to_remove.append(line)
+                if ":" in line:
+                    line = line.replace(name, "")
+                    lines[i] = re.sub("::*", ":", line)
+                else:
+                    to_remove.append(line)
         for line in to_remove:
             lines.remove(line)
-        self._string_to_add = os.sep.join(lines)
+        self._string_to_add = "\n".join(lines)
 
     def _write_to_file(self):
         if not os.path.isfile(self._config_template_path):

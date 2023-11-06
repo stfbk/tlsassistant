@@ -18,7 +18,7 @@ class ConditionParser:
     # simple regex to find all occurrences of the separators
     _splitting_regex = "|".join(regex_separators)
     # same as above but also captures the separators
-    _splitting_capturing_regex = "(" + ")|(".join(regex_separators) + ")"
+    splitting_capturing_regex = "(" + ")|(".join(regex_separators) + ")"
     _sheet_mapping = load_configuration("sheet_mapping", "configs/compliance/")
     __logging = Logger("Condition parser")
 
@@ -171,7 +171,7 @@ class ConditionParser:
         for i, token in enumerate(tokens):
             next_token = tokens[i + 1] if i < len(tokens) - 1 else None
             to_solve = to_solve.replace(token, str(self._evaluate_condition(token, next_token)))
-        tokens = re.split(self._splitting_capturing_regex, to_solve, flags=re.IGNORECASE)
+        tokens = re.split(self.splitting_capturing_regex, to_solve, flags=re.IGNORECASE)
         tokens = [token for token in tokens if token]
         while len(tokens) >= 3:
             first_instruction = tokens.pop(0).strip() == "True"
@@ -457,7 +457,7 @@ class CustomFunctions:
         self.check_value(**kwargs)
 
     def check_year_in_days(self, **kwargs):
-        for cert in self._user_configuration["Certificate"]:
+        for cert in self._user_configuration.get("Certificate", {}):
             if cert.startswith("int"):
                 continue
             cert_data = self._user_configuration["Certificate"][cert]
@@ -470,6 +470,8 @@ class CustomFunctions:
             years = int(data)
             days = years * 365
             return validity.days < days
+        self._logger.debug("No certificate information found, returning True")
+        return True
 
     def verify_scsv(self, **kwargs):
         scsv_finding = self._user_configuration.get("fallback_SCSV", "")

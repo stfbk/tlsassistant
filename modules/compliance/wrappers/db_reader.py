@@ -85,8 +85,8 @@ class Database:
                 first -= 1
         if other_filter:
             query += " " + other_filter
-        self.cursor.execute(query)
         self._logging.debug(query)
+        self.cursor.execute(query)
         return self.cursor.fetchall()
 
     def run(self, tables, join_condition="1==1", other_filter="", columns="*"):

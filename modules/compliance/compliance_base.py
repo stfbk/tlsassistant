@@ -481,8 +481,24 @@ class Compliance:
                     # Add an empty string to the notes so that all the notes are in the same position of their entry
                     notes.append("")
                     if condition:
-                        enabled = self._condition_parser.is_enabled(self._user_configuration, sheet, entry[name_index],
-                                                                    entry, condition=condition)
+                        enabled = level in ["MUST", "RECOMMENDED"]
+                        tokens = re.split(self._condition_parser.splitting_capturing_regex, condition,
+                                          flags=re.IGNORECASE)
+                        tokens = [token for token in tokens if token]
+                        # If a condition of type "this or" goes through it checks the user_configuration status which at
+                        # this point is not filled yet
+                        while "THIS" in tokens:
+                            i = tokens.index("THIS")
+                            tokens.insert(i, "True")
+                            i += 1
+                            removing = 2
+                            while i < len(tokens) and removing:
+                                if tokens[i] in [" and ", " or "]:
+                                    removing -= 1
+                                if removing:
+                                    tokens.pop(i)
+                        condition = " ".join(tokens)
+
                         valid_condition = self._condition_parser.run(condition, enabled)
                         enabled = self._condition_parser.entry_updates.get("is_enabled", enabled)
                         self._logging.debug(f"Condition: {condition} - enabled: {enabled} - valid: {valid_condition}")
@@ -505,8 +521,7 @@ class Compliance:
                             notes[-1] += "\n".join(additional_notes)
 
                     else:
-                        enabled = self._condition_parser.is_enabled(self._user_configuration, sheet, entry[name_index],
-                                                                    entry)
+                        enabled = level in ["MUST", "RECOMMENDED"]
 
                     conditions.append(valid_condition)
                     levels.append(level)

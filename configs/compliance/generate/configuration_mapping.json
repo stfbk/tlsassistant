@@ -4,6 +4,6 @@
     "SessionTickets": {"Extension": "session_ticket"},
     "Stapling": {"Extension": "status_request"},
     "EarlyData": {"Extension": "early_data"},
-    "DHParams": {"CipherSuite":  "%DH%"},
+    "DHParams": {"KeyLengths":  "DH\" AND (\"level\" = \"recommended\" OR \"level\" = \"must\") AND \"\" = \""},
     "Groups": "Groups"
 }

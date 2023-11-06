@@ -13,9 +13,15 @@
     }
   },
   "DHParams": {
-    "enable": "/path/to/dhparam# To use the directive below you have to run openssl dhparam 2048 >> /path/to/dhparam",
+    "enable": "/path/to/dhparam",
     "disable": "",
     "separator": "",
-    "enable_one_time": true
+    "enable_one_time": true,
+    "post_actions": {
+      "comment": "To use the directive below you have to run `openssl dhparam {} >> /path/to/dhparam`",
+      "comment_format": {
+        "0": "dhparam"
+      }
+    }
   }
 }

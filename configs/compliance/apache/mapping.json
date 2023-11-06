@@ -3,6 +3,6 @@
     "CipherSuiteList": "SSLCipherSuite",
     "SessionTickets": "SSLSessionTickets",
     "Stapling": "SSLUseStapling",
-    "DHParams": "# You should run openssl dhparam",
+    "DHParams": "",
     "Groups": "SSLOpenSSLConfCmd groups"
 }
