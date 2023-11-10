@@ -141,7 +141,7 @@ class Report:
         fsl = FileSystemLoader(searchpath=self.__template_dir)
         env = Environment(loader=fsl)
         file_extension = "xml" if rml else "html"
-        to_process = {"version": version, "date": date, "modules": modules}
+        to_process = {"version": version, "date": date, "modules": modules, "hosts": list(results.keys())}
         if mode == self.Mode.MODULES:
             self.__logging.info(f"Generating modules report..")
             template = env.get_template(f"modules_report.{file_extension}")
@@ -152,6 +152,7 @@ class Report:
             to_process["results"] = self.__hosts_report_formatter(results)
         else:
             raise ValueError(f"Unknown mode: {mode}")
+        print(to_process)
         return template.render(**to_process)
 
     def __extract_results(self, res: dict) -> tuple:
