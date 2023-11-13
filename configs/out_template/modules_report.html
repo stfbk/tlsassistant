@@ -50,9 +50,11 @@
                                 {% set i = i+1 %}
                             {% endfor %}
                         </h6>
-                        <h6 class="text-muted card-subtitle mb-2"
-                            style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[module]['extendedname']}}
-                        </h6>
+                        {% if results[module]["extendedname"] != results[module]["name"] %}
+                            <h6 class="text-muted card-subtitle mb-2"
+                                style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[module]['extendedname']}}
+                            </h6>
+                        {% endif %}
                         <p class="card-text"
                             style="font-family: 'Roboto Condensed', sans-serif;color: #6c757d;font-style: italic;">
                             {{results[module]['description']}}

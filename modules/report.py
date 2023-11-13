@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import datetime
 from distutils.dir_util import copy_tree as cp
 from enum import Enum
@@ -10,14 +11,15 @@ from pprint import pformat
 import requests as requests
 from jinja2 import Environment, FileSystemLoader
 from requests.structures import CaseInsensitiveDict
+from z3c.rml import rml2pdf
 
+import utils.loader
 from modules.server.webserver_type import WebserverType
 from modules.stix.stix import Stix
 from utils.globals import version
 from utils.logger import Logger
 from utils.prune import pruner
 from utils.validation import Validator, rec_search_key
-from z3c.rml import rml2pdf
 
 
 class Report:
@@ -39,6 +41,19 @@ class Report:
         self.__path = ""
         self.__template_dir = Path(f"configs{sep}out_template")
         self.__logging = Logger("Report")
+        files = utils.loader.load_configuration("module_to_mitigation", "configs/")
+        self._replacements = {"name_mapping": {},
+                              'sub': re.sub,
+                              "Replacements": {
+                                  "(<a href=.*?</a>)": "<font color='blue'>\\1</font>",
+                                  "<code>(.*?)</code>": "<font color='#d63384' fontName='Roboto Italic'>\\1</font>",
+                              }
+                              }
+
+        for module in files:
+            with open(Path("configs/mitigations/" + files[module]), "r") as f:
+                data = json.load(f)
+            self._replacements["name_mapping"][module] = data.get("Entry", {}).get("Name", "Unknown")
 
     def input(self, **kwargs):
         """
@@ -121,7 +136,7 @@ class Report:
         return out
 
     def __jinja2__report(
-        self, mode: Mode, results: dict, modules: list, date: datetime.date, rml: bool = False
+            self, mode: Mode, results: dict, modules: list, date: datetime.date, rml: bool = False
     ):
         """
         Generates the report using jinja2.
@@ -152,7 +167,7 @@ class Report:
             to_process["results"] = self.__hosts_report_formatter(results)
         else:
             raise ValueError(f"Unknown mode: {mode}")
-        print(to_process)
+        to_process = {**to_process, **self._replacements}
         return template.render(**to_process)
 
     def __extract_results(self, res: dict) -> tuple:
@@ -176,14 +191,14 @@ class Report:
 
     # sending results to the webhook with an exception safe way
     def __send_webhook(
-        self,
-        webhook_url: str,
-        results: dict,
-        modules: dict,
-        post=True,
-        result_param="results",
-        modules_param="modules",
-        other_params=None,
+            self,
+            webhook_url: str,
+            results: dict,
+            modules: dict,
+            post=True,
+            result_param="results",
+            modules_param="modules",
+            other_params=None,
     ):
         """
         Sends the results to the webhook.
@@ -209,9 +224,9 @@ class Report:
             headers = {
                 "Content-Type": "application/json",
                 "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/39.0.2171.95 "
-                "Safari/537.36",
+                              "AppleWebKit/537.36 (KHTML, like Gecko) "
+                              "Chrome/39.0.2171.95 "
+                              "Safari/537.36",
             }
             if post:
                 requests.post(
@@ -341,9 +356,8 @@ class Report:
             except Exception as e:
                 self.__logging.error(f"Error converting to PDF: {e}")
                 self.__logging.debug("Dumping results used by jinja to file")
-                with open(output_path+"-dump.txt", "w") as f:
+                with open(output_path + "-dump.txt", "w") as f:
                     json.dump(results, f, indent=2)
-
 
         self.__logging.info(f"Report generated at {output_path}")
 
@@ -372,28 +386,31 @@ class Report:
             )
         if 'prometheus' in self.__input_dict and self.__input_dict['prometheus'] != '':
             self.__logging.info("Starting prometheus...")
-            
-            output_path_prometheus = f"{output_file.absolute().parent}{sep}{output_file.stem}_prometheus.log" if not self.__input_dict['prometheus'] else self.__input_dict['prometheus']
+
+            output_path_prometheus = f"{output_file.absolute().parent}{sep}{output_file.stem}_prometheus.log" if not \
+                self.__input_dict['prometheus'] else self.__input_dict['prometheus']
             Prometheus(results=results, modules=modules).run(output_path_prometheus)
 
     # todo: add PDF library
+
+
 class Prometheus:
     """
     This class generates a prometheus compliant output
     """
-    def __init__(self,results,modules):
+
+    def __init__(self, results, modules):
         self.__logging = Logger("Prometheus")
         Validator(
             [
-                (results,dict),
-                (modules,dict),
+                (results, dict),
+                (modules, dict),
             ]
         )
         self.results = results
         self.modules = modules
-        self.output=[]
-        
-    
+        self.output = []
+
     def generate_output(self):
         """
         This method will generate the output in the form of
@@ -406,14 +423,11 @@ class Prometheus:
                     self.output.append(f"tls_check{{vhost=\"{host}\",vulnerability=\"{module}\"}} 1")
                 else:
                     self.output.append(f"tls_check{{vhost=\"{host}\",vulnerability=\"{module}\"}} 0")
-                
 
-                
-
-    def run(self,file_name:str):
+    def run(self, file_name: str):
         self.generate_output()
-        with open(file_name,"w") as f:
+        with open(file_name, "w") as f:
             self.__logging.debug(f"Writing output in file {file_name}")
             for line in self.output:
-                f.write(line+"\n")
+                f.write(line + "\n")
         self.__logging.info(f"Prometheus output generated at {file_name}")

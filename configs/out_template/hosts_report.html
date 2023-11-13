@@ -38,7 +38,7 @@
                                 <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;">
                                     Hostname/<br>Modules</th>
                                 {% for module in modules %}
-                                <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;">{{module}}
+                                <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;">{{name_mapping.get(module, module)}}
                                 </th>
                                 {% endfor %}
                             </tr>
@@ -97,9 +97,11 @@
                                 {% set i = i+1 %}
                             {% endfor %}
                             </h6>
-                        <h6 class="text-muted card-subtitle mb-2"
-                            style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[host][module]['extendedname']}}
-                        </h6>
+                        {% if results[host][module]["extendedname"] != results[host][module]["name"] %}
+                            <h6 class="text-muted card-subtitle mb-2"
+                                style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[host][module]['extendedname']}}
+                            </h6>
+                        {% endif %}
                         <p class="card-text"
                             style="font-family: 'Roboto Condensed', sans-serif;color: #6c757d;font-style: italic;">
                             {{results[host][module]['description']}}

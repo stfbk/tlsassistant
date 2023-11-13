@@ -6,103 +6,188 @@
         <registerTTFont faceName="Roboto Italic" fileName="dependencies/roboto-unhinted/Roboto-Italic.ttf" />
         <registerTTFont faceName="Roboto Bold Italic" fileName="dependencies/roboto-unhinted/Roboto-BoldItalic.ttf" />
     </docinit>
-    <template pagesize="(595, 842)" leftMargin="72" showBoundary="0">
-        <!-- First page -->
+<!--To edit the font of a string edit the corresponding style here-->
+    <stylesheet>
+        <paraStyle name = "title" fontSize="39" leading="35" alignment="centre" spaceAfter="20"/>
+        <paraStyle name = "subtitle" fontName = "Roboto" fontSize="17" alignment="centre" textColor="grey"/>
+        <paraStyle name = "recap" fontName = "Roboto Bold" fontSize = "25" alignment="centre" spaceAfter="25"/>
+        <paraStyle name = "detected_vulnerabilities" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30"/>
+        <paraStyle name = "no_vulnerabilities_detected" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30" textColor="green" spaceBefore="20"/>
+        <paraStyle name = "module_list" fontName = "Roboto" fontSize="10" alignment="left" textColor="grey" spaceAfter="5"/>
+        <paraStyle name = "module" fontName = "Roboto Bold" fontSize="20" alignment="left" spaceAfter="15" spaceBefore="10"/>
+        <paraStyle name = "host" fontName = "Roboto Bold" fontSize = "25" alignment="centre" spaceAfter="15" spaceBefore="20"/>
+        <paraStyle name = "module_full_name" fontName = "Roboto" fontSize="12" alignment="left" textColor="grey" spaceAfter="5"/>
+        <paraStyle name = "cvss" fontName = "Roboto" fontSize="12" alignment="left" textColor="grey" spaceAfter="5"/>
+        <paraStyle name = "description" fontName = "Roboto Italic" fontSize="12" alignment="left" textColor="grey" spaceAfter="10"/>
+        <paraStyle name = "mitigation" fontName = "Roboto" fontSize="18" alignment="left" spaceAfter="15"/>
+        <paraStyle name = "mitigation_type" fontName = "Roboto Bold" fontSize="15" alignment="left" spaceAfter="5"/>
+        <paraStyle name = "mitigation_text" fontName = "Roboto" fontSize = "12" alignment="left" spaceAfter="10"/>
+        <paraStyle name = "vulnerable_websites" fontName = "Roboto" fontSize = "18" alignment="left" spaceAfter="15"/>
+        <paraStyle name = "vulnerable_websites_list" fontName = "Roboto Italic" fontSize = "12" alignment="left" spaceAfter="15"/>
+        <paraStyle name = "footer" fontName="Roboto" textColor="grey" fontSize="12" alignment="right"/>
+        <paraStyle name = "vulnerable_websites" fontName = "Roboto" fontSize = "18" alignment="left" spaceAfter="10"/>
+        <paraStyle name = "vulnerable_websites_list" fontName = "Roboto Italic" fontSize = "12" alignment="left" spaceAfter="5"/>
+        <paraStyle name = "not_vulnerable" fontName="Roboto"/>
+        <paraStyle name = "potentially_vulnerable" fontName="Roboto Bold" textColor="red"/>
+        <blockTableStyle id="report">
+            <lineStyle start="0,0" stop="-1,-1" kind="GRID" thickness="0.25" colorName="black"/>
+            <blockFont start="0,0" stop="1,0" name="Roboto Bold" size="12"/>
+            <blockFont start="0, 1" stop="-1,-1" name="Roboto"/>
+            <!-- <blockTopPadding length="0.1cm" start="0,0" stop="-1,1"/>
+                <blockBottomPadding length="0.25cm" start="0,0" stop="-1,1"/>
+                <blockLeftPadding length="0.1cm" start="0,0" stop="-1,1"/>
+                <blockRightPadding length="0.1cm" start="0,0" stop="-1,1"/>  -->
+            <blockValign start = "0,0" stop = "-1,-1" value="MIDDLE"/>
+            <blockAlignment start = "0,0" stop = "-1,-1" value="LEFT"/>
+        </blockTableStyle>
+    </stylesheet>
+    {% set date = date.strftime("%Y-%m-%d %H:%M")%}
+    {% set year = date.split("-")[0] %}
+    {% set page_w = 595 %}
+    {% set page_h = 842 %}
+    {% set image_path = "configs/out_template/assets/pdf/" %}
+    <template pagesize="({{page_w}}, {{page_h}})" showBoundary="0">
         <pageTemplate id="main">
             <pageGraphics>
                 <!-- Header -->
-                <setFont name="Roboto Bold" size="18"/>
-                <drawRightString x="345" y="780">TLSAssistant</drawRightString>
+                <image x="30" y="750" file="{{image_path}}FBK_Cybersecurity_colour.png" width = "150" height = "70"/>
+                {% set frame_w = 455 %}
+                {% set frame_h = 600 %}
+                {% set frame_x = (page_w - frame_w) / 2%}
+                {% set frame_y = (page_h - frame_h) / 2 %}
+                {% set logo_scaling = 5 %}
+                {% set logo_w = 429 / logo_scaling %}
+                {% set logo_h = 585 / logo_scaling %}
+                {% set logo_x = (page_w - logo_w) / 2%}
+                <!-- change this to move the logo + name + version up or down-->
+                {% set name_scaling = 4 %}
+                {% set name_w = 799 / name_scaling %}
+                {% set name_h = 102 / name_scaling %}
+                {% set name_x = (page_w - name_w) / 2 %}
+                <!-- first frame variables-->
+                {% set target_y = page_h - (page_h / 3)%}
+                {% set first_frame_x = frame_x%}
+                {% set first_frame_y = page_h / 2.5%}
+                {% set first_frame_h = target_y - first_frame_y %}
+                {% set logo_y = first_frame_y / 2%}
+                <!-- change the integer subtracted to logo_y to change spacing between logo and name -->
+                {% set name_y = logo_y - 40 %}
+                {% set version_x = (name_w+name_x) %}
+                {% set version_y = name_y - 20 %}
+                {% set footer_line_y = 50 %}
+                {% set footer_x = page_w - frame_x %}
+                {% set footer_y = footer_line_y - 20%}
+                <!--this has to be bigger greater or equal to the font size-->
+                {% set footer_frame_h = 12 %}
+                {% set footer_frame_y = footer_line_y / 2%}
+                <!--Logo block-->
+                <image x="{{logo_x}}" y = "{{logo_y}}" file="{{image_path}}logo_only2.png" width = "{{logo_w}}" height = "{{logo_h}}"/>
+                <image x="{{name_x}}" y = "{{name_y}}" file="{{image_path}}name2.png" width = "{{name_w}}" height = "{{name_h}}"/>
                 <setFont name="Roboto Bold Italic" size="12"/>
-                <drawRightString x="523" y="800">Version {{version}}</drawRightString>
-                <setFont name="Roboto Bold Italic" size="36"/>
-                <image x="30" y="750" file="configs/out_template/assets/pdf/FBK_Cybersecurity_colour.png" width = "150" height = "70"/>
-                <setFont name="Roboto" size="20"/>
+                <drawRightString x="{{version_x}}" y="{{version_y}}">Version {{version}}</drawRightString>
+                <stroke color="#4160b0"/>
+                <rect x = "0" y = "{{footer_line_y}}" width = "{{page_w}}" height = "1"/>
+                <place x = "{{frame_x}}" y="{{footer_frame_y}}" width="{{frame_w}}" height="{{footer_frame_h}}">
+                    <para style="footer">© {{year}} Fondazione Bruno Kessler</para>
+                </place>
             </pageGraphics>
-            <frame id="first" x1="70" y1="150" width="455" height="570"/>
-            <pageGraphics>
-                <!-- Footer -->
-                <image x="222" y = "30" file="configs/out_template/assets/img/ST.png" width = "150" height = "65"/>
-            </pageGraphics>
+            <frame id="first" x1="{{first_frame_x}}" y1="{{first_frame_y}}" width="{{frame_w}}" height="{{first_frame_h}}"/>
+            <!-- the commented frame below is used to visually show the place used for the copyright footer-->
+            <!-- <frame id ="footer" x1 = "{{frame_x}}" y1="{{footer_frame_y}}" width="{{frame_w}}" height="{{footer_frame_h}}"/> -->
         </pageTemplate>
-        <!-- Second page -->
+        <pageTemplate id="disclaimer">
+            <frame id="default_frame" x1="{{frame_x}}" y1="{{frame_y}}" width="{{frame_w}}" height="{{frame_h}}"/>
+        </pageTemplate>
         <pageTemplate id="standard">
-            <frame id="second_frame" x1="70" y1="150" width="455" height="570"/>
+            <pageGraphics>
+                <drawRightString x="{{footer_x}}" y="{{footer_y}}">Page <pageNumber/> of <getName id="lastPage" default="0" /></drawRightString>
+            </pageGraphics>
+            <frame id="default_frame" x1="{{frame_x}}" y1="{{frame_y}}" width="{{frame_w}}" height="{{frame_h}}"/>
         </pageTemplate>
     </template>
-    <stylesheet>
-        <blockTableStyle id="report">
-            <lineStyle start="0,0" stop="-1,-1" kind="GRID" thickness="0.25" colorName="black"/>
-            <blockFont start="0,0" stop="-1,-1" name="Roboto" size="12"/>
-            <blockValign start = "0,0" stop = "-1,-1" value="MIDDLE"/>
-            <blockAlignment start = "0,0" stop = "-1,-1" value="CENTER"/>
-        </blockTableStyle>
-    </stylesheet>
+
     <story>
-        <setNextTemplate name="standard"/>
-{%if results%}
-        <h1>Recap</h1>
-        <para fontName="Roboto"></para>
-        <blockTable style="report">
-            <tr> 
-                <td>Hostname / Modules: </td>
-    {% for host in results %}
-                <td>{{host}}</td>
-    {% endfor %}
-            </tr>
-    {% for module in modules %}
-            <tr>
-                <td>{{module}}</td>
-        {% for host in results %}
-                <td>
-                {% if results[host][module] %}
-                    <para fontName="Roboto Bold" textColor="red">Potentially Vulnerable</para>
-                {% else %}
-                    <para fontName="Roboto Bold">Not Vulnerable</para>
-                {% endif %}
-                </td>
-        {% endfor %}
-            </tr>
-    {% endfor %}
-        </blockTable>
+        <!--cercare template per scrivre disclaimer stile approver (confidenziale) (PAGINA 2)-->
+        <!--forse mettere il comando usato per generare il report-->
+        {% if hosts.__len__() == 1 %}
+            {%set host = hosts[0]%}
+            <para style="title"><b>Target: {{host}}</b></para>
+        {% elif hosts.__len__() > 1 %}
+            <para style="title"><b>Target: <i>multiple hosts</i></b></para>
+        {% else %}
+            <para style="title"><b>NO HOST LIST FOUND</b></para>
+        {% endif %}
+        <para style="subtitle">Analysis performed on {{date}}</para>
+        <setNextTemplate name="disclaimer"/>
         <nextFrame/>
-{%endif%}
-        <h1>Detailed Results</h1>
-{%if results%}
-        <para fontName="Roboto">{{date}}</para>
-        <para> Modules: 
-        {% for module in  modules%} {{module}} {%endfor%}
-        </para>
-        {% for host in results %}
-            <para alignment="center" fontSize="18" spaceBefore="15"> {{host}} </para>
+        <para style="title">TODO: write a disclaimer</para>
+        <setNextTemplate name="standard"/>
+        <nextFrame/>
+        <h1 style="recap">Recap</h1>
+        <blockTable style="report">
+            <tr>
+                <td>Hostname / Modules: </td>
+                {% for host in results %}
+                    <td>{{host}}</td>
+                {% endfor %}
+            </tr>
             {% for module in modules %}
-                {% if results[host][module] %}
-                    <para alignment="left" fontSize="15" spaceBefore="12">{{module}}</para>
-                    <h6>
-                    {%set i = 0%}
-                    {%for cvss in ['CVE', 'CVSS2','CVSS3']%}
-                        {% if cvss in results[module] %}
-                            {%if i != 0%}
-                                -
-                            {%endif%}
-                            {{cvss}}: {{results[module][cvss]}} 
+                <tr>
+                    <td>{{name_mapping.get(module, module)}}</td>
+                    {% for host in results %}
+                        <td>
+                        {% if results[host][module] %}
+                            <para style="potentially_vulnerable">Potentially Vulnerable</para>
+                        {% else %}
+                            <para style="not_vulnerable">Not Vulnerable</para>
                         {% endif %}
-                        {% set i = i+1 %}
+                        </td>
                     {% endfor %}
-                    </h6>
-                    <para alignment="left" fontSize="12" spaceBefore="5"> {{results[host][module]["Name"]}} </para>
-                    <para alignment="left" fontSize="12" spaceBefore="5"> {{results[host][module]["Description"]}} </para>
-                    <h4>Mitigation</h4>  
-                    {% for key,mitigation in results[host][module]['Mitigation'].items() %}
-                    <h5>
-                        <strong>{{key}}</strong>
-                    </h5>
-                    <para fontName="Roboto">{{mitigation}}</para>
-                    {% endfor %}
-                {% endif %}
+                </tr>
+            {% endfor %}
+        </blockTable>
+        {% if results %}
+            <nextFrame/>
+            <h1 style="detected_vulnerabilities">Detected vulnerabilities</h1>
+            {% for host in results %}
+                <para style="host"> {{host}} </para>
+                {% for module in modules %}
+                    {% if results[host][module] %}
+                        <h3 style = "module">{{results[host][module]['Name']}}</h3>
+                        {% set ns = namespace(cvss_string = "", i=0)%}
+                        {%for cvss in ['CVE', 'CVSS2','CVSS3']%}
+                            {% if cvss in results[host][module] %}
+                                {%if ns.i != 0%}
+                                    {% set ns.cvss_string = ns.cvss_string + " - "%}
+                                {%endif%}
+                                {% set ns.cvss_string = ns.cvss_string + cvss + ":" + results[host][module][cvss] %}
+                            {% endif %}
+                            {% set ns.i = ns.i+1 %}
+                        {% endfor %}
+                        {% if ns.cvss_string != "" %}
+                            <h6 style = "cvss">{{ns.cvss_string}}</h6>
+                        {% endif %}
+                        {% if results[host][module]['ExtendedName'] != results[host][module]['Name'] %}
+                            <h4 style = "module_full_name">{{results[host][module]['ExtendedName']}}</h4>
+                        {% endif %}
+                        <para style="description">{{results[host][module]["Description"]}} </para>
+                        {% if 'Mitigation' in results[host][module] %}
+                            <h4 style = "mitigation">Mitigation</h4>
+                            {% for key,mitigation in results[host][module]['Mitigation'].items() %}
+                                <h5 style = "mitigation_type">{{key}}</h5>
+                                {% set mit_ns = namespace(new_mitigation=mitigation)%}
+                                {% for replacement in Replacements %}
+                                    {% set mit_ns.new_mitigation = sub(replacement, Replacements[replacement], mit_ns.new_mitigation) %}
+                                {% endfor %}
+                                <para style = "mitigation_text">{{mit_ns.new_mitigation}}</para>
+                            {% endfor %}
+                        {% endif %}
+                    {% endif %}
+                {%endfor%}
             {%endfor%}
-        {%endfor%}
-        
-{%endif%}
+        {% else %}
+            <para style="no_vulnerabilities_detected">No vulnerabilities detected</para>
+        {% endif %}
+        <namedString id="lastPage"><pageNumber/></namedString>
     </story>
 </document>
