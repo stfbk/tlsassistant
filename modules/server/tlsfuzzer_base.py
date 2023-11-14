@@ -1,9 +1,11 @@
-from modules.server.wrappers.tlsfuzzer import Tlsfuzzer
-from utils.validation import Validator
-from utils.urls import url_domain, port_parse
-from utils.mitigations import load_mitigation
-from utils.counter import count_occurrencies as grep
 import logging
+
+from modules.server.wrappers.testssl import Testssl
+from modules.server.wrappers.tlsfuzzer import Tlsfuzzer
+from utils.counter import count_occurrencies as grep
+from utils.mitigations import load_mitigation
+from utils.urls import url_domain, port_parse
+from utils.validation import Validator
 
 
 class Tlsfuzzer_base:
@@ -19,6 +21,7 @@ class Tlsfuzzer_base:
         self._mitigations = {}
         self._set_arguments()
         self.__logging = self._get_logger()
+        self._testssl = Testssl()
 
     def _get_logger(self):
         """
@@ -121,10 +124,19 @@ class Tlsfuzzer_base:
                     )
                     out = self._set_mitigations(out, list_of_checks["MITIGATION"], True)
             else:
-                self.__logging.warning(
-                    f"Results won't make sense for script {script}, sanity check failed."
-                )
-                self.__logging.info(f"Ignoring {script} analysis.\n")
+                reason = "Reason: "
+                if script == "test-certificate-verify" and "Unexpected message from peer: Handshake(server_hello_done)" in \
+                        results[script]:
+                    reason += "Server did not send a CertificateVerify message, the test cannot be performed."
+                elif script == "test-clienthello-md5" and "Alert(fatal, handshake_failure)" in results[script] and \
+                        not self._testssl.output().get("cipher-tls1_2_x6b", False):
+                    reason += ("Server does not support cipher `TLS_DHE_RSA_WITH_AES_256_CBC_SHA256`, "
+                               "the test cannot be performed.")
+                else:
+                    self.__logging.warning(
+                        f"Results won't make sense for script {script}, sanity check failed."
+                    )
+                self.__logging.info(f"Ignoring {script} analysis.\n" + reason)
         return out
 
     def run(self, **kwargs):
@@ -156,7 +168,9 @@ class Tlsfuzzer_base:
             [(self._input_dict["hostname"], str), (self._input_dict["port"], str)]
         )
         self._input_dict["hostname"] = url_domain(self._input_dict["hostname"])
-
+        if not self._testssl.output():
+            self._testssl.run(**{"hostname": self._input_dict["hostname"], "arguments": ["--json", "-e"],
+                                 "port": self._input_dict["port"]})
         logging.debug(
             f"Executing analysis in {self._input_dict['hostname']} in port {self._input_dict['port']} with scripts "
             f"{', '.join([s[0] for s in self._arguments])}"

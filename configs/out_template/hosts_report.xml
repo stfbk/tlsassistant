@@ -15,7 +15,7 @@
         <paraStyle name = "no_vulnerabilities_detected" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30" textColor="green" spaceBefore="20"/>
         <paraStyle name = "module_list" fontName = "Roboto" fontSize="10" alignment="left" textColor="grey" spaceAfter="5"/>
         <paraStyle name = "module" fontName = "Roboto Bold" fontSize="20" alignment="left" spaceAfter="15" spaceBefore="10"/>
-        <paraStyle name = "host" fontName = "Roboto Bold" fontSize = "25" alignment="centre" spaceAfter="15" spaceBefore="20"/>
+        <paraStyle name = "host" fontName = "Roboto Bold" fontSize = "25" alignment="centre" spaceAfter="25" spaceBefore="20" textColor="#4d4d4d"/>
         <paraStyle name = "module_full_name" fontName = "Roboto" fontSize="12" alignment="left" textColor="grey" spaceAfter="5"/>
         <paraStyle name = "cvss" fontName = "Roboto" fontSize="12" alignment="left" textColor="grey" spaceAfter="5"/>
         <paraStyle name = "description" fontName = "Roboto Italic" fontSize="12" alignment="left" textColor="grey" spaceAfter="10"/>
