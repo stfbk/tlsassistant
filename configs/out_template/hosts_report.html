@@ -54,6 +54,10 @@
                                             <td
                                                 style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(255,175,175,0.59);">
                                                 Potentially Vulnerable</td>
+                                        {% elif results[host].get("errors", None) %}
+                                            <td
+                                                style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(255,175,175,0.59);">
+                                                Error</td>
                                         {% else %}
                                             <td
                                                 style="font-family: Roboto, sans-serif;font-style: italic;color: rgb(33, 37, 41);background: rgba(235,235,235,0.59);">
@@ -84,6 +88,23 @@
                 <h5 class="text-center"
                     style="font-family: 'Roboto Condensed', sans-serif;color: #a5a5a5;background: rgba(235,235,235,0);">
                     {{host}}</h5>
+                <div class="card">
+                    <h6 class="card-title" style="color: red;font-family: Roboto, sans-serif;">
+                            ERRORS:
+                    </h6>
+                    <div class="card-body">
+                        <p class="card-text"
+                            style="font-family: 'Roboto Condensed', sans-serif;color: #6c757d;font-style: italic;">
+                            {% if results[host].get("errors", None) %}
+                                {% for error in results[host]["errors"] %}
+                                    {% if error != "raw" %}
+                                        {{error}} : {{results[host]["errors"][error]}}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
                 {% for module in modules %}
                 {% if results[host][module] %}
                 <div class="card">

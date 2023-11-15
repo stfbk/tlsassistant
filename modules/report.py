@@ -89,6 +89,8 @@ class Report:
             if module not in out:
                 out[module] = {}
             for hostname in results:
+                if "errors" in results[hostname]:
+                    out["errors"] = results[hostname]["errors"]
                 self.__logging.debug(f"Generating report for {hostname}")
                 if module in results[hostname]:
                     if "raw" in results[hostname][module]:
@@ -121,6 +123,8 @@ class Report:
             # the results are good, we need to remove the "Entry" key but preserve the rest with the CaseInsensitiveDict
             if hostname not in out:
                 out[hostname] = {}
+            if "errors" in results[hostname]:
+                out[hostname]["errors"] = results[hostname]["errors"][hostname]
             for module in results[hostname]:
                 raw_results = {}
                 if "raw" in results[hostname][module]:
