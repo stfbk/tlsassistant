@@ -22,5 +22,8 @@
   "CHECK_KEY_TYPE": "FUNCTION check_key_type",
   "CHECK_ONLY_FIRST": "FUNCTION always_true",
   "VALUE": "FUNCTION check_value",
-  "VERIFY_SCSV": "FUNCTION verify_scsv"
+  "VERIFY_SCSV": "FUNCTION verify_scsv",
+  "CHECK_AKI": "FUNCTION check_aki",
+  "CHECK_SAME_KEYUSAGE": "FUNCTION check_same_key_usage",
+  "DISABLE_IF": "FUNCTION disable_if"
 }

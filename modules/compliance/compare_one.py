@@ -38,7 +38,11 @@ class CompareOne(Compliance):
                     if condition:
                         valid_condition = self._condition_parser.run(condition, enabled)
                         enabled = self._condition_parser.entry_updates.get("is_enabled", enabled)
-                        self._logging.debug(f"Condition: {condition} - enabled: {enabled} - valid_condition: {valid_condition}" )
+                        if self._condition_parser.entry_updates.get("disable_if"):
+                            enabled = self.check_disable_if(self._condition_parser.entry_updates.get("disable_if"), enabled,
+                                                       valid_condition)
+                        self._logging.debug(
+                            f"Condition: {condition} - enabled: {enabled} - valid_condition: {valid_condition}")
                         if self._condition_parser.entry_updates.get("levels"):
                             levels = self._condition_parser.entry_updates.get("levels")
                             levels.insert(0, level)

@@ -9,9 +9,10 @@ from utils.validation import Validator
 class ConditionParser:
     _instructions = load_configuration("condition_instructions", "configs/compliance/")
     _instructions_keys = '|'.join(_instructions.keys())
-    _logical_separators = [" and ", " or "]
+    _no_match = "calculated"
+    _logical_separators = [" and ", " or ", " xor "]
     # this string ensures that the logical_separators are only matched if they are followed by a valid instruction
-    _concatenation_string = f"(?={_instructions_keys}|True|False|!)"
+    _concatenation_string = f"(?!{_no_match})(?={_instructions_keys}|True|False|!)"
     regex_separators = []
     for el in _logical_separators:
         regex_separators.append(el + _concatenation_string)
@@ -21,6 +22,7 @@ class ConditionParser:
     splitting_capturing_regex = "(" + ")|(".join(regex_separators) + ")"
     _sheet_mapping = load_configuration("sheet_mapping", "configs/compliance/")
     __logging = Logger("Condition parser")
+    __logging.debug(_splitting_regex)
 
     # mapping from field indicator used in the conditions to the field of the configuration dictionary
 
@@ -33,6 +35,7 @@ class ConditionParser:
         self._operators = {
             "and": lambda op1, op2: op1 and op2,
             "or": lambda op1, op2: op1 or op2,
+            "xor": lambda op1, op2: (not op1) != (not op2),
         }
 
     @staticmethod
@@ -248,7 +251,8 @@ class CustomFunctions:
     def __init__(self, user_configuration):
         self._user_configuration = user_configuration
         self._validator = Validator()
-        self._entry_updates = {"levels": [], "notes": []}
+        self._entry_updates = {}
+        self.reset()
         self._operators = {
             ">": lambda op1, op2: op1 > op2,
             "<": lambda op1, op2: op1 < op2,
@@ -260,6 +264,9 @@ class CustomFunctions:
             "not in": lambda op1, op2: op1 not in op2,
         }
         self._operators_regex = "(" + ")|(".join(self._operators.keys()) + ")"
+        self._extended_key_usage_consistency = load_configuration("extended_key_usage_consistency",
+                                                                  "configs/compliance/")
+        self._consistency_regex = r" x{0,1}or |[()]"
         self._logger = Logger("Custom functions")
 
     # INSERT ALL THE CUSTOM PARSING FUNCTIONS HERE THEY MUST HAVE SIGNATURE:
@@ -479,6 +486,84 @@ class CustomFunctions:
         self._entry_updates["is_enabled"] = enabled
         return True
 
+    def check_aki(self, **kwargs):
+        """
+        Checks for the condition: "Same as subject key identifier in issuing CA certificate; Prohibited: Issuer DN,
+        Serial Number tuple"
+        :param kwargs:
+        :return:
+        """
+        self.entry_updates["is_enabled"] = False
+        for cert in self._user_configuration.get("CertificateExtensions", {}):
+            if cert.startswith("int"):
+                continue
+            failed = False
+            cert_data = self._user_configuration["CertificateExtensions"][cert]
+            aki = cert_data.get("authorityKeyIdentifier", "")
+            if not aki:
+                self._entry_updates["notes"].append(f"No AKI found for certificate {cert}")
+                failed = True
+            if "issuer" in aki.lower() or "serial" in aki.lower() or "dirname" in aki.lower():
+                self._entry_updates["notes"].append(
+                    f"Certificate {cert} contains Issuer DN or Serial Number in the AKI field")
+                self._entry_updates["levels"].append("must not")
+                self.entry_updates["is_enabled"] = True
+                failed = True
+            intermediate_certificate = self._user_configuration["CertificateExtensions"].get("int_" + cert, {})
+            if not intermediate_certificate:
+                intermediate_certificate = self._user_configuration["CertificateExtensions"].get("int_1_" + cert, {})
+            if not intermediate_certificate:
+                self._entry_updates["notes"].append(f"No intermediate certificate found for certificate {cert}")
+                failed = True
+            ski = intermediate_certificate.get("subjectKeyIdentifier", "")
+            if not ski:
+                self._entry_updates["notes"].append(f"No SKI found for intermediate certificate {cert}")
+                failed = True
+            if failed:
+                # The condition must be True so that the note is shown
+                return True
+            result = ski == aki
+            self.entry_updates["is_enabled"] = result
+            return result
+        self._logger.debug("No certificate information found, returning True for condition check_aki")
+        self.entry_updates["is_enabled"] = True
+        return True
+
+    def check_same_key_usage(self, **kwargs):
+        for cert in self._user_configuration.get("CertificateExtensions", {}):
+            if cert.startswith("int"):
+                continue
+            cert_data = self._user_configuration["CertificateExtensions"][cert]
+            key_usage = cert_data.get("keyUsage", "")
+            extended_key_usages = cert_data.get("extendedKeyUsage", "")
+            if not key_usage or not extended_key_usages:
+                self._entry_updates["notes"].append(f"No key usage or extended key usage found for certificate {cert}")
+                return False
+            key_usage = key_usage.split(", ")
+            extended_key_usages = extended_key_usages.split(", ")
+            results = []
+            findings = []
+            for ext_key_usage in extended_key_usages:
+                condition = self._extended_key_usage_consistency.get(ext_key_usage, "")
+                checks = re.split(self._consistency_regex, condition)
+                checks = [check.strip() for check in checks if check.strip()]
+                for check in checks:
+                    condition = condition.replace(check, str(check in key_usage))
+                result = ConditionParser(self._user_configuration).run(condition, True)
+                results.append(result)
+                print(result, ext_key_usage)
+                if not result:
+                    findings.append(ext_key_usage)
+            self.entry_updates[
+                "note_true"] = [f"The certificate {cert} contains extended key usages that aren't in the key usage field. The invalid usages are: {', '.join(findings)}"]
+            return not all(results)
+        self._logger.debug("No certificate information found, returning False for condition check_same_key_usage")
+        self.entry_updates["is_enabled"] = False
+
+    def disable_if(self, **kwargs):
+        self._entry_updates["disable_if"] = kwargs.get("tokens", [""])[0]
+        return True
+
     @staticmethod
     def always_true(**kwargs):
         return True
@@ -488,4 +573,4 @@ class CustomFunctions:
         return self._entry_updates
 
     def reset(self):
-        self._entry_updates = {"levels": [], "notes": []}
+        self._entry_updates = {"levels": [], "notes": [], "note_false": [], "note_always": [], "note_true": []}

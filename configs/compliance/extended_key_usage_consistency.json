@@ -1,0 +1,8 @@
+{
+  "TLS Web Server Authentication": "Digital Signature or (Key Encipherment xor Key Agreement) ",
+  "TLS Web Client Authentication": "Digital Signature or Key Agreement",
+  "Code Signing": "Digital Signature",
+  "E-mail Protection": "Digital Signature or Non Repudiation or (Key Encipherment xor Key Agreement)",
+  "Time Stamping": "Digital Signature or Non Repudiation",
+  "OCSP Signing": "Digital Signature or Non Repudiation"
+}

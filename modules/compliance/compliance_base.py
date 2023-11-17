@@ -121,9 +121,9 @@ class Compliance:
                 self._config_class = NginxConfiguration(actual_configuration)
             self.prepare_configuration(self._config_class.configuration)
         if hostname and self._validator.string(hostname) and hostname != "placeholder":
-            test_ssl_output = self.test_ssl.run(**{"hostname": hostname, "one": True})
-            # with open(f"testssl_output-{hostname}.json", "r") as f:
-            #     test_ssl_output = json.load(f)
+            # test_ssl_output = self.test_ssl.run(**{"hostname": hostname, "one": True})
+            with open(f"testssl_dumps/testssl_output-{hostname}.json", "r") as f:
+                test_ssl_output = json.load(f)
             failed = 0
             for key in test_ssl_output:
                 if test_ssl_output[key].get("scanProblem") and test_ssl_output[key]["scanProblem"].get(
@@ -132,10 +132,9 @@ class Compliance:
                     self._logging.warning(f"Testssl failed to perform the analysis on {key}")
             if failed == len(test_ssl_output):
                 raise ValueError("Testssl failed to perform the analysis on all the hosts")
-            with open(f"testssl_output-{hostname}.json", "w") as f:
+            with open(f"testssl_dumps/testssl_output-{hostname}.json", "w") as f:
                 json.dump(test_ssl_output, f, indent=4)
             self.prepare_testssl_output(test_ssl_output)
-
         if output_file and self._validator.string(output_file):
             if self._apache:
                 self._config_class = ApacheConfiguration()
@@ -206,8 +205,10 @@ class Compliance:
     @staticmethod
     def find_cert_index(field: str):
         if "#" in field:
-            # the last char is a > so it gets removed
-            return field.split("#")[-1].strip(">")
+            # In the case of multiple certificates the intermediate certificates have 2 numbers
+            groups = re.match(r".*(\d+).*(\d)|.*(\d+)", field).groups()
+            groups = [el for el in groups if el]
+            return "_".join(groups)
         else:
             return "1"
 
@@ -355,6 +356,7 @@ class Compliance:
                     self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
                 elif field == "fallback_SCSV":
                     self._user_configuration["fallback_SCSV"] = actual_dict["finding"]
+        pprint.pprint(self._user_configuration["CertificateExtensions"])
 
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition):
         information_level = None
@@ -501,6 +503,9 @@ class Compliance:
 
                         valid_condition = self._condition_parser.run(condition, enabled)
                         enabled = self._condition_parser.entry_updates.get("is_enabled", enabled)
+                        if self._condition_parser.entry_updates.get("disable_if"):
+                            enabled = self.check_disable_if(self._condition_parser.entry_updates.get("disable_if"),
+                                                            enabled, valid_condition)
                         self._logging.debug(f"Condition: {condition} - enabled: {enabled} - valid: {valid_condition}")
                         if self._condition_parser.entry_updates.get("levels"):
                             potential_levels = self._condition_parser.entry_updates.get("levels")
@@ -564,6 +569,15 @@ class Compliance:
                     "note": note
                 }
                 total += 1
+
+    @staticmethod
+    def check_disable_if(condition, enabled, valid_condition):
+        if not condition:
+            return enabled
+        if isinstance(condition, str):
+            if condition in ["True", "False"]:
+                return (condition == "True") == valid_condition
+        return enabled
 
 
 class Generator(Compliance):
