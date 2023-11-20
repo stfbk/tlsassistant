@@ -1,4 +1,4 @@
-<!DOCTYPE document SYSTEM "rml_1_0.dtd">
+<!DOCTYPE document SYSTEM "rml-1.0.dtd">
 <document>
     <docinit>
         <registerTTFont faceName="Roboto" fileName="dependencies/roboto-unhinted/Roboto-Regular.ttf" />
@@ -12,6 +12,7 @@
         <paraStyle name = "subtitle" fontName = "Roboto" fontSize="17" alignment="centre" textColor="grey"/>
         <paraStyle name = "recap" fontName = "Roboto Bold" fontSize = "25" alignment="centre" spaceAfter="25"/>
         <paraStyle name = "detected_vulnerabilities" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30"/>
+        <paraStyle name = "detected_errors" fontName = "Roboto Bold" fontSize = "28" alignment="left" spaceAfter="30" textColor="red"/>
         <paraStyle name = "no_vulnerabilities_detected" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30" textColor="green" spaceBefore="20"/>
         <paraStyle name = "module_list" fontName = "Roboto" fontSize="10" alignment="left" textColor="grey" spaceAfter="5"/>
         <paraStyle name = "module" fontName = "Roboto Bold" fontSize="20" alignment="left" spaceAfter="15" spaceBefore="10"/>
@@ -30,15 +31,15 @@
         <paraStyle name = "not_vulnerable" fontName="Roboto"/>
         <paraStyle name = "potentially_vulnerable" fontName="Roboto Bold" textColor="red"/>
         <blockTableStyle id="report">
-            <lineStyle start="0,0" stop="-1,-1" kind="GRID" thickness="0.25" colorName="black"/>
+            <lineStyle start="0,0" stop="-1,-1" kind="grid" thickness="0.25" colorName="black" cap="default"/>
             <blockFont start="0,0" stop="1,0" name="Roboto Bold" size="12"/>
             <blockFont start="0, 1" stop="-1,-1" name="Roboto"/>
             <!-- <blockTopPadding length="0.1cm" start="0,0" stop="-1,1"/>
                 <blockBottomPadding length="0.25cm" start="0,0" stop="-1,1"/>
                 <blockLeftPadding length="0.1cm" start="0,0" stop="-1,1"/>
                 <blockRightPadding length="0.1cm" start="0,0" stop="-1,1"/>  -->
-            <blockValign start = "0,0" stop = "-1,-1" value="MIDDLE"/>
-            <blockAlignment start = "0,0" stop = "-1,-1" value="LEFT"/>
+            <blockValign start = "0,0" stop = "-1,-1" value="middle"/>
+            <blockAlignment start = "0,0" stop = "-1,-1" value="left"/>
         </blockTableStyle>
     </stylesheet>
     {% set date = date.strftime("%Y-%m-%d %H:%M")%}
@@ -84,11 +85,11 @@
                 <image x="{{logo_x}}" y = "{{logo_y}}" file="{{image_path}}logo_only2.png" width = "{{logo_w}}" height = "{{logo_h}}"/>
                 <image x="{{name_x}}" y = "{{name_y}}" file="{{image_path}}name2.png" width = "{{name_w}}" height = "{{name_h}}"/>
                 <setFont name="Roboto Bold Italic" size="12"/>
-                <drawRightString x="{{version_x}}" y="{{version_y}}">Version {{version}}</drawRightString>
+                <drawRightString x="{{version_x}}" y="{{version_y}}" text="Version {{version}}"/>
                 <stroke color="#4160b0"/>
                 <rect x = "0" y = "{{footer_line_y}}" width = "{{page_w}}" height = "1"/>
                 <place x = "{{frame_x}}" y="{{footer_frame_y}}" width="{{frame_w}}" height="{{footer_frame_h}}">
-                    <para style="footer">© {{year}} Fondazione Bruno Kessler</para>
+                    <para name="footer" style="footer">© {{year}} Fondazione Bruno Kessler</para>
                 </place>
             </pageGraphics>
             <frame id="first" x1="{{first_frame_x}}" y1="{{first_frame_y}}" width="{{frame_w}}" height="{{first_frame_h}}"/>
@@ -138,6 +139,8 @@
                         <td>
                         {% if results[host][module] %}
                             <para style="potentially_vulnerable">Potentially Vulnerable</para>
+                        {% elif results[host].get("errors", None) %}
+                            <para style="potentially_vulnerable">Error</para>
                         {% else %}
                             <para style="not_vulnerable">Not Vulnerable</para>
                         {% endif %}
@@ -148,9 +151,26 @@
         </blockTable>
         {% if results %}
             <nextFrame/>
+            {%set i_ns = namespace(i=0)%}
+            {% for host in results%}
+                {% if results[host].get("errors", None) %}
+                    {% set i_ns.i = i_ns.i + 1%}
+                {% endif %}
+            {% endfor %}
+            {% if i_ns.i != results.keys().__len__() %}
+                <!--Insert here text to show if all the hosts had an error-->
+            {% endif %}
             <h1 style="detected_vulnerabilities">Detected vulnerabilities</h1>
             {% for host in results %}
                 <para style="host"> {{host}} </para>
+                {% if results[host].get("errors", None) %}
+                    <h1 style="detected_errors">Errors</h1>
+                    {% for error in results[host]["errors"] %}
+                        {% if error != "raw" %}
+                            <h3 style="module">{{error}}: {{results[host]["errors"][error]}}</h3>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
                 {% for module in modules %}
                     {% if results[host][module] %}
                         <h3 style = "module">{{results[host][module]['Name']}}</h3>

@@ -38,6 +38,26 @@
                 Modules: {% for module in modules%} {{module}} {%endfor%} </h6>
             {%if results%}
             <div class="card" style="background: rgba(235,235,235,0.59);">
+                {% if "errors" in results %}
+                    {% for host in results["errors"] %}
+                        {%if host != "raw" %}
+                            <div class="card" style="background: rgba(235,235,235,0.59);">
+                                <div class="card-body">
+                                    <h3 class="card-title" style="color: red;font-family: Roboto, sans-serif;">Errors for {{host}}</h3>
+                                </div>
+                                <div class="card-body">
+                                    {% for error in results["errors"][host] %}
+                                        <p class="card-text" style="color: #000000;font-family: Roboto, sans-serif;">
+                                                {% if error != "raw" %}
+                                                    {{error}}: {{results["errors"][host][error]}}
+                                                {% endif %}
+                                        </p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
                 {% for module in modules %}
                 {% if module in results and results[module]%}
                 <div class="card">

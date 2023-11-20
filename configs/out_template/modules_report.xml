@@ -12,6 +12,7 @@
         <paraStyle name = "subtitle" fontName = "Roboto" fontSize="17" alignment="centre" textColor="grey"/>
         <paraStyle name = "recap" fontName = "Roboto Bold" fontSize = "25" alignment="centre" spaceAfter="25"/>
         <paraStyle name = "detected_vulnerabilities" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30"/>
+        <paraStyle name = "detected_errors" fontName = "Roboto Bold" fontSize = "28" alignment="left" spaceAfter="30" textColor="red"/>
         <paraStyle name = "no_vulnerabilities_detected" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30" textColor="green" spaceBefore="20"/>
         <paraStyle name = "module_list" fontName = "Roboto" fontSize="10" alignment="left" textColor="grey" spaceAfter="5"/>
         <paraStyle name = "module" fontName = "Roboto Bold" fontSize="20" alignment="left" spaceAfter="15" spaceBefore="10"/>
@@ -36,8 +37,8 @@
                 <blockBottomPadding length="0.25cm" start="0,0" stop="-1,1"/>
                 <blockLeftPadding length="0.1cm" start="0,0" stop="-1,1"/>
                 <blockRightPadding length="0.1cm" start="0,0" stop="-1,1"/>  -->
-            <blockValign start = "0,0" stop = "-1,-1" value="MIDDLE"/>
-            <blockAlignment start = "0,0" stop = "-1,-1" value="LEFT"/>
+            <blockValign start = "0,0" stop = "-1,-1" value="middle"/>
+            <blockAlignment start = "0,0" stop = "-1,-1" value="left"/>
         </blockTableStyle>
     </stylesheet>
     {% set date = date.strftime("%Y-%m-%d %H:%M")%}
@@ -129,10 +130,18 @@
                 <td>Modules</td>
                 <td>Potentially Vulnerable</td>
             </tr>
+            {%set i_ns = namespace(i=0)%}
+            {% for host in hosts%}
+                {% if results["errors"].get(host, None) %}
+                    {% set i_ns.i = i_ns.i + 1%}
+                {% endif %}
+            {% endfor %}
             {% for module in modules %}
                 <tr>
                     <td>{{name_mapping.get(module, module)}}</td>
-                    {% if module in results %}
+                    {% if i_ns.i == results.keys().__len__() %}
+                        <td><para style="potentially_vulnerable"> All the hosts encountered an error</para></td>
+                    {% elif module in results %}
                         {%set hosts_count = results[module]["hosts"].__len__()%}
                         {% if hosts_count > 0 %}
                             {% if hosts_count == 1 %}
@@ -151,6 +160,16 @@
         {% if results %}
             <nextFrame/>
             <h1 style = "detected_vulnerabilities">Detected vulnerabilities</h1>
+            {% if results.get("errors", None) %}
+                <h1 style="detected_errors">Errors for host: {{host}}</h1>
+                {% for host in hosts %}
+                    {% for error in results["errors"].get(host, {}) %}
+                        {% if error != "raw" %}
+                            <h3 style="module">{{error}}: {{results["errors"][host][error]}}</h3>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
             {% for module in modules %}
                 {% if module in results and results[module]%}
                     <h3 style = "module">{{results[module]['Name']}}</h3>
