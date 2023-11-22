@@ -41,9 +41,11 @@ class Hsts_preloading(Hsts_base):
         :rtype: dict
         """
         if condition:
+            mitigation_to_load = "HSTS_NOT_PRELOADED_INVALID_CERT" if self._instance.invalid_cert else "HSTS_NOT_PRELOADED"
             result["mitigation"] = load_mitigation(
-                "HSTS_NOT_PRELOADED", raise_error=False
+                mitigation_to_load, raise_error=False
             )  # todo: remove, debug until we have all mitigations
+            print(result["mitigation"])
         return result if condition else {}
 
     # to override
