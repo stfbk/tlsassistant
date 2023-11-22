@@ -199,7 +199,8 @@ if __name__ == "__main__":
                             # If the cell is empty and the level isn’t negative (must not, not recommended)
                             # then "must not" is used as the level.
                             if pd.notna(content) or level in ["not recommended", "must not"]:
-                                content = level
+                                if content not in ["recommended", "must"]:
+                                    content = level
                             else:
                                 content = "must not"
 
@@ -228,12 +229,20 @@ if __name__ == "__main__":
                     elif pd.notna(header[1]) and \
                             get_first_col_for_guideline(guidelines_dataframe, header[0]) != header[1]:
                         # update all the lists of the same guideline with the condition
+                        columns_to_apply = []
+                        if " [" in header[1]:
+                            columns_to_apply = header[1].split(" [")[1].replace("]", "").split(",")
+                            columns_to_apply = [int(c.strip()) for c in columns_to_apply]
+                        counter = 0
                         for t_name in values_dict:
                             guideline_db_name = get_guideline_name_for_database(header[0])
                             # this is needed only for the case of KeyLengthsBSI and KeyLengths BSI (from ...)
                             has_valid_underscore = "_" in guideline_db_name and "_" in t_name
                             if t_name.startswith(sheet_mapped + guideline_db_name):
                                 if "_" not in t_name or has_valid_underscore:
+                                    counter += 1
+                                    if " [" in header[1] and counter not in columns_to_apply:
+                                        continue
                                     values_dict[t_name][row[0]].append(content)
                     if is_double_guideline(header[0]):
                         tokens = header[0].split("+")

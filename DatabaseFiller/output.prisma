@@ -31,7 +31,8 @@ model Guideline {
   CipherSuiteNISTPREFERRED2               CipherSuiteNISTPREFERRED2[]
   CipherSuiteNISTPREFERRED3               CipherSuiteNISTPREFERRED3[]
   CipherSuiteBSIPREFERRED1                CipherSuiteBSIPREFERRED1[]
-  CipherSuiteBSIFEDERALREQ                CipherSuiteBSIFEDERALREQ[]
+  CipherSuiteBSIPREFERRED2                CipherSuiteBSIPREFERRED2[]
+  CipherSuiteBSIFEDERALREQ1               CipherSuiteBSIFEDERALREQ1[]
   CipherSuiteANSSI                        CipherSuiteANSSI[]
   CipherSuiteMOZILLAMODERN                CipherSuiteMOZILLAMODERN[]
   CipherSuiteMOZILLAINTERMEDIATE          CipherSuiteMOZILLAINTERMEDIATE[]
@@ -114,7 +115,8 @@ model CipherSuite {
   CipherSuiteNISTPREFERRED2      CipherSuiteNISTPREFERRED2[]
   CipherSuiteNISTPREFERRED3      CipherSuiteNISTPREFERRED3[]
   CipherSuiteBSIPREFERRED1       CipherSuiteBSIPREFERRED1[]
-  CipherSuiteBSIFEDERALREQ       CipherSuiteBSIFEDERALREQ[]
+  CipherSuiteBSIPREFERRED2       CipherSuiteBSIPREFERRED2[]
+  CipherSuiteBSIFEDERALREQ1      CipherSuiteBSIFEDERALREQ1[]
   CipherSuiteANSSI               CipherSuiteANSSI[]
   CipherSuiteMOZILLAMODERN       CipherSuiteMOZILLAMODERN[]
   CipherSuiteMOZILLAINTERMEDIATE CipherSuiteMOZILLAINTERMEDIATE[]
@@ -445,7 +447,19 @@ model CipherSuiteBSIPREFERRED1 {
   @@id([id, name])
 }
 
-model CipherSuiteBSIFEDERALREQ {
+model CipherSuiteBSIPREFERRED2 {
+  id            Int
+  guideline     Guideline   @relation(fields: [guidelineName], references: [name])
+  guidelineName String
+  CipherSuite   CipherSuite @relation(fields: [name], references: [name])
+  name          String
+  level         String? // put level as Nullable (it would be considered not mentioned)
+  condition     String?     @default("")
+
+  @@id([id, name])
+}
+
+model CipherSuiteBSIFEDERALREQ1 {
   id            Int
   guideline     Guideline   @relation(fields: [guidelineName], references: [name])
   guidelineName String
