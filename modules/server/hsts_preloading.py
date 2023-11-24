@@ -8,7 +8,7 @@ class Hsts_preloading(Hsts_base):
     """
     Analysis of the HSTS Preloading status
     """
-
+    # TODO capire perché STIX si trova qui
     stix = Bundled(mitigation_object=load_mitigation("HSTS_NOT_PRELOADED"))
 
     def _get_logger(self):
