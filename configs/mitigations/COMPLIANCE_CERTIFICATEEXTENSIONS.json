@@ -4,13 +4,24 @@
     "Extended Name": "Compliance report for Certificate Extensions",
     "Description": "Compliance report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
-      "Textual": "Add the following extensions to make the configuration compliant: {add}<br/>Remove the following extensions to make the configuration compliant: {remove}",
+      "Textual": "Your certificate has the following issues in its extensions: {add}{remove}</br>You should regenerate it following the constraints in the notes for each field.",
       "Apache": "No snippet available",
       "Nginx": "No snippet available"
     }
   },
   "#ConfigurationInstructions": {
-    "mode": "no_config"
+    "mode": "specific_textual",
+    "authorityKeyIdentifier": "</br>-AuthorityKeyIdentifier",
+    "subjectKeyIdentifier": "</br>-SubjectKeyIdentifier",
+    "keyUsage": "</br>-KeyUsage",
+    "extendedKeyUsage": "</br>-ExtendedKeyUsage",
+    "Certificate Policies": "</br>-CertificatePolicies",
+    "subjectAltName": "</br>-SubjectAlternativeName",
+    "authorityInfoAccess": "</br>-AuthorityInfoAccess",
+    "crlDistributionPoints": "</br>-CRLDistributionPoints",
+    "ct_precert_scts": "</br>-ct_precert_scts",
+    "OCSP must staple extension": "</br>-OCSPMustStaple"
   },
+  "#TODO": "make specific_textual support level to specify it it a should or must",
   "#omit-xml-declaration": "yes"
 }

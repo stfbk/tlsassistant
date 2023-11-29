@@ -4,13 +4,17 @@
     "Extended Name": "Compliance report for Certificates",
     "Description": "Compliance report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
-      "Textual": "Add the following extensions to make the configuration compliant: {add}<br/>Remove the following extensions to make the configuration compliant: {remove}",
+      "Textual": "Your certificate has the following issues: {add}{remove}",
       "Apache": "No snippet available",
       "Nginx": "No snippet available"
     }
   },
   "#ConfigurationInstructions": {
-    "mode": "no_config"
+    "mode": "specific_textual",
+    "X.509 version": "</br>-X.509 version: You should regenerate it following the constraints in the notes.",
+    "Issuer Distinguished Name": "</br>-Issuer Distinguished Name: You should regenerate it following the constraints in the notes.",
+    "validity": "</br>-Validity: You should regenerate it following the constraints in the notes.",
+    "Subject Distinguished Name": "</br>-Subject Distinguished Name: You should regenerate it following the constraints in the notes."
   },
   "#omit-xml-declaration": "yes"
 }

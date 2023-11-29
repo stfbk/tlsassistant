@@ -226,9 +226,12 @@ class Compliance:
                 # The usage of post actions is needed to fix the entries of some of the sheets
                 total_string += conf_instructions["connector"] + conf_instructions[level].replace("name", entry_name)
             if not self._output_dict[hostname][sheet][entry].get("total_string_only"):
-                tmp_string = string.format(name=entry_name,
-                                           action=self._output_dict[hostname][sheet][entry]["action"],
-                                           source=self._output_dict[hostname][sheet][entry]["source"])
+                if conf_instructions["mode"] == "specific_textual":
+                    tmp_string = conf_instructions.get(entry, "")
+                else:
+                    tmp_string = string.format(name=entry_name,
+                                               action=self._output_dict[hostname][sheet][entry]["action"],
+                                               source=self._output_dict[hostname][sheet][entry]["source"])
                 if self._output_dict[hostname][sheet][entry].get("notes"):
                     tmp_string += "; " + self._output_dict[hostname][sheet][entry]["notes"]
                 strings_list.append(tmp_string)
@@ -455,10 +458,12 @@ class Compliance:
         action = None
         entry_level = get_standardized_level(entry_level) if entry_level else None
         total_string_only = False
+        print(f"{sheet} - {name} - {entry_level} - {enabled} - {source} - {valid_condition}")
         if entry_level == "must" and valid_condition and not enabled:
             information_level = "MUST"
             action = "has to be enabled"
-        elif entry_level in ["must", "recommended"] and enabled and valid_condition:
+        elif (entry_level in ["must", "recommended"] and enabled and valid_condition and
+              sheet in self.report_config.get("has_total_string", [])):
             # these entries are not added to the output dict
             total_string_only = sheet in Compliance.report_config.get("has_total_string", [])
             information_level = "MUST"
@@ -469,6 +474,11 @@ class Compliance:
         elif entry_level == "recommended" and valid_condition and not enabled:
             information_level = "RECOMMENDED"
             action = "should be enabled"
+        elif (entry_level in ["must", "recommended"] and not valid_condition and
+              sheet in self.report_config.get("has_specific_textual", [])):
+            information_level = entry_level.lower()
+            # The action does not matter in this case
+            action = ""
         elif entry_level == "not recommended" and valid_condition and enabled:
             information_level = "NOT RECOMMENDED"
             action = "should be disabled"
