@@ -151,7 +151,7 @@ class ConfigurationMaker:
                 self._output_dict[field][name]["guideline"] = guideline
         return tmp_string
 
-    def _perform_post_actions(self, field_rules, actual_string, guideline):
+    def perform_post_actions(self, field_rules, actual_string, guideline):
         comment = ""
         if field_rules.get("post_actions", None):
             for action in field_rules["post_actions"]:

@@ -1,6 +1,7 @@
 {
     "Protocols": "Protocol",
     "Cipher Suites": "CipherSuite",
+    "Cipher": "CipherSuite",
     "TLS extensions": "Extension",
     "Supported groups": "Groups",
     "Signature algorithms": "Signature",

@@ -2,7 +2,7 @@ from modules.compliance.compliance_base import Compliance
 
 
 class CompareOne(Compliance):
-    def _worker(self, sheets_to_check):
+    def _worker(self, sheets_to_check, hostname):
         """
         :param sheets_to_check: dict of sheets that should be checked in the form: sheet:{protocol, version_of_protocol}
         :type sheets_to_check: dict
@@ -21,8 +21,6 @@ class CompareOne(Compliance):
             level_index = columns.index("level")
             condition_index = columns.index("condition")
             guideline = list(sheets_to_check[sheet].keys())[0]
-            if not self._output_dict.get(sheet):
-                self._output_dict[sheet] = {}
             table_name = self._database_instance.get_table_name(sheet, guideline, sheets_to_check[sheet][guideline])
             self._database_instance.input([table_name])
             data = self._database_instance.output(columns)
@@ -67,10 +65,10 @@ class CompareOne(Compliance):
                     #     valid_condition = True
                     # if it has multiple name_columns they get only shown in the output
                     name = "_".join([str(entry[i]) for i in name_columns])
-                    self.update_result(sheet, name, level, enabled, entry[-1], valid_condition)
+                    self.update_result(sheet, name, level, enabled, entry[-1], valid_condition, hostname)
                     if additional_notes:
                         note += "\nNOTE: "
                         note += "\n".join(additional_notes)
                     note += conditional_notes
-                    if self._output_dict[sheet].get(name) is not None:
-                        self._output_dict[sheet][name] += note
+                    if self._output_dict[hostname][sheet].get(name) is not None:
+                        self._output_dict[hostname][sheet][name]["notes"] = note

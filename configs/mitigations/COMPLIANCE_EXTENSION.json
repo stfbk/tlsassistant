@@ -1,0 +1,17 @@
+{
+  "Entry": {
+    "Name": "Compliance report for TLS Extensions",
+    "Extended Name": "Compliance report for TLS Extensions",
+    "Description": "Compliance report for {sheet} against {guidelines} guidelines",
+    "Mitigation": {
+      "Textual": "Add the following extensions to make the configuration compliant: {add}<br/>Remove the following extensions to make the configuration compliant: {remove}",
+      "Apache": "No snippet available",
+      "Nginx": "No snippet available"
+    }
+  },
+  "#ConfigurationInstructions": {
+    "mode": "no_config"
+  },
+  "#todo": "definire la modalità nelle configinstructions che prende la mitigazione in base alla entry da un dizionario",
+  "#omit-xml-declaration": "yes"
+}

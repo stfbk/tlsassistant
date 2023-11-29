@@ -2,7 +2,7 @@ from modules.compliance.compliance_base import Compliance
 
 
 class CompareMany(Compliance):
-    def _worker(self, sheets_to_check):
+    def _worker(self, sheets_to_check, hostname):
         """
         :param sheets_to_check: dict of sheets that should be checked in the form: sheet:{protocol: version_of_protocol}
         :type sheets_to_check: dict
@@ -31,6 +31,6 @@ class CompareMany(Compliance):
                 valid_condition = entry_dict["valid_condition"]
                 note = entry_dict["note"]
 
-                self.update_result(sheet, name, level, enabled, entry_dict["source"], valid_condition)
-                if note and self._output_dict[sheet].get(name) is not None:
-                    self._output_dict[sheet][name] += entry_dict.get("note")
+                self.update_result(sheet, name, level, enabled, entry_dict["source"], valid_condition, hostname)
+                if note and self._output_dict[hostname][sheet].get(name) is not None:
+                    self._output_dict[hostname][sheet][name]["notes"] = entry_dict.get("note")

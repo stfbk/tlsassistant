@@ -32,7 +32,7 @@ model Guideline {
   CipherSuiteNISTPREFERRED3               CipherSuiteNISTPREFERRED3[]
   CipherSuiteBSIPREFERRED1                CipherSuiteBSIPREFERRED1[]
   CipherSuiteBSIPREFERRED2                CipherSuiteBSIPREFERRED2[]
-  CipherSuiteBSIFEDERALREQ1               CipherSuiteBSIFEDERALREQ1[]
+  CipherSuiteBSIFEDERALREQ                CipherSuiteBSIFEDERALREQ[]
   CipherSuiteANSSI                        CipherSuiteANSSI[]
   CipherSuiteMOZILLAMODERN                CipherSuiteMOZILLAMODERN[]
   CipherSuiteMOZILLAINTERMEDIATE          CipherSuiteMOZILLAINTERMEDIATE[]
@@ -116,7 +116,7 @@ model CipherSuite {
   CipherSuiteNISTPREFERRED3      CipherSuiteNISTPREFERRED3[]
   CipherSuiteBSIPREFERRED1       CipherSuiteBSIPREFERRED1[]
   CipherSuiteBSIPREFERRED2       CipherSuiteBSIPREFERRED2[]
-  CipherSuiteBSIFEDERALREQ1      CipherSuiteBSIFEDERALREQ1[]
+  CipherSuiteBSIFEDERALREQ       CipherSuiteBSIFEDERALREQ[]
   CipherSuiteANSSI               CipherSuiteANSSI[]
   CipherSuiteMOZILLAMODERN       CipherSuiteMOZILLAMODERN[]
   CipherSuiteMOZILLAINTERMEDIATE CipherSuiteMOZILLAINTERMEDIATE[]
@@ -459,7 +459,7 @@ model CipherSuiteBSIPREFERRED2 {
   @@id([id, name])
 }
 
-model CipherSuiteBSIFEDERALREQ1 {
+model CipherSuiteBSIFEDERALREQ {
   id            Int
   guideline     Guideline   @relation(fields: [guidelineName], references: [name])
   guidelineName String

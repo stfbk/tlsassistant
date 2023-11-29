@@ -1,10 +1,11 @@
 import itertools
 import json
-import pprint
+import os.path
 import re
 from pathlib import Path
 
 from modules.compliance.configuration.apache_configuration import ApacheConfiguration
+from modules.compliance.configuration.configuration_base import ConfigurationMaker
 from modules.compliance.configuration.nginx_configuration import NginxConfiguration
 from modules.compliance.wrappers.certificateparser import CertificateParser
 from modules.compliance.wrappers.conditionparser import ConditionParser
@@ -13,7 +14,7 @@ from modules.server.wrappers.testssl import Testssl
 from utils.database import get_standardized_level
 from utils.loader import load_configuration
 from utils.logger import Logger
-from utils.prune import pruner
+from utils.mitigations import MitigationLoader
 from utils.validation import Validator
 
 
@@ -25,7 +26,9 @@ def convert_signature_algorithm(sig_alg: str) -> str:
 
 
 class Compliance:
+    report_config = load_configuration("report_config", "configs/compliance/")
     def __init__(self):
+        self.hostname = ""
         self._custom_guidelines = None
         self._apache = True
         # legacy vs security level switch
@@ -51,6 +54,7 @@ class Compliance:
         self._certificate_parser = CertificateParser()
         self._cert_sig_algs = [el[0] for el in self._database_instance.run(tables=["CertificateSignature"],
                                                                            columns=["name"])]
+        self._configuration_maker = ConfigurationMaker("apache")
         self._ciphers_converter = load_configuration("openssl_to_iana", "configs/compliance/")
         self._user_configuration_types = load_configuration("user_conf_types", "configs/compliance/generate/")
         self._type_converter = {
@@ -98,7 +102,7 @@ class Compliance:
             * *custom_guidelines* (``dict``) -- dictionary with form: { sheet : {guideline: name: {"level":level}}
         """
         actual_configuration = kwargs.get("actual_configuration_path")
-        hostname = kwargs.get("hostname")
+        self.hostname = kwargs.get("hostname")
         self._apache = kwargs.get("apache", True)
         self._security = kwargs.get("security", True)
         output_file = kwargs.get("output_config")
@@ -120,10 +124,14 @@ class Compliance:
                 )
                 self._config_class = NginxConfiguration(actual_configuration)
             self.prepare_configuration(self._config_class.configuration)
-        if hostname and self._validator.string(hostname) and hostname != "placeholder":
-            # test_ssl_output = self.test_ssl.run(**{"hostname": hostname, "one": True})
-            with open(f"testssl_dumps/testssl_output-{hostname}.json", "r") as f:
-                test_ssl_output = json.load(f)
+        if self.hostname and self._validator.string(self.hostname) and self.hostname != "placeholder":
+            if os.path.isfile(f"testssl_dumps/testssl_output-{self.hostname}.json"):
+                with open(f"testssl_dumps/testssl_output-{self.hostname}.json", "r") as f:
+                    test_ssl_output = json.load(f)
+            else:
+                test_ssl_output = self.test_ssl.run(**{"hostname": self.hostname, "one": True})
+            with open(f"testssl_dumps/testssl_output-{self.hostname}.json", "w") as f:
+                json.dump(test_ssl_output, f, indent=4)
             failed = 0
             for key in test_ssl_output:
                 if test_ssl_output[key].get("scanProblem") and test_ssl_output[key]["scanProblem"].get(
@@ -132,8 +140,6 @@ class Compliance:
                     self._logging.warning(f"Testssl failed to perform the analysis on {key}")
             if failed == len(test_ssl_output):
                 raise ValueError("Testssl failed to perform the analysis on all the hosts")
-            with open(f"testssl_dumps/testssl_output-{hostname}.json", "w") as f:
-                json.dump(test_ssl_output, f, indent=4)
             self.prepare_testssl_output(test_ssl_output)
         if output_file and self._validator.string(output_file):
             if self._apache:
@@ -145,7 +151,7 @@ class Compliance:
         self._input_dict["sheets_to_check"] = sheets_to_check
 
     # To override
-    def _worker(self, sheets_to_check):
+    def _worker(self, sheets_to_check, hostname):
         """
         :param sheets_to_check: dict of sheets that should be checked in the form: sheet:{protocol, version_of_protocol}
         :type sheets_to_check: dict
@@ -159,12 +165,99 @@ class Compliance:
 
     def run(self, **kwargs):
         self.input(**kwargs)
-        self._worker(self._input_dict["sheets_to_check"])
+        self._worker(self._input_dict["sheets_to_check"], self.hostname)
         return self.output()
 
     def output(self):
-        pprint.pp(pruner(self._output_dict))
+        self.prune_output()
+        self._prepare_output()
         return self._output_dict.copy()
+
+    def _prepare_output(self):
+        for hostname in self._output_dict:
+            for sheet in self._output_dict[hostname]:
+                mitigation = MitigationLoader().load_mitigation("Compliance_" + sheet)
+                guidelines = ", ".join(self._output_dict[hostname][sheet]["guidelines"])
+                mitigation["Entry"]["Description"] = mitigation["Entry"]["Description"].format(sheet=sheet,
+                                                                                               guidelines=guidelines)
+                textual = mitigation["Entry"]["Mitigation"]["Textual"]
+                total_string = "<code>"
+                conf_instructions = mitigation["#ConfigurationInstructions"]
+                if self._output_dict[hostname][sheet]["entries_add"]:
+                    add_string = "<br/>-{name} {action} according to {source}"
+                    add_list = []
+                    total_string = self.format_output_string(add_string, hostname, sheet,
+                                                             conf_instructions, total_string,
+                                                             "entries_add", add_list)
+                    textual = textual.format(add=";".join(add_list), remove="{remove}")
+                else:
+                    # remove the line that contains {add}
+                    lines = textual.split("<br/>")
+                    textual = "<br/>".join([line for line in lines if "{add}" not in line])
+                if self._output_dict[hostname][sheet]["entries_remove"]:
+                    remove_string = "<br/>-{name} {action} according to {source}"
+                    remove_list = []
+                    total_string = self.format_output_string(remove_string, hostname, sheet,
+                                                             conf_instructions, total_string,
+                                                             "entries_remove", remove_list)
+                    textual = textual.format(remove=";".join(remove_list))
+                else:
+                    # remove the line that contains {remove}
+                    lines = textual.split("<br/>")
+                    textual = "<br/>".join([line for line in lines if "{remove}" not in line])
+                # TODO add the notes
+
+                mitigation["Entry"]["Mitigation"]["Textual"] = textual
+                if total_string != "<code>":
+                    total_string += "</code>"
+                    mitigation["Entry"]["Mitigation"]["Apache"] = mitigation["Entry"]["Mitigation"]["Apache"].format(
+                        total_string=total_string)
+                    mitigation["Entry"]["Mitigation"]["Nginx"] = mitigation["Entry"]["Mitigation"]["Nginx"].format(
+                        total_string=total_string)
+                # TODO clean the dictionary before adding mitigation
+                self._output_dict[hostname][sheet]["mitigation"] = mitigation
+
+    def format_output_string(self, string, hostname, sheet, conf_instructions, total_string, entries_key, strings_list):
+        for entry in self._output_dict[hostname][sheet][entries_key]:
+            source = self._output_dict[hostname][sheet][entry]["source"]
+            entry_name, _ = self._configuration_maker.perform_post_actions(conf_instructions, entry, source)
+            level = self._output_dict[hostname][sheet][entry]["level"].lower()
+            if conf_instructions["mode"] == "standard":
+                # The usage of post actions is needed to fix the entries of some of the sheets
+                total_string += conf_instructions["connector"] + conf_instructions[level].replace("name", entry_name)
+            if not self._output_dict[hostname][sheet][entry].get("total_string_only"):
+                tmp_string = string.format(name=entry_name,
+                                           action=self._output_dict[hostname][sheet][entry]["action"],
+                                           source=self._output_dict[hostname][sheet][entry]["source"])
+                if self._output_dict[hostname][sheet][entry].get("notes"):
+                    tmp_string += "; " + self._output_dict[hostname][sheet][entry]["notes"]
+                strings_list.append(tmp_string)
+        connector = conf_instructions.get("connector", None)
+        if connector:
+            connector_length = len(connector)
+            # the 6 is added because total_string starts with <code>
+            if total_string[6:connector_length + 6] == conf_instructions["connector"]:
+                total_string = total_string.replace(conf_instructions["connector"], "", 1)
+        return total_string
+
+    def prune_output(self):
+        to_remove = set()
+        remove_sheets = set()
+        for hostname in self._output_dict:
+            for sheet in self._output_dict[hostname]:
+                for note in self._output_dict[hostname][sheet]["notes"]:
+                    if not self._output_dict[hostname][sheet][note].get("notes"):
+                        to_remove.add(note)
+                for entry in to_remove:
+                    del self._output_dict[hostname][sheet][entry]
+                    self._output_dict[hostname][sheet]["notes"].remove(entry)
+                to_remove = set()
+                if not self._output_dict[hostname][sheet]["entries_add"] and not \
+                        self._output_dict[hostname][sheet]["entries_remove"] and not \
+                        self._output_dict[hostname][sheet]["notes"]:
+                    remove_sheets.add(sheet)
+            for sheet in remove_sheets:
+                del self._output_dict[hostname][sheet]
 
     def _add_certificate_signature_algorithm(self, alg):
         """
@@ -356,28 +449,58 @@ class Compliance:
                     self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
                 elif field == "fallback_SCSV":
                     self._user_configuration["fallback_SCSV"] = actual_dict["finding"]
-        pprint.pprint(self._user_configuration["CertificateExtensions"])
 
-    def update_result(self, sheet, name, entry_level, enabled, source, valid_condition):
+    def update_result(self, sheet, name, entry_level, enabled, source, valid_condition, hostname):
         information_level = None
         action = None
         entry_level = get_standardized_level(entry_level) if entry_level else None
+        total_string_only = False
         if entry_level == "must" and valid_condition and not enabled:
-            information_level = "ERROR"
+            information_level = "MUST"
+            action = "has to be enabled"
+        elif entry_level in ["must", "recommended"] and enabled and valid_condition:
+            # these entries are not added to the output dict
+            total_string_only = sheet in Compliance.report_config.get("has_total_string", [])
+            information_level = "MUST"
             action = "has to be enabled"
         elif entry_level == "must not" and valid_condition and enabled:
-            information_level = "ERROR"
+            information_level = "MUST NOT"
             action = "has to be disabled"
         elif entry_level == "recommended" and valid_condition and not enabled:
-            information_level = "ALERT"
+            information_level = "RECOMMENDED"
             action = "should be enabled"
         elif entry_level == "not recommended" and valid_condition and enabled:
-            information_level = "ALERT"
+            information_level = "NOT RECOMMENDED"
             action = "should be disabled"
+        if not self._output_dict.get(hostname):
+            self._output_dict[hostname] = {}
+        if not self._output_dict[hostname].get(sheet):
+            self._output_dict[hostname][sheet] = {
+                "entries_add": [],
+                "entries_remove": [],
+                "notes": []
+            }
         if information_level:
-            self._output_dict[sheet][name] = f"{information_level}: {action} according to {source}"
-        else:
-            self._output_dict[sheet][name] = ""
+            if entry_level in ["must", "recommended"]:
+                self._output_dict[hostname][sheet]["entries_add"].append(name)
+            elif entry_level in ["must not", "not recommended"]:
+                self._output_dict[hostname][sheet]["entries_remove"].append(name)
+            self._output_dict[hostname][sheet][name] = {
+                "level": information_level,
+                "action": action,
+                "source": source,
+                "total_string_only": total_string_only
+            }
+        elif name not in self._output_dict[hostname][sheet]:
+            self._output_dict[hostname][sheet][name] = {
+                "level": "INFO",
+                "action": "NOTE: ",
+                "source": source,
+            }
+            self._output_dict[hostname][sheet]["notes"].append(name)
+        if not self._output_dict[hostname][sheet].get("guidelines"):
+            self._output_dict[hostname][sheet]["guidelines"] = set()
+        self._output_dict[hostname][sheet]["guidelines"].add(source)
 
     def add_conditional_notes(self, enabled, valid_condition):
         conditional_notes = "\nNOTE: "
@@ -627,7 +750,7 @@ class Generator(Compliance):
                             user_conf_field[str(iana_code)] = val
 
     # To override
-    def _worker(self, sheets_to_check):
+    def _worker(self, sheets_to_check, hostname):
         """
         :param sheets_to_check: dict of sheets that should be checked in the form: sheet:{protocol, version_of_protocol}
         :type sheets_to_check: dict
