@@ -1,5 +1,6 @@
 import OpenSSL.crypto as crypto
 from dateutil import parser
+from pyasn1.codec.der.decoder import decode as der_decoder
 
 
 class CertificateParser:
@@ -26,9 +27,13 @@ class CertificateParser:
         self._output_dict[cert_sha]["SigAlgComplete"] = self.certificate.get_signature_algorithm().decode("utf-8")
         # this list comprehension takes every tuple, decodes its elements and puts the decoded pair in a new list
         entries = [[el.decode("utf-8") for el in entry] for entry in self.certificate.get_issuer().get_components()]
+        issuer_der = der_decoder(self.certificate.get_issuer().der())[0] if self.certificate.get_issuer() else None
+        self._output_dict[cert_sha]["Issuer Distinguished Name - der"] = issuer_der
         self._output_dict[cert_sha]["Issuer Distinguished Name"] = dict(entries)
         entries = [[el.decode("utf-8") for el in entry] for entry in self.certificate.get_subject().get_components()]
         self._output_dict[cert_sha]["Subject Distinguished Name"] = dict(entries)
+        subject_der = der_decoder(self.certificate.get_subject().der())[0] if self.certificate.get_subject() else None
+        self._output_dict[cert_sha]["Subject Distinguished Name - der"] = subject_der
         # validity should be the difference between these two fields
         not_after = self.certificate.get_notAfter().decode("utf-8")
         not_before = self.certificate.get_notBefore().decode("utf-8")

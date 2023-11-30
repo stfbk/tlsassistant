@@ -189,7 +189,7 @@ class Compliance:
                     total_string = self.format_output_string(add_string, hostname, sheet,
                                                              conf_instructions, total_string,
                                                              "entries_add", add_list)
-                    textual = textual.format(add=";".join(add_list), remove="{remove}")
+                    textual = textual.format(add=";".join(add_list), remove="{remove}", notes="{notes}")
                 else:
                     # remove the line that contains {add}
                     lines = textual.split("<br/>")
@@ -200,12 +200,22 @@ class Compliance:
                     total_string = self.format_output_string(remove_string, hostname, sheet,
                                                              conf_instructions, total_string,
                                                              "entries_remove", remove_list)
-                    textual = textual.format(remove=";".join(remove_list))
+                    textual = textual.format(remove=";".join(remove_list), notes="{notes}")
                 else:
                     # remove the line that contains {remove}
                     lines = textual.split("<br/>")
                     textual = "<br/>".join([line for line in lines if "{remove}" not in line])
-                # TODO add the notes
+                if self._output_dict[hostname][sheet]["notes"]:
+                    notes_string = "<br/>{name}"
+                    notes_list = []
+                    total_string = self.format_output_string(notes_string, hostname, sheet,
+                                                             conf_instructions, total_string,
+                                                             "notes", notes_list)
+                    textual = textual.format(notes=";".join(notes_list))
+                else:
+                    # remove the line that contains {notes}
+                    lines = textual.split("<br/>")
+                    textual = "<br/>".join([line for line in lines if "{notes}" not in line])
 
                 mitigation["Entry"]["Mitigation"]["Textual"] = textual
                 if total_string != "<code>":
@@ -249,10 +259,15 @@ class Compliance:
         for hostname in self._output_dict:
             for sheet in self._output_dict[hostname]:
                 for note in self._output_dict[hostname][sheet]["notes"]:
-                    if not self._output_dict[hostname][sheet][note].get("notes"):
+                    if not self._output_dict[hostname][sheet][note].get("notes") or \
+                        note in self._output_dict[hostname][sheet]["entries_add"] or note in \
+                            self._output_dict[hostname][sheet]["entries_remove"]:
                         to_remove.add(note)
+
                 for entry in to_remove:
-                    del self._output_dict[hostname][sheet][entry]
+                    if entry not in self._output_dict[hostname][sheet]["entries_add"] and entry not in \
+                            self._output_dict[hostname][sheet]["entries_remove"]:
+                        del self._output_dict[hostname][sheet][entry]
                     self._output_dict[hostname][sheet]["notes"].remove(entry)
                 to_remove = set()
                 if not self._output_dict[hostname][sheet]["entries_add"] and not \
@@ -458,7 +473,6 @@ class Compliance:
         action = None
         entry_level = get_standardized_level(entry_level) if entry_level else None
         total_string_only = False
-        print(f"{sheet} - {name} - {entry_level} - {enabled} - {source} - {valid_condition}")
         if entry_level == "must" and valid_condition and not enabled:
             information_level = "MUST"
             action = "has to be enabled"
@@ -478,7 +492,7 @@ class Compliance:
               sheet in self.report_config.get("has_specific_textual", [])):
             information_level = entry_level.lower()
             # The action does not matter in this case
-            action = ""
+            action = "should" if information_level == "recommended" else "has to"
         elif entry_level == "not recommended" and valid_condition and enabled:
             information_level = "NOT RECOMMENDED"
             action = "should be disabled"

@@ -1,6 +1,9 @@
 import datetime
 import re
 
+from pyasn1.type.char import PrintableString
+from pyasn1.type.univ import SequenceOf
+
 from utils.loader import load_configuration
 from utils.logger import Logger
 from utils.validation import Validator
@@ -429,6 +432,8 @@ class CustomFunctions:
         if config_field in ["Certificate", "CertificateExtensions"]:
             result = True
             for cert in field:
+                if cert.startswith("int"):
+                    continue
                 for level in last_level:
                     levels[-1] = level
                     # I pass to the function that gets the value the certificate dictionary as field
@@ -551,17 +556,45 @@ class CustomFunctions:
                     condition = condition.replace(check, str(check in key_usage))
                 result = ConditionParser(self._user_configuration).run(condition, True)
                 results.append(result)
-                print(result, ext_key_usage)
                 if not result:
                     findings.append(ext_key_usage)
             self.entry_updates[
-                "note_true"] = [f"The certificate {cert} contains extended key usages that aren't in the key usage field. The invalid usages are: {', '.join(findings)}"]
+                "note_true"] = [
+                f"The certificate {cert} contains extended key usages that aren't in the key usage field. The invalid usages are: {', '.join(findings)}"]
             return not all(results)
         self._logger.debug("No certificate information found, returning False for condition check_same_key_usage")
         self.entry_updates["is_enabled"] = False
 
     def disable_if(self, **kwargs):
         self._entry_updates["disable_if"] = kwargs.get("tokens", [""])[0]
+        return True
+
+    def check_dn(self, **kwargs):
+        token = " ".join(kwargs.get("tokens", []))
+        for cert in self._user_configuration["Certificate"]:
+            cert_data = self._user_configuration["Certificate"][cert]
+            dn_data = cert_data.get(token, {})
+            if not dn_data:
+                self._entry_updates["note_false"].append(f"No DN data found for certificate {cert}")
+                return False
+            if not isinstance(dn_data, SequenceOf):
+                self._entry_updates["note_false"].append(
+                    f"Distinguished Name data found for certificate {cert} isn't a SequenceOf object")
+                return False
+            for dn in dn_data.components:
+                if len(dn.components) != 1:
+                    self._entry_updates["note_false"].append(
+                        f"Certificate {cert} has more then one value encoded in its Relative Distinguished Name")
+                    return False
+                for rdn in dn.components:
+                    component_type = rdn.components[0]
+                    component_value = rdn.components[1]
+                    print(component_type, component_value, type(component_value))
+                    if not isinstance(component_value, PrintableString):
+                        self._entry_updates["note_false"].append(
+                            f"Certificate {cert} has an attribute value that isn't a PrintableString,"
+                            f" the field has oid: {component_type}")
+                        return False
         return True
 
     @staticmethod

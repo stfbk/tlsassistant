@@ -25,5 +25,6 @@
   "VERIFY_SCSV": "FUNCTION verify_scsv",
   "CHECK_AKI": "FUNCTION check_aki",
   "CHECK_SAME_KEYUSAGE": "FUNCTION check_same_key_usage",
-  "DISABLE_IF": "FUNCTION disable_if"
+  "DISABLE_IF": "FUNCTION disable_if",
+  "CHECK_DN": "FUNCTION check_dn"
 }
