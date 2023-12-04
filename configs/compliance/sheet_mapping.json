@@ -8,5 +8,6 @@
     "Hash Algorithm": "Hash",
     "Certificate Signature": "CertificateSignature",
     "Key lengths": "KeyLengths",
+    "Key": "KeyLengths",
     "Misc": "Misc"
 }

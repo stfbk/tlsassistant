@@ -172,6 +172,7 @@ class ConditionParser:
             to_replace = self.expression[starting_index:end_index + 2]
             start += len(to_replace) - len(replacement)
             to_solve = to_solve.replace(to_replace, replacement)
+        to_solve = to_solve.replace("  ", " ")
         tokens = re.split(self._splitting_regex, to_solve, flags=re.IGNORECASE)
         tokens = [token.strip() for token in tokens]
         for i, token in enumerate(tokens):
@@ -354,6 +355,12 @@ class CustomFunctions:
         name = " ".join(tokens[1:])
         # only the first two fields of the entry matter, and entry is only needed for key lengths
         entry_data = name.split(",") if "," in name else (None, None)
+        if entry_data[1]:
+            if not entry_data[1].isnumeric():
+                self._logger.error(f"Invalid key length: {entry_data[1]}")
+                return False
+            entry_data = (entry_data[0], int(entry_data[1]))
+
         # The field must be prepared
         field = ConditionParser.prepare_field(field)
         if ";" in name:
@@ -589,7 +596,6 @@ class CustomFunctions:
                 for rdn in dn.components:
                     component_type = rdn.components[0]
                     component_value = rdn.components[1]
-                    print(component_type, component_value, type(component_value))
                     if not isinstance(component_value, PrintableString):
                         self._entry_updates["note_false"].append(
                             f"Certificate {cert} has an attribute value that isn't a PrintableString,"

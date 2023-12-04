@@ -4,6 +4,8 @@
   "CIPHER": "CipherSuite",
   "TRANSPARENCY": "Transparency",
   "GROUPS": "Groups",
+  "HASH": "Hash",
+  "KEY": "KeyLengths",
   "TLS": "Protocol",
   "CERTSIG": "CertificateSignature",
   "CERTIFICATESIGNATURE": "CertificateSignature",

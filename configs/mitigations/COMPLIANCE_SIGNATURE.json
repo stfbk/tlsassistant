@@ -4,7 +4,7 @@
     "Extended Name": "Compliance report for Signature Algorithms",
     "Description": "Compliance report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
-      "Textual": "Add the following extensions to make the configuration compliant: {add}<br/>Remove the following extensions to make the configuration compliant: {remove}",
+      "Textual": "TODO decide mitigation<br/>{add}<br/>{remove}<br/>{notes}",
       "Apache": "No snippet available",
       "Nginx": "No snippet available"
     }

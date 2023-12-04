@@ -4,14 +4,53 @@
     "Extended Name": "Compliance report for TLS Extensions",
     "Description": "Compliance report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
-      "Textual": "Add the following extensions to make the configuration compliant: {add}<br/>Remove the following extensions to make the configuration compliant: {remove}",
-      "Apache": "No snippet available",
-      "Nginx": "No snippet available"
+      "Textual": "Add the following extensions to make the configuration compliant:<br/>{add}<br/>Remove the following extensions to make the configuration compliant:<br/>{remove}",
+      "Apache": "{total_string}",
+      "Nginx": "{total_string}"
     }
   },
   "#ConfigurationInstructions": {
-    "mode": "no_config"
+    "mode": "specific_mitigation",
+    "server_name": "<br/>the server_name extension {action}",
+    "server_name_config": {
+      "Apache": "Server Name: Add the directive <code>SSLServerName your_server_name</code> to your virtualhosts;",
+      "Nginx": "Server Name: Add the directive <code>server_name your_server_name</code> to your virtualhosts;"
+    },
+    "max_fragment_length": "<br/>the max_fragment_length extension {action}",
+    "client_certificate_url": "<br/>the client_certificate_url extension {action}",
+    "trusted_ca_keys": "<br/>the trusted_ca_keys extension {action}",
+    "truncated_hmac": "<br/>the truncated_hmac extension {action}",
+    "status_request": "<br/>the status_request extension {action}",
+    "user_mapping": "<br/>the user_mapping extension {action}",
+    "client_authz": "<br/>the client_authz extension {action}",
+    "server_authz": "<br/>the server_authz extension {action}",
+    "cert_type": "<br/>the cert_type extension {action}",
+    "supported_groups": "<br/>the supported_groups extension {action}",
+    "ec_point_formats": "<br/>the ec_point_formats extension {action}",
+    "srp": "<br/>the srp extension {action}",
+    "signature_algorithms": "<br/>the signature_algorithms extension {action}",
+    "heartbeat": "<br/>the heartbeat extension {action}",
+    "application_layer_protocol_negotiation": "<br/>the application_layer_protocol_negotiation extension {action}",
+    "status_request_v2": "<br/>the status_request_v2 extension {action}",
+    "signed_certificate_timestamp": "<br/>the signed_certificate_timestamp extension {action}",
+    "client_certificate_type": "<br/>the client_certificate_type extension {action}",
+    "server_certificate_type": "<br/>the server_certificate_type extension {action}",
+    "padding": "<br/>the padding extension {action}",
+    "encrypt_then_mac": "<br/>the encrypt_then_mac extension {action}",
+    "extended_master_secret": "<br/>the extended_master_secret extension {action}",
+    "record_size_limit": "<br/>the record_size_limit extension {action}",
+    "session_ticket": "<br/>the session_ticket extension {action}",
+    "pre_shared_key": "<br/>the pre_shared_key extension {action}",
+    "early_data": "<br/>the early_data extension {action}",
+    "supported_versions": "<br/>the supported_versions extension {action}",
+    "cookie": "<br/>the cookie extension {action}",
+    "psk_key_exchange_modes": "<br/>the psk_key_exchange_modes extension {action}",
+    "certificate_authorities": "<br/>the certificate_authorities extension {action}",
+    "oid_filters": "<br/>the oid_filters extension {action}",
+    "post_handshake_auth": "<br/>the post_handshake_auth extension {action}",
+    "signature_algorithms_cert": "<br/>the signature_algorithms_cert extension {action}",
+    "key_share": "<br/>the key_share extension {action}",
+    "renegotiation_info": "<br/>the renegotiation_info extension {action}"
   },
-  "#todo": "definire la modalità nelle configinstructions che prende la mitigazione in base alla entry da un dizionario",
   "#omit-xml-declaration": "yes"
 }

@@ -26,7 +26,8 @@ def convert_signature_algorithm(sig_alg: str) -> str:
 
 
 class Compliance:
-    report_config = load_configuration("report_config", "configs/compliance/")
+    report_config = load_configuration("special_configs", "configs/compliance/")
+
     def __init__(self):
         self.hostname = ""
         self._custom_guidelines = None
@@ -181,14 +182,18 @@ class Compliance:
                 mitigation["Entry"]["Description"] = mitigation["Entry"]["Description"].format(sheet=sheet,
                                                                                                guidelines=guidelines)
                 textual = mitigation["Entry"]["Mitigation"]["Textual"]
-                total_string = "<code>"
+                total_string_apache = total_string_nginx = "<code>"
                 conf_instructions = mitigation["#ConfigurationInstructions"]
                 if self._output_dict[hostname][sheet]["entries_add"]:
                     add_string = "<br/>-{name} {action} according to {source}"
                     add_list = []
-                    total_string = self.format_output_string(add_string, hostname, sheet,
-                                                             conf_instructions, total_string,
-                                                             "entries_add", add_list)
+                    total_string_apache, total_string_nginx = self.format_output_string(add_string, hostname, sheet,
+                                                                                        conf_instructions,
+                                                                                        total_string_apache,
+                                                                                        total_string_nginx,
+                                                                                        "entries_add", add_list)
+                    # this is necessary to avoid having an extra empty line
+                    textual = textual.replace("{add}<br/>{remove}", "{add}{remove}")
                     textual = textual.format(add=";".join(add_list), remove="{remove}", notes="{notes}")
                 else:
                     # remove the line that contains {add}
@@ -197,9 +202,11 @@ class Compliance:
                 if self._output_dict[hostname][sheet]["entries_remove"]:
                     remove_string = "<br/>-{name} {action} according to {source}"
                     remove_list = []
-                    total_string = self.format_output_string(remove_string, hostname, sheet,
-                                                             conf_instructions, total_string,
-                                                             "entries_remove", remove_list)
+                    total_string_apache, total_string_nginx = self.format_output_string(remove_string, hostname, sheet,
+                                                                                        conf_instructions,
+                                                                                        total_string_apache,
+                                                                                        total_string_nginx,
+                                                                                        "entries_remove", remove_list)
                     textual = textual.format(remove=";".join(remove_list), notes="{notes}")
                 else:
                     # remove the line that contains {remove}
@@ -208,36 +215,59 @@ class Compliance:
                 if self._output_dict[hostname][sheet]["notes"]:
                     notes_string = "<br/>{name}"
                     notes_list = []
-                    total_string = self.format_output_string(notes_string, hostname, sheet,
-                                                             conf_instructions, total_string,
-                                                             "notes", notes_list)
+                    total_string_apache, total_string_nginx = self.format_output_string(notes_string, hostname, sheet,
+                                                                                        conf_instructions,
+                                                                                        total_string_apache,
+                                                                                        total_string_nginx,
+                                                                                        "notes", notes_list)
                     textual = textual.format(notes=";".join(notes_list))
                 else:
                     # remove the line that contains {notes}
                     lines = textual.split("<br/>")
                     textual = "<br/>".join([line for line in lines if "{notes}" not in line])
-
+                textual = textual.replace(":<br/><br/>", ":<br/>", 1)
                 mitigation["Entry"]["Mitigation"]["Textual"] = textual
-                if total_string != "<code>":
-                    total_string += "</code>"
+                if total_string_apache != "<code>":
+                    if conf_instructions["mode"] == "standard":
+                        total_string_apache += "</code>"
+                    else:
+                        total_string_apache = total_string_apache.replace("<code>", "", 1)
                     mitigation["Entry"]["Mitigation"]["Apache"] = mitigation["Entry"]["Mitigation"]["Apache"].format(
-                        total_string=total_string)
+                        total_string=total_string_apache)
+                if total_string_nginx != "<code>":
+                    if conf_instructions["mode"] == "standard":
+                        total_string_nginx += "</code>"
+                    else:
+                        total_string_nginx = total_string_nginx.replace("<code>", "", 1)
                     mitigation["Entry"]["Mitigation"]["Nginx"] = mitigation["Entry"]["Mitigation"]["Nginx"].format(
-                        total_string=total_string)
+                        total_string=total_string_nginx)
                 # TODO clean the dictionary before adding mitigation
                 self._output_dict[hostname][sheet]["mitigation"] = mitigation
 
-    def format_output_string(self, string, hostname, sheet, conf_instructions, total_string, entries_key, strings_list):
+    def format_output_string(self, string, hostname, sheet, conf_instructions, total_string_apache, total_string_nginx,
+                             entries_key, strings_list):
         for entry in self._output_dict[hostname][sheet][entries_key]:
             source = self._output_dict[hostname][sheet][entry]["source"]
             entry_name, _ = self._configuration_maker.perform_post_actions(conf_instructions, entry, source)
             level = self._output_dict[hostname][sheet][entry]["level"].lower()
             if conf_instructions["mode"] == "standard":
                 # The usage of post actions is needed to fix the entries of some of the sheets
-                total_string += conf_instructions["connector"] + conf_instructions[level].replace("name", entry_name)
+                total_string_apache += conf_instructions["connector"] + conf_instructions[level].replace("name",
+                                                                                                         entry_name)
+                total_string_nginx += conf_instructions["connector"] + conf_instructions[level].replace("name",
+                                                                                                        entry_name)
             if not self._output_dict[hostname][sheet][entry].get("total_string_only"):
-                if conf_instructions["mode"] == "specific_textual":
-                    tmp_string = conf_instructions.get(entry, "")
+                if conf_instructions["mode"] == "specific_mitigation":
+                    string = conf_instructions.get(entry, "")
+                    if conf_instructions.get(entry+"_config"):
+                        total_string_apache += "<br/>" + conf_instructions[entry+"_config"]["Apache"]
+                        total_string_nginx += "<br/>" + conf_instructions[entry+"_config"]["Nginx"]
+
+                # This case is needed because the notes don't have the action and source fields
+                if entries_key == "notes":
+                    if "{action}" in string:
+                        string = string.split("{action}")[0].strip()
+                    tmp_string = string
                 else:
                     tmp_string = string.format(name=entry_name,
                                                action=self._output_dict[hostname][sheet][entry]["action"],
@@ -249,9 +279,11 @@ class Compliance:
         if connector:
             connector_length = len(connector)
             # the 6 is added because total_string starts with <code>
-            if total_string[6:connector_length + 6] == conf_instructions["connector"]:
-                total_string = total_string.replace(conf_instructions["connector"], "", 1)
-        return total_string
+            if total_string_apache[6:connector_length + 6] == conf_instructions["connector"]:
+                total_string_apache = total_string_apache.replace(conf_instructions["connector"], "", 1)
+            if total_string_nginx[6:connector_length + 6] == conf_instructions["connector"]:
+                total_string_nginx = total_string_nginx.replace(conf_instructions["connector"], "", 1)
+        return total_string_apache, total_string_nginx
 
     def prune_output(self):
         to_remove = set()
@@ -260,7 +292,7 @@ class Compliance:
             for sheet in self._output_dict[hostname]:
                 for note in self._output_dict[hostname][sheet]["notes"]:
                     if not self._output_dict[hostname][sheet][note].get("notes") or \
-                        note in self._output_dict[hostname][sheet]["entries_add"] or note in \
+                            note in self._output_dict[hostname][sheet]["entries_add"] or note in \
                             self._output_dict[hostname][sheet]["entries_remove"]:
                         to_remove.add(note)
 
@@ -385,7 +417,7 @@ class Compliance:
                         if sig_alg.startswith("SHA"):
                             sig_alg, hash_alg = hash_alg, sig_alg
                         sig_alg = self._add_certificate_signature_algorithm(sig_alg)[0]
-                        self._user_configuration["Hash"].add(hash_alg)
+                        self._user_configuration["Hash"].add(hash_alg.lower())
                         cert_index = self.find_cert_index(field)
                         if not self._user_configuration["Certificate"].get(cert_index):
                             self._user_configuration["Certificate"][cert_index] = {}
@@ -401,7 +433,8 @@ class Compliance:
                         self._user_configuration["Certificate"][cert_index] = {}
                     self._user_configuration["Certificate"][cert_index]["KeyAlg"] = element_to_add[0]
 
-                # In TLS 1.2 the certificate signatures and hashes are present in the signature algorithms field.
+                # The field FS_TLS_12_sig_algs contains the signature algorithms that can be used for Forward secrecy.
+                # For more details https://github.com/drwetter/testssl.sh/issues/2440
                 elif field[-11:] == "12_sig_algs":
                     finding = actual_dict["finding"]
                     elements = finding.split(" ") if " " in finding else [finding]
@@ -415,7 +448,8 @@ class Compliance:
                             # RSASSA-PSS is a subset of RSA
                             signatures.append(tokens[0].replace("RSASSA-PSS", "RSA").lower())
                             hashes.append(tokens[1].lower())
-                    self._add_certificate_signature_algorithm(signatures)
+                    # TODO check if this is needed. In theory it is a different thing
+                    # self._add_certificate_signature_algorithm(signatures)
                     self._user_configuration["Hash"].update(hashes)
 
                 # From TLS 1.3 the signature algorithms are different from the previous versions.
@@ -473,6 +507,7 @@ class Compliance:
         action = None
         entry_level = get_standardized_level(entry_level) if entry_level else None
         total_string_only = False
+        print(f"{sheet} - {name} - {entry_level} - {enabled} - {source} - {valid_condition}")
         if entry_level == "must" and valid_condition and not enabled:
             information_level = "MUST"
             action = "has to be enabled"
@@ -605,7 +640,6 @@ class Compliance:
             # this variable is needed to get the relative position of the guideline in respect of the level
             level_to_guideline_index = guideline_index - level_index
             step = len(columns)
-
             entries = self.entries[sheet]
             if not self.evaluated_entries.get(sheet):
                 self.evaluated_entries[sheet] = {}
@@ -629,24 +663,28 @@ class Compliance:
                     valid_condition = True
                     # Add an empty string to the notes so that all the notes are in the same position of their entry
                     notes.append("")
-                    if condition:
+                    if isinstance(self, Generator):
                         enabled = level in ["MUST", "RECOMMENDED"]
+                    else:
+                        enabled = ConditionParser.is_enabled(self._user_configuration, sheet, name, entry)
+                    if condition:
                         tokens = re.split(self._condition_parser.splitting_capturing_regex, condition,
                                           flags=re.IGNORECASE)
                         tokens = [token for token in tokens if token]
                         # If a condition of type "this or" goes through it checks the user_configuration status which at
                         # this point is not filled yet
-                        while "THIS" in tokens:
-                            i = tokens.index("THIS")
-                            tokens.insert(i, "True")
-                            i += 1
-                            removing = 2
-                            while i < len(tokens) and removing:
-                                if tokens[i] in [" and ", " or "]:
-                                    removing -= 1
-                                if removing:
-                                    tokens.pop(i)
-                        condition = " ".join(tokens)
+                        if isinstance(self, Generator):
+                            while "THIS" in tokens:
+                                i = tokens.index("THIS")
+                                tokens.insert(i, "True")
+                                i += 1
+                                removing = 2
+                                while i < len(tokens) and removing:
+                                    if tokens[i] in [" and ", " or "]:
+                                        removing -= 1
+                                    if removing:
+                                        tokens.pop(i)
+                            condition = " ".join(tokens)
 
                         valid_condition = self._condition_parser.run(condition, enabled)
                         enabled = self._condition_parser.entry_updates.get("is_enabled", enabled)
@@ -671,9 +709,6 @@ class Compliance:
                         if additional_notes:
                             notes[-1] += "\nNOTE:"
                             notes[-1] += "\n".join(additional_notes)
-
-                    else:
-                        enabled = level in ["MUST", "RECOMMENDED"]
 
                     conditions.append(valid_condition)
                     levels.append(level)
