@@ -4,7 +4,7 @@
     "Extended Name": "Compliance report for TLS Extensions",
     "Description": "Compliance report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
-      "Textual": "Add the following extensions to make the configuration compliant:<br/>{add}<br/>Remove the following extensions to make the configuration compliant:<br/>{remove}",
+      "Textual": "Add the following extensions to make the configuration compliant:{add}<br/>Remove the following extensions to make the configuration compliant:{remove}",
       "Apache": "{total_string}",
       "Nginx": "{total_string}"
     }

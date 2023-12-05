@@ -1,6 +1,7 @@
 import itertools
 import json
 import os.path
+import pprint
 import re
 from pathlib import Path
 
@@ -296,7 +297,14 @@ class Compliance:
                             note in self._output_dict[hostname][sheet]["entries_add"] or note in \
                             self._output_dict[hostname][sheet]["entries_remove"]:
                         to_remove.add(note)
-
+                count = 0
+                for entry in self._output_dict[hostname][sheet]["entries_add"]:
+                    if self._output_dict[hostname][sheet][entry].get("total_string_only"):
+                        count += 1
+                if count == len(self._output_dict[hostname][sheet]["entries_add"]):
+                    for entry in self._output_dict[hostname][sheet]["entries_add"]:
+                        del self._output_dict[hostname][sheet][entry]
+                    self._output_dict[hostname][sheet]["entries_add"] = []
                 for entry in to_remove:
                     if entry not in self._output_dict[hostname][sheet]["entries_add"] and entry not in \
                             self._output_dict[hostname][sheet]["entries_remove"]:
@@ -433,6 +441,14 @@ class Compliance:
                     if not self._user_configuration["Certificate"].get(cert_index):
                         self._user_configuration["Certificate"][cert_index] = {}
                     self._user_configuration["Certificate"][cert_index]["KeyAlg"] = element_to_add[0]
+                elif field == "DH_groups":
+                    curve, length = re.match(r"([^\d]+)(\d+)", actual_dict["finding"]).groups()
+                    print(curve, length)
+                    if "(" in actual_dict["finding"]:
+                        self._user_configuration["KeyLengths"].add(("DH", int(length)))
+                    else:
+                        self._user_configuration["KeyLengths"].add(("DH", int(length)))
+                        self._user_configuration["Groups"].append(actual_dict["finding"])
 
                 # The field FS_TLS_12_sig_algs contains the signature algorithms that can be used for Forward secrecy.
                 # For more details https://github.com/drwetter/testssl.sh/issues/2440
@@ -449,7 +465,6 @@ class Compliance:
                             # RSASSA-PSS is a subset of RSA
                             signatures.append(tokens[0].replace("RSASSA-PSS", "RSA").lower())
                             hashes.append(tokens[1].lower())
-                    # TODO check if this is needed. In theory it is a different thing
                     # self._add_certificate_signature_algorithm(signatures)
                     self._user_configuration["Hash"].update(hashes)
 
@@ -502,7 +517,6 @@ class Compliance:
                     self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
                 elif field == "fallback_SCSV":
                     self._user_configuration["fallback_SCSV"] = actual_dict["finding"]
-
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition, hostname):
         information_level = None
         action = None

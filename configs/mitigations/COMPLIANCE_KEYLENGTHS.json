@@ -4,7 +4,7 @@
     "Extended Name": "Compliance report for Key Lengths",
     "Description": "Compliance report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
-      "Textual": "TODO: verificare se basta parlare di certificati o bisogna descrivere anche le cose riguardanti i sig_algs<br/>Regenerate the certificate using the following signature algorithms with the respective key length:<br/>{add}<br/>Don't use the following signature algorithms and keys:<br/>{remove}",
+      "Textual": "TODO: verificare se basta parlare di certificati o bisogna descrivere anche le cose riguardanti i sig_algs<br/>Regenerate the certificate using the following signature algorithms with the respective key length:{add}<br/>Don't use the following signature algorithms and keys:{remove}",
       "Apache": "No snippet available",
       "Nginx": "No snippet available"
     }
