@@ -193,7 +193,6 @@ class Compliance:
                                                                                         total_string_nginx,
                                                                                         "entries_add", add_list)
                     # this is necessary to avoid having an extra empty line
-                    textual = textual.replace("{add}<br/>{remove}", "{add}{remove}")
                     textual = textual.format(add=";".join(add_list), remove="{remove}", notes="{notes}")
                 else:
                     # remove the line that contains {add}
@@ -207,6 +206,7 @@ class Compliance:
                                                                                         total_string_apache,
                                                                                         total_string_nginx,
                                                                                         "entries_remove", remove_list)
+                    textual = textual.replace("{add}<br/>{remove}", "{add}{remove}")
                     textual = textual.format(remove=";".join(remove_list), notes="{notes}")
                 else:
                     # remove the line that contains {remove}
@@ -274,6 +274,7 @@ class Compliance:
                                                source=self._output_dict[hostname][sheet][entry]["source"])
                 if self._output_dict[hostname][sheet][entry].get("notes"):
                     tmp_string += "; " + self._output_dict[hostname][sheet][entry]["notes"]
+                tmp_string, _ = self._configuration_maker.perform_post_actions(conf_instructions, tmp_string, source)
                 strings_list.append(tmp_string)
         connector = conf_instructions.get("connector", None)
         if connector:
@@ -507,7 +508,7 @@ class Compliance:
         action = None
         entry_level = get_standardized_level(entry_level) if entry_level else None
         total_string_only = False
-        print(f"{sheet} - {name} - {entry_level} - {enabled} - {source} - {valid_condition}")
+        #print(f"{sheet} - {name} - {entry_level} - {enabled} - {source} - {valid_condition}")
         if entry_level == "must" and valid_condition and not enabled:
             information_level = "MUST"
             action = "has to be enabled"
@@ -527,7 +528,7 @@ class Compliance:
               sheet in self.report_config.get("has_specific_textual", [])):
             information_level = entry_level.lower()
             # The action does not matter in this case
-            action = "should" if information_level == "recommended" else "has to"
+            action = "should be enabled" if information_level == "recommended" else "has to be enabled"
         elif entry_level == "not recommended" and valid_condition and enabled:
             information_level = "NOT RECOMMENDED"
             action = "should be disabled"

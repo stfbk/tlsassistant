@@ -20,7 +20,13 @@
     "authorityInfoAccess": "<br/>-AuthorityInfoAccess {action}",
     "crlDistributionPoints": "<br/>-CRLDistributionPoints {action}",
     "ct_precert_scts": "<br/>-ct_precert_scts {action}",
-    "OCSP must staple extension": "<br/>-OCSPMustStaple {action}"
+    "OCSP must staple extension": "<br/>-OCSPMustStaple {action}",
+    "post_actions": {
+      "replace": {
+        "be enabled": "be fixed",
+        "be disabled": "be fixed"
+      }
+    }
   },
   "#omit-xml-declaration": "yes"
 }

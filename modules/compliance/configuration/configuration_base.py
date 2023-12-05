@@ -181,7 +181,7 @@ class Actions:
         """
         :param kwargs: Dictionary of arguments
         :type kwargs: dict
-        :return: True if the year indicated has already passed
+        :return: the result of the split function called on a string
         :rtype: bool
         :Keyword Arguments:
             * *value* (``str``) -- String to split
@@ -193,14 +193,30 @@ class Actions:
         self.validator.string(separator)
         return [v for v in value.split(separator) if v]
 
+    def replace(self, **kwargs) -> str:
+        """
+        :param kwargs: Dictionary of arguments
+        :type kwargs: dict
+        :return: the result of the replace function
+        :param kwargs:
+        :Keyword Arguments:
+            * *value* (``str``) -- String to replace
+            * *arguments* (``dict``) -- a dict containing as keys the string to replace and as values the replacement
+        """
+        value = kwargs.get("value", None)
+        arguments = kwargs.get("arguments", None)
+        self.validator.string(value)
+        self.validator.dict(arguments)
+        for argument in arguments:
+            value = value.replace(argument, arguments[argument])
+        return value
+
     def convert_ciphers(self, **kwargs) -> str:
         """
         :param kwargs: Dictionary of arguments
         :type kwargs: dict
         :return: the list of converted ciphers
         :rtype: str
-        :Keyword Arguments:
-            * *value* (``str``) -- String to convert
         """
         string = kwargs.get("value", None)
         self.validator.string(string)
@@ -221,8 +237,9 @@ class Actions:
         """
         string = kwargs.get("value", None)
         self.validator.string(string)
-        for group in string.split(":"):
-            if "/" in group:
+        groups = string.split(":") if ":" in string else [string]
+        for group in groups:
+            if "/" in group and not group.startswith("<br"):
                 string = string.replace(group, group.split("/")[0].strip())
         return string
 
