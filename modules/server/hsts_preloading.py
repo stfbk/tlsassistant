@@ -8,7 +8,6 @@ class Hsts_preloading(Hsts_base):
     """
     Analysis of the HSTS Preloading status
     """
-    # TODO capire perché STIX si trova qui
     stix = Bundled(mitigation_object=load_mitigation("HSTS_NOT_PRELOADED"))
 
     def _get_logger(self):
@@ -41,7 +40,11 @@ class Hsts_preloading(Hsts_base):
         :rtype: dict
         """
         if condition:
-            mitigation_to_load = "HSTS_NOT_PRELOADED_INVALID_CERT" if self._instance.invalid_cert else "HSTS_NOT_PRELOADED"
+            if self._instance.invalid_cert:
+                mitigation_to_load = "HSTS_NOT_PRELOADED_INVALID_CERT"
+                self.stix = Bundled(mitigation_object=load_mitigation(mitigation_to_load))
+            else:
+                mitigation_to_load = "HSTS_NOT_PRELOADED"
             result["mitigation"] = load_mitigation(
                 mitigation_to_load, raise_error=False
             )  # todo: remove, debug until we have all mitigations
