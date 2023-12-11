@@ -45,8 +45,8 @@ class Report:
         self._replacements = {"name_mapping": {},
                               'sub': re.sub,
                               "Replacements": {
-                                  "(<a href=.*?</a>)": "<font color='blue'>\\1</font>",
-                                  "<code>(.*?)</code>": "<font color='#d63384' fontName='Roboto Italic'>\\1</font>",
+                                  "(<a href=.*?</a>)": "<font color=\"blue\">\\1</font>",
+                                  "<code>(.*?)</code>": "<font color=\"#d63384\" fontName=\"Roboto Italic\">\\1</font>",
                               }
                               }
 
