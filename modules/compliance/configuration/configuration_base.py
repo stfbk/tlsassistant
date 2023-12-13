@@ -19,6 +19,7 @@ class ConfigurationMaker:
         self.conditions_to_check = {}
         self._specific_rules = load_configuration("rules", f"configs/compliance/{config_type}/")
         self._actions = Actions()
+        self.signature_algorithms = load_configuration("sigalgs", "configs/compliance/")
 
     def set_out_file(self, output_file):
         """

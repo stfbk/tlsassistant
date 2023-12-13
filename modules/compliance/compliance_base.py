@@ -31,6 +31,7 @@ class Compliance:
 
     def __init__(self):
         self.hostname = ""
+        self._openssl_version = ""
         self._custom_guidelines = None
         self._apache = True
         # legacy vs security level switch
@@ -110,6 +111,15 @@ class Compliance:
         output_file = kwargs.get("output_config")
         self._custom_guidelines = kwargs.get("custom_guidelines")
         guidelines_string = kwargs.get("guidelines")
+        openssl_version = kwargs.get("openssl-version")
+        ignore_openssl = kwargs.get("ignore_openssl")
+        if ignore_openssl:
+            self._openssl_version = "1.1.1"
+        elif openssl_version:
+            self._openssl_version = openssl_version
+        if openssl_version not in self._configuration_maker.signature_algorithms:
+            self._logging.warning(f"OpenSSL version {openssl_version} is not supported, using 1.1.1")
+            self._openssl_version = "1.1.1"
 
         # guidelines evaluation
         self._validator.string(guidelines_string)
@@ -268,7 +278,7 @@ class Compliance:
                 if entries_key == "notes":
                     if "{action}" in string:
                         string = string.split("{action}")[0].strip()
-                    tmp_string = string
+                    tmp_string = string.format(name=entry_name)
                 else:
                     tmp_string = string.format(name=entry_name,
                                                action=self._output_dict[hostname][sheet][entry]["action"],

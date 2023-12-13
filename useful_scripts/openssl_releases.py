@@ -80,6 +80,7 @@ def extract_sigalgs():
             if "TLSEXT_SIGALG" in l and "gost" not in l:
                 l = l.strip().strip(",").strip("TLSEXT_SIGALG_")
                 sigalgs.append(l)
+        release = release.lower().replace("openssl", "")[1:]
         sigalgs_dict[release] = sigalgs
     with open("../configs/compliance/sigalgs.json", "w") as f:
         json.dump(sigalgs_dict, f, indent=4, sort_keys=True)

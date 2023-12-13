@@ -465,7 +465,11 @@ class Core:
             args={}
             if self.__input_dict['compliance_args'] and name in self.__input_dict['compliance_args']: # if we are not checking compliance
                 args = self.__input_dict['compliance_args'][name]
-            
+                openssl_version=self.__input_dict["openssl_version"],
+                ignore_openssl=self.__input_dict["ignore_openssl"],
+                args["openssl_version"]=openssl_version
+                args["ignore_openssl"]=ignore_openssl
+
             args.update(loaded_arguments[name])
             if type_of_analysis != self.Analysis.APK:  # server analysis
                 args["port"] = port  # set the port
