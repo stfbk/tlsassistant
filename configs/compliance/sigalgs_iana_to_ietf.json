@@ -1,0 +1,21 @@
+{
+    "NULL": "rsa_pkcs1_sha224",
+    "ecdsa_brainpoolP256r1tls13_sha256": "ecdsa_brainpoolP256r1_sha256",
+    "ecdsa_brainpoolP384r1tls13_sha384": "ecdsa_brainpoolP384r1_sha384",
+    "ecdsa_brainpoolP512r1tls13_sha512": "ecdsa_brainpoolP512r1_sha512",
+    "ecdsa_secp256r1_sha256": "ecdsa_secp256r1_sha256",
+    "ecdsa_secp384r1_sha384": "ecdsa_secp384r1_sha384",
+    "ecdsa_secp521r1_sha512": "ecdsa_secp521r1_sha512",
+    "ed25519": "ed25519",
+    "ed448": "ed448",
+    "rsa_pkcs1_sha1": "rsa_pkcs1_sha1",
+    "rsa_pkcs1_sha256": "rsa_pkcs1_sha256",
+    "rsa_pkcs1_sha384": "rsa_pkcs1_sha384",
+    "rsa_pkcs1_sha512": "rsa_pkcs1_sha512",
+    "rsa_pss_pss_sha256": "rsa_pss_pss_sha256",
+    "rsa_pss_pss_sha384": "rsa_pss_pss_sha384",
+    "rsa_pss_pss_sha512": "rsa_pss_pss_sha512",
+    "rsa_pss_rsae_sha256": "rsa_pss_rsae_sha256",
+    "rsa_pss_rsae_sha384": "rsa_pss_rsae_sha384",
+    "rsa_pss_rsae_sha512": "rsa_pss_rsae_sha512"
+}

@@ -48,12 +48,22 @@ def download_releases():
             with open(f"tmp/{release}.tar.gz", "wb") as f:
                 f.write(r.content)
         # unzip only the file from the tar ssl/ti_lib.c
-        tar = tarfile.open(f"tmp/{release}.tar.gz")
-        first_name = tar.getnames()[0]
+        if not os.path.exists(f"tmp/{release}/t1_lib.c"):
+            extract_file(release, "t1_lib.c")
+        if not os.path.exists(f"tmp/{release}/ssl_local.h"):
+            extract_file(release, "ssl_local.h")
+        if os.path.isdir(f"tmp/{release}/ssl"):
+            shutil.rmtree(f"tmp/{release}/ssl")
+
+
+def extract_file(release, file):
+    tar = tarfile.open(f"tmp/{release}.tar.gz")
+    first_name = tar.getnames()[0]
+    if f"{first_name}/ssl/{file}" in tar.getnames():
         first_name = first_name.split("/")[0] if "/" in first_name else first_name
-        tar.extract(f"{first_name}/ssl/t1_lib.c", path=f"tmp/")
+        tar.extract(f"{first_name}/ssl/{file}", path=f"tmp/")
         tar.close()
-        shutil.move(f"tmp/{first_name}/ssl/t1_lib.c", f"tmp/{release}/t1_lib.c")
+        shutil.move(f"tmp/{first_name}/ssl/{file}", f"tmp/{release}/{file}")
         if first_name != release:
             if not os.path.exists(f"tmp/{release}"):
                 os.mkdir(f"tmp/{release}")
@@ -61,7 +71,8 @@ def download_releases():
 
 def extract_sigalgs():
     sigalgs_dict = {}
-    for release in [r for r in os.listdir("tmp") if r[-2:] != "gz"]:
+    sigalgs_table = {}
+    for release in [r for r in os.listdir("tmp") if r[-2:] != "gz" and r[-3:] != "csv"]:
         lines = []
         print("Release: ", release)
         with open(f"tmp/{release}/t1_lib.c", "r") as f:
@@ -69,21 +80,59 @@ def extract_sigalgs():
             start_reading = False
             while line:
                 line = f.readline()
-                if "/* Default sigalg schemes */" in line:
+                if "static const SIGALG_LOOKUP sigalg_lookup_tbl[]" in line:
                     start_reading = True
-                if "SIGALG_LOOKUP" in line:
+                elif "SIGALG_LOOKUP" in line:
                     start_reading = False
-                if start_reading:
+                elif start_reading:
                     lines.append(line)
         sigalgs = []
         for l in lines:
             if "TLSEXT_SIGALG" in l and "gost" not in l:
-                l = l.strip().strip(",").strip("TLSEXT_SIGALG_")
-                sigalgs.append(l)
+                l = l.strip().strip("{").strip(",")
+                name, tlsext = l.split(",")
+                name = name.strip().strip("\"")
+                if name != "NULL":
+                    sigalgs.append(name)
+                if name not in sigalgs_table and name != "NULL":
+                    with open(f"tmp/{release}/ssl_local.h", "r") as f:
+                        line = "a"
+                        while line:
+                            line = f.readline()
+                            if tlsext in line:
+                                line = line.strip()
+                                sigalgs_table[name] = "0x" + line.split("0x")[1]
+
         release = release.lower().replace("openssl", "")[1:]
         sigalgs_dict[release] = sigalgs
+    # switch the keys and the values in sigalgs_table
+    sigalgs_table = {v: k for k, v in sigalgs_table.items()}
+    if not os.path.exists("tmp/iana_sigalgs.csv"):
+        r = requests.get("https://www.iana.org/assignments/tls-parameters/tls-signaturescheme.csv")
+        with open("tmp/iana_sigalgs.csv", "w") as f:
+            f.write(r.text)
+    with open("tmp/iana_sigalgs.csv", "r") as f:
+        lines = f.readlines()
+        lines = [l.strip().split(",") for l in lines]
+        lines = lines[1:]
+        tmp_dict = {}
+        for l in lines:
+            tmp_dict[l[0].lower()] = l[1]
+        lines = tmp_dict
+    for sigalg in sigalgs_table:
+        sigalgs_table[sigalg] = {
+            "ietf": sigalgs_table[sigalg],
+            "iana": lines.get(sigalg, "NULL"),
+        }
+    iana_to_ietf = {}
+    for sigalg in sigalgs_table:
+        iana_to_ietf[sigalgs_table[sigalg]["iana"]] = sigalgs_table[sigalg]["ietf"]
     with open("../configs/compliance/sigalgs.json", "w") as f:
         json.dump(sigalgs_dict, f, indent=4, sort_keys=True)
+    with open("../configs/compliance/sigalgs_table.json", "w") as f:
+        json.dump(sigalgs_table, f, indent=4, sort_keys=True)
+    with open("../configs/compliance/sigalgs_iana_to_ietf.json", "w") as f:
+        json.dump(iana_to_ietf, f, indent=4, sort_keys=True)
 
 
 

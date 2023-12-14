@@ -1,0 +1,78 @@
+{
+    "0x0201": {
+        "iana": "rsa_pkcs1_sha1",
+        "ietf": "rsa_pkcs1_sha1"
+    },
+    "0x0301": {
+        "iana": "NULL",
+        "ietf": "rsa_pkcs1_sha224"
+    },
+    "0x0401": {
+        "iana": "rsa_pkcs1_sha256",
+        "ietf": "rsa_pkcs1_sha256"
+    },
+    "0x0403": {
+        "iana": "ecdsa_secp256r1_sha256",
+        "ietf": "ecdsa_secp256r1_sha256"
+    },
+    "0x0501": {
+        "iana": "rsa_pkcs1_sha384",
+        "ietf": "rsa_pkcs1_sha384"
+    },
+    "0x0503": {
+        "iana": "ecdsa_secp384r1_sha384",
+        "ietf": "ecdsa_secp384r1_sha384"
+    },
+    "0x0601": {
+        "iana": "rsa_pkcs1_sha512",
+        "ietf": "rsa_pkcs1_sha512"
+    },
+    "0x0603": {
+        "iana": "ecdsa_secp521r1_sha512",
+        "ietf": "ecdsa_secp521r1_sha512"
+    },
+    "0x0804": {
+        "iana": "rsa_pss_rsae_sha256",
+        "ietf": "rsa_pss_rsae_sha256"
+    },
+    "0x0805": {
+        "iana": "rsa_pss_rsae_sha384",
+        "ietf": "rsa_pss_rsae_sha384"
+    },
+    "0x0806": {
+        "iana": "rsa_pss_rsae_sha512",
+        "ietf": "rsa_pss_rsae_sha512"
+    },
+    "0x0807": {
+        "iana": "ed25519",
+        "ietf": "ed25519"
+    },
+    "0x0808": {
+        "iana": "ed448",
+        "ietf": "ed448"
+    },
+    "0x0809": {
+        "iana": "rsa_pss_pss_sha256",
+        "ietf": "rsa_pss_pss_sha256"
+    },
+    "0x080a": {
+        "iana": "rsa_pss_pss_sha384",
+        "ietf": "rsa_pss_pss_sha384"
+    },
+    "0x080b": {
+        "iana": "rsa_pss_pss_sha512",
+        "ietf": "rsa_pss_pss_sha512"
+    },
+    "0x081a": {
+        "iana": "ecdsa_brainpoolP256r1tls13_sha256",
+        "ietf": "ecdsa_brainpoolP256r1_sha256"
+    },
+    "0x081b": {
+        "iana": "ecdsa_brainpoolP384r1tls13_sha384",
+        "ietf": "ecdsa_brainpoolP384r1_sha384"
+    },
+    "0x081c": {
+        "iana": "ecdsa_brainpoolP512r1tls13_sha512",
+        "ietf": "ecdsa_brainpoolP512r1_sha512"
+    }
+}
