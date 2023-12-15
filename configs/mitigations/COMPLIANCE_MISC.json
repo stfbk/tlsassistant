@@ -20,6 +20,11 @@
     "Client-initiated renegotiation_config": {
       "Apache": "Client-initiated renegotiation: search for the <code>SSLInsecureRenegotiation</code> directive and set it to <code>off</code>.",
       "Nginx": "Update nginx (newer versions are not vulnerable)."
+    },
+    "openssl_dependency": {
+      "< 0.9.8m": {
+        "Textual": "<br/>OpenSSL versions previous to 0.9.8m allows client insecure renegotiation."
+      }
     }
   },
   "#omit-xml-declaration": "yes"
