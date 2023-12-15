@@ -504,10 +504,11 @@ class Compliance:
                             # The entries are SigAlg+HashAlg
                             tokens = el.split("+")
                             # RSASSA-PSS is a subset of RSA
-                            signatures.append(tokens[0].replace("RSASSA-PSS", "RSA").lower())
                             hashes.append(tokens[1].lower())
+                        signatures.append(convert_signature_algorithm(el))
                     # self._add_certificate_signature_algorithm(signatures)
                     self._user_configuration["Hash"].update(hashes)
+                    self._user_configuration["Signature"].update(signatures)
 
                 # From TLS 1.3 the signature algorithms are different from the previous versions.
                 # So they are saved in a different field of the configuration dictionary.
