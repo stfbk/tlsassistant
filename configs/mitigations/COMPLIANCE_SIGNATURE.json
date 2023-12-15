@@ -5,12 +5,30 @@
     "Description": "Compliance report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
       "Textual": "TODO decide mitigation:<br/>{add}<br/>{remove}<br/>{notes}",
-      "Apache": "No snippet available",
-      "Nginx": "No snippet available"
+      "Apache": "-Quick solution: Replace the instruction of the directive <code>SSLOpenSSLConfCmd ClientSignatureAlgorithms</code> with the following string:<br/> {total_string}</br>-Advanced solution: Check the directive <code>SSLOpenSSLConfCmd ClientSignatureAlgorithms</code> and for each element in the Textual section, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element you have to remove it from the string.",
+      "Nginx": "-Quick solution: Replace the instruction of the directive <code>ssl_conf_command SignatureAlgorithms</code> with the following string:<br/> {total_string}</br>-Advanced solution: Check the directive <code>ssl_conf_command SignatureAlgorithms</code> and for each element in the Textual section, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element you have to remove it from the string."
     }
   },
   "#ConfigurationInstructions": {
-    "mode": "no_config"
+    "must not": "",
+    "not recommended": "",
+    "recommended": "name",
+    "must": "name",
+    "connector": ":",
+    "mode": "standard",
+    "openssl_dependency": {
+      "< 1.1.1": {
+        "Textual": "<br/>NOTE: In order to use signature algorithms, you need to upgrade to OpenSSL 1.1.1 or later.",
+        "Nginx": "<br/>NOTE: This directive is only supported by NGINX 1.19.4 or higher."
+      },
+      "> 1.0.2": {
+        "Textual": "<br/>NOTE: Your OpenSSL version may not support all the signature algorithms listed in this section. The mitigations provided in this report only show the supported ones.",
+        "Nginx": "<br/>NOTE: This directive is only supported by NGINX 1.19.4 or higher."
+      }
+    },
+    "actions_on_final_string": {
+      "convert_sigalgs": ""
+    }
   },
   "#omit-xml-declaration": "yes"
 }

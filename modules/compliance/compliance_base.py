@@ -1,7 +1,6 @@
 import itertools
 import json
 import os.path
-import pprint
 import re
 from pathlib import Path
 
@@ -11,6 +10,7 @@ from modules.compliance.configuration.nginx_configuration import NginxConfigurat
 from modules.compliance.wrappers.certificateparser import CertificateParser
 from modules.compliance.wrappers.conditionparser import ConditionParser
 from modules.compliance.wrappers.db_reader import Database
+from modules.configuration.configuration_base import OpenSSL
 from modules.server.wrappers.testssl import Testssl
 from utils.database import get_standardized_level
 from utils.loader import load_configuration
@@ -23,8 +23,14 @@ def convert_signature_algorithm(sig_alg: str) -> str:
     """
     This function is needed to convert the input from testssl to make it compatible with the requirements database
     """
-    return sig_alg.replace("-", "_").replace("+", "_").lower()
-
+    sig_alg = sig_alg.replace("-", "_").replace("+", "_").lower()
+    if "brainpool" in sig_alg:
+        hash_len = sig_alg[-3:]
+        sig_alg = sig_alg.replace("brainpool", f"brainpoolP{hash_len}r1tls13")
+    elif "ecdsa" in sig_alg:
+        hash_len = sig_alg[-3:]
+        sig_alg = sig_alg.replace("ecdsa", f"ecdsa_secp{hash_len}r1")
+    return sig_alg
 
 class Compliance:
     report_config = load_configuration("special_configs", "configs/compliance/")
@@ -57,7 +63,8 @@ class Compliance:
         self._certificate_parser = CertificateParser()
         self._cert_sig_algs = [el[0] for el in self._database_instance.run(tables=["CertificateSignature"],
                                                                            columns=["name"])]
-        self._configuration_maker = ConfigurationMaker("apache")
+        self._configuration_maker = ConfigurationMaker("apache", self._openssl_version)
+        self._openssl = OpenSSL()
         self._ciphers_converter = load_configuration("openssl_to_iana", "configs/compliance/")
         self._user_configuration_types = load_configuration("user_conf_types", "configs/compliance/generate/")
         self._type_converter = {
@@ -111,15 +118,16 @@ class Compliance:
         output_file = kwargs.get("output_config")
         self._custom_guidelines = kwargs.get("custom_guidelines")
         guidelines_string = kwargs.get("guidelines")
-        openssl_version = kwargs.get("openssl-version")
+        openssl_version = kwargs.get("openssl_version")
         ignore_openssl = kwargs.get("ignore_openssl")
-        if ignore_openssl:
+        if ignore_openssl[0]:
             self._openssl_version = "1.1.1"
         elif openssl_version:
-            self._openssl_version = openssl_version
-        if openssl_version not in self._configuration_maker.signature_algorithms:
-            self._logging.warning(f"OpenSSL version {openssl_version} is not supported, using 1.1.1")
+            self._openssl_version = openssl_version[0]
+        if self._openssl_version not in self._configuration_maker.signature_algorithms:
+            self._logging.warning(f"OpenSSL version {openssl_version[0]} is not supported, using 1.1.1")
             self._openssl_version = "1.1.1"
+        self._configuration_maker.set_openssl_version(self._openssl_version)
 
         # guidelines evaluation
         self._validator.string(guidelines_string)
@@ -253,10 +261,26 @@ class Compliance:
                     mitigation["Entry"]["Mitigation"]["Nginx"] = mitigation["Entry"]["Mitigation"]["Nginx"].format(
                         total_string=total_string_nginx)
                 # TODO clean the dictionary before adding mitigation
+                if conf_instructions.get("openssl_dependency"):
+                    for version in conf_instructions["openssl_dependency"]:
+                        operator, check_version = version.split(" ")
+                        add_openssl_text = False
+                        if operator == "<" and self._openssl.less_than(self._openssl_version, check_version):
+                            add_openssl_text = True
+                        elif operator == ">" and self._openssl.greater_than(self._openssl_version, check_version):
+                            add_openssl_text = True
+                        if add_openssl_text:
+                            mitigation["Entry"]["Mitigation"]["Textual"] += conf_instructions["openssl_dependency"][
+                                version].get("Textual", "")
+                            mitigation["Entry"]["Mitigation"]["Apache"] += conf_instructions["openssl_dependency"][
+                                version].get("Apache", "")
+                            mitigation["Entry"]["Mitigation"]["Nginx"] += conf_instructions["openssl_dependency"][
+                                version].get("Nginx", "")
                 self._output_dict[hostname][sheet]["mitigation"] = mitigation
 
     def format_output_string(self, string, hostname, sheet, conf_instructions, total_string_apache, total_string_nginx,
                              entries_key, strings_list):
+        source = ""
         for entry in self._output_dict[hostname][sheet][entries_key]:
             source = self._output_dict[hostname][sheet][entry]["source"]
             entry_name, _ = self._configuration_maker.perform_post_actions(conf_instructions, entry, source)
@@ -270,9 +294,9 @@ class Compliance:
             if not self._output_dict[hostname][sheet][entry].get("total_string_only"):
                 if conf_instructions["mode"] == "specific_mitigation":
                     string = conf_instructions.get(entry, "")
-                    if conf_instructions.get(entry+"_config"):
-                        total_string_apache += "<br/>" + conf_instructions[entry+"_config"]["Apache"]
-                        total_string_nginx += "<br/>" + conf_instructions[entry+"_config"]["Nginx"]
+                    if conf_instructions.get(entry + "_config"):
+                        total_string_apache += "<br/>" + conf_instructions[entry + "_config"]["Apache"]
+                        total_string_nginx += "<br/>" + conf_instructions[entry + "_config"]["Nginx"]
 
                 # This case is needed because the notes don't have the action and source fields
                 if entries_key == "notes":
@@ -287,6 +311,13 @@ class Compliance:
                     tmp_string += "; " + self._output_dict[hostname][sheet][entry]["notes"]
                 tmp_string, _ = self._configuration_maker.perform_post_actions(conf_instructions, tmp_string, source)
                 strings_list.append(tmp_string)
+        total_string_apache, _ = self._configuration_maker.perform_post_actions(conf_instructions, total_string_apache,
+                                                                                source,
+                                                                                "actions_on_final_string")
+        total_string_nginx, _ = self._configuration_maker.perform_post_actions(conf_instructions, total_string_nginx,
+                                                                               source,
+                                                                               "actions_on_final_string")
+
         connector = conf_instructions.get("connector", None)
         if connector:
             connector_length = len(connector)
@@ -527,12 +558,14 @@ class Compliance:
                     self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
                 elif field == "fallback_SCSV":
                     self._user_configuration["fallback_SCSV"] = actual_dict["finding"]
+        print(self._user_configuration["Signature"])
+
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition, hostname):
         information_level = None
         action = None
         entry_level = get_standardized_level(entry_level) if entry_level else None
         total_string_only = False
-        #print(f"{sheet} - {name} - {entry_level} - {enabled} - {source} - {valid_condition}")
+        # print(f"{sheet} - {name} - {entry_level} - {enabled} - {source} - {valid_condition}")
         if entry_level == "must" and valid_condition and not enabled:
             information_level = "MUST"
             action = "has to be enabled"

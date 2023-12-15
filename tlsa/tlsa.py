@@ -113,11 +113,14 @@ class Tlsa:
                 gen_one_or_many:all_args
             }
             
-        if args.apply_fix or args.file:
+        if args.apply_fix or args.file or args.compliance_args:
             # checks for openssl and ignore-openssl flag
             if not args.ignore_openssl and not args.openssl:
+                reason = "OpenSSL is required to fix the TLSA records."
+                if args.compliance_args:
+                    reason = "\nOpenSSL is required to generate the compliance reports."
                 raise AssertionError(
-                    f"\n{Color.WARNING}OpenSSL is required to fix the TLSA records.{Color.ENDC}"
+                    f"\n{Color.WARNING}{reason}{Color.ENDC}"
                     f"\nIgnore the checks with \n\t{Color.CBEIGE}--ignore-openssl{Color.ENDC}\n"
                     f"or insert an openssl version with\n\t{Color.CBEIGE}--openssl [VERSION]{Color.ENDC}"
                 )
@@ -133,6 +136,8 @@ class Tlsa:
                 group_by=args.group_by,
                 apply_fix=args.apply_fix,
                 stix=args.stix,
+                openssl_version=args.openssl,
+                ignore_openssl=args.ignore_openssl,
                 compliance_args=args.compliance_args
             )
         elif args.apk:

@@ -1,13 +1,14 @@
 from pathlib import Path
 
+from modules.compliance.wrappers.db_reader import Database
 from utils.database import get_standardized_level
 from utils.loader import load_configuration
+from utils.logger import Logger
 from utils.validation import Validator
-from modules.compliance.wrappers.db_reader import Database
-
+from modules.configuration.configuration_base import OpenSSL
 
 class ConfigurationMaker:
-    def __init__(self, config_type):
+    def __init__(self, config_type, openssl_version):
         self.mapping = load_configuration("mapping", f"configs/compliance/{config_type}/")
         self.reverse_mapping = dict((v, k) for k, v in self.mapping.items())
         self._output_dict = {"configuration": config_type}
@@ -18,7 +19,8 @@ class ConfigurationMaker:
         self._enabled_once = set()
         self.conditions_to_check = {}
         self._specific_rules = load_configuration("rules", f"configs/compliance/{config_type}/")
-        self._actions = Actions()
+        self._actions = Actions(openssl_version)
+        self._logger = Logger("Configuration maker")
         self.signature_algorithms = load_configuration("sigalgs", "configs/compliance/")
 
     def set_out_file(self, output_file):
@@ -111,7 +113,8 @@ class ConfigurationMaker:
 
         return string_to_add
 
-    def _prepare_field_string(self, tmp_string, field, field_rules, name_index, level_index, condition_index, columns, data,
+    def _prepare_field_string(self, tmp_string, field, field_rules, name_index, level_index, condition_index, columns,
+                              data,
                               config_field, guideline, target):
         for entry in data:
             condition = ""
@@ -152,11 +155,11 @@ class ConfigurationMaker:
                 self._output_dict[field][name]["guideline"] = guideline
         return tmp_string
 
-    def perform_post_actions(self, field_rules, actual_string, guideline):
+    def perform_post_actions(self, field_rules, actual_string, guideline, actions_from = "post_actions"):
         comment = ""
-        if field_rules.get("post_actions", None):
-            for action in field_rules["post_actions"]:
-                arguments = field_rules["post_actions"][action]
+        if field_rules.get(actions_from, None):
+            for action in field_rules[actions_from]:
+                arguments = field_rules[actions_from][action]
                 if action.startswith("comment"):
                     comment = self._actions.__getattribute__(action)(**{"value": comment, "arguments": arguments,
                                                                         "guideline": guideline,
@@ -166,18 +169,28 @@ class ConfigurationMaker:
                                                                               "arguments": arguments})
         return actual_string, comment
 
+    def set_openssl_version(self, version):
+        self._actions._openssl_version = version
+
     @property
     def output_dict(self):
         return self._output_dict
+
 
 # This class is used to define the actions that can be taken after a field has been prepared and before it gets added to
 # the configuration file. The actions are defined in the configuration_rules file using the post_actions key with value
 # a list of actions to take, the function_name and the arguments are separated by a blank space ` `.
 class Actions:
-    def __init__(self):
+    def __init__(self, openssl_version):
         self.validator = Validator()
         self._ciphers_converter = load_configuration("iana_to_openssl", "configs/compliance/")
         self._database = Database()
+        self._openssl_version = openssl_version
+        self._logger = Logger("Configuration actions")
+        self._openssl = OpenSSL()
+        self._sigalgs_table = load_configuration("sigalgs_iana_to_ietf", "configs/compliance/")
+        self.signature_algorithms = load_configuration("sigalgs", "configs/compliance/")
+
     def split(self, **kwargs) -> list:
         """
         :param kwargs: Dictionary of arguments
@@ -227,7 +240,6 @@ class Actions:
         return string
 
     def convert_groups(self, **kwargs) -> str:
-        # TODO add to report a message stating that this directive is not supported by OpenSSL prior to 1.0.2
         """
         :param kwargs: Dictionary of arguments
         :type kwargs: dict
@@ -239,10 +251,39 @@ class Actions:
         string = kwargs.get("value", None)
         self.validator.string(string)
         groups = string.split(":") if ":" in string else [string]
+        if self._openssl.less_than(self._openssl_version, "1.0.2"):
+            self._logger.warning(
+                "The provided openssl version can not use multiple groups, only the first one will be used.")
+            groups = groups[:1]
+            string = string.split(":")[0]
         for group in groups:
             if "/" in group and not group.startswith("<br"):
                 string = string.replace(group, group.split("/")[0].strip())
         return string
+
+    def convert_sigalgs(self, **kwargs) -> str:
+        """
+        :param kwargs: Dictionary of arguments
+        :type kwargs: dict
+        :return: the list of converted sigalgs
+        :param kwargs:
+        :return:
+        """
+        string = kwargs.get("value", None)
+        self.validator.string(string)
+        sigalgs = string.split(":") if ":" in string else [string]
+        if sigalgs[0] == "<code>":
+            sigalgs = sigalgs[1:]
+        for i, sigalg in enumerate(sigalgs):
+            sigalgs[i] = self._sigalgs_table.get(sigalg, sigalg)
+            string = string.replace(sigalg, sigalgs[i])
+        for sigalg in sigalgs:
+            if sigalg not in self.signature_algorithms[self._openssl_version]:
+                self._logger.info(f"Signature algorithm {sigalg} can not be enabled with the current openssl version")
+                string = string.replace(sigalg, "")
+        while "::" in string:
+            string = string.replace("::", ":")
+        return string.replace("<code>:", "<code>")
 
     def prepend(self, **kwargs):
         """
@@ -304,7 +345,7 @@ class Actions:
         self.validator.string(string)
         self.validator.dict(arguments)
         self.validator.string(guideline)
-        format_values = [""*len(arguments)]
+        format_values = ["" * len(arguments)]
         for position in arguments:
             format_values[int(position)] = self.__getattribute__(arguments[position])(**{"value": string,
                                                                                          "guideline": guideline})
@@ -326,5 +367,3 @@ class Actions:
                                     other_filter="WHERE name = \"DH\" AND (level = \"must\" OR level = \"recommended\")")
         value = values[-1][0]
         return value
-
-
