@@ -1,11 +1,12 @@
 from pathlib import Path
 
 from modules.compliance.wrappers.db_reader import Database
+from modules.configuration.configuration_base import OpenSSL
 from utils.database import get_standardized_level
 from utils.loader import load_configuration
 from utils.logger import Logger
 from utils.validation import Validator
-from modules.configuration.configuration_base import OpenSSL
+
 
 class ConfigurationMaker:
     def __init__(self, config_type, openssl_version):
@@ -155,7 +156,7 @@ class ConfigurationMaker:
                 self._output_dict[field][name]["guideline"] = guideline
         return tmp_string
 
-    def perform_post_actions(self, field_rules, actual_string, guideline, actions_from = "post_actions"):
+    def perform_post_actions(self, field_rules, actual_string, guideline, actions_from="post_actions"):
         comment = ""
         if field_rules.get(actions_from, None):
             for action in field_rules[actions_from]:
@@ -190,6 +191,13 @@ class Actions:
         self._openssl = OpenSSL()
         self._sigalgs_table = load_configuration("sigalgs_iana_to_ietf", "configs/compliance/")
         self.signature_algorithms = load_configuration("sigalgs", "configs/compliance/")
+
+    def clean_final_string(self, string):
+        while "::" in string:
+            string = string.replace("::", ":")
+        if string[-1] == ":":
+            string = string[:-1]
+        return string
 
     def split(self, **kwargs) -> list:
         """
@@ -259,6 +267,7 @@ class Actions:
         for group in groups:
             if "/" in group and not group.startswith("<br"):
                 string = string.replace(group, group.split("/")[0].strip())
+        string = self.clean_final_string(string)
         return string
 
     def convert_sigalgs(self, **kwargs) -> str:
@@ -281,8 +290,7 @@ class Actions:
             if sigalg not in self.signature_algorithms[self._openssl_version]:
                 self._logger.info(f"Signature algorithm {sigalg} can not be enabled with the current openssl version")
                 string = string.replace(sigalg, "")
-        while "::" in string:
-            string = string.replace("::", ":")
+        string = self.clean_final_string(string)
         return string.replace("<code>:", "<code>")
 
     def prepend(self, **kwargs):

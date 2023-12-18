@@ -32,6 +32,7 @@ def convert_signature_algorithm(sig_alg: str) -> str:
         sig_alg = sig_alg.replace("ecdsa", f"ecdsa_secp{hash_len}r1")
     return sig_alg
 
+
 class Compliance:
     report_config = load_configuration("special_configs", "configs/compliance/")
 
