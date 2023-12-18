@@ -112,7 +112,6 @@ class Tlsa:
                 f"default{'_android.json' if args.apk else '_server.json'}"
             )
         config_or_modules = args.configuration
-            args.config_type = config_types_mapping.get(args.config_type.lower(), WebserverType.AUTO)
         if args.config_type:
             args.config_type = config_types_mapping.get(args.config_type.lower(), WebserverType.AUTO)
         if args.compliance_args:

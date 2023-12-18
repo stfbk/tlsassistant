@@ -913,7 +913,7 @@
     },
     "0x13,0x06": {
         "GnuTLS": "",
-        "IANA": "TLS_AEGIS_256_SHA384",
+        "IANA": "TLS_AEGIS_256_SHA512",
         "NSS": "",
         "OpenSSL": ""
     },
