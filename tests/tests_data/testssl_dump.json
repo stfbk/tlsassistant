@@ -1,0 +1,838 @@
+{
+    "127.0.0.1": {
+        "service": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "HTTP"
+        },
+        "pre_128cipher": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "No 128 cipher limit bug"
+        },
+        "SSLv2": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "not offered"
+        },
+        "SSLv3": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "not offered"
+        },
+        "TLS1": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "not offered"
+        },
+        "TLS1_1": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "not offered"
+        },
+        "TLS1_2": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "offered"
+        },
+        "TLS1_3": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "offered with final"
+        },
+        "NPN": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "offered with h2, http/1.1 (advertised)"
+        },
+        "ALPN_HTTP2": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "h2"
+        },
+        "ALPN": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "http/1.1"
+        },
+        "cipherlist_NULL": {
+            "port": "443",
+            "severity": "OK",
+            "cwe": "CWE-327",
+            "finding": "not offered"
+        },
+        "cipherlist_aNULL": {
+            "port": "443",
+            "severity": "OK",
+            "cwe": "CWE-327",
+            "finding": "not offered"
+        },
+        "cipherlist_EXPORT": {
+            "port": "443",
+            "severity": "OK",
+            "cwe": "CWE-327",
+            "finding": "not offered"
+        },
+        "cipherlist_LOW": {
+            "port": "443",
+            "severity": "OK",
+            "cwe": "CWE-327",
+            "finding": "not offered"
+        },
+        "cipherlist_3DES_IDEA": {
+            "port": "443",
+            "severity": "INFO",
+            "cwe": "CWE-310",
+            "finding": "not offered"
+        },
+        "cipherlist_OBSOLETED": {
+            "port": "443",
+            "severity": "INFO",
+            "cwe": "CWE-310",
+            "finding": "not offered"
+        },
+        "cipherlist_STRONG_NOFS": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "not offered"
+        },
+        "cipherlist_STRONG_FS": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "offered"
+        },
+        "cipher_order-tls1_2": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "NOT a cipher order configured"
+        },
+        "cipher-tls1_2_xc030": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "TLSv1.2   xc030   ECDHE-RSA-AES256-GCM-SHA384       ECDH 521   AESGCM      256      TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+        },
+        "cipher-tls1_2_x9f": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "TLSv1.2   x9f     DHE-RSA-AES256-GCM-SHA384         DH 2048    AESGCM      256      TLS_DHE_RSA_WITH_AES_256_GCM_SHA384"
+        },
+        "cipher-tls1_2_xcca8": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "TLSv1.2   xcca8   ECDHE-RSA-CHACHA20-POLY1305       ECDH 521   ChaCha20    256      TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
+        },
+        "cipher-tls1_2_xccaa": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "TLSv1.2   xccaa   DHE-RSA-CHACHA20-POLY1305         DH 2048    ChaCha20    256      TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
+        },
+        "cipher-tls1_2_xc02f": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "TLSv1.2   xc02f   ECDHE-RSA-AES128-GCM-SHA256       ECDH 521   AESGCM      128      TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+        },
+        "cipher-tls1_2_x9e": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "TLSv1.2   x9e     DHE-RSA-AES128-GCM-SHA256         DH 2048    AESGCM      128      TLS_DHE_RSA_WITH_AES_128_GCM_SHA256"
+        },
+        "supportedciphers_TLSv1_2": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "ECDHE-RSA-AES256-GCM-SHA384 DHE-RSA-AES256-GCM-SHA384 ECDHE-RSA-CHACHA20-POLY1305 DHE-RSA-CHACHA20-POLY1305 ECDHE-RSA-AES128-GCM-SHA256 DHE-RSA-AES128-GCM-SHA256"
+        },
+        "cipher_order-tls1_3": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "NOT a cipher order configured"
+        },
+        "cipher-tls1_3_x1302": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "TLSv1.3   x1302   TLS_AES_256_GCM_SHA384            ECDH 253   AESGCM      256      TLS_AES_256_GCM_SHA384"
+        },
+        "cipher-tls1_3_x1303": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "TLSv1.3   x1303   TLS_CHACHA20_POLY1305_SHA256      ECDH 253   ChaCha20    256      TLS_CHACHA20_POLY1305_SHA256"
+        },
+        "cipher-tls1_3_x1301": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "TLSv1.3   x1301   TLS_AES_128_GCM_SHA256            ECDH 253   AESGCM      128      TLS_AES_128_GCM_SHA256"
+        },
+        "supportedciphers_TLSv1_3": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLS_AES_256_GCM_SHA384 TLS_CHACHA20_POLY1305_SHA256 TLS_AES_128_GCM_SHA256"
+        },
+        "cipher_order": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "NOT a cipher order configured"
+        },
+        "FS": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "offered"
+        },
+        "FS_ciphers": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLS_AES_256_GCM_SHA384 TLS_CHACHA20_POLY1305_SHA256 ECDHE-RSA-AES256-GCM-SHA384 DHE-RSA-AES256-GCM-SHA384 ECDHE-RSA-CHACHA20-POLY1305 DHE-RSA-CHACHA20-POLY1305 TLS_AES_128_GCM_SHA256 ECDHE-RSA-AES128-GCM-SHA256 DHE-RSA-AES128-GCM-SHA256"
+        },
+        "FS_ECDHE_curves": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "prime256v1 secp384r1 secp521r1 X25519 X448"
+        },
+        "DH_groups": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "ffdhe2048 ffdhe3072 ffdhe4096 ffdhe6144 ffdhe8192"
+        },
+        "FS_TLS12_sig_algs": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "RSA+SHA224 RSA+SHA256 RSA+SHA384 RSA+SHA512 RSA-PSS-RSAE+SHA256 RSA-PSS-RSAE+SHA384 RSA-PSS-RSAE+SHA512"
+        },
+        "FS_TLS13_sig_algs": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "RSA-PSS-RSAE+SHA256 RSA-PSS-RSAE+SHA384 RSA-PSS-RSAE+SHA512"
+        },
+        "TLS_extensions": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "'renegotiation info/#65281' 'server name/#0' 'EC point formats/#11' 'session ticket/#35' 'next protocol/#13172' 'supported versions/#43' 'key share/#51' 'supported_groups/#10' 'max fragment length/#1' 'application layer protocol negotiation/#16' 'extended master secret/#23'"
+        },
+        "TLS_session_ticket": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "valid for 300 seconds only (<daily)"
+        },
+        "SSL_sessionID_support": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "yes"
+        },
+        "sessionresumption_ticket": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "supported"
+        },
+        "sessionresumption_ID": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "not supported"
+        },
+        "TLS_timestamp": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "random"
+        },
+        "certificate_compression": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "none"
+        },
+        "clientAuth": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "none"
+        },
+        "cert_numbers": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "1"
+        },
+        "cert_signatureAlgorithm": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "SHA256 with RSA"
+        },
+        "cert_keySize": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "RSA 2048 bits (exponent is 65537)"
+        },
+        "cert_keyUsage": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "No server key usage information"
+        },
+        "cert_extKeyUsage": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "No server extended key usage information"
+        },
+        "cert_serialNumber": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "0A9036EA80A045987FA09603D5AD424C51DAF948"
+        },
+        "cert_serialNumberLen": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "20"
+        },
+        "cert_fingerprintSHA1": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "B63F8DDABEC4356C08F5B53928F2F1D5876F6443"
+        },
+        "cert_fingerprintSHA256": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "B3E97E0EC1615B26502BBECBC13443D60F6AD3C273ECB7E60C2001B10235DF3B"
+        },
+        "cert": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "-----BEGIN CERTIFICATE-----\nMIIDlzCCAn+gAwIBAgIUCpA26oCgRZh/oJYD1a1CTFHa+UgwDQYJKoZIhvcNAQELBQAwWzELMAkGA1UEBhMCdHQxCjAIBgNVBAgMAXQxCjAIBgNVBAcMAXQxCjAIBgNVBAoMAXQxCjAIBgNVBAsMAXQxCjAIBgNVBAMMAXQxEDAOBgkqhkiG9w0BCQEWAXQwHhcNMjMxMDMwMTQxNTQxWhcNMjQxMDI5MTQxNTQxWjBbMQswCQYDVQQGEwJ0dDEKMAgGA1UECAwBdDEKMAgGA1UEBwwBdDEKMAgGA1UECgwBdDEKMAgGA1UECwwBdDEKMAgGA1UEAwwBdDEQMA4GCSqGSIb3DQEJARYBdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJyT1rWLIIIsOPK0MhVWWAz4pGftHkpzD7Px6+3k22aEOjGXOBbVwtIpoVTMNmpOM82VFJHiRXGhAGr0Ww2CkV/M0tVtglnxR/BxP20R8EfYs9Nk7eotIuJIwwwIcyKqDT9UOInibrdk9UUJNFy4/XorpEo6fAbzCz/BMa+SUnY7gZ3MHxgiGr3dQ1bvfvLDHULY+qAY007eVc+Xvzgkn2NslyWwhpX6u4c9mLSR6K8IANYmQY9XPs3YqKrQ2FTIk+Jl96/w1jAdTkUdzoetO+Rs7FolG6FGo/Pu5NPr4v/lTpAXImU6Aaf90u8ugZRedxyQDmn8uVCFbKxvZNISnKECAwEAAaNTMFEwHQYDVR0OBBYEFGw+9zU96IW3B0YK2DUO2AXeS7DFMB8GA1UdIwQYMBaAFGw+9zU96IW3B0YK2DUO2AXeS7DFMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBAD4w9e49xxw0EdOYfwBLGzjdxwFBtFvCtZPB1MLZ5Fcrlll+aAKn5kNiGRaqWvhext88XFMZahdNn8k4wDHNKs7OSyoycbVMcVAl9f9W/ii7InHLOIwgn4qn/BgD4Sza1JnlKDbuU5O2U8ekOETQaxk/qjnEuub3n6sLTOhUZ3XkFK706qMbe+e11OVpnQPyvQU6vwkhkWQ8TXHBFI2+coj67OjIPl1q7vQzOexBQFOtW0s8aZvV7W3S62LnEiRG+nHyfW5qUauwEORHsi4QOSg+VDR5Ek3z2Rv+RbIxcm1DSRpZRybHdIuETi4ARZ1H0+9EmlodJ9LNlYExdJd5LOU=\n-----END CERTIFICATE-----"
+        },
+        "cert_commonName": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "t"
+        },
+        "cert_commonName_wo_SNI": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "t"
+        },
+        "cert_subjectAltName": {
+            "port": "443",
+            "severity": "HIGH",
+            "finding": "No SAN, browsers are complaining"
+        },
+        "cert_trust": {
+            "port": "443",
+            "severity": "HIGH",
+            "finding": "certificate does not match supplied URI (same w/o SNI)"
+        },
+        "cert_chain_of_trust": {
+            "port": "443",
+            "severity": "CRITICAL",
+            "finding": "failed (self signed)."
+        },
+        "cert_certificatePolicies_EV": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "no"
+        },
+        "cert_expirationStatus": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "364 >= 60 days"
+        },
+        "cert_notBefore": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "2023-10-30 14:15"
+        },
+        "cert_notAfter": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "2024-10-29 14:15"
+        },
+        "cert_extlifeSpan": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "certificate has no extended life time according to browser forum"
+        },
+        "cert_eTLS": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "not present"
+        },
+        "cert_crlDistributionPoints": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "--"
+        },
+        "cert_ocspURL": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "--"
+        },
+        "cert_revocation": {
+            "port": "443",
+            "severity": "HIGH",
+            "finding": "Neither CRL nor OCSP URI provided"
+        },
+        "OCSP_stapling": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "not offered"
+        },
+        "cert_mustStapleExtension": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "--"
+        },
+        "DNS_CAArecord": {
+            "port": "443",
+            "severity": "LOW",
+            "finding": "--"
+        },
+        "certificate_transparency": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "--"
+        },
+        "certs_countServer": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "1"
+        },
+        "certs_list_ordering_problem": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "no"
+        },
+        "cert_caIssuers": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "t (t from tt)"
+        },
+        "intermediate_cert_badOCSP": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "intermediate certificate(s) is/are ok"
+        },
+        "HTTP_status_code": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "200 OK ('/')"
+        },
+        "HTTP_clock_skew": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "0 seconds from localtime"
+        },
+        "HTTP_headerTime": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "1698741989"
+        },
+        "HSTS": {
+            "port": "443",
+            "severity": "LOW",
+            "finding": "not offered"
+        },
+        "HPKP": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "No support for HTTP Public Key Pinning"
+        },
+        "banner_server": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "nginx/1.18.0 (Ubuntu)"
+        },
+        "banner_application": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "No application banner found"
+        },
+        "cookie_count": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "0 at '/'"
+        },
+        "security_headers": {
+            "port": "443",
+            "severity": "MEDIUM",
+            "finding": "--"
+        },
+        "banner_reverseproxy": {
+            "port": "443",
+            "severity": "INFO",
+            "cwe": "CWE-200",
+            "finding": "--"
+        },
+        "heartbleed": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2014-0160",
+            "cwe": "CWE-119",
+            "finding": "not vulnerable, no heartbeat extension"
+        },
+        "CCS": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2014-0224",
+            "cwe": "CWE-310",
+            "finding": "not vulnerable"
+        },
+        "ticketbleed": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2016-9244",
+            "cwe": "CWE-200",
+            "finding": "not vulnerable"
+        },
+        "ROBOT": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2017-17382 CVE-2017-17427 CVE-2017-17428 CVE-2017-13098 CVE-2017-1000385 CVE-2017-13099 CVE-2016-6883 CVE-2012-5081 CVE-2017-6168",
+            "cwe": "CWE-203",
+            "finding": "not vulnerable, no RSA key transport cipher"
+        },
+        "secure_renego": {
+            "port": "443",
+            "severity": "OK",
+            "cwe": "CWE-310",
+            "finding": "supported"
+        },
+        "secure_client_renego": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2011-1473",
+            "cwe": "CWE-310",
+            "finding": "not vulnerable"
+        },
+        "CRIME_TLS": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2012-4929",
+            "cwe": "CWE-310",
+            "finding": "not vulnerable"
+        },
+        "BREACH": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2013-3587",
+            "cwe": "CWE-310",
+            "finding": "not vulnerable, no gzip/deflate/compress/br HTTP compression  - only supplied '/' tested"
+        },
+        "POODLE_SSL": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2014-3566",
+            "cwe": "CWE-310",
+            "finding": "not vulnerable, no SSLv3"
+        },
+        "fallback_SCSV": {
+            "port": "443",
+            "severity": "OK",
+            "finding": "no protocol below TLS 1.2 offered"
+        },
+        "SWEET32": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2016-2183 CVE-2016-6329",
+            "cwe": "CWE-327",
+            "finding": "not vulnerable"
+        },
+        "FREAK": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2015-0204",
+            "cwe": "CWE-310",
+            "finding": "not vulnerable"
+        },
+        "DROWN": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2016-0800 CVE-2016-0703",
+            "cwe": "CWE-310",
+            "finding": "not vulnerable on this host and port"
+        },
+        "DROWN_hint": {
+            "port": "443",
+            "severity": "INFO",
+            "cve": "CVE-2016-0800 CVE-2016-0703",
+            "cwe": "CWE-310",
+            "finding": "Make sure you don't use this certificate elsewhere with SSLv2 enabled services, see https://search.censys.io/search?resource=hosts&virtual_hosts=INCLUDE&q=B3E97E0EC1615B26502BBECBC13443D60F6AD3C273ECB7E60C2001B10235DF3B"
+        },
+        "LOGJAM": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2015-4000",
+            "cwe": "CWE-310",
+            "finding": "not vulnerable, no DH EXPORT ciphers,"
+        },
+        "LOGJAM-common_primes": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2015-4000",
+            "cwe": "CWE-310",
+            "finding": "--"
+        },
+        "BEAST": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2011-3389",
+            "cwe": "CWE-20",
+            "finding": "not vulnerable, no SSL3 or TLS1"
+        },
+        "LUCKY13": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2013-0169",
+            "cwe": "CWE-310",
+            "finding": "not vulnerable"
+        },
+        "winshock": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2014-6321",
+            "cwe": "CWE-94",
+            "finding": "not vulnerable"
+        },
+        "RC4": {
+            "port": "443",
+            "severity": "OK",
+            "cve": "CVE-2013-2566 CVE-2015-2808",
+            "cwe": "CWE-310",
+            "finding": "not vulnerable"
+        },
+        "clientsimulation-android_60": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.2 ECDHE-RSA-AES128-GCM-SHA256"
+        },
+        "clientsimulation-android_70": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.2 ECDHE-RSA-AES128-GCM-SHA256"
+        },
+        "clientsimulation-android_81": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.2 ECDHE-RSA-AES128-GCM-SHA256"
+        },
+        "clientsimulation-android_90": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_128_GCM_SHA256"
+        },
+        "clientsimulation-android_X": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_128_GCM_SHA256"
+        },
+        "clientsimulation-android_11": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_128_GCM_SHA256"
+        },
+        "clientsimulation-android_12": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_128_GCM_SHA256"
+        },
+        "clientsimulation-chrome_79_win10": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_128_GCM_SHA256"
+        },
+        "clientsimulation-chrome_101_win10": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_128_GCM_SHA256"
+        },
+        "clientsimulation-firefox_66_win81": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_128_GCM_SHA256"
+        },
+        "clientsimulation-firefox_100_win10": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_128_GCM_SHA256"
+        },
+        "clientsimulation-ie_6_xp": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "No connection"
+        },
+        "clientsimulation-ie_8_win7": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "No connection"
+        },
+        "clientsimulation-ie_8_xp": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "No connection"
+        },
+        "clientsimulation-ie_11_win7": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.2 DHE-RSA-AES256-GCM-SHA384"
+        },
+        "clientsimulation-ie_11_win81": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.2 DHE-RSA-AES256-GCM-SHA384"
+        },
+        "clientsimulation-ie_11_winphone81": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "No connection"
+        },
+        "clientsimulation-ie_11_win10": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384"
+        },
+        "clientsimulation-edge_15_win10": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384"
+        },
+        "clientsimulation-edge_101_win10_21h2": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_128_GCM_SHA256"
+        },
+        "clientsimulation-safari_121_ios_122": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_CHACHA20_POLY1305_SHA256"
+        },
+        "clientsimulation-safari_130_osx_10146": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_CHACHA20_POLY1305_SHA256"
+        },
+        "clientsimulation-safari_154_osx_1231": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_128_GCM_SHA256"
+        },
+        "clientsimulation-java_7u25": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "No connection"
+        },
+        "clientsimulation-java_8u161": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384"
+        },
+        "clientsimulation-java1102": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_128_GCM_SHA256"
+        },
+        "clientsimulation-java1703": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_256_GCM_SHA384"
+        },
+        "clientsimulation-go_1178": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_128_GCM_SHA256"
+        },
+        "clientsimulation-libressl_283": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.2 ECDHE-RSA-CHACHA20-POLY1305"
+        },
+        "clientsimulation-openssl_102e": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384"
+        },
+        "clientsimulation-openssl_110l": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384"
+        },
+        "clientsimulation-openssl_111d": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_256_GCM_SHA384"
+        },
+        "clientsimulation-openssl_303": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_256_GCM_SHA384"
+        },
+        "clientsimulation-apple_mail_16_0": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384"
+        },
+        "clientsimulation-thunderbird_91_9": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "TLSv1.3 TLS_AES_128_GCM_SHA256"
+        },
+        "rating_spec": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "SSL Labs's 'SSL Server Rating Guide' (version 2009q from 2020-01-30)"
+        },
+        "rating_doc": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "https://github.com/ssllabs/research/wiki/SSL-Server-Rating-Guide"
+        },
+        "protocol_support_score": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "0"
+        },
+        "protocol_support_score_weighted": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "0"
+        },
+        "key_exchange_score": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "0"
+        },
+        "key_exchange_score_weighted": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "0"
+        },
+        "cipher_strength_score": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "0"
+        },
+        "cipher_strength_score_weighted": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "0"
+        },
+        "final_score": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "0"
+        },
+        "overall_grade": {
+            "port": "443",
+            "severity": "CRITICAL",
+            "finding": "T"
+        },
+        "grade_cap_reason_1": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "Grade capped to T. Issues with the chain of trust (self signed)"
+        },
+        "grade_cap_reason_2": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "Grade capped to M. Domain name mismatch"
+        },
+        "grade_cap_reason_3": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "Grade capped to A. HSTS is not offered"
+        },
+        "scanTime": {
+            "port": "443",
+            "severity": "INFO",
+            "finding": "70"
+        }
+    }
+}
