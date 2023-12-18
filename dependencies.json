@@ -55,5 +55,13 @@
     "type": "git-submodule",
     "cmd": "update --init --recursive",
     "path": "TLS-Scanner"
+  },
+  {
+    "type": "git",
+    "url": "https://github.com/april/tls-table"
+  },
+  {
+    "type": "python3",
+    "path": "ciphersuites_converter.py"
   }
 ]

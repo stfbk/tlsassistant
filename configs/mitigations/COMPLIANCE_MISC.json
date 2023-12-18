@@ -1,0 +1,31 @@
+{
+  "Entry": {
+    "Name": "Compliance report for Misc",
+    "Extended Name": "Compliance report for Misc",
+    "Description": "Compliance report for {sheet} against {guidelines} guidelines",
+    "Mitigation": {
+      "Textual": "The following configurable elements are not compliant:<br/>{add}<br/>{remove}<br/>{notes}",
+      "Apache": "",
+      "Nginx": ""
+    }
+  },
+  "#ConfigurationInstructions": {
+    "mode": "specific_mitigation",
+    "Use TLS Compression": "<br/>TLS Compression {action}",
+    "Use TLS Compression_config": {
+      "Apache": "Use TLS Compression: search for the <code>SSLCompression</code> directive and set it to <code>off</code>.",
+      "Nginx": "Update nginx (newer versions are not vulnerable)."
+    },
+    "Client-initiated renegotiation": "<br/>Client-initiated renegotiation {action}",
+    "Client-initiated renegotiation_config": {
+      "Apache": "Client-initiated renegotiation: search for the <code>SSLInsecureRenegotiation</code> directive and set it to <code>off</code>.",
+      "Nginx": "Update nginx (newer versions are not vulnerable)."
+    },
+    "openssl_dependency": {
+      "< 0.9.8m": {
+        "Textual": "<br/>OpenSSL versions previous to 0.9.8m allows client insecure renegotiation."
+      }
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}

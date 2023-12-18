@@ -73,20 +73,6 @@ class Tlsfuzzer_base:
         raise NotImplementedError("This method should be reimplemented!")
 
     # to override
-    def _worker(self, results):
-        """
-        Dummy method to be overridden
-
-        :param results: results to be processed
-        :type results: dict
-
-        :return: processed results
-        :rtype: dict
-
-        :raise  NotImplementedError:
-        """
-        raise NotImplementedError("This method should be reimplemented!")
-
     def _obtain_results(self, results: dict, keys: dict):
         """
         Obtain results from the analysis
@@ -139,6 +125,20 @@ class Tlsfuzzer_base:
                     )
                 self.__logging.info(f"Ignoring {script} analysis.\n" + reason)
         return out
+
+    def _worker(self, results):
+        """
+        Dummy method to be overridden
+
+        :param results: results to be processed
+        :type results: dict
+
+        :return: processed results
+        :rtype: dict
+
+        :raise  NotImplementedError:
+        """
+        raise NotImplementedError("This method should be reimplemented!")
 
     def run(self, **kwargs):
         """

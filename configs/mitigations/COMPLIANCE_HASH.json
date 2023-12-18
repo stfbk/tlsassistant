@@ -1,0 +1,16 @@
+{
+  "Entry": {
+    "Name": "Compliance report for Hash Algorithms",
+    "Extended Name": "Compliance report for Hash Algorithms",
+    "Description": "Compliance report for {sheet} against {guidelines} guidelines",
+    "Mitigation": {
+      "Textual": "TODO decide what to write here:<br/>{add}<br/>TODO decide what to write here:<br/>{remove}",
+      "Apache": "No snippet available",
+      "Nginx": "No snippet available"
+    }
+  },
+  "#ConfigurationInstructions": {
+    "mode": "no_config"
+  },
+  "#omit-xml-declaration": "yes"
+}

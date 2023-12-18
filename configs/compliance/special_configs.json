@@ -1,0 +1,4 @@
+{
+  "has_total_string": ["CipherSuite", "Protocol", "Groups", "Signature"],
+  "has_specific_textual": ["Certificate", "CertificateExtensions"]
+}

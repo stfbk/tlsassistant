@@ -47,6 +47,7 @@ class Core:
         APK = 1
         DOMAINS = 2
         CONFIGURATION = 3
+        COMPLIANCE = 4
 
     def __init__(
         self,
@@ -63,7 +64,8 @@ class Core:
         stix=False,
         webhook="",
         prometheus="",
-        config_type=WebserverType.AUTO
+        config_type=WebserverType.AUTO,
+        compliance_args=None
     ):
         """
         :param hostname_or_path: hostname or path to scan
@@ -92,6 +94,8 @@ class Core:
         :type webhook: str
         :param prometheus: prometheus output
         :type prometheus: str
+        :param compliance_args: arguments for compliance module
+        :type compliance_args: dict
         """
         if to_exclude is None:
             to_exclude = []
@@ -116,7 +120,8 @@ class Core:
             stix=stix,
             webhook=webhook,
             prometheus=prometheus,
-            config_type=config_type
+            config_type=config_type,
+            compliance_args=compliance_args
         )
         self.__cache[configuration] = self.__load_configuration(modules)
         self.__exec(
@@ -217,6 +222,9 @@ class Core:
                 kwargs["output_type"] = self.Report.RAW
             else:
                 kwargs["output_type"] = self.Report.HTML  # or default HTML
+
+        if kwargs["compliance_args"] is None:
+            kwargs["compliance_args"] = {}
 
         ext = self.__string_output_type(kwargs["output_type"])  # tostring
 
@@ -347,7 +355,7 @@ class Core:
         return results
 
     def __preanalysis_testssl(
-        self, testssl_args: list, type_of_analysis: Analysis, hostname: str, port: str
+        self, testssl_args: list, type_of_analysis: Analysis, hostname: str, port: str, full_analysis: bool
     ):
         """
         Preanalysis of testssl
@@ -360,6 +368,8 @@ class Core:
         :type hostname: str
         :param port: port to use
         :type port: str
+        :param full_analysis: if true a complete analysis is performed
+        :type full_analysis: bool
         :return: preanalysis
         :rtype: dict
         """
@@ -367,6 +377,8 @@ class Core:
             type_of_analysis == self.Analysis.HOST
             or type_of_analysis == self.Analysis.DOMAINS
         ):
+            if full_analysis:
+                testssl_args = []
             self.__logging.debug(
                 f"Starting preanalysis testssl with args {testssl_args}..."
             )
@@ -485,7 +497,15 @@ class Core:
         for name, module in loaded_modules.items():
             if hostname_or_path_type not in loaded_arguments[name]:
                 loaded_arguments[name][hostname_or_path_type] = hostname_or_path
-            args = loaded_arguments[name]
+            args={}
+            if self.__input_dict['compliance_args'] and name in self.__input_dict['compliance_args']: # if we are not checking compliance
+                args = self.__input_dict['compliance_args'][name]
+                openssl_version=self.__input_dict["openssl_version"],
+                ignore_openssl=self.__input_dict["ignore_openssl"],
+                args["openssl_version"]=openssl_version
+                args["ignore_openssl"]=ignore_openssl
+
+            args.update(loaded_arguments[name])
             if type_of_analysis != self.Analysis.APK:  # server analysis
                 args["port"] = port  # set the port
             self.__logging.info(f"{Color.CBEIGE}Running {name} module...")
@@ -661,8 +681,13 @@ class Core:
                         f"Hostname {hostname_or_path} not found, skipping.."
                     )
                     return loaded_modules, {"errors": {hostname_or_path: {"Invalid hostname": "Critical"}}}
+            full_analysis = False
+            for module in loaded_modules:
+                if module.startswith("compare"):
+                    # A full analysis is needed with these modules
+                    full_analysis = True
             self.__preanalysis_testssl(
-                testssl_args, type_of_analysis, hostname_or_path, port
+                testssl_args, type_of_analysis, hostname_or_path, port, full_analysis
             )
             self.__preanalysis_webserver_type(
                 hostname_or_path

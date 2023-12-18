@@ -1,0 +1,37 @@
+{
+  "ProtocolList": {
+    "enable": "+name",
+    "disable": "-name",
+    "separator": " ",
+    "added_negatives": true,
+    "replacements": {
+      " ": "v",
+      ".0": ""
+    }
+  },
+  "CipherSuiteList": {
+    "enable": "name",
+    "disable": "",
+    "separator": ":",
+    "added_negatives": false,
+    "post_actions": {
+      "convert_ciphers": "",
+      "prepend_after": {
+        "string": "-ALL:",
+        "separator": " "
+      }
+    }
+  },
+  "DHParams": {
+    "enable": " ",
+    "disable": "",
+    "separator": "",
+    "enable_one_time": true,
+    "post_actions": {
+      "comment": "You should run `openssl dhparam {} >> /path/to/cert_chain`",
+      "comment_format": {
+        "0": "dhparam"
+      }
+    }
+  }
+}

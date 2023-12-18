@@ -1,0 +1,26 @@
+{
+  "Entry": {
+    "Name": "Compliance report for Certificates",
+    "Extended Name": "Compliance report for Certificates",
+    "Description": "Compliance report for {sheet} against {guidelines} guidelines",
+    "Mitigation": {
+      "Textual": "Your certificate has issues with the following fields:<br/>{add}<br/>{remove}<br/>You should regenerate it following the constraints in the notes.<br/>Additional notes: {notes}.",
+      "Apache": "No snippet available",
+      "Nginx": "No snippet available"
+    }
+  },
+  "#ConfigurationInstructions": {
+    "mode": "specific_mitigation",
+    "X.509 version": "<br/>-X.509 version {action} be fixed",
+    "Issuer Distinguished Name": "<br/>-Issuer Distinguished Name {action}",
+    "validity": "<br/>-Validity {action}",
+    "Subject Distinguished Name": "<br/>-Subject Distinguished Name {action}",
+    "post_actions": {
+      "replace": {
+        "be enabled": "be fixed",
+        "be disabled": "be fixed"
+      }
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}

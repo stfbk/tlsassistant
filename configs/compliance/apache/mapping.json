@@ -1,0 +1,8 @@
+{
+    "ProtocolList": "SSLProtocol",
+    "CipherSuiteList": "SSLCipherSuite",
+    "SessionTickets": "SSLSessionTickets",
+    "Stapling": "SSLUseStapling",
+    "DHParams": "",
+    "Groups": "SSLOpenSSLConfCmd groups"
+}

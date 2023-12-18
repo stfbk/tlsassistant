@@ -1,0 +1,27 @@
+{
+  "ProtocolList": {
+    "enable": "name",
+    "disable": "",
+    "separator": ":",
+    "added_negatives": false,
+    "replacements": {
+      " ": "v",
+      ".0": ""
+    },
+    "post_actions": {
+      "split": ":"
+    }
+  },
+  "DHParams": {
+    "enable": "/path/to/dhparam",
+    "disable": "",
+    "separator": "",
+    "enable_one_time": true,
+    "post_actions": {
+      "comment": "To use the directive below you have to run `openssl dhparam {} >> /path/to/dhparam`",
+      "comment_format": {
+        "0": "dhparam"
+      }
+    }
+  }
+}
