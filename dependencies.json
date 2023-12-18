@@ -34,5 +34,26 @@
   {
     "type": "zip",
     "url": "https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-unhinted.zip"
+  },
+  {
+    "type": "git",
+    "url": "https://github.com/IvanValentini/TLS-Scanner"
+  },
+  {
+    "type": "apt",
+    "url": "default-jre"
+  },
+  {
+    "type": "apt",
+    "url": "maven"
+  },
+  {
+    "type": "compile_maven",
+    "path": "TLS-Scanner"
+  },
+  {
+    "type": "git-submodule",
+    "cmd": "update --init --recursive",
+    "path": "TLS-Scanner"
   }
 ]

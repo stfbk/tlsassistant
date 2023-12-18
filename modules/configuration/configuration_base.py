@@ -1,7 +1,10 @@
-from enum import Enum
 from ssl import OPENSSL_VERSION
 import logging
+from utils.type import PortType, WebserverType
 from utils.validation import Validator
+
+from modules.configuration.apache.apache_configuration_base import *
+from modules.configuration.nginx.nginx_configuration_base import *
 
 
 class OpenSSL:
@@ -83,30 +86,29 @@ class OpenSSL:
         return (ver1 < ver2) if not reverse else (ver1 > ver2)
 
 
-class Type:
-    """
-    Type of configuration.
-    """
-
-    NONE = 0
-    HTTP = 80
-    SSL = 443
-
-
 class Config_base:
     """
     Interface for configuration base.
     """
 
     openSSL = OpenSSL()
-    VHOST_USE = Type.NONE
+    VHOST_USE = PortType.NONE
+
+    def set_webserver(self, webserver: WebserverType):
+        """
+        Dummy set webserver type.
+
+        :param webserver: Webserver type.
+        :type webserver: :class:`~letsencrypt_apache.configuration.WebserverType`
+        """
+        raise NotImplementedError
 
     def condition(self, vhost):
         """
         Dummy condition method.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :returns: True if vhost is vulnerable.
         :rtype: bool
         :raise: NotImplementedError if method is not implemented.
@@ -118,7 +120,7 @@ class Config_base:
         Dummy fix method.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :raise: NotImplementedError if method is not implemented.
         """
         raise NotImplementedError
@@ -128,45 +130,17 @@ class Config_base:
         Dummy empty method.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :returns: True if vhost doesn't have the contextual VirtualHost directive.
         :rtype: bool
         :raise: NotImplementedError if method is not implemented.
         """
         raise NotImplementedError
 
-
 class Parse_configuration_protocols(Config_base):
     """
     Check if vhost is vulnerable to TLS SSLProtocol bad configuration.
     """
-
-    def is_empty(self, vhost):
-        """
-        Check if vhost doesn't have the contextual directive.
-
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
-        :returns: True if vhost doesn't have the contextual directive.
-        :rtype: bool
-        """
-        return self.__key not in vhost or not vhost[self.__key]
-
-    def is_tls(self, vhost, version=3):
-        """
-        Check if vhost is using only the TLS version x.
-
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
-        :param version: TLS version to check.
-        :type version: int
-        :returns: True if vhost is using ONLY the TLS version x.
-        :rtype: bool
-        """
-        return (
-            "SSLProtocol" in vhost
-            and vhost["SSLProtocol"].lower() == f"tlsv1.{version}"
-        )
 
     def __init__(self, openssl: str, protocols: dict):
         """
@@ -177,36 +151,59 @@ class Parse_configuration_protocols(Config_base):
         """
         self.__openssl = openssl
         self.__protocols = protocols
-        self.__key = "SSLProtocol"
         Validator([(openssl, str), (protocols, dict)])
+        self.__execution_class = None
+        self.__webserver_type = WebserverType.AUTO
+
+    def set_webserver(self, webserver: WebserverType):
+        self.__webserver_type = webserver
+        if webserver == WebserverType.APACHE:
+            self.__execution_class = Apache_parse_configuration_protocols(self.__openssl, self.__protocols, self.openSSL)
+        elif webserver == WebserverType.NGINX: 
+            self.__execution_class = Nginx_parse_configuration_protocols(self.__openssl, self.__protocols, self.openSSL)
+
+    def is_empty(self, vhost):
+        """
+        Check if vhost doesn't have the contextual directive.
+
+        :param vhost: VirtualHost object.
+        :type vhost: dict
+        :returns: True if vhost doesn't have the contextual directive.
+        :rtype: bool
+        """
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.is_empty(vhost)
+
+    def is_tls(self, vhost, version=3):
+        """
+        Check if vhost is using only the TLS version x.
+
+        :param vhost: VirtualHost object.
+        :type vhost: dict
+        :param version: TLS version to check.
+        :type version: int
+        :returns: True if vhost is using ONLY the TLS version x.
+        :rtype: bool
+        """
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.is_tls(vhost, version)
 
     def fix(self, vhost):
         """
         Fix TLS/SSL protocol bad configuration.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         """
-        key = self.__key
-        backup = vhost[key] if key in vhost else ""
-        v = Validator()
-        for cipher, operation in self.__protocols.items():
-            v.string(cipher)
-            vhost[key] = (
-                f"{(vhost[key] if key in vhost and vhost[key] else 'ALL ')}"
-                f"{' ' if key in vhost and vhost[key] else ''}{operation}{cipher}"
-            )
-        return {
-            "before": f"{key} {backup}" if backup else "",
-            "after": f"{key} {vhost[key]}",
-        }
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.fix(vhost)
 
     def condition(self, vhost, openssl: str = None, ignore_openssl=False):
         """
         Check if vhost is vulnerable to TLS SSLProtocol bad configuration.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :param openssl: OpenSSL version.
         :type openssl: str
         :param ignore_openssl: Ignore OpenSSL version.
@@ -214,32 +211,8 @@ class Parse_configuration_protocols(Config_base):
         :returns: True if vhost is vulnerable to TLS SSLProtocol bad configuration.
         :rtype: bool
         """
-
-        if self.is_tls(vhost, version=3):
-            logging.debug("TLSv1.3 Detected as mutually allowed.")
-            return False
-        key = self.__key
-        openssl_greater_than = self.__openssl
-        if openssl is None:
-            openssl = ""
-        Validator([(openssl, str)])
-        if not ignore_openssl:
-            if openssl:
-                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
-            else:
-                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
-
-            return not is_safe and True in (
-                operation + cipher.lower()
-                not in (vhost[key].lower() if key in vhost else "")
-                for cipher, operation in self.__protocols.items()
-            )
-        else:
-            return True in (
-                operation + cipher.lower()
-                not in (vhost[key].lower() if key in vhost else "")
-                for cipher, operation in self.__protocols.items()
-            )  # is vulnerable if True
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.condition(vhost, openssl, ignore_openssl)
 
 
 class Parse_configuration_ciphers(Config_base):
@@ -247,66 +220,58 @@ class Parse_configuration_ciphers(Config_base):
     Check if vhost is vulnerable to misconfigured TLS cipher.
     """
 
+    VHOST_USE = PortType.SSL
+
     def __init__(self, openssl: str, ciphers: list):
         self.__openssl = openssl
         self.__ciphers = ciphers
-        self.__key = "SSLCipherSuite"
         Validator([(openssl, str), (ciphers, list)])
+        self.__execution_class = None
+        self.__webserver_type = WebserverType.AUTO
+
+    def set_webserver(self, webserver: WebserverType):
+        self.__webserver_type = webserver
+        if webserver == WebserverType.APACHE:
+            self.__execution_class = Apache_parse_configuration_ciphers(self.__openssl, self.__ciphers, self.openSSL)
+        elif webserver == WebserverType.NGINX: 
+            self.__execution_class = Nginx_parse_configuration_ciphers(self.__openssl, self.__ciphers, self.openSSL)
 
     def is_tls(self, vhost, version=3):
         """
         Check if vhost is using ONLY the TLS version x.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :param version: TLS version to check.
         :type version: int
         :returns: True if vhost is using ONLY the TLS version x.
         :rtype: bool
         """
-        return (
-            "SSLProtocol" in vhost
-            and vhost["SSLProtocol"].lower() == f"tlsv1.{version}"
-        )
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.is_tls(vhost, version)
 
     def is_empty(self, vhost):
         """
         Check if vhost doesn't have the contextual directive.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :returns: True if vhost doesn't have the contextual directive.
         :rtype: bool
         """
-        return self.__key not in vhost or not vhost[self.__key]
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.is_empty(vhost)
 
     def fix(self, vhost):
-        """
-        Fix misconfigured TLS cipher in vhost.
-
-        :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
-        """
-        key = self.__key
-        v = Validator()
-        backup = vhost[key] if key in vhost else ""
-        for cipher in self.__ciphers:
-            v.string(cipher)
-            vhost[key] = (
-                f"{vhost[key] if key in vhost and vhost[key] else ''}"
-                f"{':' if key in vhost and vhost[key] else ''}!{cipher.upper()}"
-            )
-        return {
-            "before": f"{key} {backup}" if backup else "",
-            "after": f"{key} {vhost[key]}",
-        }
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.fix(vhost)
 
     def condition(self, vhost, openssl: str = None, ignore_openssl=False):
         """
         Check if vhost is vulnerable to misconfigured TLS cipher.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :param openssl: OpenSSL version.
         :type openssl: str
         :param ignore_openssl: Ignore OpenSSL version.
@@ -315,29 +280,8 @@ class Parse_configuration_ciphers(Config_base):
         :rtype: bool
 
         """
-        if self.is_tls(vhost, version=3):
-            logging.debug("TLSv1.3 Detected as mutually allowed.")
-            return False
-        key = self.__key
-        openssl_greater_than = self.__openssl
-        if openssl is None:
-            openssl = ""
-        Validator([(openssl, str)])
-        if not ignore_openssl:
-            if openssl:
-                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
-            else:
-                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
-
-            return not is_safe and True in (
-                "!" + cipher.lower() not in (vhost[key].lower() if key in vhost else "")
-                for cipher in self.__ciphers
-            )
-        else:
-            return True in (
-                "!" + cipher.lower() not in (vhost[key].lower() if key in vhost else "")
-                for cipher in self.__ciphers
-            )  # is vulnerable if True
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.condition(vhost, openssl, ignore_openssl)
 
 
 class Parse_configuration_strict_security(Config_base):
@@ -345,47 +289,47 @@ class Parse_configuration_strict_security(Config_base):
     Check if vhost is vulnerable to misconfigured TLS strict security.
     """
 
-    VHOST_USE = Type.SSL
+    VHOST_USE = PortType.SSL
 
     def __init__(self):
-        self.__key = "Header"
+        self.__execution_class = None
+        self.__webserver_type = WebserverType.AUTO
+
+    def set_webserver(self, webserver: WebserverType):
+        self.__webserver_type = webserver
+        if webserver == WebserverType.APACHE:
+            self.__execution_class = Apache_parse_configuration_strict_security()
+        elif webserver == WebserverType.NGINX: 
+            self.__execution_class = Nginx_parse_configuration_strict_security()
 
     def is_empty(self, vhost):
         """
         Check if vhost doesn't have the header directive.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :returns: True if vhost doesn't have the header directive.
         :rtype: bool
         """
-        return self.__key not in vhost or not vhost[self.__key]
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.is_empty(vhost)
 
     def fix(self, vhost):
         """
         Fix misconfigured TLS strict security in vhost.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         """
-        key = self.__key
-        backup = vhost[key] if key in vhost else ""
-        to_add = 'always set Strict-Transport-Security "max-age=63072000"'
-        if key in vhost:
-            vhost[key] += f";{to_add}"
-        else:
-            vhost[key] = to_add
-        return {
-            "before": f"{key} {backup}" if backup else "",
-            "after": f"{key} {vhost[key]}",
-        }
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.fix(vhost)
 
     def condition(self, vhost, openssl: str = None, ignore_openssl=False):
         """
         Check if vhost is vulnerable to misconfigured TLS strict security.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :param openssl: OpenSSL version.
         :type openssl: str
         :param ignore_openssl: Ignore OpenSSL version.
@@ -393,11 +337,8 @@ class Parse_configuration_strict_security(Config_base):
         :returns: True if vhost is vulnerable to misconfigured TLS strict security.
         :rtype: bool
         """
-
-        return (
-            self.__key not in vhost
-            or "Strict-Transport-Security" not in vhost[self.__key]
-        )  # vulnerable if True
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.condition(vhost, openssl, ignore_openssl)
 
 
 class Parse_configuration_checks_compression(Config_base):
@@ -405,65 +346,67 @@ class Parse_configuration_checks_compression(Config_base):
     Check if vhost is vulnerable to misconfigured TLS compression.
 
     :param vhost: VirtualHost object.
-    :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+    :type vhost: dict
     """
 
-    VHOST_USE = Type.NONE
+    VHOST_USE = PortType.NONE
 
     def __init__(self, openssl: str):
         self.__openssl = openssl
-        self.__key = "SSLCompression"
-        self.__value = "Off"
         Validator([(openssl, str)])
+        self.__execution_class = None
+        self.__webserver_type = WebserverType.AUTO
+
+    def set_webserver(self, webserver: WebserverType):
+        self.__webserver_type = webserver
+        if webserver == WebserverType.APACHE:
+            self.__execution_class = Apache_parse_configuration_checks_compression(self.__openssl, self.openSSL)
+        elif webserver == WebserverType.NGINX: 
+            self.__execution_class = Nginx_parse_configuration_checks_compression(self.__openssl, self.openSSL)
+
 
     def is_tls(self, vhost, version=3):
         """
         Check if vhost is using only a specific version of TLS.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :param version: TLS version.
         :type version: int
         :returns: True if vhost is using only a specific version of TLS.
         :rtype: bool
         """
-        return (
-            "SSLProtocol" in vhost
-            and vhost["SSLProtocol"].lower() == f"tlsv1.{version}"
-        )
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.is_tls(vhost, version)
 
     def is_empty(self, vhost):
         """
         Check if vhost doesn't have the SSLCompression directive.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :returns: True if vhost doesn't have the SSLCompression directive.
         :rtype: bool
         """
-        return self.__key not in vhost or not vhost[self.__key]
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.is_empty(vhost)
 
     def fix(self, vhost):
         """
         Fix misconfigured TLS compression in vhost.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         """
-        key = self.__key
-        backup = vhost[key] if key in vhost else ""
-        vhost[key] = self.__value
-        return {
-            "before": f"{key} {backup}" if backup else "",
-            "after": f"{key} {vhost[key]}",
-        }
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.fix(vhost)
 
     def condition(self, vhost, openssl: str = None, ignore_openssl=False):
         """
         Check if vhost is vulnerable to misconfigured TLS compression.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :param openssl: OpenSSL version.
         :type openssl: str
         :param ignore_openssl: Ignore OpenSSL version.
@@ -471,78 +414,55 @@ class Parse_configuration_checks_compression(Config_base):
         :returns: True if vhost is vulnerable to misconfigured TLS compression.
         :rtype: bool
         """
-        if self.is_tls(vhost, version=3):
-            logging.debug("TLSv1.3 Detected as mutually allowed.")
-            return False
-        key = self.__key
-        openssl_greater_than = self.__openssl
-        if openssl is None:
-            openssl = ""
-        Validator([(openssl, str)])
-        if not ignore_openssl:
-            if openssl:
-                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than, ver2=openssl)
-            else:
-                is_safe = self.openSSL.is_safe(ver1=openssl_greater_than)
-
-            return not is_safe and (key not in vhost or vhost[key] != self.__value)
-
-        else:
-            return (
-                key not in vhost or vhost[key] != self.__value
-            )  # is vulnerable if True
-
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.condition(vhost, openssl, ignore_openssl)
 
 class Parse_configuration_checks_redirect(Config_base):
     """
     Check if vhost is vulnerable to misconfigured TLS redirect.
     """
 
-    VHOST_USE = Type.HTTP
+    VHOST_USE = PortType.HTTP
 
     def __init__(self):
-        self.__keys = ["RewriteEngine", "RewriteRule"]
+        self.__execution_class = None
+        self.__webserver_type = WebserverType.AUTO
+
+    def set_webserver(self, webserver: WebserverType):
+        self.__webserver_type = webserver
+        if webserver == WebserverType.APACHE:
+            self.__execution_class = Apache_parse_configuration_checks_redirect()
+        elif webserver == WebserverType.NGINX: 
+            self.__execution_class = Nginx_parse_configuration_checks_redirect()
 
     def is_empty(self, vhost):
         """
         Check if vhost doesn't have the RewriteEngine and RewriteRule directives.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :returns: True if vhost doesn't have the RewriteEngine and RewriteRule directives.
         :rtype: bool
         """
-        return True in (key not in vhost for key in self.__keys)
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.is_empty(vhost)
 
     def fix(self, vhost):
         """
         Fix misconfigured TLS redirect in vhost.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         """
-        RewriteEngine, RewriteRule = self.__keys
-        backup_rewrite_engine = vhost[RewriteEngine] if RewriteEngine in vhost else ""
-        backup_rewrite_rule = vhost[RewriteRule] if RewriteRule in vhost else ""
-        vhost[RewriteEngine] = "on"
-        vhost[RewriteRule] = "^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]"
-        return {
-            "before": {
-                "RewriteEngine": backup_rewrite_engine,
-                "RewriteRule": backup_rewrite_rule,
-            },
-            "after": {
-                "RewriteEngine": vhost[RewriteEngine],
-                "RewriteRule": vhost[RewriteRule],
-            },
-        }
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.fix(vhost)
 
     def condition(self, vhost, openssl=None, ignore_openssl=False):
         """
         Check if vhost is vulnerable to misconfigured TLS redirect.
 
         :param vhost: VirtualHost object.
-        :type vhost: :class:`~letsencrypt_apache.obj.VirtualHost`
+        :type vhost: dict
         :param openssl: OpenSSL version.
         :type openssl: str
         :param ignore_openssl: Ignore OpenSSL version.
@@ -550,10 +470,5 @@ class Parse_configuration_checks_redirect(Config_base):
         :returns: True if vhost is vulnerable to misconfigured TLS redirect.
         :rtype: bool
         """
-        RewriteEngine, RewriteRule = self.__keys
-        return (
-            RewriteEngine not in vhost
-            or RewriteRule not in vhost
-            or vhost[RewriteEngine] != "on"
-            or vhost[RewriteRule] != "^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]"
-        )  # vulnerable if True
+        assert self.__execution_class is not None, "Webserver type not set."
+        return self.__execution_class.condition(vhost, openssl, ignore_openssl)

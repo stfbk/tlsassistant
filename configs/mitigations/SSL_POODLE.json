@@ -1,7 +1,7 @@
 {
   "Entry": {
-    "Name": "POODLE",
-    "ExtendedName": "<strong>P</strong>adding <strong>O</strong>racle <strong>O</strong>n <strong>D</strong>owngraded <strong>L</strong>egacy <strong>E</strong>ncryption",
+    "Name": "SSL POODLE",
+    "ExtendedName": "SSL <strong>P</strong>adding <strong>O</strong>racle <strong>O</strong>n <strong>D</strong>owngraded <strong>L</strong>egacy <strong>E</strong>ncryption",
     "CVE": "2014-3566",
     "CVSS3": "3.4 (Low)",
     "#comment": " AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:N/A:N ",

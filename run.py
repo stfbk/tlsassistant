@@ -153,6 +153,13 @@ if __name__ == "__main__":
         default="",
         help="Generate the prometheus output in a default path or in the specified path.",
     )
+    parser.add_argument(
+        "--config_type",
+        action="store",
+        help="Define the type of configuration to analyze.",
+        choices=["apache", "nginx", "auto"],
+        default="auto",
+    )
     # todo add default aliases configurations for analysis
     # configurations.add_argument()
     args = parser.parse_args()

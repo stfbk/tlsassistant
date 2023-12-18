@@ -1,0 +1,20 @@
+{
+    "input":[
+       {
+          "name":"hostname",
+          "type":"str",
+          "description":"Hostname to analyze",
+          "required":"True"
+       }
+    ],
+    "description":"This modules runs the vulnerability checks for the Padding Oracle vulnerability.",
+    "path":"modules/server/padding_oracle.py",
+    "class_name":"PaddingOracle",
+    "output":[
+       {
+          "name":"results",
+          "type":"dict",
+          "description":"results of the scan"
+       }
+    ]
+ }

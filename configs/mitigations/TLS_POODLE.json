@@ -1,0 +1,16 @@
+{
+  "Entry": {
+    "Name": "TLS Poodle",
+    "ExtendedName": "TLS <strong>P</strong>adding <strong>O</strong>racle <strong>O</strong>n <strong>D</strong>owngraded <strong>L</strong>egacy <strong>E</strong>ncryption",
+    "CVE": "2014-3566",
+    "CVSS3": "3.4 (Low)",
+    "#comment": " AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:N/A:N ",
+    "Description": "Non-determinism during the decryption of malformed TLS records can induce the server to respond with different behaviours. If an attacker (MITM) can observe these different behaviours, then is able to decrypt the communication.",
+    "Mitigation": {
+      "Textual": "Ciphersuite that use CBC mode of operation should be avoided. Run the padding_oracle module to find out what ciphers where found to be vulnerable."
+    }
+  },
+  "#comment": " https://nvd.nist.gov/vuln/detail/CVE-2014-3566 ",
+  "#comment1": " https://www.imperialviolet.org/2014/12/08/poodleagain.html ",
+  "#omit-xml-declaration": "yes"
+}
