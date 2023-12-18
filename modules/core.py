@@ -6,7 +6,7 @@ from modules.server.testssl_base import Testssl_base
 from modules.server.tlsscanner_base import TLS_Scanner_base 
 from modules.server.wrappers.testssl import Testssl
 from modules.server.wrappers.tlsscanner import TLS_Scanner
-from modules.server.webserver_type import WebserverType
+from modules.server.webserver_type import WebserverType as WebserverType_module
 from utils.booleanize import boolean_results
 from utils.logger import Logger
 from utils.colors import Color
@@ -393,7 +393,7 @@ class Core:
         self.__logging.debug(
             f"Starting preanalysis webserver type for {hostname}..."
         )
-        WebserverType().run(**{"hosts": [hostname]})
+        WebserverType_module().run(**{"hosts": [hostname]})
 
 
     def __preanalysis_tls_scanner(

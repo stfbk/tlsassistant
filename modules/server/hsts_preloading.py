@@ -48,7 +48,6 @@ class Hsts_preloading(Hsts_base):
             result["mitigation"] = load_mitigation(
                 mitigation_to_load, raise_error=False
             )  # todo: remove, debug until we have all mitigations
-            print(result["mitigation"])
         return result if condition else {}
 
     # to override

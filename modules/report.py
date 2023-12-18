@@ -1,4 +1,5 @@
 import json
+import os.path
 import re
 from datetime import datetime
 from distutils.dir_util import copy_tree as cp
@@ -51,9 +52,11 @@ class Report:
                               }
 
         for module in files:
-            with open(Path("configs/mitigations/" + files[module]), "r") as f:
-                data = json.load(f)
-            self._replacements["name_mapping"][module] = data.get("Entry", {}).get("Name", "Unknown")
+            # TODO fix poodle alias system
+            if os.path.isfile(Path("configs/mitigations/" + files[module])):
+                with open(Path("configs/mitigations/" + files[module]), "r") as f:
+                    data = json.load(f)
+                self._replacements["name_mapping"][module] = data.get("Entry", {}).get("Name", "Unknown")
 
     def input(self, **kwargs):
         """
