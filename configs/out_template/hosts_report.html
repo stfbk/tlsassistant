@@ -38,7 +38,7 @@
                                 <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;">
                                     Hostname/<br>Modules</th>
                                 {% for module in modules %}
-                                <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;">{{module}}
+                                <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;">{{name_mapping.get(module, module)}}
                                 </th>
                                 {% endfor %}
                             </tr>
@@ -54,6 +54,10 @@
                                             <td
                                                 style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(255,175,175,0.59);">
                                                 Potentially Vulnerable</td>
+                                        {% elif results[host].get("errors", None) %}
+                                            <td
+                                                style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(255,175,175,0.59);">
+                                                Error</td>
                                         {% else %}
                                             <td
                                                 style="font-family: Roboto, sans-serif;font-style: italic;color: rgb(33, 37, 41);background: rgba(235,235,235,0.59);">
@@ -84,6 +88,21 @@
                 <h5 class="text-center"
                     style="font-family: 'Roboto Condensed', sans-serif;color: #a5a5a5;background: rgba(235,235,235,0);">
                     {{host}}</h5>
+                <div class="card">
+                    <h3 class="card-title" style="color: red;font-family: Roboto, sans-serif;">Errors:</h3>
+                    <div class="card-body">
+                        <p class="card-text"
+                            style="color: #000000;font-family: Roboto, sans-serif;">
+                            {% if results[host].get("errors", None) %}
+                                {% for error in results[host]["errors"] %}
+                                    {% if error != "raw" %}
+                                        {{error}}: {{results[host]["errors"][error]}}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
                 {% for module in modules %}
                 {% if results[host][module] %}
                 <div class="card">
@@ -97,9 +116,11 @@
                                 {% set i = i+1 %}
                             {% endfor %}
                             </h6>
-                        <h6 class="text-muted card-subtitle mb-2"
-                            style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[host][module]['extendedname']}}
-                        </h6>
+                        {% if results[host][module]["extendedname"] != results[host][module]["name"] %}
+                            <h6 class="text-muted card-subtitle mb-2"
+                                style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[host][module]['extendedname']}}
+                            </h6>
+                        {% endif %}
                         <p class="card-text"
                             style="font-family: 'Roboto Condensed', sans-serif;color: #6c757d;font-style: italic;">
                             {{results[host][module]['description']}}
@@ -108,7 +129,7 @@
                         <div class="card" style="border-style: none;padding: 2px;margin: 0px;">
                             <h5 style="color: #000000;font-family: Roboto, sans-serif;">Mitigation</h5>
                             <ul class="list-group list-group-flush" style="border-style: solid;border-color: #8db53d;">
-                                
+
                                 {% for key,mitigation in results[host][module]['mitigation'].items() %}
                                 <li class="list-group-item" style="border-radius: 4px;border-style: none;">
                                     <h5 class="mb-0"

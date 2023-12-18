@@ -38,6 +38,26 @@
                 Modules: {% for module in modules%} {{module}} {%endfor%} </h6>
             {%if results%}
             <div class="card" style="background: rgba(235,235,235,0.59);">
+                {% if "errors" in results %}
+                    {% for host in results["errors"] %}
+                        {%if host != "raw" %}
+                            <div class="card" style="background: rgba(235,235,235,0.59);">
+                                <div class="card-body">
+                                    <h3 class="card-title" style="color: red;font-family: Roboto, sans-serif;">Errors for {{host}}</h3>
+                                </div>
+                                <div class="card-body">
+                                    {% for error in results["errors"][host] %}
+                                        <p class="card-text" style="color: #000000;font-family: Roboto, sans-serif;">
+                                                {% if error != "raw" %}
+                                                    {{error}}: {{results["errors"][host][error]}}
+                                                {% endif %}
+                                        </p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
                 {% for module in modules %}
                 {% if module in results and results[module]%}
                 <div class="card">
@@ -50,9 +70,11 @@
                                 {% set i = i+1 %}
                             {% endfor %}
                         </h6>
-                        <h6 class="text-muted card-subtitle mb-2"
-                            style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[module]['extendedname']}}
-                        </h6>
+                        {% if results[module]["extendedname"] != results[module]["name"] %}
+                            <h6 class="text-muted card-subtitle mb-2"
+                                style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[module]['extendedname']}}
+                            </h6>
+                        {% endif %}
                         <p class="card-text"
                             style="font-family: 'Roboto Condensed', sans-serif;color: #6c757d;font-style: italic;">
                             {{results[module]['description']}}

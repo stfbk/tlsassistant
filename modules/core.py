@@ -11,6 +11,7 @@ from utils.colors import Color
 from utils.validation import Validator, is_apk
 from modules.parse_input_conf import Parser
 import datetime
+import socket
 from enum import Enum
 from modules.report import Report as Report_module
 from utils.urls import link_sep
@@ -561,6 +562,15 @@ class Core:
                 ignore_openssl=self.__input_dict["ignore_openssl"],
             )  # TODO: better output report
         else:
+            if type_of_analysis == self.Analysis.HOST:
+                try:
+                    _ = socket.gethostbyname(hostname_or_path)
+                except socket.error as e:
+                    self.__logging.debug(e)
+                    self.__logging.error(
+                        f"Hostname {hostname_or_path} not found, skipping.."
+                    )
+                    return loaded_modules, {"errors": {hostname_or_path: {"Invalid hostname": "Critical"}}}
             self.__preanalysis_testssl(
                 testssl_args, type_of_analysis, hostname_or_path, port
             )

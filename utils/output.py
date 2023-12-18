@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from markdown2 import markdown
-from pdfkit import from_file  # import python module
 from os.path import exists
 from os import remove
 import codecs
@@ -158,23 +157,23 @@ def __recursive_parsing_runner(
     return "\n".join(results)
 
 
-def html_to_pdf(source_path: str, output_filename: str, delete_html=True):
-    """
-    Convert an HTML file to PDF.
-
-    :param source_path: The input HTML file path
-    :type source_path: str
-    :param output_filename: The output PDF file path
-    :type source_path: str
-    :param delete_html: Delete HTML file after doing the conversion. Default: True
-    :type delete_html: bool
-    """
-    # open output file for writing (truncated binary)
-    assert exists(source_path), "The input file MUST exists!"
-    from_file(source_path, output_filename)
-    if delete_html:
-        remove(source_path)
-        # return False on success and True on errors
+# def html_to_pdf(source_path: str, output_filename: str, delete_html=True):
+#     """
+#     Convert an HTML file to PDF.
+#
+#     :param source_path: The input HTML file path
+#     :type source_path: str
+#     :param output_filename: The output PDF file path
+#     :type source_path: str
+#     :param delete_html: Delete HTML file after doing the conversion. Default: True
+#     :type delete_html: bool
+#     """
+#     # open output file for writing (truncated binary)
+#     assert exists(source_path), "The input file MUST exists!"
+#     from_file(source_path, output_filename)
+#     if delete_html:
+#         remove(source_path)
+#         # return False on success and True on errors
 
 
 def md_to_html(

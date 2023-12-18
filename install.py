@@ -1,15 +1,15 @@
+import argparse
 import asyncio
 import json
+import logging
+import subprocess
 import sys
+from os import path, geteuid, mkdir, sep, remove, devnull, environ
+from shutil import rmtree as rm_rf
+from zipfile import ZipFile
 
 import aiohttp
 import async_timeout
-from zipfile import ZipFile
-from os import path, geteuid, mkdir, sep, remove, devnull, environ
-import subprocess
-import argparse
-import logging
-from shutil import rmtree as rm_rf
 
 # parser for the arguments
 from utils.logger import Logger
@@ -36,6 +36,7 @@ class Install:
         zips = []
         cfgs = []
         apts = []
+        pips = []
         logger.info("Loading dependencies...")
         for dependency in dependencies:  # for each dependency
             if dependency["type"] == "git":  # if it's git
@@ -53,6 +54,9 @@ class Install:
             elif dependency["type"] == "cfg":  # if it's cfg
                 cfgs.append(dependency["url"])  # append it's url to the cfg array
                 logger.debug(f"Added dependency cfg {dependency['url']}")
+            elif dependency["type"] == "pip":  # if it's pip
+                pips.append(dependency["url"])  # append it's url to the pip array
+                logger.debug(f"Added dependency pip {dependency['url']}")
             else:  # if not found, throw warning
                 logger.warning(
                     f"Ignoring dependency {dependency['url']}, type {dependency['type']} is not recognized."
@@ -79,6 +83,7 @@ class Install:
             logger.info(f"getting {file_name}...")
             self.git_clone(git)  # and clone it
             logger.info(f"{file_name} done.")
+        results_pips = pips
 
         logger.info("Installing dependencies...")
         logger.warning(
@@ -89,6 +94,7 @@ class Install:
         self.install_dependencies("apts", results_apts)  # install the dependencies pkg
         logger.info("Unzipping dependencies...")
         self.install_dependencies("zips", results_zips)  # unzips the zips
+        self.install_dependencies("pip", results_pips) # install the dependencies with pip
         logger.info("Generating Certificates...")
         self.generate_cert()
         logger.info("All done!")
@@ -177,6 +183,24 @@ class Install:
                     zip.extractall(
                         f"dependencies{sep}{file.rsplit('.', 1)[0]}"
                     )  # extract it and remove the extension (myzip.zip) in the folder myzip
+            elif type == "pip":
+                logger.debug(f"Installing dependencies{sep}{file}")
+                with open(devnull, "w") as null:
+                    subprocess.check_call(
+                        [
+                            "pip3",
+                            "install",
+                            file
+                        ],
+                        stderr=sys.stderr,
+                        stdout=(
+                            sys.stdout
+                            if logging.getLogger().isEnabledFor(
+                                logging.DEBUG
+                            )  # if the user asked for debug mode, let him see the output.
+                            else null  # else /dev/null
+                        ),
+                    )
             else:  # if the type is not found, stop everything, we have an issue.
                 logger.error("no type found.")
                 raise AssertionError(
