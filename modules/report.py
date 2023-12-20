@@ -224,7 +224,7 @@ class Report:
                         else:
                             self.__logging.debug(f"Removing {sheet} from {hostname} because no mitigation was found")
                 del results[hostname][module]
-                del modules[module]
+            del modules[module]
         # now, we want to divide raw from mitigations
         for hostname in results:
             for module in results[hostname]:

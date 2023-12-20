@@ -161,6 +161,9 @@ class Tlsa:
                 type_of_analysis=Core.Analysis.DOMAINS,
                 group_by=args.group_by,
                 stix=args.stix,
+                openssl_version = args.openssl,
+                ignore_openssl = args.ignore_openssl,
+                compliance_args = args.compliance_args
             )
         elif args.file:
             if isinstance(args.configuration, list):

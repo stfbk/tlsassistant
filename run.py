@@ -203,6 +203,15 @@ if __name__ == "__main__":
              "Default to 1  (first certificate)."
     )
 
+    parser.add_argument(
+        "--custom_guideline",
+        type=str,
+        nargs=1,
+        action=ComplianceAction,
+        dest="compliance_args",
+        help="A path to a custom guideline file, only needed if the user wants to use a custom guideline."
+    )
+
     # todo add default aliases configurations for analysis
     # configurations.add_argument()
     args = parser.parse_args()

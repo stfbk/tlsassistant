@@ -121,15 +121,25 @@ class Compliance:
             * *custom_guidelines* (``dict``) -- dictionary with form: { sheet : {guideline: name: {"level":level}}
         """
         actual_configuration = kwargs.get("actual_configuration_path")
-        self.hostname = kwargs.get("hostname")
+        port = kwargs.get("port", "")
+        if port:
+            port = ":" + port
+        self.hostname = kwargs.get("hostname") + port
         self._apache = kwargs.get("apache", True)
         self._security = kwargs.get("security", True)
         output_file = kwargs.get("output_config")
-        self._custom_guidelines = kwargs.get("custom_guidelines")
+        custom_guidelines = kwargs.get("custom_guidelines")
+        if custom_guidelines:
+            if not os.path.isfile(self._custom_guidelines):
+                raise FileNotFoundError(f"Custom guidelines file {self._custom_guidelines} not found")
+            with open(custom_guidelines, "r") as f:
+                self._custom_guidelines = json.load(f)
+
         guidelines_string = kwargs.get("guidelines")
         openssl_version = kwargs.get("openssl_version")
         ignore_openssl = kwargs.get("ignore_openssl")
         self._certificate_index = kwargs.get("certificate_index", "1")
+
         if isinstance(self._certificate_index, int):
             self._certificate_index = str(self._certificate_index)
         if ignore_openssl[0]:
@@ -171,7 +181,7 @@ class Compliance:
                     failed += 1
                     self._logging.warning(f"Testssl failed to perform the analysis on {key}")
             if failed == len(test_ssl_output):
-                raise ValueError("Testssl failed to perform the analysis on all the hosts")
+                self._output_dict[self.hostname] = {"error": "Testssl failed to perform the analysis"}
             self.prepare_testssl_output(test_ssl_output)
         if output_file and self._validator.string(output_file):
             if self._apache:
@@ -201,8 +211,9 @@ class Compliance:
         return self.output()
 
     def output(self):
-        self.prune_output()
-        self._prepare_output()
+        if not self._output_dict[self.hostname].get("error"):
+            self.prune_output()
+            self._prepare_output()
         return self._output_dict.copy()
 
     def _prepare_output(self):
