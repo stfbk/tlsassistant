@@ -180,7 +180,10 @@ class Tlsa:
                 stix=args.stix,
                 webhook=args.webhook,
                 prometheus=args.prometheus,
-                config_type=args.config_type
+                config_type=args.config_type,
+                openssl_version = args.openssl,
+                ignore_openssl = args.ignore_openssl,
+                compliance_args = args.compliance_args
             )
         elif args.file:
             if isinstance(args.configuration, list):

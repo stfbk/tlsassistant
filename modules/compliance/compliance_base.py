@@ -23,6 +23,8 @@ def convert_signature_algorithm(sig_alg: str) -> str:
     """
     This function is needed to convert the input from testssl to make it compatible with the requirements database
     """
+    if "RSA+" in sig_alg:
+        sig_alg = sig_alg.replace("RSA+", "rsa_pkcs1_")
     sig_alg = sig_alg.replace("-", "_").replace("+", "_").lower()
     if "brainpool" in sig_alg:
         hash_len = sig_alg[-3:]
@@ -51,6 +53,7 @@ class Compliance:
         self._user_configuration = {}
         self.entries = {}
         self.evaluated_entries = {}
+        self._certificate_index = "1"
         self.evaluations_mapping = load_configuration("evaluations_mapping", "configs/compliance/")
         self.sheet_columns = load_configuration("sheet_columns", "configs/compliance/")
         self.misc_fields = load_configuration("misc_fields", "configs/compliance/")
@@ -72,6 +75,11 @@ class Compliance:
             "dict": dict,
             "list": list,
             "set": set,
+        }
+        # This is used in the check_year function to disable entries that are not valid anymore
+        self.level_flipper = {
+            "must": "must not",
+            "recommended": "not recommended"
         }
 
     def level_to_use(self, levels):
@@ -113,14 +121,27 @@ class Compliance:
             * *custom_guidelines* (``dict``) -- dictionary with form: { sheet : {guideline: name: {"level":level}}
         """
         actual_configuration = kwargs.get("actual_configuration_path")
-        self.hostname = kwargs.get("hostname")
+        port = kwargs.get("port", "")
+        if port:
+            port = ":" + port
+        self.hostname = kwargs.get("hostname") + port
         self._apache = kwargs.get("apache", True)
         self._security = kwargs.get("security", True)
         output_file = kwargs.get("output_config")
-        self._custom_guidelines = kwargs.get("custom_guidelines")
+        custom_guidelines = kwargs.get("custom_guidelines")
+        if custom_guidelines:
+            if not os.path.isfile(self._custom_guidelines):
+                raise FileNotFoundError(f"Custom guidelines file {self._custom_guidelines} not found")
+            with open(custom_guidelines, "r") as f:
+                self._custom_guidelines = json.load(f)
+
         guidelines_string = kwargs.get("guidelines")
         openssl_version = kwargs.get("openssl_version")
         ignore_openssl = kwargs.get("ignore_openssl")
+        self._certificate_index = kwargs.get("certificate_index", "1")
+
+        if isinstance(self._certificate_index, int):
+            self._certificate_index = str(self._certificate_index)
         if ignore_openssl[0]:
             self._openssl_version = "1.1.1"
         elif openssl_version:
@@ -160,7 +181,7 @@ class Compliance:
                     failed += 1
                     self._logging.warning(f"Testssl failed to perform the analysis on {key}")
             if failed == len(test_ssl_output):
-                raise ValueError("Testssl failed to perform the analysis on all the hosts")
+                self._output_dict[self.hostname] = {"error": "Testssl failed to perform the analysis"}
             self.prepare_testssl_output(test_ssl_output)
         if output_file and self._validator.string(output_file):
             if self._apache:
@@ -190,8 +211,9 @@ class Compliance:
         return self.output()
 
     def output(self):
-        self.prune_output()
-        self._prepare_output()
+        if not self._output_dict[self.hostname].get("error"):
+            self.prune_output()
+            self._prepare_output()
         return self._output_dict.copy()
 
     def _prepare_output(self):
@@ -218,6 +240,10 @@ class Compliance:
                     # remove the line that contains {add}
                     lines = textual.split("<br/>")
                     textual = "<br/>".join([line for line in lines if "{add}" not in line])
+                if self._output_dict[hostname][sheet].get("only_total_string_add"):
+                    # remove the first line from Textual
+                    lines = textual.split("<br/>")
+                    textual = "<br/>".join(lines[1:])
                 if self._output_dict[hostname][sheet]["entries_remove"]:
                     remove_string = "<br/>-{name} {action} according to {source}"
                     remove_list = []
@@ -340,20 +366,22 @@ class Compliance:
                             self._output_dict[hostname][sheet]["entries_remove"]:
                         to_remove.add(note)
                 count = 0
+
                 for entry in self._output_dict[hostname][sheet]["entries_add"]:
                     if self._output_dict[hostname][sheet][entry].get("total_string_only"):
                         count += 1
                 if count == len(self._output_dict[hostname][sheet]["entries_add"]):
-                    for entry in self._output_dict[hostname][sheet]["entries_add"]:
-                        del self._output_dict[hostname][sheet][entry]
-                    self._output_dict[hostname][sheet]["entries_add"] = []
+                    self._output_dict[hostname][sheet]["only_total_string_add"] = True
+
                 for entry in to_remove:
                     if entry not in self._output_dict[hostname][sheet]["entries_add"] and entry not in \
                             self._output_dict[hostname][sheet]["entries_remove"]:
                         del self._output_dict[hostname][sheet][entry]
                     self._output_dict[hostname][sheet]["notes"].remove(entry)
                 to_remove = set()
-                if not self._output_dict[hostname][sheet]["entries_add"] and not \
+                no_add = self._output_dict[hostname][sheet]["entries_add"].__len__() == 0 or \
+                         self._output_dict[hostname][sheet].get("only_total_string_add")
+                if no_add and not \
                         self._output_dict[hostname][sheet]["entries_remove"] and not \
                         self._output_dict[hostname][sheet]["notes"]:
                     remove_sheets.add(sheet)
@@ -485,7 +513,6 @@ class Compliance:
                     self._user_configuration["Certificate"][cert_index]["KeyAlg"] = element_to_add[0]
                 elif field == "DH_groups":
                     curve, length = re.match(r"([^\d]+)(\d+)", actual_dict["finding"]).groups()
-                    print(curve, length)
                     if "(" in actual_dict["finding"]:
                         self._user_configuration["KeyLengths"].add(("DH", int(length)))
                     else:
@@ -560,7 +587,6 @@ class Compliance:
                     self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
                 elif field == "fallback_SCSV":
                     self._user_configuration["fallback_SCSV"] = actual_dict["finding"]
-        print(self._user_configuration["Signature"])
 
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition, hostname):
         information_level = None
@@ -726,7 +752,8 @@ class Compliance:
                     if isinstance(self, Generator):
                         enabled = level in ["MUST", "RECOMMENDED"]
                     else:
-                        enabled = ConditionParser.is_enabled(self._user_configuration, sheet, name, entry)
+                        enabled = ConditionParser.is_enabled(self._user_configuration, sheet, name, entry,
+                                                             certificate_index=self._certificate_index)
                     if condition:
                         tokens = re.split(self._condition_parser.splitting_capturing_regex, condition,
                                           flags=re.IGNORECASE)
@@ -746,12 +773,14 @@ class Compliance:
                                         tokens.pop(i)
                             condition = " ".join(tokens)
 
-                        valid_condition = self._condition_parser.run(condition, enabled)
+                        valid_condition = self._condition_parser.run(condition, enabled, cert_index=self._certificate_index)
                         enabled = self._condition_parser.entry_updates.get("is_enabled", enabled)
                         if self._condition_parser.entry_updates.get("disable_if"):
                             enabled = self.check_disable_if(self._condition_parser.entry_updates.get("disable_if"),
                                                             enabled, valid_condition)
                         self._logging.debug(f"Condition: {condition} - enabled: {enabled} - valid: {valid_condition}")
+                        if self._condition_parser.entry_updates.get("flip_level"):
+                            level = self.level_flipper.get(level, level)
                         if self._condition_parser.entry_updates.get("levels"):
                             potential_levels = self._condition_parser.entry_updates.get("levels")
                             level = potential_levels[self.level_to_use(potential_levels)]
@@ -774,7 +803,6 @@ class Compliance:
                     levels.append(level)
                     field_is_enabled_in_guideline[guideline] = enabled
                     pos += step
-
                 best_level = self.level_to_use(levels)
                 resulting_level = levels[best_level]
                 condition = conditions[best_level]
@@ -895,7 +923,7 @@ class Generator(Compliance):
             field = conditions_to_check[index]["field"]
             enabled = level in ["recommended", "must"]
             name = conditions_to_check[index]["name"]
-            valid_condition = self._condition_parser.run(expression, enabled)
+            valid_condition = self._condition_parser.run(expression, enabled, cert_index=self._certificate_index)
             field_rules = self._configuration_rules.get(field, {})
             if self._condition_parser.entry_updates.get("levels"):
                 potential_levels = self._condition_parser.entry_updates.get("levels")

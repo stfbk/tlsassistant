@@ -31,14 +31,16 @@ class CompareOne(Compliance):
                     level = entry[level_index]
                     condition = entry[condition_index]
                     enabled = self._condition_parser.is_enabled(self._user_configuration, config_field, name,
-                                                                entry, condition=condition)
+                                                                entry, condition=condition,
+                                                                certificate_index=self._certificate_index)
                     valid_condition = True
                     if condition:
-                        valid_condition = self._condition_parser.run(condition, enabled)
+                        valid_condition = self._condition_parser.run(condition, enabled, cert_index=self._certificate_index)
                         enabled = self._condition_parser.entry_updates.get("is_enabled", enabled)
                         if self._condition_parser.entry_updates.get("disable_if"):
-                            enabled = self.check_disable_if(self._condition_parser.entry_updates.get("disable_if"), enabled,
-                                                       valid_condition)
+                            enabled = self.check_disable_if(self._condition_parser.entry_updates.get("disable_if"),
+                                                            enabled,
+                                                            valid_condition)
                         self._logging.debug(
                             f"Condition: {condition} - enabled: {enabled} - valid_condition: {valid_condition}")
                         if self._condition_parser.entry_updates.get("levels"):

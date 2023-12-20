@@ -281,8 +281,11 @@ class Actions:
         string = kwargs.get("value", None)
         self.validator.string(string)
         sigalgs = string.split(":") if ":" in string else [string]
+        sigalgs = [sigalg for sigalg in sigalgs if sigalg.strip()]
         if sigalgs[0] == "<code>":
             sigalgs = sigalgs[1:]
+        elif sigalgs[0].startswith("<code>"):
+            sigalgs[0] = sigalgs[0].replace("<code>", "")
         for i, sigalg in enumerate(sigalgs):
             sigalgs[i] = self._sigalgs_table.get(sigalg, sigalg)
             string = string.replace(sigalg, sigalgs[i])
