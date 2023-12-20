@@ -19,7 +19,7 @@ class WebserverType:
         for host in self.__input.get("hosts", []):
             webserver = "http://"+host if not host.startswith("http") else host
             try:
-                res = requests.get(webserver, headers={"User-Agent": "Mozilla/5.0"})
+                res = requests.get(webserver, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
             except Exception as e:
                 self.__logging.debug(e.__str__())
                 self.__logging.warning(f"Error occurred while connecting to {host}")
