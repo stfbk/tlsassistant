@@ -296,7 +296,9 @@ class CustomFunctions:
 
         actual_date = datetime.date.today()
         parsed_date = datetime.datetime.strptime(year + "-12-31", "%Y-%m-%d")
-        return parsed_date.date() > actual_date
+        result = parsed_date.date() > actual_date
+        self._entry_updates["flip_level"] = not result
+        return result
 
     def check_vlp(self, **kwargs):
         status = kwargs.get("data", "").lower() == "true"

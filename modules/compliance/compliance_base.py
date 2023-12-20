@@ -23,6 +23,8 @@ def convert_signature_algorithm(sig_alg: str) -> str:
     """
     This function is needed to convert the input from testssl to make it compatible with the requirements database
     """
+    if "RSA+" in sig_alg:
+        sig_alg = sig_alg.replace("RSA+", "rsa_pkcs1_")
     sig_alg = sig_alg.replace("-", "_").replace("+", "_").lower()
     if "brainpool" in sig_alg:
         hash_len = sig_alg[-3:]
@@ -72,6 +74,11 @@ class Compliance:
             "dict": dict,
             "list": list,
             "set": set,
+        }
+        # This is used in the check_year function to disable entries that are not valid anymore
+        self.level_flipper = {
+            "must": "must not",
+            "recommended": "not recommended"
         }
 
     def level_to_use(self, levels):
@@ -218,6 +225,10 @@ class Compliance:
                     # remove the line that contains {add}
                     lines = textual.split("<br/>")
                     textual = "<br/>".join([line for line in lines if "{add}" not in line])
+                if self._output_dict[hostname][sheet].get("only_total_string_add"):
+                    # remove the first line from Textual
+                    lines = textual.split("<br/>")
+                    textual = "<br/>".join(lines[1:])
                 if self._output_dict[hostname][sheet]["entries_remove"]:
                     remove_string = "<br/>-{name} {action} according to {source}"
                     remove_list = []
@@ -292,6 +303,8 @@ class Compliance:
                                                                                                          entry_name)
                 total_string_nginx += conf_instructions["connector"] + conf_instructions[level].replace("name",
                                                                                                         entry_name)
+            if sheet == "Signature":
+                print(total_string_nginx)
             if not self._output_dict[hostname][sheet][entry].get("total_string_only"):
                 if conf_instructions["mode"] == "specific_mitigation":
                     string = conf_instructions.get(entry, "")
@@ -340,20 +353,22 @@ class Compliance:
                             self._output_dict[hostname][sheet]["entries_remove"]:
                         to_remove.add(note)
                 count = 0
+
                 for entry in self._output_dict[hostname][sheet]["entries_add"]:
                     if self._output_dict[hostname][sheet][entry].get("total_string_only"):
                         count += 1
                 if count == len(self._output_dict[hostname][sheet]["entries_add"]):
-                    for entry in self._output_dict[hostname][sheet]["entries_add"]:
-                        del self._output_dict[hostname][sheet][entry]
-                    self._output_dict[hostname][sheet]["entries_add"] = []
+                    self._output_dict[hostname][sheet]["only_total_string_add"] = True
+
                 for entry in to_remove:
                     if entry not in self._output_dict[hostname][sheet]["entries_add"] and entry not in \
                             self._output_dict[hostname][sheet]["entries_remove"]:
                         del self._output_dict[hostname][sheet][entry]
                     self._output_dict[hostname][sheet]["notes"].remove(entry)
                 to_remove = set()
-                if not self._output_dict[hostname][sheet]["entries_add"] and not \
+                no_add = self._output_dict[hostname][sheet]["entries_add"].__len__() == 0 or \
+                         self._output_dict[hostname][sheet].get("only_total_string_add")
+                if no_add and not \
                         self._output_dict[hostname][sheet]["entries_remove"] and not \
                         self._output_dict[hostname][sheet]["notes"]:
                     remove_sheets.add(sheet)
@@ -752,6 +767,8 @@ class Compliance:
                             enabled = self.check_disable_if(self._condition_parser.entry_updates.get("disable_if"),
                                                             enabled, valid_condition)
                         self._logging.debug(f"Condition: {condition} - enabled: {enabled} - valid: {valid_condition}")
+                        if self._condition_parser.entry_updates.get("flip_level"):
+                            level = self.level_flipper.get(level, level)
                         if self._condition_parser.entry_updates.get("levels"):
                             potential_levels = self._condition_parser.entry_updates.get("levels")
                             level = potential_levels[self.level_to_use(potential_levels)]
@@ -774,7 +791,6 @@ class Compliance:
                     levels.append(level)
                     field_is_enabled_in_guideline[guideline] = enabled
                     pos += step
-
                 best_level = self.level_to_use(levels)
                 resulting_level = levels[best_level]
                 condition = conditions[best_level]
