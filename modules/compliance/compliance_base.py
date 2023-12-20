@@ -53,6 +53,7 @@ class Compliance:
         self._user_configuration = {}
         self.entries = {}
         self.evaluated_entries = {}
+        self._certificate_index = "1"
         self.evaluations_mapping = load_configuration("evaluations_mapping", "configs/compliance/")
         self.sheet_columns = load_configuration("sheet_columns", "configs/compliance/")
         self.misc_fields = load_configuration("misc_fields", "configs/compliance/")
@@ -128,6 +129,9 @@ class Compliance:
         guidelines_string = kwargs.get("guidelines")
         openssl_version = kwargs.get("openssl_version")
         ignore_openssl = kwargs.get("ignore_openssl")
+        self._certificate_index = kwargs.get("certificate_index", "1")
+        if isinstance(self._certificate_index, int):
+            self._certificate_index = str(self._certificate_index)
         if ignore_openssl[0]:
             self._openssl_version = "1.1.1"
         elif openssl_version:
@@ -303,8 +307,6 @@ class Compliance:
                                                                                                          entry_name)
                 total_string_nginx += conf_instructions["connector"] + conf_instructions[level].replace("name",
                                                                                                         entry_name)
-            if sheet == "Signature":
-                print(total_string_nginx)
             if not self._output_dict[hostname][sheet][entry].get("total_string_only"):
                 if conf_instructions["mode"] == "specific_mitigation":
                     string = conf_instructions.get(entry, "")
@@ -500,7 +502,6 @@ class Compliance:
                     self._user_configuration["Certificate"][cert_index]["KeyAlg"] = element_to_add[0]
                 elif field == "DH_groups":
                     curve, length = re.match(r"([^\d]+)(\d+)", actual_dict["finding"]).groups()
-                    print(curve, length)
                     if "(" in actual_dict["finding"]:
                         self._user_configuration["KeyLengths"].add(("DH", int(length)))
                     else:
@@ -575,7 +576,6 @@ class Compliance:
                     self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
                 elif field == "fallback_SCSV":
                     self._user_configuration["fallback_SCSV"] = actual_dict["finding"]
-        print(self._user_configuration["Signature"])
 
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition, hostname):
         information_level = None
@@ -741,7 +741,8 @@ class Compliance:
                     if isinstance(self, Generator):
                         enabled = level in ["MUST", "RECOMMENDED"]
                     else:
-                        enabled = ConditionParser.is_enabled(self._user_configuration, sheet, name, entry)
+                        enabled = ConditionParser.is_enabled(self._user_configuration, sheet, name, entry,
+                                                             certificate_index=self._certificate_index)
                     if condition:
                         tokens = re.split(self._condition_parser.splitting_capturing_regex, condition,
                                           flags=re.IGNORECASE)
@@ -761,7 +762,7 @@ class Compliance:
                                         tokens.pop(i)
                             condition = " ".join(tokens)
 
-                        valid_condition = self._condition_parser.run(condition, enabled)
+                        valid_condition = self._condition_parser.run(condition, enabled, cert_index=self._certificate_index)
                         enabled = self._condition_parser.entry_updates.get("is_enabled", enabled)
                         if self._condition_parser.entry_updates.get("disable_if"):
                             enabled = self.check_disable_if(self._condition_parser.entry_updates.get("disable_if"),
@@ -911,7 +912,7 @@ class Generator(Compliance):
             field = conditions_to_check[index]["field"]
             enabled = level in ["recommended", "must"]
             name = conditions_to_check[index]["name"]
-            valid_condition = self._condition_parser.run(expression, enabled)
+            valid_condition = self._condition_parser.run(expression, enabled, cert_index=self._certificate_index)
             field_rules = self._configuration_rules.get(field, {})
             if self._condition_parser.entry_updates.get("levels"):
                 potential_levels = self._condition_parser.entry_updates.get("levels")

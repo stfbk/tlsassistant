@@ -17,7 +17,8 @@ class ComplianceAction(argparse.Action):
             "true": True
         }
         dictionary = namespace.__getattribute__(self.dest)
-        dictionary[option_string.strip("-")] = converters.get(values[0].lower(), values[0])
+        value = values[0].lower() if isinstance(values[0], str) else values[0]
+        dictionary[option_string.strip("-")] = converters.get(value, value)
 
 
 if __name__ == "__main__":
@@ -190,6 +191,16 @@ if __name__ == "__main__":
         action=ComplianceAction,
         dest="compliance_args",
         help="Where to save the output configuration file, only needed for generate one/many"
+    )
+
+    parser.add_argument(
+        "--certificate_index",
+        type=int,
+        nargs=1,
+        action=ComplianceAction,
+        dest="compliance_args",
+        help="The index of the certificate to use for the analysis, only needed if the website has multiple certificates."
+             "Default to 1  (first certificate)."
     )
 
     # todo add default aliases configurations for analysis
