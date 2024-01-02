@@ -214,13 +214,13 @@ class Report:
         results = pruner(results)  # prune empty results
         # this block is needed to prepare the output of the compliance modules
         if any([module in modules for module in ["compare_one", "compare_many"]]):
+            module = "compare_one" if "compare_one" in modules else "compare_many"
             for hostname in results:
-                module = "compare_one" if "compare_one" in modules else "compare_many"
                 if results[hostname].get(module):
-                    for sheet in results[hostname][module][hostname]:
-                        if "mitigation" in results[hostname][module][hostname][sheet]:
+                    for sheet in results[hostname][module]:
+                        if "mitigation" in results[hostname][module][sheet]:
                             modules[module+"_"+sheet] = ""
-                            results[hostname][module+"_"+sheet] = results[hostname][module][hostname][sheet]
+                            results[hostname][module+"_"+sheet] = results[hostname][module][sheet]
                         else:
                             self.__logging.debug(f"Removing {sheet} from {hostname} because no mitigation was found")
                 del results[hostname][module]

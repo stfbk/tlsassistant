@@ -72,5 +72,5 @@ class CompareOne(Compliance):
                         note += "\nNOTE: "
                         note += "\n".join(additional_notes)
                     note += conditional_notes
-                    if self._output_dict[hostname][sheet].get(name) is not None:
-                        self._output_dict[hostname][sheet][name]["notes"] = note
+                    if self._output_dict[sheet].get(name) is not None:
+                        self._output_dict[sheet][name]["notes"] = note

@@ -22,7 +22,8 @@ class CertificateParser:
         for index in range(self.certificate.get_extension_count()):
             ext = self.certificate.get_extension(index)
             ext_name = ext.get_short_name().decode("utf-8")
-            self._output_dict[cert_sha]["Extensions"][ext_name] = ext.__str__()
+            content = ext.__str__() if ext_name != "UNDEF" else ""
+            self._output_dict[cert_sha]["Extensions"][ext_name] = content
         self._output_dict[cert_sha]["X.509 version"] = self.certificate.get_version()
         self._output_dict[cert_sha]["SigAlgComplete"] = self.certificate.get_signature_algorithm().decode("utf-8")
         # this list comprehension takes every tuple, decodes its elements and puts the decoded pair in a new list

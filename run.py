@@ -20,6 +20,16 @@ class ComplianceAction(argparse.Action):
         value = values[0].lower() if isinstance(values[0], str) else values[0]
         dictionary[option_string.strip("-")] = converters.get(value, value)
 
+class ComplianceTrue(argparse.Action):
+    def __init__(self, option_strings, dest, nargs=None, **kwargs):
+        super().__init__(option_strings, dest, nargs, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=""):
+        if not isinstance(namespace.__getattribute__(self.dest), dict):
+            namespace.__setattr__(self.dest, {})
+        dictionary = namespace.__getattribute__(self.dest)
+        dictionary[option_string.strip("-")] = True
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -210,6 +220,26 @@ if __name__ == "__main__":
         action=ComplianceAction,
         dest="compliance_args",
         help="A path to a custom guideline file, only needed if the user wants to use a custom guideline."
+    )
+
+    parser.add_argument(
+        "--use_cache",
+        type=bool,
+        nargs=0,
+        default=False,
+        action=ComplianceTrue,
+        dest="compliance_args",
+        help="Default to False. If True the program will use the cached testssl analysis, if False the cache will be ignored."
+    )
+
+    parser.add_argument(
+        "--clean",
+        type=bool,
+        nargs=0,
+        default=False,
+        action=ComplianceTrue,
+        dest="compliance_args",
+        help="Default to False. If True the program will remove the cached testssl analysis for this host."
     )
 
     # todo add default aliases configurations for analysis

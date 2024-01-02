@@ -2,6 +2,7 @@ import itertools
 import json
 import os.path
 import re
+from collections import OrderedDict
 from pathlib import Path
 
 from modules.compliance.configuration.apache_configuration import ApacheConfiguration
@@ -122,11 +123,12 @@ class Compliance:
         """
         actual_configuration = kwargs.get("actual_configuration_path")
         port = kwargs.get("port", "")
-        if port:
-            port = ":" + port
-        self.hostname = kwargs.get("hostname") + port
+        port = ":" + port if port else ""
+        self.hostname = kwargs.get("hostname")
         self._apache = kwargs.get("apache", True)
         self._security = kwargs.get("security", True)
+        use_cache = kwargs.get("use_cache", False)
+        clean = kwargs.get("clean", False)
         output_file = kwargs.get("output_config")
         custom_guidelines = kwargs.get("custom_guidelines")
         if custom_guidelines:
@@ -167,13 +169,21 @@ class Compliance:
                 self._config_class = NginxConfiguration(actual_configuration)
             self.prepare_configuration(self._config_class.configuration)
         if self.hostname and self._validator.string(self.hostname) and self.hostname != "placeholder":
-            if os.path.isfile(f"testssl_dumps/testssl_output-{self.hostname}.json"):
-                with open(f"testssl_dumps/testssl_output-{self.hostname}.json", "r") as f:
+            test_ssl_output = {}
+            dump_folder = "testssl_dumps"
+            file_path = f"{dump_folder}/testssl_output-{self.hostname}.json"
+            if clean and os.path.isfile(file_path):
+                os.remove(file_path)
+            if use_cache and os.path.isfile(file_path):
+                with open(file_path, "r") as f:
                     test_ssl_output = json.load(f)
-            else:
-                test_ssl_output = self.test_ssl.run(**{"hostname": self.hostname, "one": True})
-            with open(f"testssl_dumps/testssl_output-{self.hostname}.json", "w") as f:
-                json.dump(test_ssl_output, f, indent=4)
+            if not test_ssl_output:
+                test_ssl_output = self.test_ssl.run(**{"hostname": self.hostname + port, "one": True})
+                if use_cache:
+                    if not os.path.isdir(dump_folder):
+                        os.mkdir(dump_folder)
+                    with open(file_path, "w") as f:
+                        json.dump(test_ssl_output, f, indent=4)
             failed = 0
             for key in test_ssl_output:
                 if test_ssl_output[key].get("scanProblem") and test_ssl_output[key]["scanProblem"].get(
@@ -181,7 +191,8 @@ class Compliance:
                     failed += 1
                     self._logging.warning(f"Testssl failed to perform the analysis on {key}")
             if failed == len(test_ssl_output):
-                self._output_dict[self.hostname] = {"error": "Testssl failed to perform the analysis"}
+                self._output_dict = {"error": "Testssl failed to perform the analysis"}
+                self.output()
             self.prepare_testssl_output(test_ssl_output)
         if output_file and self._validator.string(output_file):
             if self._apache:
@@ -211,114 +222,124 @@ class Compliance:
         return self.output()
 
     def output(self):
-        if not self._output_dict[self.hostname].get("error"):
+        if not self._output_dict.get("error"):
             self.prune_output()
             self._prepare_output()
         return self._output_dict.copy()
 
     def _prepare_output(self):
-        for hostname in self._output_dict:
-            for sheet in self._output_dict[hostname]:
-                mitigation = MitigationLoader().load_mitigation("Compliance_" + sheet)
-                guidelines = ", ".join(self._output_dict[hostname][sheet]["guidelines"])
-                mitigation["Entry"]["Description"] = mitigation["Entry"]["Description"].format(sheet=sheet,
-                                                                                               guidelines=guidelines)
-                textual = mitigation["Entry"]["Mitigation"]["Textual"]
-                total_string_apache = total_string_nginx = "<code>"
-                conf_instructions = mitigation["#ConfigurationInstructions"]
-                if self._output_dict[hostname][sheet]["entries_add"]:
-                    add_string = "<br/>-{name} {action} according to {source}"
-                    add_list = []
-                    total_string_apache, total_string_nginx = self.format_output_string(add_string, hostname, sheet,
-                                                                                        conf_instructions,
-                                                                                        total_string_apache,
-                                                                                        total_string_nginx,
-                                                                                        "entries_add", add_list)
-                    # this is necessary to avoid having an extra empty line
-                    textual = textual.format(add=";".join(add_list), remove="{remove}", notes="{notes}")
+        for sheet in self._output_dict:
+            mitigation = MitigationLoader().load_mitigation("Compliance_" + sheet)
+            guidelines = ", ".join(self._output_dict[sheet]["guidelines"])
+            mitigation["Entry"]["Description"] = mitigation["Entry"]["Description"].format(sheet=sheet,
+                                                                                           guidelines=guidelines)
+            textual = mitigation["Entry"]["Mitigation"]["Textual"]
+            total_string_apache = total_string_nginx = "<code>"
+            conf_instructions = mitigation["#ConfigurationInstructions"]
+            if self._output_dict[sheet]["entries_add"]:
+                add_string = "<br/>-{name} {action} according to {source}"
+                add_list = []
+                total_string_apache, total_string_nginx = self.format_output_string(add_string, sheet,
+                                                                                    conf_instructions,
+                                                                                    total_string_apache,
+                                                                                    total_string_nginx,
+                                                                                    "entries_add", add_list)
+                # this is necessary to avoid having an extra empty line
+                textual = textual.format(add=";".join(add_list), remove="{remove}", notes="{notes}")
+            else:
+                # remove the line that contains {add}
+                lines = textual.split("<br/>")
+                textual = "<br/>".join([line for line in lines if "{add}" not in line])
+            if self._output_dict[sheet].get("only_total_string_add"):
+                # remove the first line from Textual
+                lines = textual.split("<br/>")
+                textual = "<br/>".join(lines[1:])
+            if self._output_dict[sheet]["entries_remove"]:
+                remove_string = "<br/>-{name} {action} according to {source}"
+                remove_list = []
+                total_string_apache, total_string_nginx = self.format_output_string(remove_string, sheet,
+                                                                                    conf_instructions,
+                                                                                    total_string_apache,
+                                                                                    total_string_nginx,
+                                                                                    "entries_remove", remove_list)
+                textual = textual.replace("{add}<br/>{remove}", "{add}{remove}")
+                textual = textual.format(remove=";".join(remove_list), notes="{notes}")
+            else:
+                # remove the line that contains {remove}
+                lines = textual.split("<br/>")
+                textual = "<br/>".join([line for line in lines if "{remove}" not in line])
+            if self._output_dict[sheet]["notes"]:
+                notes_string = "<br/>{name}"
+                notes_list = []
+                total_string_apache, total_string_nginx = self.format_output_string(notes_string, sheet,
+                                                                                    conf_instructions,
+                                                                                    total_string_apache,
+                                                                                    total_string_nginx,
+                                                                                    "notes", notes_list)
+                textual = textual.format(notes=";".join(notes_list))
+            else:
+                # remove the line that contains {notes}
+                lines = textual.split("<br/>")
+                textual = "<br/>".join([line for line in lines if "{notes}" not in line])
+            textual = textual.replace(":<br/><br/>", ":<br/>", 1)
+            mitigation["Entry"]["Mitigation"]["Textual"] = textual
+            if total_string_apache != "<code>":
+                if conf_instructions["mode"] == "standard":
+                    total_string_apache += ";</code>"
                 else:
-                    # remove the line that contains {add}
-                    lines = textual.split("<br/>")
-                    textual = "<br/>".join([line for line in lines if "{add}" not in line])
-                if self._output_dict[hostname][sheet].get("only_total_string_add"):
-                    # remove the first line from Textual
-                    lines = textual.split("<br/>")
-                    textual = "<br/>".join(lines[1:])
-                if self._output_dict[hostname][sheet]["entries_remove"]:
-                    remove_string = "<br/>-{name} {action} according to {source}"
-                    remove_list = []
-                    total_string_apache, total_string_nginx = self.format_output_string(remove_string, hostname, sheet,
-                                                                                        conf_instructions,
-                                                                                        total_string_apache,
-                                                                                        total_string_nginx,
-                                                                                        "entries_remove", remove_list)
-                    textual = textual.replace("{add}<br/>{remove}", "{add}{remove}")
-                    textual = textual.format(remove=";".join(remove_list), notes="{notes}")
+                    total_string_apache = total_string_apache.replace("<code>", "", 1)
+                mitigation["Entry"]["Mitigation"]["Apache"] = mitigation["Entry"]["Mitigation"]["Apache"].format(
+                    total_string=total_string_apache)
+            if total_string_nginx != "<code>":
+                if conf_instructions["mode"] == "standard":
+                    total_string_nginx += ";</code>"
                 else:
-                    # remove the line that contains {remove}
-                    lines = textual.split("<br/>")
-                    textual = "<br/>".join([line for line in lines if "{remove}" not in line])
-                if self._output_dict[hostname][sheet]["notes"]:
-                    notes_string = "<br/>{name}"
-                    notes_list = []
-                    total_string_apache, total_string_nginx = self.format_output_string(notes_string, hostname, sheet,
-                                                                                        conf_instructions,
-                                                                                        total_string_apache,
-                                                                                        total_string_nginx,
-                                                                                        "notes", notes_list)
-                    textual = textual.format(notes=";".join(notes_list))
-                else:
-                    # remove the line that contains {notes}
-                    lines = textual.split("<br/>")
-                    textual = "<br/>".join([line for line in lines if "{notes}" not in line])
-                textual = textual.replace(":<br/><br/>", ":<br/>", 1)
-                mitigation["Entry"]["Mitigation"]["Textual"] = textual
-                if total_string_apache != "<code>":
-                    if conf_instructions["mode"] == "standard":
-                        total_string_apache += "</code>"
-                    else:
-                        total_string_apache = total_string_apache.replace("<code>", "", 1)
-                    mitigation["Entry"]["Mitigation"]["Apache"] = mitigation["Entry"]["Mitigation"]["Apache"].format(
-                        total_string=total_string_apache)
-                if total_string_nginx != "<code>":
-                    if conf_instructions["mode"] == "standard":
-                        total_string_nginx += "</code>"
-                    else:
-                        total_string_nginx = total_string_nginx.replace("<code>", "", 1)
-                    mitigation["Entry"]["Mitigation"]["Nginx"] = mitigation["Entry"]["Mitigation"]["Nginx"].format(
-                        total_string=total_string_nginx)
-                # TODO clean the dictionary before adding mitigation
-                if conf_instructions.get("openssl_dependency"):
-                    for version in conf_instructions["openssl_dependency"]:
-                        operator, check_version = version.split(" ")
-                        add_openssl_text = False
-                        if operator == "<" and self._openssl.less_than(self._openssl_version, check_version):
-                            add_openssl_text = True
-                        elif operator == ">" and self._openssl.greater_than(self._openssl_version, check_version):
-                            add_openssl_text = True
-                        if add_openssl_text:
-                            mitigation["Entry"]["Mitigation"]["Textual"] += conf_instructions["openssl_dependency"][
-                                version].get("Textual", "")
-                            mitigation["Entry"]["Mitigation"]["Apache"] += conf_instructions["openssl_dependency"][
-                                version].get("Apache", "")
-                            mitigation["Entry"]["Mitigation"]["Nginx"] += conf_instructions["openssl_dependency"][
-                                version].get("Nginx", "")
-                self._output_dict[hostname][sheet]["mitigation"] = mitigation
+                    total_string_nginx = total_string_nginx.replace("<code>", "", 1)
+                mitigation["Entry"]["Mitigation"]["Nginx"] = mitigation["Entry"]["Mitigation"]["Nginx"].format(
+                    total_string=total_string_nginx)
+            # TODO clean the dictionary before adding mitigation
+            if conf_instructions.get("openssl_dependency"):
+                for version in conf_instructions["openssl_dependency"]:
+                    operator, check_version = version.split(" ")
+                    add_openssl_text = False
+                    if operator == "<" and self._openssl.less_than(self._openssl_version, check_version):
+                        add_openssl_text = True
+                    elif operator == ">" and self._openssl.greater_than(self._openssl_version, check_version):
+                        add_openssl_text = True
+                    if add_openssl_text:
+                        mitigation["Entry"]["Mitigation"]["Textual"] += conf_instructions["openssl_dependency"][
+                            version].get("Textual", "")
+                        mitigation["Entry"]["Mitigation"]["Apache"] += conf_instructions["openssl_dependency"][
+                            version].get("Apache", "")
+                        mitigation["Entry"]["Mitigation"]["Nginx"] += conf_instructions["openssl_dependency"][
+                            version].get("Nginx", "")
+            textual = mitigation["Entry"]["Mitigation"]["Textual"]
+            textual = "<br/>".join(list(OrderedDict.fromkeys(textual.split("<br/>"))))
+            mitigation["Entry"]["Mitigation"]["Textual"] = textual
+            nginx_string = mitigation["Entry"]["Mitigation"]["Nginx"]
+            nginx_string = "<br/>".join(list(OrderedDict.fromkeys(nginx_string.split("<br/>"))))
+            nginx_string = nginx_string.replace("{total_string}", "No snippet available")
+            mitigation["Entry"]["Mitigation"]["Nginx"] = nginx_string
+            apache_string = mitigation["Entry"]["Mitigation"]["Apache"]
+            apache_string = "<br/>".join(list(OrderedDict.fromkeys(apache_string.split("<br/>"))))
+            apache_string = apache_string.replace("{total_string}", "No snippet available")
+            mitigation["Entry"]["Mitigation"]["Apache"] = apache_string
+            self._output_dict[sheet]["mitigation"] = mitigation
 
-    def format_output_string(self, string, hostname, sheet, conf_instructions, total_string_apache, total_string_nginx,
+    def format_output_string(self, string, sheet, conf_instructions, total_string_apache, total_string_nginx,
                              entries_key, strings_list):
         source = ""
-        for entry in self._output_dict[hostname][sheet][entries_key]:
-            source = self._output_dict[hostname][sheet][entry]["source"]
+        for entry in self._output_dict[sheet][entries_key]:
+            source = self._output_dict[sheet][entry]["source"]
             entry_name, _ = self._configuration_maker.perform_post_actions(conf_instructions, entry, source)
-            level = self._output_dict[hostname][sheet][entry]["level"].lower()
+            level = self._output_dict[sheet][entry]["level"].lower()
             if conf_instructions["mode"] == "standard":
                 # The usage of post actions is needed to fix the entries of some of the sheets
                 total_string_apache += conf_instructions["connector"] + conf_instructions[level].replace("name",
                                                                                                          entry_name)
                 total_string_nginx += conf_instructions["connector"] + conf_instructions[level].replace("name",
                                                                                                         entry_name)
-            if not self._output_dict[hostname][sheet][entry].get("total_string_only"):
+            if not self._output_dict[sheet][entry].get("total_string_only"):
                 if conf_instructions["mode"] == "specific_mitigation":
                     string = conf_instructions.get(entry, "")
                     if conf_instructions.get(entry + "_config"):
@@ -332,10 +353,10 @@ class Compliance:
                     tmp_string = string.format(name=entry_name)
                 else:
                     tmp_string = string.format(name=entry_name,
-                                               action=self._output_dict[hostname][sheet][entry]["action"],
-                                               source=self._output_dict[hostname][sheet][entry]["source"])
-                if self._output_dict[hostname][sheet][entry].get("notes"):
-                    tmp_string += "; " + self._output_dict[hostname][sheet][entry]["notes"]
+                                               action=self._output_dict[sheet][entry]["action"],
+                                               source=self._output_dict[sheet][entry]["source"])
+                if self._output_dict[sheet][entry].get("notes"):
+                    tmp_string += "; " + self._output_dict[sheet][entry]["notes"]
                 tmp_string, _ = self._configuration_maker.perform_post_actions(conf_instructions, tmp_string, source)
                 strings_list.append(tmp_string)
         total_string_apache, _ = self._configuration_maker.perform_post_actions(conf_instructions, total_string_apache,
@@ -358,35 +379,34 @@ class Compliance:
     def prune_output(self):
         to_remove = set()
         remove_sheets = set()
-        for hostname in self._output_dict:
-            for sheet in self._output_dict[hostname]:
-                for note in self._output_dict[hostname][sheet]["notes"]:
-                    if not self._output_dict[hostname][sheet][note].get("notes") or \
-                            note in self._output_dict[hostname][sheet]["entries_add"] or note in \
-                            self._output_dict[hostname][sheet]["entries_remove"]:
-                        to_remove.add(note)
-                count = 0
+        for sheet in self._output_dict:
+            for note in self._output_dict[sheet]["notes"]:
+                if not self._output_dict[sheet][note].get("notes") or \
+                        note in self._output_dict[sheet]["entries_add"] or note in \
+                        self._output_dict[sheet]["entries_remove"]:
+                    to_remove.add(note)
+            count = 0
 
-                for entry in self._output_dict[hostname][sheet]["entries_add"]:
-                    if self._output_dict[hostname][sheet][entry].get("total_string_only"):
-                        count += 1
-                if count == len(self._output_dict[hostname][sheet]["entries_add"]):
-                    self._output_dict[hostname][sheet]["only_total_string_add"] = True
+            for entry in self._output_dict[sheet]["entries_add"]:
+                if self._output_dict[sheet][entry].get("total_string_only"):
+                    count += 1
+            if count == len(self._output_dict[sheet]["entries_add"]):
+                self._output_dict[sheet]["only_total_string_add"] = True
 
-                for entry in to_remove:
-                    if entry not in self._output_dict[hostname][sheet]["entries_add"] and entry not in \
-                            self._output_dict[hostname][sheet]["entries_remove"]:
-                        del self._output_dict[hostname][sheet][entry]
-                    self._output_dict[hostname][sheet]["notes"].remove(entry)
-                to_remove = set()
-                no_add = self._output_dict[hostname][sheet]["entries_add"].__len__() == 0 or \
-                         self._output_dict[hostname][sheet].get("only_total_string_add")
-                if no_add and not \
-                        self._output_dict[hostname][sheet]["entries_remove"] and not \
-                        self._output_dict[hostname][sheet]["notes"]:
-                    remove_sheets.add(sheet)
-            for sheet in remove_sheets:
-                del self._output_dict[hostname][sheet]
+            for entry in to_remove:
+                if entry not in self._output_dict[sheet]["entries_add"] and entry not in \
+                        self._output_dict[sheet]["entries_remove"]:
+                    del self._output_dict[sheet][entry]
+                self._output_dict[sheet]["notes"].remove(entry)
+            to_remove = set()
+            no_add = self._output_dict[sheet]["entries_add"].__len__() == 0 or \
+                     self._output_dict[sheet].get("only_total_string_add")
+            if no_add and not \
+                    self._output_dict[sheet]["entries_remove"] and not \
+                    self._output_dict[sheet]["notes"]:
+                remove_sheets.add(sheet)
+        for sheet in remove_sheets:
+            del self._output_dict[sheet]
 
     def _add_certificate_signature_algorithm(self, alg):
         """
@@ -512,12 +532,16 @@ class Compliance:
                         self._user_configuration["Certificate"][cert_index] = {}
                     self._user_configuration["Certificate"][cert_index]["KeyAlg"] = element_to_add[0]
                 elif field == "DH_groups":
-                    curve, length = re.match(r"([^\d]+)(\d+)", actual_dict["finding"]).groups()
-                    if "(" in actual_dict["finding"]:
+                    finding = actual_dict["finding"]
+                    groups = finding.split(" ") if " " in finding and not "Unknown" in finding else [finding]
+                    for group in groups:
+                        curve, length = re.match(r"([^\d]+)(\d+)", finding).groups()
                         self._user_configuration["KeyLengths"].add(("DH", int(length)))
-                    else:
-                        self._user_configuration["KeyLengths"].add(("DH", int(length)))
-                        self._user_configuration["Groups"].append(actual_dict["finding"])
+                        if "(" in finding:
+                            # This naming is needed to be compliant with the database entry
+                            self._user_configuration["Groups"].append(f"{length}-long DH")
+                        else:
+                            self._user_configuration["Groups"].append(group)
 
                 # The field FS_TLS_12_sig_algs contains the signature algorithms that can be used for Forward secrecy.
                 # For more details https://github.com/drwetter/testssl.sh/issues/2440
@@ -617,35 +641,33 @@ class Compliance:
         elif entry_level == "not recommended" and valid_condition and enabled:
             information_level = "NOT RECOMMENDED"
             action = "should be disabled"
-        if not self._output_dict.get(hostname):
-            self._output_dict[hostname] = {}
-        if not self._output_dict[hostname].get(sheet):
-            self._output_dict[hostname][sheet] = {
+        if not self._output_dict.get(sheet):
+            self._output_dict[sheet] = {
                 "entries_add": [],
                 "entries_remove": [],
                 "notes": []
             }
         if information_level:
             if entry_level in ["must", "recommended"]:
-                self._output_dict[hostname][sheet]["entries_add"].append(name)
+                self._output_dict[sheet]["entries_add"].append(name)
             elif entry_level in ["must not", "not recommended"]:
-                self._output_dict[hostname][sheet]["entries_remove"].append(name)
-            self._output_dict[hostname][sheet][name] = {
+                self._output_dict[sheet]["entries_remove"].append(name)
+            self._output_dict[sheet][name] = {
                 "level": information_level,
                 "action": action,
                 "source": source,
                 "total_string_only": total_string_only
             }
-        elif name not in self._output_dict[hostname][sheet]:
-            self._output_dict[hostname][sheet][name] = {
+        elif name not in self._output_dict[sheet]:
+            self._output_dict[sheet][name] = {
                 "level": "INFO",
                 "action": "NOTE: ",
                 "source": source,
             }
-            self._output_dict[hostname][sheet]["notes"].append(name)
-        if not self._output_dict[hostname][sheet].get("guidelines"):
-            self._output_dict[hostname][sheet]["guidelines"] = set()
-        self._output_dict[hostname][sheet]["guidelines"].add(source)
+            self._output_dict[sheet]["notes"].append(name)
+        if not self._output_dict[sheet].get("guidelines"):
+            self._output_dict[sheet]["guidelines"] = set()
+        self._output_dict[sheet]["guidelines"].add(source)
 
     def add_conditional_notes(self, enabled, valid_condition):
         conditional_notes = "\nNOTE: "
@@ -773,7 +795,8 @@ class Compliance:
                                         tokens.pop(i)
                             condition = " ".join(tokens)
 
-                        valid_condition = self._condition_parser.run(condition, enabled, cert_index=self._certificate_index)
+                        valid_condition = self._condition_parser.run(condition, enabled,
+                                                                     cert_index=self._certificate_index)
                         enabled = self._condition_parser.entry_updates.get("is_enabled", enabled)
                         if self._condition_parser.entry_updates.get("disable_if"):
                             enabled = self.check_disable_if(self._condition_parser.entry_updates.get("disable_if"),
@@ -848,6 +871,10 @@ class Compliance:
             if condition in ["True", "False"]:
                 return (condition == "True") == valid_condition
         return enabled
+
+    def get_certsig_types(self):
+        for cert in self._user_configuration.get("Certificate", {}):
+            sigalg = self._user_configuration["Certificate"][cert].get("SigAlg")
 
 
 class Generator(Compliance):

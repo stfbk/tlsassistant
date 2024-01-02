@@ -10,7 +10,19 @@
     }
   },
   "#ConfigurationInstructions": {
-    "mode": "no_config"
+    "mode": "specific_mitigation",
+    "ECDSA_224": "<br/>ECDSA 224bit: {action}",
+    "ECDSA_256": "<br/>ECDSA 256bit: {action}",
+    "DSA_2048": "<br/>DSA 2048bit: {action}",
+    "DSA_3076": "<br/>DSA 3076bit: {action}",
+    "RSA_1024": "<br/>RSA 1024bit: {action}",
+    "RSA_2048": "<br/>RSA 2048bit: {action}",
+    "RSA_3076": "<br/>RSA 3076bit: {action}",
+    "ECDH_224": "<br/>ECDH 224bit: {action}",
+    "ECDH_256": "<br/>ECDH 256bit: {action}",
+    "DH_1024": "<br/>DH 1024bit: {action}",
+    "DH_2048": "<br/>DH 2048bit: {action}",
+    "DH_3076": "<br/>DH 3076bit: {action}"
   },
   "#omit-xml-declaration": "yes"
 }
