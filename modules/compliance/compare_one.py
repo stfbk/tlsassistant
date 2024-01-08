@@ -15,6 +15,9 @@ class CompareOne(Compliance):
         for sheet in sheets_to_check:
             columns_orig = ["name", "level", "condition", "guidelineName"]
             # If the sheet isn't in the dictionary then I can use the default value
+            query_filter = ""
+            if sheet == "CipherSuite":
+                query_filter = self.ciphersuites_filter()
             columns = self.sheet_columns.get(sheet, {"columns": columns_orig})["columns"]
             name_index = columns.index("name")
             name_columns = self.sheet_columns.get(sheet, {}).get("name_columns", [name_index])
@@ -22,8 +25,7 @@ class CompareOne(Compliance):
             condition_index = columns.index("condition")
             guideline = list(sheets_to_check[sheet].keys())[0]
             table_name = self._database_instance.get_table_name(sheet, guideline, sheets_to_check[sheet][guideline])
-            self._database_instance.input([table_name])
-            data = self._database_instance.output(columns)
+            data = self._database_instance.run(tables=[table_name], columns=columns, other_filter=query_filter)
             config_field = sheet
             for entry in data:
                 if config_field:

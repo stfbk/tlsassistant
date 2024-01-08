@@ -82,6 +82,7 @@ class Compliance:
             "must": "must not",
             "recommended": "not recommended"
         }
+        self._cert_key_filters = load_configuration("cert_key_filters", "configs/compliance/")
 
     def level_to_use(self, levels):
         """
@@ -325,6 +326,18 @@ class Compliance:
             apache_string = apache_string.replace("{total_string}", "No snippet available")
             mitigation["Entry"]["Mitigation"]["Apache"] = apache_string
             self._output_dict[sheet]["mitigation"] = mitigation
+
+    def ciphersuites_filter(self):
+        cert_keys = self.get_cert_key_types()
+        return_string = ""
+        filters = []
+        for key_type in self._cert_key_filters:
+            if key_type not in cert_keys:
+                filters.append(self._cert_key_filters[key_type])
+        if filters:
+            return_string += "WHERE "
+            return_string += " AND ".join(filters)
+        return return_string
 
     def format_output_string(self, string, sheet, conf_instructions, total_string_apache, total_string_nginx,
                              entries_key, strings_list):
@@ -698,6 +711,7 @@ class Compliance:
         for sheet in sheets_to_check:
             columns_to_get = []
             columns_to_use = self.sheet_columns.get(sheet, {"columns": columns})["columns"]
+            query_filter = ""
             if not self._output_dict.get(sheet):
                 self._output_dict[sheet] = {}
             for guideline in sheets_to_check[sheet]:
@@ -709,10 +723,14 @@ class Compliance:
                 for column in columns_to_use:
                     # all the columns are repeated to make easier index access later
                     columns_to_get.append(f"{t}.{column}")
+            if sheet == "CipherSuite":
+                query_filter = self.ciphersuites_filter()
+                if tables:
+                    query_filter = query_filter.replace("name", tables[0]+".name")
 
             join_condition = "ON {first_table}.id == {table}.id".format(first_table=tables[0], table="{table}")
-            self._database_instance.input(tables, join_condition=join_condition)
-            data = self._database_instance.output(columns_to_get)
+            data = self._database_instance.run(join_condition=join_condition, columns=columns_to_get, tables=tables,
+                                               other_filter=query_filter)
             entries[sheet] = data
             tables = []
         self.entries = entries
@@ -872,9 +890,15 @@ class Compliance:
                 return (condition == "True") == valid_condition
         return enabled
 
-    def get_certsig_types(self):
+    def get_cert_key_types(self):
+        key_types = []
         for cert in self._user_configuration.get("Certificate", {}):
-            sigalg = self._user_configuration["Certificate"][cert].get("SigAlg")
+            # This list is used to check which cipher-suites are offered, intermediate certificates aren't necessary
+            if not cert.startswith("int"):
+                sigalg = self._user_configuration["Certificate"][cert].get("KeyAlg")
+                if sigalg:
+                    key_types.append(sigalg)
+        return key_types
 
 
 class Generator(Compliance):

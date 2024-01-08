@@ -243,8 +243,11 @@ class Actions:
         string = kwargs.get("value", None)
         self.validator.string(string)
         for cipher in self._ciphers_converter:
-            if self._ciphers_converter[cipher]:
-                string = string.replace(cipher, self._ciphers_converter[cipher])
+            if not self._ciphers_converter[cipher]:
+                self._logger.debug(f"Skipping cipher: {cipher} because it is not available in openssl")
+            string = string.replace(cipher, self._ciphers_converter[cipher])
+        while "::" in string:
+            string = string.replace("::", ":")
         return string
 
     def convert_groups(self, **kwargs) -> str:

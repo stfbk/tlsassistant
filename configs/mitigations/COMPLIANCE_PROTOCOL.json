@@ -5,8 +5,8 @@
     "Description": "Compliance report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
       "Textual": "Add the following protocols to the server configuration:<br/>{add}<br/>Remove the following protocols from the server configuration:<br/>{remove}",
-      "Apache": "-Quick solution: Replace the instruction of the directive <code>SSLProtocol</code> with the following string:<br/> {total_string}</br>-Expert solution: Check the directive <code>SSLProtocol</code> and for each element in the Textual section, follow the instructions provided. The separator for this directive is a whitespace and to disable an element can add <code>-</code> in front of it.",
-      "Nginx": "-Quick solution: Replace the instruction of the directive <code>ssl_protocols</code> with the following string: {total_string}</br>-Expert solution: Check the directive <code>ssl_protocols</code> and for each element in the Textual section, follow the instructions provided. The separator for this directive is a whitespace and to disable an element can add <code>-</code> in front of it."
+      "Apache": "-Quick solution: Replace the instruction of the directive <code>SSLProtocol</code> with the following string:<br/> {total_string}</br>-Advanced solution: Check the directive <code>SSLProtocol</code> and for each element in the Textual section, follow the instructions provided. The separator for this directive is a whitespace and to disable an element can add <code>-</code> in front of it.",
+      "Nginx": "-Quick solution: Replace the instruction of the directive <code>ssl_protocols</code> with the following string: {total_string}</br>-Advanced solution: Check the directive <code>ssl_protocols</code> and for each element in the Textual section, follow the instructions provided. The separator for this directive is a whitespace and to disable an element can add <code>-</code> in front of it."
     }
   },
   "#ConfigurationInstructions": {
