@@ -76,3 +76,5 @@ class CompareOne(Compliance):
                     note += conditional_notes
                     if self._output_dict[sheet].get(name) is not None:
                         self._output_dict[sheet][name]["notes"] = note
+                    if sheet == "KeyLengths" and enabled and valid_condition and level in ["recommended", "must"]:
+                        self.valid_keysize = True

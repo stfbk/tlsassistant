@@ -34,3 +34,5 @@ class CompareMany(Compliance):
                 self.update_result(sheet, name, level, enabled, entry_dict["source"], valid_condition, hostname)
                 if note and self._output_dict[sheet].get(name) is not None:
                     self._output_dict[sheet][name]["notes"] = entry_dict.get("note")
+                if sheet == "KeyLengths" and enabled and valid_condition and level in ["recommended", "must"]:
+                    self.valid_keysize = True

@@ -83,6 +83,7 @@ class Compliance:
             "recommended": "not recommended"
         }
         self._cert_key_filters = load_configuration("cert_key_filters", "configs/compliance/")
+        self.valid_keysize = False
 
     def level_to_use(self, levels):
         """
@@ -392,6 +393,15 @@ class Compliance:
     def prune_output(self):
         to_remove = set()
         remove_sheets = set()
+        if self.valid_keysize:
+            for entry in self._output_dict["KeyLengths"]["entries_add"]:
+                # If there is a valid keylength pair all the certificate ones can be removed
+                if "DH" not in entry :
+                    to_remove.add(entry)
+            for entry in to_remove:
+                del self._output_dict["KeyLengths"][entry]
+                self._output_dict["KeyLengths"]["entries_add"].remove(entry)
+            to_remove = set()
         for sheet in self._output_dict:
             for note in self._output_dict[sheet]["notes"]:
                 if not self._output_dict[sheet][note].get("notes") or \
@@ -539,6 +549,10 @@ class Compliance:
                     # the first two tokens (after doing a space split) are the Key Algorithm and its key size
                     element_to_add = actual_dict["finding"].split(" ")[:2]
                     element_to_add[1] = int(element_to_add[1])
+                    # This is a temporary fix to make it compatible with the database
+                    # *ecdsa*|*ecPublicKey* -> EC in testssl.sh output
+                    if element_to_add[0] == "EC":
+                        element_to_add[0] = "ECDSA"
                     self._user_configuration["KeyLengths"].add(tuple(element_to_add))
                     cert_index = self.find_cert_index(field)
                     if not self._user_configuration["Certificate"].get(cert_index):
@@ -546,15 +560,17 @@ class Compliance:
                     self._user_configuration["Certificate"][cert_index]["KeyAlg"] = element_to_add[0]
                 elif field == "DH_groups":
                     finding = actual_dict["finding"]
-                    groups = finding.split(" ") if " " in finding and not "Unknown" in finding else [finding]
+                    groups = finding.split(" ") if " " in finding else [finding]
                     for group in groups:
-                        curve, length = re.match(r"([^\d]+)(\d+)", finding).groups()
-                        self._user_configuration["KeyLengths"].add(("DH", int(length)))
-                        if "(" in finding:
-                            # This naming is needed to be compliant with the database entry
-                            self._user_configuration["Groups"].append(f"{length}-long DH")
-                        else:
-                            self._user_configuration["Groups"].append(group)
+                        matches = re.match(r"[^\d]+(\d+)", group)
+                        if matches:
+                            length = matches.groups()[0]
+                            self._user_configuration["KeyLengths"].add(("DH", int(length)))
+                            if "(" in finding:
+                                # This naming is needed to be compliant with the database entry
+                                self._user_configuration["Groups"].append(f"{length}-long DH")
+                            else:
+                                self._user_configuration["Groups"].append(group)
 
                 # The field FS_TLS_12_sig_algs contains the signature algorithms that can be used for Forward secrecy.
                 # For more details https://github.com/drwetter/testssl.sh/issues/2440
@@ -589,6 +605,12 @@ class Compliance:
                         else [actual_dict["finding"]]
                     # secp256r1 is the same as prime256v1, it also happens with the 192 version
                     values = [re.sub(r"prime(\d+)v1", r"secp\1r1", val) for val in values]
+                    for val in values:
+                        bits = re.match(r".*?(\d+)", val).groups()[0]
+                        # The curve X25519 has a keysize of 256bits
+                        if bits == "25519":
+                            bits = "256"
+                        self._user_configuration["KeyLengths"].add(("ECDH", int(bits)))
                     self._user_configuration["Groups"] = values
 
                 # The transparency field describes how the transparency is handled in each certificate.
