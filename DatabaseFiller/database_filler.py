@@ -1,4 +1,5 @@
 import sqlite3
+from copy import deepcopy
 from typing import Tuple
 
 import pandas as pd
@@ -250,7 +251,7 @@ if __name__ == "__main__":
                         for other_guideline in tokens[1:]:
                             other_name = get_guideline_name_for_database(other_guideline)
                             other_table = sheet_mapped + other_name + version_name
-                            values_dict[other_table] = values_dict[table_name]
+                            values_dict[other_table] = deepcopy(values_dict[table_name])
                             for el in values_dict[other_table]:
                                 # Update the guideline name
                                 for i, entry in enumerate(values_dict[other_table][el]):
@@ -285,10 +286,10 @@ if __name__ == "__main__":
                         # skip first element
                         if index == 0:
                             continue
-                        if len(entry) > 3 and pd.notna(entry[-1]) and pd.notna(entries[index-1][-1]):
-                            if entry[-2] != entries[index-1][-2]:
+                        if len(entry) > 3 and pd.notna(entry[-1]) and pd.notna(entries[index - 1][-1]):
+                            if entry[-2] != entries[index - 1][-2]:
                                 entry[-1] = None
-                                entries[index-1][-1] = None
+                                entries[index - 1][-1] = None
 
                 if not values_groups.get(table):
                     values_groups[table] = []
