@@ -248,6 +248,8 @@ class Actions:
             string = string.replace(cipher, self._ciphers_converter[cipher])
         while "::" in string:
             string = string.replace("::", ":")
+        if string[-1] == ":":
+            string = string[:-1]
         return string
 
     def convert_groups(self, **kwargs) -> str:

@@ -1,5 +1,5 @@
 {
   "RSA": "name NOT LIKE '%_RSA_%'",
-  "EC": "name NOT LIKE '_ECDH%'",
+  "EC": "name NOT LIKE '_ECDH%' and name NOT LIKE '%_ECDSA_%'",
   "DSA": "name NOT LIKE '%_DSS_%'"
 }

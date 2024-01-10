@@ -17,7 +17,10 @@
     "connector": ":",
     "mode": "standard",
     "actions_on_final_string": {
-      "convert_ciphers": ""
+      "convert_ciphers": "",
+      "replace": {
+        ":;": ";"
+      }
     }
   },
   "#todo": "mettere un textbox al Textual perché è troppo grande",
