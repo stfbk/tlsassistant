@@ -11,8 +11,8 @@ from utils.type import WebserverType
 
 class ApacheConfiguration(ConfigurationMaker):
 
-    def __init__(self, file: Path = None):
-        super().__init__("apache")
+    def __init__(self, file: Path = None, openssl_version: str = "1.1.1"):
+        super().__init__("apache", openssl_version)
         self._string_to_add = ""
         if file:
             self._load_conf(file)

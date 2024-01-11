@@ -10,8 +10,8 @@ from utils.type import WebserverType
 
 
 class NginxConfiguration(ConfigurationMaker):
-    def __init__(self, file: Path = None):
-        super().__init__("nginx")
+    def __init__(self, file: Path = None, openssl_version: str = "1.1.1"):
+        super().__init__("nginx", openssl_version)
         if file:
             self._load_conf(file)
 
