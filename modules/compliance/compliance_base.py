@@ -335,7 +335,7 @@ class Compliance:
         for key_type in self._cert_key_filters:
             if key_type not in cert_keys:
                 filters.append(self._cert_key_filters[key_type])
-        if filters:
+        if filters and len(filters) != len(self._cert_key_filters):
             return_string += "WHERE "
             return_string += " AND ".join(filters)
         return return_string
