@@ -272,6 +272,8 @@ class Actions:
         for group in groups:
             if "/" in group and not group.startswith("<br"):
                 string = string.replace(group, group.split("/")[0].strip())
+            if "long DH" in group:
+                string = string.replace(group, "")
         string = self.clean_final_string(string)
         return string
 
@@ -383,3 +385,21 @@ class Actions:
                                     other_filter="WHERE name = \"DH\" AND (level = \"must\" OR level = \"recommended\")")
         value = values[-1][0]
         return value
+
+    def strip(self, **kwargs):
+        """
+        :param kwargs: Dictionary of arguments
+        :type kwargs: dict
+        :return: the stripped string
+        :rtype: str
+        :Keyword Arguments:
+            * *value* (``str``) -- String to strip
+            * *arguments* (``list``) -- List of strings to strip
+        """
+        string = kwargs.get("value", None)
+        arguments = kwargs.get("arguments", None)
+        self.validator.string(string)
+        self.validator.list(arguments)
+        for argument in arguments:
+            string = string.strip(argument)
+        return string

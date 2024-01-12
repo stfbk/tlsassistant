@@ -2,9 +2,9 @@ import itertools
 import json
 import os.path
 import re
-from collections import OrderedDict
 from pathlib import Path
 
+import utils.remove_duplicates
 from modules.compliance.configuration.apache_configuration import ApacheConfiguration
 from modules.compliance.configuration.configuration_base import ConfigurationMaker
 from modules.compliance.configuration.nginx_configuration import NginxConfiguration
@@ -84,6 +84,17 @@ class Compliance:
         }
         self._cert_key_filters = load_configuration("cert_key_filters", "configs/compliance/")
         self.valid_keysize = False
+        self.tls1_3_ciphers = Compliance._get_1_3_ciphers()
+
+    @staticmethod
+    def _get_1_3_ciphers():
+        ciphers = []
+        dictionary = load_configuration("ciphersuites", "configs/compliance/")
+        for cipher in dictionary:
+            val = dictionary[cipher]["OpenSSL"]
+            if cipher.startswith("0x13,") and val:
+                ciphers.append(val)
+        return set(ciphers)
 
     def level_to_use(self, levels):
         """
@@ -231,6 +242,10 @@ class Compliance:
 
     def _prepare_output(self):
         for sheet in self._output_dict:
+            to_append = {
+                "Apache": "",
+                "Nginx": ""
+            }
             mitigation = MitigationLoader().load_mitigation("Compliance_" + sheet)
             guidelines = ", ".join(self._output_dict[sheet]["guidelines"])
             mitigation["Entry"]["Description"] = mitigation["Entry"]["Description"].format(sheet=sheet,
@@ -245,7 +260,9 @@ class Compliance:
                                                                                     conf_instructions,
                                                                                     total_string_apache,
                                                                                     total_string_nginx,
-                                                                                    "entries_add", add_list)
+                                                                                    "entries_add",
+                                                                                    add_list,
+                                                                                    to_append)
                 # this is necessary to avoid having an extra empty line
                 textual = textual.format(add=";".join(add_list), remove="{remove}", notes="{notes}")
             else:
@@ -263,7 +280,9 @@ class Compliance:
                                                                                     conf_instructions,
                                                                                     total_string_apache,
                                                                                     total_string_nginx,
-                                                                                    "entries_remove", remove_list)
+                                                                                    "entries_remove",
+                                                                                    remove_list,
+                                                                                    to_append)
                 textual = textual.replace("{add}<br/>{remove}", "{add}{remove}")
                 textual = textual.format(remove=";".join(remove_list), notes="{notes}")
             else:
@@ -277,7 +296,9 @@ class Compliance:
                                                                                     conf_instructions,
                                                                                     total_string_apache,
                                                                                     total_string_nginx,
-                                                                                    "notes", notes_list)
+                                                                                    "notes",
+                                                                                    notes_list,
+                                                                                    to_append)
                 textual = textual.format(notes=";".join(notes_list))
             else:
                 # remove the line that contains {notes}
@@ -286,14 +307,14 @@ class Compliance:
             textual = textual.replace(":<br/><br/>", ":<br/>", 1)
             mitigation["Entry"]["Mitigation"]["Textual"] = textual
             if total_string_apache != "<code>":
-                if conf_instructions["mode"] == "standard":
+                if conf_instructions["mode"].startswith("standard"):
                     total_string_apache += ";</code>"
                 else:
                     total_string_apache = total_string_apache.replace("<code>", "", 1)
                 mitigation["Entry"]["Mitigation"]["Apache"] = mitigation["Entry"]["Mitigation"]["Apache"].format(
                     total_string=total_string_apache)
             if total_string_nginx != "<code>":
-                if conf_instructions["mode"] == "standard":
+                if conf_instructions["mode"].startswith("standard"):
                     total_string_nginx += ";</code>"
                 else:
                     total_string_nginx = total_string_nginx.replace("<code>", "", 1)
@@ -304,6 +325,9 @@ class Compliance:
                 for version in conf_instructions["openssl_dependency"]:
                     operator, check_version = version.split(" ")
                     add_openssl_text = False
+                    if "=" in operator and self._openssl_version == check_version:
+                        add_openssl_text = True
+                    operator = operator.replace("=", "")
                     if operator == "<" and self._openssl.less_than(self._openssl_version, check_version):
                         add_openssl_text = True
                     elif operator == ">" and self._openssl.greater_than(self._openssl_version, check_version):
@@ -315,18 +339,18 @@ class Compliance:
                             version].get("Apache", "")
                         mitigation["Entry"]["Mitigation"]["Nginx"] += conf_instructions["openssl_dependency"][
                             version].get("Nginx", "")
-            textual = mitigation["Entry"]["Mitigation"]["Textual"]
-            textual = "<br/>".join(list(OrderedDict.fromkeys(textual.split("<br/>"))))
-            mitigation["Entry"]["Mitigation"]["Textual"] = textual
-            nginx_string = mitigation["Entry"]["Mitigation"]["Nginx"]
-            nginx_string = "<br/>".join(list(OrderedDict.fromkeys(nginx_string.split("<br/>"))))
-            nginx_string = nginx_string.replace("{total_string}", "No snippet available")
-            mitigation["Entry"]["Mitigation"]["Nginx"] = nginx_string
-            apache_string = mitigation["Entry"]["Mitigation"]["Apache"]
-            apache_string = "<br/>".join(list(OrderedDict.fromkeys(apache_string.split("<br/>"))))
-            apache_string = apache_string.replace("{total_string}", "No snippet available")
-            mitigation["Entry"]["Mitigation"]["Apache"] = apache_string
+            mitigation["Entry"]["Mitigation"]["Apache"] += to_append.get("Apache")
+            mitigation["Entry"]["Mitigation"]["Nginx"] += to_append.get("Nginx")
+            self.remove_duplicates_from_mitigation(mitigation, "<br/>")
             self._output_dict[sheet]["mitigation"] = mitigation
+
+    def remove_duplicates_from_mitigation(self, mitigation, line_sep):
+        for key in mitigation["Entry"]["Mitigation"]:
+            if isinstance(mitigation["Entry"]["Mitigation"][key], str):
+                mitigation["Entry"]["Mitigation"][key] = utils.remove_duplicates.remove_duplicates(
+                    mitigation["Entry"]["Mitigation"][key], line_sep)
+                mitigation["Entry"]["Mitigation"][key] = mitigation["Entry"]["Mitigation"][key].replace(
+                    "{total_string}", "No snippet available")
 
     def ciphersuites_filter(self):
         cert_keys = self.get_cert_key_types()
@@ -341,25 +365,32 @@ class Compliance:
         return return_string
 
     def format_output_string(self, string, sheet, conf_instructions, total_string_apache, total_string_nginx,
-                             entries_key, strings_list):
+                             entries_key, strings_list, to_append):
         source = ""
         for entry in self._output_dict[sheet][entries_key]:
             source = self._output_dict[sheet][entry]["source"]
             entry_name, _ = self._configuration_maker.perform_post_actions(conf_instructions, entry, source)
             level = self._output_dict[sheet][entry]["level"].lower()
-            if conf_instructions["mode"] == "standard":
+            # Standard mode, take all the entries and add them to the total_string
+            if conf_instructions["mode"].startswith("standard"):
+                print(entry)
                 # The usage of post actions is needed to fix the entries of some of the sheets
                 total_string_apache += conf_instructions["connector"] + conf_instructions[level].replace("name",
                                                                                                          entry_name)
                 total_string_nginx += conf_instructions["connector"] + conf_instructions[level].replace("name",
                                                                                                         entry_name)
+            # Standard mode but there are additional information for some entries
+            if conf_instructions["mode"] == "standard_with_specific":
+                if conf_instructions.get(entry):
+                    to_append["Apache"] += conf_instructions[entry]["Apache"]
+                    to_append["Nginx"] += conf_instructions[entry]["Nginx"]
+
             if not self._output_dict[sheet][entry].get("total_string_only"):
                 if conf_instructions["mode"] == "specific_mitigation":
                     string = conf_instructions.get(entry, "")
                     if conf_instructions.get(entry + "_config"):
                         total_string_apache += "<br/>" + conf_instructions[entry + "_config"]["Apache"]
                         total_string_nginx += "<br/>" + conf_instructions[entry + "_config"]["Nginx"]
-
                 # This case is needed because the notes don't have the action and source fields
                 if entries_key == "notes":
                     if "{action}" in string:
@@ -372,7 +403,6 @@ class Compliance:
                 if self._output_dict[sheet][entry].get("notes"):
                     tmp_string += "; " + self._output_dict[sheet][entry]["notes"]
                 tmp_string, _ = self._configuration_maker.perform_post_actions(conf_instructions, tmp_string, source)
-                strings_list.append(tmp_string)
         total_string_apache, _ = self._configuration_maker.perform_post_actions(conf_instructions, total_string_apache,
                                                                                 source,
                                                                                 "actions_on_final_string")
@@ -396,7 +426,7 @@ class Compliance:
         if self.valid_keysize:
             for entry in self._output_dict["KeyLengths"]["entries_add"]:
                 # If there is a valid keylength pair all the certificate ones can be removed
-                if "DH" not in entry :
+                if "DH" not in entry:
                     to_remove.add(entry)
             for entry in to_remove:
                 del self._output_dict["KeyLengths"][entry]
@@ -549,7 +579,6 @@ class Compliance:
                     # the first two tokens (after doing a space split) are the Key Algorithm and its key size
                     element_to_add = actual_dict["finding"].split(" ")[:2]
                     element_to_add[1] = int(element_to_add[1])
-                    # This is a temporary fix to make it compatible with the database
                     # *ecdsa*|*ecPublicKey* -> EC in testssl.sh output
                     if element_to_add[0] == "EC":
                         element_to_add[0] = "ECDSA"
@@ -748,7 +777,7 @@ class Compliance:
             if sheet == "CipherSuite":
                 query_filter = self.ciphersuites_filter()
                 if tables:
-                    query_filter = query_filter.replace("name", tables[0]+".name")
+                    query_filter = query_filter.replace("name", tables[0] + ".name")
 
             join_condition = "ON {first_table}.id == {table}.id".format(first_table=tables[0], table="{table}")
             data = self._database_instance.run(join_condition=join_condition, columns=columns_to_get, tables=tables,

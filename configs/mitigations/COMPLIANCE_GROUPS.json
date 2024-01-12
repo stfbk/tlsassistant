@@ -15,17 +15,22 @@
     "recommended": "name",
     "must": "name",
     "connector": ":",
-    "mode": "standard",
+    "mode": "standard_with_specific",
     "actions_on_final_string": {
       "replace": {
         "<code>:": "<code>"
       },
-      "convert_groups": ""
+      "convert_groups": "",
+      "strip": ["</code>"]
     },
     "openssl_dependency": {
       "< 1.0.2": {
         "Textual": "<br/>NOTE: OpenSSL version < 1.0.2 can only use one curve at a time. If you want to use multiple curves, you must upgrade OpenSSL to version 1.0.2 or higher."
       }
+    },
+    "1024-long DH": {
+      "Apache": "</code><br/>Run the following command to generate 1024bit DH parameters: <code>openssl dhparam 1024 &gt;&gt; /path/to/cert</code>.<br/>To remove 1024bit DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.",
+      "Nginx": "</code><br/>Run the following command to generate 1024bit DH parameters: <code>openssl dhparam 1024 %gt; /path/to/dhparams</code>.<br/> To remove 1024bit DH keys disable the directive <code>ssl_dhparam</code>."
     }
   },
   "#omit-xml-declaration": "yes"

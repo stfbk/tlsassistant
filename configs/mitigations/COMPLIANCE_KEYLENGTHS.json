@@ -5,8 +5,8 @@
     "Description": "Compliance report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
       "Textual": "TODO: verificare se basta parlare di certificati o bisogna descrivere anche le cose riguardanti i sig_algs<br/>Regenerate the certificate using the following signature algorithms with the respective key length:{add}<br/>Don't use the following signature algorithms and keys:{remove}",
-      "Apache": "No snippet available",
-      "Nginx": "No snippet available"
+      "Apache": "{total_string}",
+      "Nginx": "{total_string}"
     }
   },
   "#ConfigurationInstructions": {
@@ -21,8 +21,25 @@
     "ECDH_224": "<br/>ECDH 224bit: {action}",
     "ECDH_256": "<br/>ECDH 256bit: {action}",
     "DH_1024": "<br/>DH 1024bit: {action}",
-    "DH_2048": "<br/>DH 2048bit: {action}",
-    "DH_3076": "<br/>DH 3076bit: {action}"
+    "DH_1024_config": {
+      "Apache": "Run the following command to generate 1024bit DH parameters: <code>openssl dhparam 1024 >> /path/to/cert</code>.<br/>To remove DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.",
+      "Nginx": "Run the following command to generate 1024bit DH parameters: <code>openssl dhparam 1024 > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>."
+    },
+    "DH_2048": "<br/>DH 2048bits: {action}",
+    "DH_2048_config": {
+      "Apache": "To add a 2048bits DH key run the following command: <code>curl https://ssl-config.mozilla.org/ffdhe2048.txt >> /path/to/cert</code>.<br/>To remove DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.",
+      "Nginx": "To add a 2048bits DH key run the following command: <code>curl https://ssl-config.mozilla.org/ffdhe2048.txt > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>.<br/> NOTE: these DH parameters are defined in RFC 7919."
+    },
+    "DH_3076": "<br/>DH 3076bits: {action}",
+    "DH_3076_config": {
+      "Apache": "To add a 3076its DH key run the following command: <code>curl https://ssl-config.mozilla.org/ffdhe3076.txt >> /path/to/cert</code>.<br/>To remove DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.",
+      "Nginx": "To add a 3076bit DH key run the following command: <code>curl https://ssl-config.mozilla.org/ffdhe3076.txt > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>.<br/> NOTE: these DH parameters are defined in RFC 7919."
+    },
+    "openssl_dependency": {
+      ">= 1.0.2": {
+        "Textual": "<br/>NOTE: With your openssl version in order to fix DH keys it may be enough to follow the mitigation of the Key Lengths section."
+      }
+    }
   },
   "#omit-xml-declaration": "yes"
 }
