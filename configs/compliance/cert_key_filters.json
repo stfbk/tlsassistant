@@ -5,6 +5,6 @@
     "DSA": "name NOT LIKE '%_DSS_%'"
   },
   "KeyLengths": {
-    "RSA": "name NOT LIKE 'DH%'"
+    "RSA,DSA": "name NOT LIKE 'DH%'"
   }
 }

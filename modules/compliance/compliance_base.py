@@ -13,7 +13,7 @@ from modules.compliance.wrappers.conditionparser import ConditionParser
 from modules.compliance.wrappers.db_reader import Database
 from modules.configuration.configuration_base import OpenSSL
 from modules.server.wrappers.testssl import Testssl
-from utils.ciphersuites import get_1_3_ciphers, filter_1_3_ciphers
+from utils.ciphersuites import get_1_3_ciphers
 from utils.database import get_standardized_level
 from utils.loader import load_configuration
 from utils.logger import Logger
@@ -345,12 +345,17 @@ class Compliance:
 
     def get_filters(self, sheet):
         cert_keys = self.get_cert_key_types()
-        filters = []
+        filters = set()
         filters_dict = self._cert_key_filters.get(sheet, {})
         generating = isinstance(self, Generator)
         for key_type in filters_dict:
-            if key_type not in cert_keys:
-                filters.append(filters_dict[key_type])
+            # If multiple key_types have the same filter they should be comma separated
+            if "," in key_type:
+                key_types = key_type.split(",")
+                if not any([key in cert_keys for key in key_types]):
+                    filters.add(filters_dict[key_type])
+            elif key_type not in cert_keys:
+                filters.add(filters_dict[key_type])
         # While generating there are no Certificate information so the filters are not needed
         if not filters or (len(filters) == len(self._cert_key_filters) and generating):
             return ""
@@ -951,6 +956,7 @@ class Generator(Compliance):
         super().__init__()
         self._configuration_rules = load_configuration("configuration_rules", "configs/compliance/generate/")
         self._configuration_mapping = load_configuration("configuration_mapping", "configs/compliance/generate/")
+        self._ciphers1_3_filter = "WHERE name IN (\"" + "\" , \"".join(self.tls1_3_ciphers) + "\")"
 
     def _get_config_name(self, field):
         name = self._configuration_mapping.get(field, None)
