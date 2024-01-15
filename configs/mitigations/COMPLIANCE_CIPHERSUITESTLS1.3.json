@@ -1,0 +1,28 @@
+{
+  "Entry": {
+    "Name": "Compliance report for Cipher Suites TLS 1.3",
+    "Extended Name": "Compliance report for Cipher Suites supported by TLS 1.3",
+    "Description": "Compliance report for {sheet} against {guidelines} guidelines",
+    "Mitigation": {
+      "Textual": "Add the following cipher suites to the server configuration:{add}<br/>Remove the following cipher suites from the server configuration:{remove}",
+      "Apache": "-Quick solution: Replace the instruction of the directive <code>SSLOpenSSLConfCmd Ciphersuites</code> with the following string:<br/> {total_string}</br>-Advanced solution: Check the directive <code>SSLOpenSSLConfCmd Ciphersuites</code> and for each element in the Textual section, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element you can add either <code>-</code> (remove once) or <code>!</code> (kill) in front of it.",
+      "Nginx": "-Quick solution: Replace the instruction of the directive <code>ssl_conf_command Ciphersuites</code> with the following string:<br/> {total_string}</br>-Advanced solution: Check the directive <code>ssl_conf_command Ciphersuites</code> and for each element in the Textual section, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element you can add either <code>-</code> (remove once) or <code>!</code> (kill) in front of it."
+    }
+  },
+  "#ConfigurationInstructions": {
+    "must not": "!name",
+    "not recommended": "-name",
+    "recommended": "name",
+    "must": "name",
+    "connector": ":",
+    "mode": "standard",
+    "actions_on_final_string": {
+      "convert_ciphers": "",
+      "replace": {
+        ":;": ";"
+      }
+    }
+  },
+  "#todo": "mettere un textbox al Textual perché è troppo grande",
+  "#omit-xml-declaration": "yes"
+}

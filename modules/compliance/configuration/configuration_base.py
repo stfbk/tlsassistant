@@ -2,6 +2,7 @@ from pathlib import Path
 
 from modules.compliance.wrappers.db_reader import Database
 from modules.configuration.configuration_base import OpenSSL
+from utils.ciphersuites import get_1_3_ciphers
 from utils.database import get_standardized_level
 from utils.loader import load_configuration
 from utils.logger import Logger
@@ -191,6 +192,7 @@ class Actions:
         self._openssl = OpenSSL()
         self._sigalgs_table = load_configuration("sigalgs_iana_to_ietf", "configs/compliance/")
         self.signature_algorithms = load_configuration("sigalgs", "configs/compliance/")
+        self.tls1_3_ciphers = get_1_3_ciphers()
 
     def clean_final_string(self, string):
         while "::" in string:
@@ -245,7 +247,9 @@ class Actions:
         for cipher in self._ciphers_converter:
             if not self._ciphers_converter[cipher]:
                 self._logger.debug(f"Skipping cipher: {cipher} because it is not available in openssl")
-            string = string.replace(cipher, self._ciphers_converter[cipher])
+            converted_cipher = self._ciphers_converter[cipher]
+            if converted_cipher in self.tls1_3_ciphers:
+                string = string.replace(cipher, self._ciphers_converter[cipher])
         while "::" in string:
             string = string.replace("::", ":")
         if string[-1] == ":":

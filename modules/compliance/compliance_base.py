@@ -13,6 +13,7 @@ from modules.compliance.wrappers.conditionparser import ConditionParser
 from modules.compliance.wrappers.db_reader import Database
 from modules.configuration.configuration_base import OpenSSL
 from modules.server.wrappers.testssl import Testssl
+from utils.ciphersuites import get_1_3_ciphers, filter_1_3_ciphers
 from utils.database import get_standardized_level
 from utils.loader import load_configuration
 from utils.logger import Logger
@@ -84,17 +85,7 @@ class Compliance:
         }
         self._cert_key_filters = load_configuration("cert_key_filters", "configs/compliance/")
         self.valid_keysize = False
-        self.tls1_3_ciphers = Compliance._get_1_3_ciphers()
-
-    @staticmethod
-    def _get_1_3_ciphers():
-        ciphers = []
-        dictionary = load_configuration("ciphersuites", "configs/compliance/")
-        for cipher in dictionary:
-            val = dictionary[cipher]["OpenSSL"]
-            if cipher.startswith("0x13,") and val:
-                ciphers.append(val)
-        return set(ciphers)
+        self.tls1_3_ciphers = get_1_3_ciphers()
 
     def level_to_use(self, levels):
         """
@@ -362,7 +353,7 @@ class Compliance:
                 filters.append(filters_dict[key_type])
         # While generating there are no Certificate information so the filters are not needed
         if not filters or (len(filters) == len(self._cert_key_filters) and generating):
-           return ""
+            return ""
         return "WHERE " + " AND ".join(filters)
 
     def format_output_string(self, string, sheet, conf_instructions, total_string_apache, total_string_nginx,

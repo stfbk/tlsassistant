@@ -13,6 +13,7 @@ class CompareOne(Compliance):
         if not self._user_configuration:
             raise ValueError("No configuration provided")
         for sheet in sheets_to_check:
+            original_sheet = sheet
             columns_orig = ["name", "level", "condition", "guidelineName"]
             # If the sheet isn't in the dictionary then I can use the default value
             query_filter = self.get_filters(sheet)
@@ -67,6 +68,9 @@ class CompareOne(Compliance):
                     #     valid_condition = True
                     # if it has multiple name_columns they get only shown in the output
                     name = "_".join([str(entry[i]) for i in name_columns])
+                    # Filter for TLS1.3 ciphers
+                    if name in self.tls1_3_ciphers:
+                        sheet = "CipherSuitesTLS1.3"
                     self.update_result(sheet, name, level, enabled, entry[-1], valid_condition, hostname)
                     if additional_notes:
                         note += "\nNOTE: "
@@ -76,3 +80,4 @@ class CompareOne(Compliance):
                         self._output_dict[sheet][name]["notes"] = note
                     if sheet == "KeyLengths" and enabled and valid_condition and level in ["recommended", "must"]:
                         self.valid_keysize = True
+                    sheet = original_sheet
