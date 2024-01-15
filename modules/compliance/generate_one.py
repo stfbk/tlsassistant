@@ -17,7 +17,10 @@ class GenerateOne(Generator):
             if isinstance(sheet, dict):
                 table_to_search = list(sheet.keys())[0]
                 name_to_search = sheet[table_to_search]
-                query_filter = "WHERE name LIKE \"" + name_to_search + "\""
+                if name_to_search[0] == "{" and name_to_search[-1] == "}":
+                    name_to_search = name_to_search[1:-1]
+                    name_to_search = self.__getattribute__(name_to_search)
+                query_filter = name_to_search
                 sheet = table_to_search
             columns_temp = self.sheet_columns.get(sheet, columns)
             if isinstance(columns_temp, dict):
@@ -26,8 +29,7 @@ class GenerateOne(Generator):
             if sheets_to_check[sheet]:
                 guideline = list(sheets_to_check[sheet].keys())[0]
                 table_name = self._database_instance.get_table_name(sheet, guideline, sheets_to_check[sheet][guideline])
-                self._database_instance.input([table_name], other_filter=query_filter)
-                data = self._database_instance.output(columns_temp)
+                data = self._database_instance.run([table_name], other_filter=query_filter, columns=columns_temp)
                 if data:
                     field_rules = self._configuration_rules.get(field, {})
                     self._config_class.add_configuration_for_field(field, field_rules, data, columns_temp, table_name)

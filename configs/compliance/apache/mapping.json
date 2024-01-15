@@ -1,6 +1,6 @@
 {
-    "ProtocolList": "SSLProtocol",
-    "CipherSuiteList": "SSLCipherSuite",
+    "Protocol": "SSLProtocol",
+    "CipherSuites": "SSLCipherSuite",
     "SessionTickets": "SSLSessionTickets",
     "Stapling": "SSLUseStapling",
     "DHParams": "",

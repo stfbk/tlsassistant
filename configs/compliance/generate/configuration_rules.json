@@ -1,5 +1,5 @@
 {
-  "ProtocolList": {
+  "Protocol": {
     "enable": "name",
     "disable": "-name",
     "separator": " ",
@@ -9,7 +9,7 @@
       ".0": ""
     }
   },
-  "CipherSuiteList": {
+  "CipherSuites": {
     "enable": "name",
     "disable": "",
     "separator": ":",

@@ -1,9 +1,10 @@
 {
-    "ProtocolList": "Protocol",
-    "CipherSuiteList": "CipherSuite",
+    "Protocol": "Protocol",
+    "CipherSuites": "CipherSuite",
+    "CipherSuitesTLS1_3": {"CipherSuite": "{_ciphers1_3_filter}"},
     "SessionTickets": {"Extension": "session_ticket"},
     "Stapling": {"Extension": "status_request"},
     "EarlyData": {"Extension": "early_data"},
-    "DHParams": {"KeyLengths":  "DH\" AND (\"level\" = \"recommended\" OR \"level\" = \"must\") AND \"\" = \""},
+    "DHParams": {"KeyLengths":  "WHERE name LIKE \"DH\" AND (\"level\" = \"recommended\" OR \"level\" = \"must\")"},
     "Groups": "Groups"
 }

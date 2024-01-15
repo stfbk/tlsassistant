@@ -1,5 +1,5 @@
 {
-  "ProtocolList": {
+  "Protocol": {
     "enable": "name",
     "disable": "",
     "separator": ":",
