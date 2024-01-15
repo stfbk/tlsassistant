@@ -352,17 +352,18 @@ class Compliance:
                 mitigation["Entry"]["Mitigation"][key] = mitigation["Entry"]["Mitigation"][key].replace(
                     "{total_string}", "No snippet available")
 
-    def ciphersuites_filter(self):
+    def get_filters(self, sheet):
         cert_keys = self.get_cert_key_types()
-        return_string = ""
         filters = []
-        for key_type in self._cert_key_filters:
+        filters_dict = self._cert_key_filters.get(sheet, {})
+        generating = isinstance(self, Generator)
+        for key_type in filters_dict:
             if key_type not in cert_keys:
-                filters.append(self._cert_key_filters[key_type])
-        if filters and len(filters) != len(self._cert_key_filters):
-            return_string += "WHERE "
-            return_string += " AND ".join(filters)
-        return return_string
+                filters.append(filters_dict[key_type])
+        # While generating there are no Certificate information so the filters are not needed
+        if not filters or (len(filters) == len(self._cert_key_filters) and generating):
+           return ""
+        return "WHERE " + " AND ".join(filters)
 
     def format_output_string(self, string, sheet, conf_instructions, total_string_apache, total_string_nginx,
                              entries_key, strings_list, to_append):
@@ -373,7 +374,6 @@ class Compliance:
             level = self._output_dict[sheet][entry]["level"].lower()
             # Standard mode, take all the entries and add them to the total_string
             if conf_instructions["mode"].startswith("standard"):
-                print(entry)
                 # The usage of post actions is needed to fix the entries of some of the sheets
                 total_string_apache += conf_instructions["connector"] + conf_instructions[level].replace("name",
                                                                                                          entry_name)
@@ -403,6 +403,7 @@ class Compliance:
                 if self._output_dict[sheet][entry].get("notes"):
                     tmp_string += "; " + self._output_dict[sheet][entry]["notes"]
                 tmp_string, _ = self._configuration_maker.perform_post_actions(conf_instructions, tmp_string, source)
+                strings_list.append(tmp_string)
         total_string_apache, _ = self._configuration_maker.perform_post_actions(conf_instructions, total_string_apache,
                                                                                 source,
                                                                                 "actions_on_final_string")
@@ -775,7 +776,7 @@ class Compliance:
                     # all the columns are repeated to make easier index access later
                     columns_to_get.append(f"{t}.{column}")
             if sheet == "CipherSuite":
-                query_filter = self.ciphersuites_filter()
+                query_filter = self.get_filters()
                 if tables:
                     query_filter = query_filter.replace("name", tables[0] + ".name")
 
