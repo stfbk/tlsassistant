@@ -1,10 +1,11 @@
 {
     "Protocol": "Protocol",
-    "CipherSuites": "CipherSuite",
-    "CipherSuitesTLS1_3": {"CipherSuite": "{_ciphers1_3_filter}"},
-    "SessionTickets": {"Extension": "session_ticket"},
-    "Stapling": {"Extension": "status_request"},
-    "EarlyData": {"Extension": "early_data"},
+    "CipherSuites": {"CipherSuite": "{_ciphers1_2_filter}"},
+    "CipherSuitesTLS1.3": {"CipherSuite": "{_ciphers1_3_filter}"},
+    "SessionTickets": {"Extension": "WHERE name = \"session_ticket\""},
+    "Stapling": {"Extension": "WHERE name LIKE \"status_request%\""},
+    "StaplingCache": {"Extension": "WHERE name LIKE \"status_request%\""},
+    "EarlyData": {"Extension": "WHERE name LIKE \"early_data\""},
     "DHParams": {"KeyLengths":  "WHERE name LIKE \"DH\" AND (\"level\" = \"recommended\" OR \"level\" = \"must\")"},
     "Groups": "Groups"
 }

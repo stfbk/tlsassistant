@@ -771,10 +771,9 @@ class Compliance:
                 for column in columns_to_use:
                     # all the columns are repeated to make easier index access later
                     columns_to_get.append(f"{t}.{column}")
-            if sheet == "CipherSuite":
-                query_filter = self.get_filters()
-                if tables:
-                    query_filter = query_filter.replace("name", tables[0] + ".name")
+            query_filter = self.get_filters(sheet)
+            if tables:
+                query_filter = query_filter.replace("name", tables[0] + ".name")
 
             join_condition = "ON {first_table}.id == {table}.id".format(first_table=tables[0], table="{table}")
             data = self._database_instance.run(join_condition=join_condition, columns=columns_to_get, tables=tables,
@@ -956,6 +955,7 @@ class Generator(Compliance):
         super().__init__()
         self._configuration_rules = load_configuration("configuration_rules", "configs/compliance/generate/")
         self._configuration_mapping = load_configuration("configuration_mapping", "configs/compliance/generate/")
+        self._ciphers1_2_filter = "WHERE name NOT IN (\"" + "\" , \"".join(self.tls1_3_ciphers) + "\")"
         self._ciphers1_3_filter = "WHERE name IN (\"" + "\" , \"".join(self.tls1_3_ciphers) + "\")"
 
     def _get_config_name(self, field):

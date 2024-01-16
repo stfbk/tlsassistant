@@ -58,6 +58,11 @@ class NginxConfiguration(ConfigurationMaker):
             args, comment = self.perform_post_actions(field_rules, args, guideline)
             if not isinstance(args, list):
                 args = [args]
+            if " " in config_field:
+                tokens = config_field.split(" ")
+                config_field = tokens[0]
+                for arg in tokens[1:]:
+                    args.insert(0, arg)
             directive_to_add = {"directive": config_field, "args": args}
             self._template["config"][0]["parsed"][1]["block"].insert(0, directive_to_add)
             if comment:

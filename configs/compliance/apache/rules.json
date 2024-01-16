@@ -33,5 +33,11 @@
         "0": "dhparam"
       }
     }
+  },
+  "StaplingCache": {
+    "enable": "\"shmcb:/usr/local/apache/logs/ssl_gcache_data(512000)\"",
+    "disable": "",
+    "separator": "",
+    "enable_one_time": true
   }
 }
