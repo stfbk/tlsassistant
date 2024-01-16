@@ -255,7 +255,7 @@ if __name__ == "__main__":
                             for el in values_dict[other_table]:
                                 # Update the guideline name
                                 for i, entry in enumerate(values_dict[other_table][el]):
-                                    if isinstance(entry, str) and entry.upper() == base_guideline:
+                                    if isinstance(entry, str) and entry.upper() == base_guideline.upper():
                                         values_dict[other_table][el][i] = other_name
 
             # Convert all the data into tuples to add them to the database and group them by guideline name
