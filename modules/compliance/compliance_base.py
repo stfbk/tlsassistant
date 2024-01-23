@@ -39,6 +39,7 @@ def convert_signature_algorithm(sig_alg: str) -> str:
 
 class Compliance:
     report_config = load_configuration("special_configs", "configs/compliance/")
+    evaluations_mapping = load_configuration("evaluations_mapping", "configs/compliance/")
 
     def __init__(self):
         self.hostname = ""
@@ -53,10 +54,7 @@ class Compliance:
         self._last_data = {}
         self._output_dict = {}
         self._user_configuration = {}
-        self.entries = {}
-        self.evaluated_entries = {}
         self._certificate_index = "1"
-        self.evaluations_mapping = load_configuration("evaluations_mapping", "configs/compliance/")
         self.sheet_columns = load_configuration("sheet_columns", "configs/compliance/")
         self.misc_fields = load_configuration("misc_fields", "configs/compliance/")
         self._validator = Validator()
@@ -87,7 +85,8 @@ class Compliance:
         self.valid_keysize = False
         self.tls1_3_ciphers = get_1_3_ciphers()
 
-    def level_to_use(self, levels):
+    @staticmethod
+    def level_to_use(levels, security):
         """
         Given two evaluations returns true if the first one wins, false otherwise.
 
@@ -97,13 +96,13 @@ class Compliance:
         :rtype: int
         """
         # If a level is not mapped it can be considered as a Not mentioned
-        security_mapping = "security" if self._security else "legacy"
+        security_mapping = "security" if security else "legacy"
         if not levels:
             raise IndexError("Levels list is empty")
-        first_value = self.evaluations_mapping.get(security_mapping, {}).get(get_standardized_level(levels[0]), 4)
+        first_value = Compliance.evaluations_mapping.get(security_mapping, {}).get(get_standardized_level(levels[0]), 4)
         best = 0
         for i, el in enumerate(levels[1:]):
-            evaluation_value = self.evaluations_mapping.get(security_mapping, {}).get(get_standardized_level(el), 4)
+            evaluation_value = Compliance.evaluations_mapping.get(security_mapping, {}).get(get_standardized_level(el), 4)
             if first_value > evaluation_value:
                 # +1 is needed because the first element is ignored
                 best = i + 1
@@ -357,7 +356,7 @@ class Compliance:
             elif key_type not in cert_keys:
                 filters.add(filters_dict[key_type])
         # While generating there are no Certificate information so the filters are not needed
-        if not filters or (len(filters) == len(self._cert_key_filters) and generating):
+        if not filters or (len(filters) == len(filters_dict) and generating):
             return ""
         return "WHERE " + " AND ".join(filters)
 
@@ -748,7 +747,7 @@ class Compliance:
             conditional_notes = ""
         return conditional_notes
 
-    def _retrieve_entries(self, sheets_to_check, columns):
+    def _retrieve_entries(self, sheets_to_check, columns, additional_filters=None, tables_copy=None):
         """
         Given the input dictionary and the list of columns updates the entries field with a dictionary in the form
         sheet: data. The data is ordered by name
@@ -759,7 +758,6 @@ class Compliance:
         for sheet in sheets_to_check:
             columns_to_get = []
             columns_to_use = self.sheet_columns.get(sheet, {"columns": columns})["columns"]
-            query_filter = ""
             if not self._output_dict.get(sheet):
                 self._output_dict[sheet] = {}
             for guideline in sheets_to_check[sheet]:
@@ -772,6 +770,25 @@ class Compliance:
                     # all the columns are repeated to make easier index access later
                     columns_to_get.append(f"{t}.{column}")
             query_filter = self.get_filters(sheet)
+            if additional_filters.get(sheet):
+                additional_filter = additional_filters[sheet]
+                if query_filter:
+                    # Remove "WHERE" from the string
+                    additional_filter = additional_filter.replace("WHERE", " AND ")
+                if "level" in additional_filter and tables:
+                    strip_first = 2 if query_filter else 1
+                    parts = additional_filter.split(" ")
+                    filter_base = " ".join(parts[:strip_first])
+                    repeat_filter = " ".join(parts[strip_first:])
+                    repeat_filter = [f"({repeat_filter})"] * len(tables)
+                    repeat_filter = " OR ".join(repeat_filter)
+                    for table in tables:
+                        # First level is substituted with the table_name.lvl then it is brought back as level
+                        # this is needed to avoid replacing the same "level" occurrence many times
+                        repeat_filter = repeat_filter.replace("level", table + ".lvl", 1)
+                    repeat_filter = repeat_filter.replace("lvl", "level")
+                    additional_filter = filter_base + repeat_filter
+                query_filter += additional_filter
             if tables:
                 query_filter = query_filter.replace("name", tables[0] + ".name")
 
@@ -779,10 +796,12 @@ class Compliance:
             data = self._database_instance.run(join_condition=join_condition, columns=columns_to_get, tables=tables,
                                                other_filter=query_filter)
             entries[sheet] = data
+            if tables_copy is not None:
+                tables_copy[sheet] = tables
             tables = []
-        self.entries = entries
+        return entries
 
-    def _evaluate_entries(self, sheets_to_check, original_columns):
+    def _evaluate_entries(self, sheets_to_check, original_columns, entries_to_check):
         """
         This function checks the entries with the same name and chooses which guideline to follow for that entry.
         The results can be found in the evaluated_entries field. The dictionary will have form:
@@ -801,7 +820,8 @@ class Compliance:
         # The entry is composed of all the columns repeated n times, with n being the number of guidelines.
         # The step is the number of columns. This allows easy data retrieval by doing something like:
         # "value_index * step * guideline_index" to retrieve data for a specific guideline
-        for sheet in self.entries:
+        evaluated_entries = {}
+        for sheet in entries_to_check:
             columns = self.sheet_columns.get(sheet, {"columns": original_columns})["columns"]
             guideline_index = columns.index("guidelineName")
             # A more fitting name could be current_requirement_level
@@ -813,9 +833,9 @@ class Compliance:
             # this variable is needed to get the relative position of the guideline in respect of the level
             level_to_guideline_index = guideline_index - level_index
             step = len(columns)
-            entries = self.entries[sheet]
-            if not self.evaluated_entries.get(sheet):
-                self.evaluated_entries[sheet] = {}
+            entries = entries_to_check[sheet]
+            if not evaluated_entries.get(sheet):
+                evaluated_entries[sheet] = {}
             custom_guidelines_list = sheets_to_check[sheet].keys() - self._guidelines
             total = 0
             for entry in entries:
@@ -871,7 +891,7 @@ class Compliance:
                             level = self.level_flipper.get(level, level)
                         if self._condition_parser.entry_updates.get("levels"):
                             potential_levels = self._condition_parser.entry_updates.get("levels")
-                            level = potential_levels[self.level_to_use(potential_levels)]
+                            level = potential_levels[self.level_to_use(potential_levels, self._security)]
                         has_alternative = self._condition_parser.entry_updates.get("has_alternative")
                         additional_notes = self._condition_parser.entry_updates.get("notes", "")
                         conditional_notes = self.add_conditional_notes(enabled, valid_condition)
@@ -891,7 +911,7 @@ class Compliance:
                     levels.append(level)
                     field_is_enabled_in_guideline[guideline] = enabled
                     pos += step
-                best_level = self.level_to_use(levels)
+                best_level = self.level_to_use(levels, self._security)
                 resulting_level = levels[best_level]
                 condition = conditions[best_level]
                 note = notes[best_level]
@@ -907,7 +927,7 @@ class Compliance:
                         # the level was deducted) it has greater priority, so it is necessary to switch them
                         if guidelines_to_check.index(guideline) < guidelines_to_check.index(source_guideline):
                             levels = levels[::-1]
-                        best_level = self.level_to_use(levels)
+                        best_level = self.level_to_use(levels, self._security)
                         # if best_level is 0 the source_guideline is the best
                         if best_level:
                             source_guideline = guideline
@@ -918,7 +938,7 @@ class Compliance:
                     note = ""
 
                 # Save it to the dictionary
-                self.evaluated_entries[sheet][total] = {
+                evaluated_entries[sheet][total] = {
                     "entry": entry,
                     "level": resulting_level,
                     "source": source_guideline,
@@ -927,6 +947,7 @@ class Compliance:
                     "note": note
                 }
                 total += 1
+        return evaluated_entries
 
     @staticmethod
     def check_disable_if(condition, enabled, valid_condition):
@@ -1027,7 +1048,7 @@ class Generator(Compliance):
             field_rules = self._configuration_rules.get(field, {})
             if self._condition_parser.entry_updates.get("levels"):
                 potential_levels = self._condition_parser.entry_updates.get("levels")
-                level = potential_levels[self.level_to_use(potential_levels)]
+                level = potential_levels[self.level_to_use(potential_levels, self._security)]
             if not valid_condition and enabled:
                 self._config_class.remove_field(field, name)
             elif level in ["not recommended", "must not"] and valid_condition:
@@ -1040,6 +1061,21 @@ class Generator(Compliance):
         self._condition_parser = ConditionParser(self._user_configuration)
         self._check_conditions()
         return self._config_class.configuration_output()
+
+    def get_sheet_filter(self, sheet):
+        # Dictionaries are used for specific things like a directive that enables an extension for this reason it is
+        # used a filter on the query to get that specific thing by name
+        if isinstance(sheet, dict):
+            table_to_search = list(sheet.keys())[0]
+            name_to_search = sheet[table_to_search]
+            if name_to_search[0] == "{" and name_to_search[-1] == "}":
+                name_to_search = name_to_search[1:-1]
+                name_to_search = self.__getattribute__(name_to_search)
+            query_filter = name_to_search
+            sheet = table_to_search
+        else:
+            query_filter = ""
+        return sheet, query_filter
 
 
 class AliasParser:

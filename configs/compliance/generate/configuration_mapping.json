@@ -6,6 +6,6 @@
     "Stapling": {"Extension": "WHERE name LIKE \"status_request%\""},
     "StaplingCache": {"Extension": "WHERE name LIKE \"status_request%\""},
     "EarlyData": {"Extension": "WHERE name LIKE \"early_data\""},
-    "DHParams": {"KeyLengths":  "WHERE name LIKE \"DH\" AND (\"level\" = \"recommended\" OR \"level\" = \"must\")"},
+    "DHParams": {"KeyLengths":  "WHERE name = \"DH\" AND level in (\"recommended\",\"must\")"},
     "Groups": "Groups"
 }

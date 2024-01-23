@@ -199,6 +199,8 @@ if __name__ == "__main__":
                             level = get_cell_for_df(guidelines_dataframe, row[0], (guideline, level_column))
                             # If the cell is empty and the level isn’t negative (must not, not recommended)
                             # then "must not" is used as the level.
+                            if level == "<Not mentioned>":
+                                content = level
                             if pd.notna(content) or level in ["not recommended", "must not"]:
                                 if content not in ["recommended", "must"]:
                                     content = level

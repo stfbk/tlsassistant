@@ -47,7 +47,7 @@ class CompareOne(Compliance):
                         if self._condition_parser.entry_updates.get("levels"):
                             levels = self._condition_parser.entry_updates.get("levels")
                             levels.insert(0, level)
-                            to_use = self.level_to_use(levels)
+                            to_use = self.level_to_use(levels, self._security)
                             level = levels[to_use]
 
                     has_alternative = self._condition_parser.entry_updates.get("has_alternative")

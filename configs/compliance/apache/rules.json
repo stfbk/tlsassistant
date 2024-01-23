@@ -28,7 +28,7 @@
     "separator": "",
     "enable_one_time": true,
     "post_actions": {
-      "comment": "You should run `openssl dhparam {} >> /path/to/cert_chain`",
+      "comment": "You should run {} >> /path/to/cert_chain`",
       "comment_format": {
         "0": "dhparam"
       }

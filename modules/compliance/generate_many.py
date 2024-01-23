@@ -7,26 +7,25 @@ class GenerateMany(Generator):
             raise ValueError("No output file path provided")
         columns = ["name", "level", "condition", "guidelineName"]
         conf_mapping = self._configuration_mapping
-        # fill the entries field with the data from the sheets
-        self._retrieve_entries(sheets_to_check, columns)
-        self._evaluate_entries(sheets_to_check, columns)
         for field in conf_mapping:
             if not self._output_dict.get(field):
                 self._output_dict[field] = {}
-            sheet = conf_mapping[field]
-            target = None
-            # Dictionaries are used for specific things like a directive that enables an extension for this reason it is
-            # used a filter on the query to get that specific thing by name
-            if isinstance(sheet, dict):
-                table_to_search = list(sheet.keys())[0]
-                # Since for generate_many the data are retrieved and processed before this block the filtering is
-                # postponed by using the target variable
-                target = sheet[table_to_search]
-                sheet = table_to_search
+            tables = {}
+            sheet, query_filter = self.get_sheet_filter(conf_mapping[field])
+            query_filters = {sheet: query_filter}
+            sheets_to_use = {sheet: sheets_to_check[sheet]}
+            # Retrieve entries from the database
+            entries = self._retrieve_entries(sheets_to_use, columns, query_filters, tables)
+            evaluated_entries = self._evaluate_entries(sheets_to_use, columns, entries)
             field_rules = self._configuration_rules.get(field, {})
             # the guideline here is defined as None because it will be defined in the function
-            self._config_class.add_configuration_for_field(field, field_rules, self.evaluated_entries[sheet].values(),
-                                                           columns, None, target)
+            columns_temp = self.sheet_columns.get(sheet, columns)
+            if isinstance(columns_temp, dict):
+                columns_temp = columns_temp["columns"]
+            # get guidelines from sheets_to_check
+            guidelines = tables[sheet]
+            self._config_class.add_configuration_for_field(field, field_rules, evaluated_entries[sheet].values(),
+                                                           columns_temp, ",".join(guidelines))
         for field in self._config_class.conditions_to_check:
             condition = self._config_class.conditions_to_check[field]
 

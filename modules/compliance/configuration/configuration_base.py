@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from modules.compliance import compliance_base
+from modules.compliance.wrappers.conditionparser import ConditionParser
 from modules.compliance.wrappers.db_reader import Database
 from modules.configuration.configuration_base import OpenSSL
 from utils.ciphersuites import get_1_3_ciphers
@@ -24,6 +26,7 @@ class ConfigurationMaker:
         self._actions = Actions(openssl_version)
         self._logger = Logger("Configuration maker")
         self.signature_algorithms = load_configuration("sigalgs", "configs/compliance/")
+        self._database_instance = Database()
 
     def set_out_file(self, output_file):
         """
@@ -57,7 +60,7 @@ class ConfigurationMaker:
     def _write_to_file(self):
         raise NotImplementedError("This method should be reimplemented")
 
-    def add_configuration_for_field(self, field, field_rules, data, columns, guideline, target=None):
+    def add_configuration_for_field(self, field, field_rules, data, columns, guideline):
         """
         :param field: the field that should be added (taken from configuration_rules)
         :param field_rules: the rules that should be applied to that field
@@ -117,7 +120,7 @@ class ConfigurationMaker:
 
     def _prepare_field_string(self, tmp_string, field, field_rules, name_index, level_index, condition_index, columns,
                               data,
-                              config_field, guideline, target):
+                              config_field, guideline):
         for entry in data:
             condition = ""
             if isinstance(entry, dict):
@@ -134,9 +137,6 @@ class ConfigurationMaker:
                 name = entry[name_index]
                 level = entry[level_index]
                 condition = entry[condition_index]
-
-            if target and target.replace("*", "") not in name:
-                continue
 
             replacements = field_rules.get("replacements", [])
             for replacement in replacements:
@@ -174,6 +174,9 @@ class ConfigurationMaker:
     def set_openssl_version(self, version):
         self._actions._openssl_version = version
 
+    def set_security(self, security):
+        self._actions._security = security
+
     @property
     def output_dict(self):
         return self._output_dict
@@ -193,6 +196,9 @@ class Actions:
         self._sigalgs_table = load_configuration("sigalgs_iana_to_ietf", "configs/compliance/")
         self.signature_algorithms = load_configuration("sigalgs", "configs/compliance/")
         self.tls1_3_ciphers = get_1_3_ciphers()
+        self._condition_parser = ConditionParser({})
+        self._dh_converter = load_configuration("dhparams_mapping", "configs/compliance/")
+        self.security = True
 
     def clean_final_string(self, string):
         while "::" in string:
@@ -385,10 +391,55 @@ class Actions:
         """
         guideline = kwargs.get("guideline", None)
         self.validator.string(guideline)
-        values = self._database.run([guideline], columns=["length", "level"],
-                                    other_filter="WHERE name = \"DH\" AND (level = \"must\" OR level = \"recommended\")")
-        value = values[-1][0]
-        return value
+        columns = ["length", "level", "condition"]
+        columns_orig = columns.copy()
+        query_filter = "WHERE name = \"DH\" AND level in (\"must\", \"recommended\")"
+        join_condition = ""
+        guidelines = guideline.split(",") if "," in guideline else [guideline]
+        if len(guidelines) > 1:
+            columns = []
+            filters = []
+            query_filter = f"WHERE {guidelines[0]}.name = \"DH\" AND ("
+            join_condition += "ON "
+            for token in guidelines:
+                for column in columns_orig:
+                    columns.append(token + "." + column)
+                filters.append(f"{token}.level in (\"must\", \"recommended\")")
+            join_condition += ".id == ".join(guidelines) + ".id"
+            query_filter += " OR ".join(filters) + ")"
+        values = self._database.run(tables=guidelines, columns=columns,
+                                    other_filter=query_filter, join_condition=join_condition)
+        valid_sizes = {}
+        entries = []
+        # The entries are split here to make the evaluation of the condition easier
+        for entry in values:
+            for i in range(0, len(entry), len(columns_orig)):
+                entries.append(entry[i:i + len(columns_orig)])
+        for entry in entries:
+            if len(entry) == len(columns_orig):
+                condition = entry[columns_orig.index("condition")]
+                valid_condition = True
+                if condition:
+                    valid_condition = self._condition_parser.run(condition, enabled=True)
+                enabled = self._condition_parser.entry_updates.get("is_enabled", True)
+                level = entry[columns_orig.index("level")]
+                if self._condition_parser.entry_updates.get("levels"):
+                    potential_levels = self._condition_parser.entry_updates.get("levels")
+                    level = compliance_base.Compliance.level_to_use(potential_levels, self.security)
+                if valid_condition and enabled:
+                    length = entry[columns_orig.index("length")]
+                    if valid_sizes.get(length) is None:
+                        valid_sizes[length] = []
+                    valid_sizes[length].append(level)
+        for length in valid_sizes:
+            valid_index = compliance_base.Compliance.level_to_use(valid_sizes[length], self.security)
+            valid_sizes[length] = valid_sizes[length][valid_index]
+        # remove all the levels that should not be enabled from the dict
+        valid_sizes = dict((k, v) for k, v in valid_sizes.items() if v not in ["must not", "not recommended"])
+        levels = list(valid_sizes.values())
+        resulting_level = compliance_base.Compliance.level_to_use(levels, self.security)
+        length = list(valid_sizes.keys())[resulting_level]
+        return self._dh_converter.get(str(length), "No dhparam available")
 
     def strip(self, **kwargs):
         """

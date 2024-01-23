@@ -10,18 +10,7 @@ class GenerateOne(Generator):
         for field in conf_mapping:
             if not self._output_dict.get(field):
                 self._output_dict[field] = {}
-            sheet = conf_mapping[field]
-            query_filter = ""
-            # Dictionaries are used for specific things like a directive that enables an extension for this reason it is
-            # used a filter on the query to get that specific thing by name
-            if isinstance(sheet, dict):
-                table_to_search = list(sheet.keys())[0]
-                name_to_search = sheet[table_to_search]
-                if name_to_search[0] == "{" and name_to_search[-1] == "}":
-                    name_to_search = name_to_search[1:-1]
-                    name_to_search = self.__getattribute__(name_to_search)
-                query_filter = name_to_search
-                sheet = table_to_search
+            sheet, query_filter = self.get_sheet_filter(conf_mapping[field])
             columns_temp = self.sheet_columns.get(sheet, columns)
             if isinstance(columns_temp, dict):
                 columns_temp = columns_temp["columns"]

@@ -25,7 +25,7 @@ class NginxConfiguration(ConfigurationMaker):
         """
         self.configuration = Configuration(path=str(file), type_=WebserverType.NGINX, process=False).get_conf()
 
-    def add_configuration_for_field(self, field, field_rules, data, columns, guideline, target=None):
+    def add_configuration_for_field(self, field, field_rules, data, columns, guideline):
         config_field = self.mapping.get(field, None)
         name_index = columns.index("name")
         level_index = columns.index("level")
@@ -40,7 +40,7 @@ class NginxConfiguration(ConfigurationMaker):
         field_rules = self._specific_rules.get(field, field_rules)
         tmp_string = self._prepare_field_string(tmp_string, field, field_rules, name_index, level_index,
                                                 condition_index,
-                                                columns, data, config_field, guideline, target)
+                                                columns, data, config_field, guideline)
         if tmp_string and tmp_string[-1] == ":":
             tmp_string = tmp_string[:-1]
         tmp_string = tmp_string.strip()

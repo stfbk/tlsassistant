@@ -14,10 +14,10 @@ class CompareMany(Compliance):
             raise ValueError("No configuration provided")
         columns = ["name", "level", "condition", "guidelineName"]
         # fill the entries field with the data from the sheets
-        self._retrieve_entries(sheets_to_check, columns)
-        self._evaluate_entries(sheets_to_check, columns)
-        for sheet in self.evaluated_entries:
-            for entry_dict in self.evaluated_entries[sheet].values():
+        entries = self._retrieve_entries(sheets_to_check, columns)
+        evaluated_entries = self._evaluate_entries(sheets_to_check, columns, entries)
+        for sheet in evaluated_entries:
+            for entry_dict in evaluated_entries[sheet].values():
                 original_sheet = sheet
                 entry = entry_dict["entry"]
                 columns = ["name", "level", "condition", "guidelineName"]
