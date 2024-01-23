@@ -770,7 +770,7 @@ class Compliance:
                     # all the columns are repeated to make easier index access later
                     columns_to_get.append(f"{t}.{column}")
             query_filter = self.get_filters(sheet)
-            if additional_filters.get(sheet):
+            if additional_filters and additional_filters.get(sheet):
                 additional_filter = additional_filters[sheet]
                 if query_filter:
                     # Remove "WHERE" from the string
