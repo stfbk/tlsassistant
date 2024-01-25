@@ -178,11 +178,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--apache",
         type=str,
-        nargs=1,
-        action=ComplianceAction,
+        nargs=0,
+        action=ComplianceTrue,
         default=True,
         dest="compliance_args",
-        help="Default to True. If True the output configuration will have apache syntax, if false nginx will be used."
+        help="Default to False. If True the output configuration will have apache syntax, if false nginx will be used."
     )
     parser.add_argument(
         "--security",

@@ -45,7 +45,7 @@ class Compliance:
         self.hostname = ""
         self._openssl_version = ""
         self._custom_guidelines = None
-        self._apache = True
+        self._apache = False
         # legacy vs security level switch
         self._security = True
         self._input_dict = {}
@@ -128,7 +128,7 @@ class Compliance:
         port = kwargs.get("port", "")
         port = ":" + port if port else ""
         self.hostname = kwargs.get("hostname")
-        self._apache = kwargs.get("apache", True)
+        self._apache = kwargs.get("apache", False)
         self._security = kwargs.get("security", True)
         use_cache = kwargs.get("use_cache", False)
         clean = kwargs.get("clean", False)
