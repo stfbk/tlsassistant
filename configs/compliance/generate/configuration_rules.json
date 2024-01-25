@@ -14,6 +14,7 @@
     "disable": "",
     "separator": ":",
     "added_negatives": false,
+    "enable_optional": true,
     "post_actions": {
       "convert_ciphers": "",
       "prepend": "-ALL:"

@@ -75,14 +75,13 @@ class NginxConfiguration(ConfigurationMaker):
             if directive.get("directive") == field:
                 to_remove.append(directive)
         for directive in to_remove:
-            found = False
             if name:
                 for i, element in enumerate(directive["args"]):
                     if name in element:
                         directive["args"][i] = element.replace(name, "")
                         directive["args"][i] = re.sub("::*", ":", directive["args"][i])
                         found = True
-            if not found:
+            else:
                 self._template["config"][0]["parsed"][1]["block"].remove(directive)
 
     def _load_template(self):

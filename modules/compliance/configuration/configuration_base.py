@@ -100,13 +100,13 @@ class ConfigurationMaker:
             self._output_dict[field] = {}
         if field in self._enabled_once:
             return ""
-
-        if get_standardized_level(level) in ["must", "recommended"]:
+        level = get_standardized_level(level)
+        if level in ["must", "recommended"] or field_rules.get("enable_optional") and level == "optional":
             if field_rules.get("enable_one_time"):
                 self._enabled_once.add(field)
             string_to_add += allow_string.replace("name", name)
             self._output_dict[field][name] = {"added": True}
-        elif get_standardized_level(level) in ["must not", "not recommended"]:
+        elif level in ["must not", "not recommended"]:
             string_to_add += deny_string.replace("name", name)
             added = added_negatives
             self._output_dict[field][name] = {"added": False}
@@ -253,9 +253,7 @@ class Actions:
         for cipher in self._ciphers_converter:
             if not self._ciphers_converter[cipher]:
                 self._logger.debug(f"Skipping cipher: {cipher} because it is not available in openssl")
-            converted_cipher = self._ciphers_converter[cipher]
-            if converted_cipher in self.tls1_3_ciphers:
-                string = string.replace(cipher, self._ciphers_converter[cipher])
+            string = string.replace(cipher, self._ciphers_converter[cipher])
         while "::" in string:
             string = string.replace("::", ":")
         if string[-1] == ":":
