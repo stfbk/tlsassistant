@@ -2,7 +2,8 @@
   "CipherSuite": {
     "RSA": "name NOT LIKE '%_RSA_%'",
     "EC": "name NOT LIKE '_ECDH%' and name NOT LIKE '%_ECDSA_%'",
-    "DSA": "name NOT LIKE '%_DSS_%'"
+    "DSA": "name NOT LIKE '%_DSS_%'",
+    "PSK": "name NOT LIKE '%_PSK_%'"
   },
   "KeyLengths": {
     "RSA,DSA": "name NOT LIKE 'DH%'"

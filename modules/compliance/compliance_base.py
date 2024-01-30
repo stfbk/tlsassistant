@@ -44,7 +44,7 @@ class Compliance:
     def __init__(self):
         self.hostname = ""
         self._openssl_version = ""
-        self._custom_guidelines = None
+        self._custom_guidelines = {}
         self._apache = False
         # legacy vs security level switch
         self._security = True
@@ -84,6 +84,7 @@ class Compliance:
         self._cert_key_filters = load_configuration("cert_key_filters", "configs/compliance/")
         self.valid_keysize = False
         self.tls1_3_ciphers = get_1_3_ciphers()
+        self._no_psk = None
 
     @staticmethod
     def level_to_use(levels, security):
@@ -133,9 +134,10 @@ class Compliance:
         use_cache = kwargs.get("use_cache", False)
         clean = kwargs.get("clean", False)
         output_file = kwargs.get("output_config")
-        custom_guidelines = kwargs.get("custom_guidelines")
+        custom_guidelines: str = kwargs.get("custom_guidelines", "")
+        self._validator.string(custom_guidelines)
         if custom_guidelines:
-            if not os.path.isfile(self._custom_guidelines):
+            if not os.path.isfile(custom_guidelines):
                 raise FileNotFoundError(f"Custom guidelines file {self._custom_guidelines} not found")
             with open(custom_guidelines, "r") as f:
                 self._custom_guidelines = json.load(f)
@@ -143,6 +145,7 @@ class Compliance:
         guidelines_string = kwargs.get("guidelines")
         openssl_version = kwargs.get("openssl_version")
         ignore_openssl = kwargs.get("ignore_openssl")
+        self._no_psk = kwargs.get("no_psk", False)
         self._certificate_index = kwargs.get("certificate_index", "1")
 
         if isinstance(self._certificate_index, int):
@@ -159,9 +162,8 @@ class Compliance:
         # guidelines evaluation
         self._validator.string(guidelines_string)
         guidelines_list = guidelines_string.split(",") if "," in guidelines_string else [guidelines_string]
-        sheets_to_check = self._alias_parser.get_sheets_to_check(guidelines_list)
+        sheets_to_check = self._alias_parser.get_sheets_to_check(guidelines_list, self._custom_guidelines)
         self._validator.dict(sheets_to_check)
-
         if actual_configuration and self._validator.string(actual_configuration):
             try:
                 self._config_class = ApacheConfiguration(actual_configuration)
@@ -171,7 +173,7 @@ class Compliance:
                 )
                 self._config_class = NginxConfiguration(actual_configuration)
             self.prepare_configuration(self._config_class.configuration)
-        if self.hostname and self._validator.string(self.hostname) and self.hostname != "placeholder":
+        elif self.hostname and self._validator.string(self.hostname) and self.hostname != "placeholder":
             test_ssl_output = {}
             dump_folder = "testssl_dumps"
             file_path = f"{dump_folder}/testssl_output-{self.hostname}.json"
@@ -353,6 +355,8 @@ class Compliance:
                 key_types = key_type.split(",")
                 if not any([key in cert_keys for key in key_types]):
                     filters.add(filters_dict[key_type])
+            elif key_type == "PSK" and not self._no_psk:
+                pass
             elif key_type not in cert_keys:
                 filters.add(filters_dict[key_type])
         # While generating there are no Certificate information so the filters are not needed
@@ -919,7 +923,7 @@ class Compliance:
                 source_guideline = entry[guideline_index + step * best_level]
 
                 for guideline in custom_guidelines_list:
-                    custom_entry = self._custom_guidelines[sheet][guideline].get(name)
+                    custom_entry = self._custom_guidelines[sheet].get(guideline, {}).get(name)
                     if custom_entry:
                         levels = [resulting_level, custom_entry["level"]]
                         guidelines_to_check = list(sheets_to_check[sheet])
@@ -932,6 +936,9 @@ class Compliance:
                         if best_level:
                             source_guideline = guideline
                         resulting_level = levels[best_level]
+                        enabled = ConditionParser.is_enabled(self._user_configuration, sheet, name, entry,
+                                                             certificate_index=self._certificate_index)
+                        field_is_enabled_in_guideline[guideline] = enabled
 
                 # Custom guidelines don't have notes
                 if source_guideline.upper() not in self._guidelines:
@@ -1149,12 +1156,12 @@ class AliasParser:
                             guideline_dict[i] = set()
                         guideline_dict[i].add(version.upper())
 
-    def is_valid(self, alias):
-        if "-" not in alias and alias.upper() not in self._guidelines:
+    def is_valid(self, alias, custom_guidelines_list):
+        if "-" not in alias and alias.upper() not in self._guidelines and alias.upper() not in custom_guidelines_list:
             raise ValueError(f"Alias {alias} not valid")
         tokens = alias.split("-")
         guideline = tokens[0].upper()
-        if guideline not in self._guidelines_versions:
+        if guideline not in self._guidelines_versions and guideline not in custom_guidelines_list:
             raise ValueError(f"Invalid guideline in alias: {alias}")
         used_sets = set()
         for token in tokens[1:]:
@@ -1168,7 +1175,7 @@ class AliasParser:
             if not found:
                 raise ValueError(f"Invalid version {token} for alias: {alias}")
 
-    def get_sheets_to_check(self, aliases):
+    def get_sheets_to_check(self, aliases, custom_guidelines):
         sheets_to_check = {}
         for alias in aliases:
             alias = alias.strip()
@@ -1177,7 +1184,11 @@ class AliasParser:
                 self.list_strings()
             if alias == "aliases":
                 self.list_aliases()
-            self.is_valid(alias)
+            custom_guidelines_list = set()
+            for sheet in custom_guidelines:
+                for guideline in custom_guidelines[sheet]:
+                    custom_guidelines_list.add(guideline.upper())
+            self.is_valid(alias, custom_guidelines_list)
             tokens = alias.split("-")
             guideline = tokens[0].upper()
             tokens.append("")
@@ -1196,6 +1207,11 @@ class AliasParser:
                         sheets_to_check[sheet][guideline] = version
                     else:
                         self.__logging.info(f"Skipping {guideline} in {sheet} because no version is available.")
+            for sheet in custom_guidelines:
+                if sheets_to_check.get(sheet):
+                    for guideline in custom_guidelines[sheet]:
+                        sheets_to_check[sheet][guideline] = ""
+
         to_remove = set()
         for sheet in sheets_to_check.keys():
             if not sheets_to_check[sheet].keys():

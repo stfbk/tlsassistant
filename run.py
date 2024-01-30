@@ -214,7 +214,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--custom_guideline",
+        "--custom_guidelines",
         type=str,
         nargs=1,
         action=ComplianceAction,
@@ -240,6 +240,16 @@ if __name__ == "__main__":
         action=ComplianceTrue,
         dest="compliance_args",
         help="Default to False. If True the program will remove the cached testssl analysis for this host."
+    )
+
+    parser.add_argument(
+        "--no_psk",
+        type=bool,
+        nargs=0,
+        default=False,
+        action=ComplianceTrue,
+        dest="compliance_args",
+        help="Default to False. If True the program will not consider PSK ciphersuites during analysis."
     )
 
     # todo add default aliases configurations for analysis
