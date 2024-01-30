@@ -1,0 +1,1133 @@
+{
+    "0.9.6": [
+        "prime256v1"
+    ],
+    "0.9.6i": [
+        "prime256v1"
+    ],
+    "0.9.6j": [
+        "prime256v1"
+    ],
+    "0.9.6k": [
+        "prime256v1"
+    ],
+    "0.9.6l": [
+        "prime256v1"
+    ],
+    "0.9.6m": [
+        "prime256v1"
+    ],
+    "0.9.7": [
+        "prime256v1"
+    ],
+    "0.9.7b": [
+        "prime256v1"
+    ],
+    "0.9.7c": [
+        "prime256v1"
+    ],
+    "0.9.7d": [
+        "prime256v1"
+    ],
+    "0.9.7e": [
+        "prime256v1"
+    ],
+    "0.9.7f": [
+        "prime256v1"
+    ],
+    "0.9.7h": [
+        "prime256v1"
+    ],
+    "0.9.7i": [
+        "prime256v1"
+    ],
+    "0.9.7j": [
+        "prime256v1"
+    ],
+    "0.9.7k": [
+        "prime256v1"
+    ],
+    "0.9.7l": [
+        "prime256v1"
+    ],
+    "0.9.7m": [
+        "prime256v1"
+    ],
+    "0.9.8": [
+        "prime256v1"
+    ],
+    "0.9.8b": [
+        "prime256v1"
+    ],
+    "0.9.8c": [
+        "prime256v1"
+    ],
+    "0.9.8d": [
+        "prime256v1"
+    ],
+    "0.9.8e": [
+        "prime256v1"
+    ],
+    "0.9.8f": [
+        "prime256v1"
+    ],
+    "0.9.8h": [
+        "prime256v1"
+    ],
+    "0.9.8i": [
+        "prime256v1"
+    ],
+    "0.9.8j": [
+        "prime256v1"
+    ],
+    "0.9.8k": [
+        "prime256v1"
+    ],
+    "0.9.8l": [
+        "prime256v1"
+    ],
+    "0.9.8m": [
+        "prime256v1"
+    ],
+    "0.9.8m-beta1": [
+        "prime256v1"
+    ],
+    "0.9.8n": [
+        "prime256v1"
+    ],
+    "0.9.8o": [
+        "prime256v1"
+    ],
+    "0.9.8p": [
+        "prime256v1"
+    ],
+    "0.9.8q": [
+        "prime256v1"
+    ],
+    "0.9.8s": [
+        "prime256v1"
+    ],
+    "0.9.8u": [
+        "prime256v1"
+    ],
+    "0.9.8v": [
+        "prime256v1"
+    ],
+    "0.9.8w": [
+        "prime256v1"
+    ],
+    "0.9.8x": [
+        "prime256v1"
+    ],
+    "0.9.8y": [
+        "prime256v1"
+    ],
+    "0.9.8zb": [
+        "prime256v1"
+    ],
+    "0.9.8zc": [
+        "prime256v1"
+    ],
+    "0.9.8zd": [
+        "prime256v1"
+    ],
+    "0.9.8ze": [
+        "prime256v1"
+    ],
+    "0.9.8zf": [
+        "prime256v1"
+    ],
+    "0.9.8zh": [
+        "prime256v1"
+    ],
+    "1.0.0": [
+        "prime256v1"
+    ],
+    "1.0.0-beta1": [
+        "prime256v1"
+    ],
+    "1.0.0-beta2": [
+        "prime256v1"
+    ],
+    "1.0.0-beta3": [
+        "prime256v1"
+    ],
+    "1.0.0-beta4": [
+        "prime256v1"
+    ],
+    "1.0.0-beta5": [
+        "prime256v1"
+    ],
+    "1.0.0b": [
+        "prime256v1"
+    ],
+    "1.0.0c": [
+        "prime256v1"
+    ],
+    "1.0.0d": [
+        "prime256v1"
+    ],
+    "1.0.0e": [
+        "prime256v1"
+    ],
+    "1.0.0f": [
+        "prime256v1"
+    ],
+    "1.0.0h": [
+        "prime256v1"
+    ],
+    "1.0.0i": [
+        "prime256v1"
+    ],
+    "1.0.0j": [
+        "prime256v1"
+    ],
+    "1.0.0k": [
+        "prime256v1"
+    ],
+    "1.0.0l": [
+        "prime256v1"
+    ],
+    "1.0.0m": [
+        "prime256v1"
+    ],
+    "1.0.0n": [
+        "prime256v1"
+    ],
+    "1.0.0o": [
+        "prime256v1"
+    ],
+    "1.0.0p": [
+        "prime256v1"
+    ],
+    "1.0.0q": [
+        "prime256v1"
+    ],
+    "1.0.0s": [
+        "prime256v1"
+    ],
+    "1.0.1": [
+        "prime256v1"
+    ],
+    "1.0.1-beta1": [
+        "prime256v1"
+    ],
+    "1.0.1-beta2": [
+        "prime256v1"
+    ],
+    "1.0.1-beta3": [
+        "prime256v1"
+    ],
+    "1.0.1b": [
+        "prime256v1"
+    ],
+    "1.0.1c": [
+        "prime256v1"
+    ],
+    "1.0.1d": [
+        "prime256v1"
+    ],
+    "1.0.1e": [
+        "prime256v1"
+    ],
+    "1.0.1f": [
+        "prime256v1"
+    ],
+    "1.0.1h": [
+        "prime256v1"
+    ],
+    "1.0.1i": [
+        "prime256v1"
+    ],
+    "1.0.1j": [
+        "prime256v1"
+    ],
+    "1.0.1k": [
+        "prime256v1"
+    ],
+    "1.0.1l": [
+        "prime256v1"
+    ],
+    "1.0.1m": [
+        "prime256v1"
+    ],
+    "1.0.1n": [
+        "prime256v1"
+    ],
+    "1.0.1o": [
+        "prime256v1"
+    ],
+    "1.0.1p": [
+        "prime256v1"
+    ],
+    "1.0.1q": [
+        "prime256v1"
+    ],
+    "1.0.1s": [
+        "prime256v1"
+    ],
+    "1.0.1u": [
+        "prime256v1"
+    ],
+    "1.0.2": [
+        "sect571r1",
+        "sect571k1",
+        "secp521r1",
+        "brainpool512r1",
+        "sect409k1",
+        "sect409r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "sect283k1",
+        "sect283r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "secp256r1",
+        "sect239k1",
+        "sect233k1",
+        "sect233r1",
+        "secp224k1",
+        "secp224r1",
+        "sect193r1",
+        "sect193r2",
+        "secp192k1",
+        "secp192r1",
+        "sect163k1",
+        "sect163r1",
+        "sect163r2",
+        "secp160k1",
+        "secp160r1",
+        "secp160r2"
+    ],
+    "1.0.2-beta1": [
+        "sect571r1",
+        "sect571k1",
+        "secp521r1",
+        "brainpool512r1",
+        "sect409k1",
+        "sect409r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "sect283k1",
+        "sect283r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "secp256r1",
+        "sect239k1",
+        "sect233k1",
+        "sect233r1",
+        "secp224k1",
+        "secp224r1",
+        "sect193r1",
+        "sect193r2",
+        "secp192k1",
+        "secp192r1",
+        "sect163k1",
+        "sect163r1",
+        "sect163r2",
+        "secp160k1",
+        "secp160r1",
+        "secp160r2"
+    ],
+    "1.0.2-beta2": [
+        "sect571r1",
+        "sect571k1",
+        "secp521r1",
+        "brainpool512r1",
+        "sect409k1",
+        "sect409r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "sect283k1",
+        "sect283r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "secp256r1",
+        "sect239k1",
+        "sect233k1",
+        "sect233r1",
+        "secp224k1",
+        "secp224r1",
+        "sect193r1",
+        "sect193r2",
+        "secp192k1",
+        "secp192r1",
+        "sect163k1",
+        "sect163r1",
+        "sect163r2",
+        "secp160k1",
+        "secp160r1",
+        "secp160r2"
+    ],
+    "1.0.2-beta3": [
+        "sect571r1",
+        "sect571k1",
+        "secp521r1",
+        "brainpool512r1",
+        "sect409k1",
+        "sect409r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "sect283k1",
+        "sect283r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "secp256r1",
+        "sect239k1",
+        "sect233k1",
+        "sect233r1",
+        "secp224k1",
+        "secp224r1",
+        "sect193r1",
+        "sect193r2",
+        "secp192k1",
+        "secp192r1",
+        "sect163k1",
+        "sect163r1",
+        "sect163r2",
+        "secp160k1",
+        "secp160r1",
+        "secp160r2"
+    ],
+    "1.0.2b": [
+        "prime256v1"
+    ],
+    "1.0.2c": [
+        "prime256v1"
+    ],
+    "1.0.2d": [
+        "prime256v1"
+    ],
+    "1.0.2e": [
+        "prime256v1"
+    ],
+    "1.0.2f": [
+        "prime256v1"
+    ],
+    "1.0.2h": [
+        "prime256v1"
+    ],
+    "1.0.2i": [
+        "prime256v1"
+    ],
+    "1.0.2j": [
+        "prime256v1"
+    ],
+    "1.0.2k": [
+        "prime256v1"
+    ],
+    "1.0.2l": [
+        "prime256v1"
+    ],
+    "1.0.2m": [
+        "prime256v1"
+    ],
+    "1.0.2n": [
+        "prime256v1"
+    ],
+    "1.0.2o": [
+        "prime256v1"
+    ],
+    "1.0.2p": [
+        "prime256v1"
+    ],
+    "1.0.2q": [
+        "prime256v1"
+    ],
+    "1.0.2s": [
+        "prime256v1"
+    ],
+    "1.0.2u": [
+        "prime256v1"
+    ],
+    "1.1.0": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.0-pre1": [
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
+    ],
+    "1.1.0-pre2": [
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
+    ],
+    "1.1.0-pre3": [
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
+    ],
+    "1.1.0b": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.0c": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.0d": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.0e": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.0f": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.0h": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.0i": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.0j": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.0k": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.0l": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1-pre1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1-pre2": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1-pre3": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1-pre4": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1-pre5": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1-pre6": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1-pre7": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1-pre8": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1-pre9": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1b": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1c": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1d": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1e": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1f": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1h": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1i": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1j": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1k": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1l": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1m": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1n": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1o": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1p": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1q": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1s": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1u": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1v": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1.1.1w": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1_1_1s": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1_1_1t": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1_1_1u": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1_1_1v": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "1_1_1w": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1"
+    ],
+    "3.0.0": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha10": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha11": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha12": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha13": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha14": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha15": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha16": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha17": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha2": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha3": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha4": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha5": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha6": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha7": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha8": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-alpha9": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-beta1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.0-beta2": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.10": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.11": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.12": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.2": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.3": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.4": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.5": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.7": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.8": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.9": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.1.0": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.1.0-alpha1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.1.0-beta1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.1.1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.1.2": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.1.3": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.1.4": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.2.0": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.2.0-alpha1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.2.0-alpha2": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.2.0-beta1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ]
+}
