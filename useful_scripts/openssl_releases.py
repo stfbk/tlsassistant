@@ -6,8 +6,6 @@ import tarfile
 import shutil
 import json
 import time
-import logging
-logging.basicConfig(level=logging.DEBUG)
 # dentro ssl/ssl.h c'è # define SSL_DEFAULT_CIPHER_LIST "ALL:!EXPORT:!aNULL:!eNULL:!SSLv2"
 releases = ["0.9.x", "1.0.0", "1.0.1", "1.0.2", "1.1.0", "1.1.1", "3.0", "3.1", "3.2"]
 # THIS SCRIPT IS USED TO DOWNLOAD THE OPENSSL RELEASES AND EXTRACT THE SIGALGS
@@ -29,7 +27,7 @@ def download_releases():
         lines = r.text.split("\n")
         for line in lines:
             if "openssl-" in line and ".tar.gz" in line:
-                old_releases[release].append(line.split(">")[1].split("<")[0])
+                old_releases[release].append(line.split(">")[2].split("<")[0])
         time.sleep(0.2)
     urls = {}
     for release in latest_releases:
@@ -37,6 +35,13 @@ def download_releases():
     for release in old_releases:
         for old_release in old_releases[release]:
             urls[old_release.strip(".tar.gz")] = f"https://www.openssl.org/source/old/{release}/{old_release}"
+    del urls[""]
+    to_remove = []
+    for release in urls:
+        if "fips" in release or "engine" in release:
+            to_remove.append(release)
+    for release in to_remove:
+        del urls[release]
     with open("urls.json", "w") as f:
         json.dump(urls, f, indent=4, sort_keys=True)
     return urls
@@ -146,6 +151,7 @@ def extract_groups(releases_data):
 def extract_sigalgs(releases_data):
     sigalgs_dict = {}
     sigalgs_table = {}
+    print(releases_data.keys())
     for release in releases_data:
         lines = releases_data[release].get("sigalgs", [])
         sigalgs = []
@@ -197,35 +203,50 @@ def extract_sigalgs(releases_data):
         json.dump(iana_to_ietf, f, indent=4, sort_keys=True)
 
 def extract_ciphersuites_tags():
-    final_ciphers = {"releases_default": {}}
-    for release in [r for r in os.listdir("tmp") if r[-2:] != "gz" and r[-3:] != "csv"]:
+    final_ciphers = {
+        "releases_default": {},
+        "ciphers_per_release": {}
+    }
+    releases_list = [r for r in os.listdir("tmp") if r[-2:] != "gz" and r[-3:] != "csv"]
+    releases_list.sort()
+    for release in releases_list:
+        final_ciphers["ciphers_per_release"][release] = []
+    for release in releases_list:
         print("Release: ", release)
+        use_default = False
+        counter_to_field = {}
         # at the moment we consider only ciphersuites from openssl 1.0.0 onwards
-        if release.startswith("openssl-0.9"):
-            continue
         file = "ssl.h"
         if not os.path.exists(f"tmp/{release}/{file}"):
             file = "ssl_local.h"
-        if not os.path.exists(f"tmp/{release}/{file}"):
-            continue
-        counter_to_field = {}
-        with open(f"tmp/{release}/{file}", "r") as f:
-            line = "a"
-            start = False
-            counter = 0
-            while line:
-                line = f.readline()
-                if "SSL_DEFAULT_CIPHER_LIST" in line:
-                    default_ciphers = line.split("\"")[1].strip("\"")
-                    final_ciphers["releases_default"][release] = default_ciphers
-                if "ssl_cipher_st" in line and "SSL_CIPHER" not in line:
-                    start = True
-                elif "};" in line:
-                    line = None
-                elif start and ";" in line:
-                    field_name = line.split(";")[0].strip().split(" ")[-1]
-                    counter_to_field[counter] = field_name
-                    counter += 1
+        if os.path.exists(f"tmp/{release}/{file}"):
+            with open(f"tmp/{release}/{file}", "r") as f:
+                line = "a"
+                start = False
+                counter = 0
+                while line:
+                    line = f.readline()
+                    if "SSL_DEFAULT_CIPHER_LIST" in line:
+                        default_ciphers = line.split("\"")[1].strip("\"")
+                        final_ciphers["releases_default"][release] = default_ciphers
+                    if "ssl_cipher_st" in line and "SSL_CIPHER" not in line:
+                        start = True
+                    elif "};" in line or (start and "SSL_CIPHER;" in line):
+                        line = None
+                    elif start and ";" in line:
+                        field_name = line.split(";")[0].strip().split(" ")[-1]
+                        counter_to_field[counter] = field_name
+                        counter += 1
+        if not counter_to_field:
+            values_to_add = ["valid", "*name", "id", "algorithm_mkey", "algorithm_auth", "algorithm_enc",
+                             "algorithm_mac",
+                             "min_tls", "max_tls", "min_dtls", "max_dtls", "algo_strength", "algorithm2",
+                             "strength_bits", "alg_bits"]
+            if release.startswith("openssl-1.1.1"):
+                values_to_add.insert(2, "*stdname")
+            counter_to_field = {}
+            for i, v in enumerate(values_to_add):
+                counter_to_field[i] = v
         if not final_ciphers["releases_default"].get(release) and os.path.isfile(f"tmp/{release}/ssl_ciph.c"):
             with open(f"tmp/{release}/ssl_ciph.c", "r") as f:
                 line = "a"
@@ -258,6 +279,7 @@ def extract_ciphersuites_tags():
             read = -1
             skipping = 0
             ciphers_counter = 0
+            total_blocks = 1
             if os.path.isfile(f"tmp/{release}/{file}"):
                 counter = 0
                 with open(f"tmp/{release}/{file}", "r") as f:
@@ -265,6 +287,8 @@ def extract_ciphersuites_tags():
                     while line:
                         line_counter += 1
                         line = f.readline()
+                        if "tls13_ciphers" in line:
+                            total_blocks += 1
                         if "downgrade" in line and read == -1:
                             continue
                         if "if 0" in line:
@@ -279,11 +303,15 @@ def extract_ciphersuites_tags():
                             counter = 0
                             # the list of ciphersuites is over
                             if "};" in line:
-                                line = None
+                                total_blocks -= 1
+                                read = -1
+                                if total_blocks == 0:
+                                    line = None
                         elif read > 0 and skipping == 0:
                             if counter_to_field.get(counter):
+                                line = line.split("/*")[0] if "/*" in line else line
                                 content = line.split(",") if line.count(",") > 1 else [line]
-                                content = [c.strip().strip(",") for c in content]
+                                content = [c.strip().strip(",") for c in content if c.strip().strip(",")]
                                 ciphers[ciphers_counter][counter_to_field[counter]] = content[0]
                                 i = 0
                                 if len(content) > 1:
@@ -300,6 +328,15 @@ def extract_ciphersuites_tags():
                             ciphers[ciphers_counter] = {}
                 # make the name field the new key for each element that has a number as its key
                 tmp = {}
+                if release.startswith("openssl-0.9"):
+                    for cipher in ciphers:
+                        algs = ciphers[cipher].pop("algorithms", "")
+                        if algs:
+                            algs = algs.split("|")
+                            to_insert = ["algorithm_mkey", "algorithm_auth", "algorithm_enc", "algorithm_mac",
+                                         "algorithm_ssl"]
+                            for alg in algs:
+                                ciphers[cipher][to_insert.pop(0)] = alg
                 for cipher in ciphers:
                     if ciphers[cipher].get("*name"):
                         tmp[ciphers[cipher]["*name"]] = ciphers[cipher]
@@ -320,8 +357,11 @@ def extract_ciphersuites_tags():
                             final_ciphers[cipher][field].replace(" ", "") != ciphers[cipher][field].replace(" ", ""):
                         differences[field] = ciphers[cipher][field]
             final_ciphers[cipher]["releases"][release] = differences if differences else True
+            final_ciphers["ciphers_per_release"][release].append(cipher)
     with open("../configs/compliance/ciphersuites_tags.json", "w") as f:
         json.dump(final_ciphers, f, indent=4)
+
+
 
 
 
@@ -329,5 +369,5 @@ if __name__ == "__main__":
     if not os.path.exists("tmp"):
         os.mkdir("tmp")
     #extract_files()
-    #extract_tables()
+    extract_tables()
     extract_ciphersuites_tags()
