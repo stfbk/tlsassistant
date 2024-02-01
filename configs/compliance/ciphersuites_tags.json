@@ -257,12 +257,14 @@
         "algorithm_auth": "SSL_aANY",
         "algorithm_enc": "SSL_AES128GCM",
         "algorithm_mac": "SSL_AEAD",
-        "min_tls": "TLS1_3_VERSION, TLS1_3_VERSION",
-        "max_tls": "0, 0",
-        "min_dtls": "SSL_HIGH",
-        "max_dtls": "SSL_HANDSHAKE_MAC_SHA256",
-        "algo_strength": "128",
-        "algorithm2": "128",
+        "min_tls": "TLS1_3_VERSION",
+        "max_tls": "TLS1_3_VERSION",
+        "min_dtls": "0",
+        "max_dtls": "0",
+        "algo_strength": "SSL_HIGH",
+        "algorithm2": "SSL_HANDSHAKE_MAC_SHA256",
+        "strength_bits": "128",
+        "alg_bits": "128",
         "releases": {
             "openssl-1.1.1n": true,
             "openssl-1.1.1v": true,
@@ -271,7 +273,7 @@
             "openssl-3.0.0-alpha16": true,
             "openssl-3.0.3": true,
             "openssl-3.2.0-alpha2": {
-                "max_dtls": "SSL_HANDSHAKE_MAC_SHA256 | SSL_QUIC"
+                "algorithm2": "SSL_HANDSHAKE_MAC_SHA256 | SSL_QUIC"
             },
             "openssl-3.0.10": true,
             "openssl-3.0.0-alpha15": true,
@@ -308,7 +310,7 @@
             "openssl-3.1.0": true,
             "openssl-3.1.3": true,
             "openssl-3.2.0-beta1": {
-                "max_dtls": "SSL_HANDSHAKE_MAC_SHA256 | SSL_QUIC"
+                "algorithm2": "SSL_HANDSHAKE_MAC_SHA256 | SSL_QUIC"
             },
             "openssl-1.1.1e": true,
             "openssl-3.0.0-beta1": true,
@@ -319,7 +321,7 @@
             "openssl-3.0.0-alpha10": true,
             "openssl-3.1.0-beta1": true,
             "openssl-3.2.0": {
-                "max_dtls": "SSL_HANDSHAKE_MAC_SHA256 | SSL_QUIC"
+                "algorithm2": "SSL_HANDSHAKE_MAC_SHA256 | SSL_QUIC"
             },
             "openssl-3.0.0-alpha13": true,
             "openssl-3.0.0-beta2": true,
@@ -338,12 +340,14 @@
         "algorithm_auth": "SSL_aANY",
         "algorithm_enc": "SSL_CHACHA20POLY1305",
         "algorithm_mac": "SSL_AEAD",
-        "min_tls": "TLS1_3_VERSION, TLS1_3_VERSION",
-        "max_tls": "0, 0",
-        "min_dtls": "SSL_HIGH",
-        "max_dtls": "SSL_HANDSHAKE_MAC_SHA256",
-        "algo_strength": "256",
-        "algorithm2": "256",
+        "min_tls": "TLS1_3_VERSION",
+        "max_tls": "TLS1_3_VERSION",
+        "min_dtls": "0",
+        "max_dtls": "0",
+        "algo_strength": "SSL_HIGH",
+        "algorithm2": "SSL_HANDSHAKE_MAC_SHA256",
+        "strength_bits": "256",
+        "alg_bits": "256",
         "releases": {
             "openssl-1.1.1n": true,
             "openssl-1.1.1v": true,
@@ -352,7 +356,7 @@
             "openssl-3.0.0-alpha16": true,
             "openssl-3.0.3": true,
             "openssl-3.2.0-alpha2": {
-                "max_dtls": "SSL_HANDSHAKE_MAC_SHA256 | SSL_QUIC"
+                "algorithm2": "SSL_HANDSHAKE_MAC_SHA256 | SSL_QUIC"
             },
             "openssl-3.0.10": true,
             "openssl-3.0.0-alpha15": true,
@@ -389,7 +393,7 @@
             "openssl-3.1.0": true,
             "openssl-3.1.3": true,
             "openssl-3.2.0-beta1": {
-                "max_dtls": "SSL_HANDSHAKE_MAC_SHA256 | SSL_QUIC"
+                "algorithm2": "SSL_HANDSHAKE_MAC_SHA256 | SSL_QUIC"
             },
             "openssl-1.1.1e": true,
             "openssl-3.0.0-beta1": true,
@@ -400,7 +404,7 @@
             "openssl-3.0.0-alpha10": true,
             "openssl-3.1.0-beta1": true,
             "openssl-3.2.0": {
-                "max_dtls": "SSL_HANDSHAKE_MAC_SHA256 | SSL_QUIC"
+                "algorithm2": "SSL_HANDSHAKE_MAC_SHA256 | SSL_QUIC"
             },
             "openssl-3.0.0-alpha13": true,
             "openssl-3.0.0-beta2": true,
@@ -419,12 +423,14 @@
         "algorithm_auth": "SSL_aANY",
         "algorithm_enc": "SSL_AES128CCM",
         "algorithm_mac": "SSL_AEAD",
-        "min_tls": "TLS1_3_VERSION, TLS1_3_VERSION",
-        "max_tls": "0, 0",
-        "min_dtls": "SSL_NOT_DEFAULT | SSL_HIGH",
-        "max_dtls": "SSL_HANDSHAKE_MAC_SHA256",
-        "algo_strength": "128",
-        "algorithm2": "128",
+        "min_tls": "TLS1_3_VERSION",
+        "max_tls": "TLS1_3_VERSION",
+        "min_dtls": "0",
+        "max_dtls": "0",
+        "algo_strength": "SSL_NOT_DEFAULT | SSL_HIGH",
+        "algorithm2": "SSL_HANDSHAKE_MAC_SHA256",
+        "strength_bits": "128",
+        "alg_bits": "128",
         "releases": {
             "openssl-1.1.1n": true,
             "openssl-1.1.1v": true,

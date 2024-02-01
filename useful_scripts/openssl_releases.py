@@ -282,7 +282,14 @@ def extract_ciphersuites_tags():
                                 line = None
                         elif read > 0 and skipping == 0:
                             if counter_to_field.get(counter):
-                                ciphers[ciphers_counter][counter_to_field[counter]] = line.strip().strip(",")
+                                content = line.split(",") if line.count(",") > 1 else [line]
+                                content = [c.strip().strip(",") for c in content]
+                                ciphers[ciphers_counter][counter_to_field[counter]] = content[0]
+                                i = 0
+                                if len(content) > 1:
+                                    i += 1
+                                    counter += 1
+                                    ciphers[ciphers_counter][counter_to_field[counter]] = content[i]
                             else:
                                 print("Error: ", line_counter, line, file, release, counter_to_field, counter)
                                 input()
