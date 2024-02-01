@@ -210,17 +210,19 @@ def extract_ciphersuites_tags():
     releases_list = [r for r in os.listdir("tmp") if r[-2:] != "gz" and r[-3:] != "csv"]
     releases_list.sort()
     for release in releases_list:
+        release = release.lower().replace("openssl", "")[1:]
         final_ciphers["ciphers_per_release"][release] = []
     for release in releases_list:
+        file_release = release
+        release = release.lower().replace("openssl", "")[1:]
         print("Release: ", release)
-        use_default = False
         counter_to_field = {}
         # at the moment we consider only ciphersuites from openssl 1.0.0 onwards
         file = "ssl.h"
-        if not os.path.exists(f"tmp/{release}/{file}"):
+        if not os.path.exists(f"tmp/{file_release}/{file}"):
             file = "ssl_local.h"
-        if os.path.exists(f"tmp/{release}/{file}"):
-            with open(f"tmp/{release}/{file}", "r") as f:
+        if os.path.exists(f"tmp/{file_release}/{file}"):
+            with open(f"tmp/{file_release}/{file}", "r") as f:
                 line = "a"
                 start = False
                 counter = 0
@@ -242,13 +244,18 @@ def extract_ciphersuites_tags():
                              "algorithm_mac",
                              "min_tls", "max_tls", "min_dtls", "max_dtls", "algo_strength", "algorithm2",
                              "strength_bits", "alg_bits"]
-            if release.startswith("openssl-1.1.1"):
+            if release.startswith("1.1.1"):
                 values_to_add.insert(2, "*stdname")
+            elif release.startswith("1.1.0-pre"):
+                values_to_add[7] = "algorithm_ssl"
+                values_to_add.remove("max_tls")
+                values_to_add.remove("min_dtls")
+                values_to_add.remove("max_dtls")
             counter_to_field = {}
             for i, v in enumerate(values_to_add):
                 counter_to_field[i] = v
-        if not final_ciphers["releases_default"].get(release) and os.path.isfile(f"tmp/{release}/ssl_ciph.c"):
-            with open(f"tmp/{release}/ssl_ciph.c", "r") as f:
+        if not final_ciphers["releases_default"].get(release) and os.path.isfile(f"tmp/{file_release}/ssl_ciph.c"):
+            with open(f"tmp/{file_release}/ssl_ciph.c", "r") as f:
                 line = "a"
                 start = 0
                 tls1_2_ciphers = ""
@@ -280,9 +287,9 @@ def extract_ciphersuites_tags():
             skipping = 0
             ciphers_counter = 0
             total_blocks = 1
-            if os.path.isfile(f"tmp/{release}/{file}"):
+            if os.path.isfile(f"tmp/{file_release}/{file}"):
                 counter = 0
-                with open(f"tmp/{release}/{file}", "r") as f:
+                with open(f"tmp/{file_release}/{file}", "r") as f:
                     line = "a"
                     while line:
                         line_counter += 1
@@ -328,7 +335,7 @@ def extract_ciphersuites_tags():
                             ciphers[ciphers_counter] = {}
                 # make the name field the new key for each element that has a number as its key
                 tmp = {}
-                if release.startswith("openssl-0.9"):
+                if release.startswith("0.9"):
                     for cipher in ciphers:
                         algs = ciphers[cipher].pop("algorithms", "")
                         if algs:
@@ -358,6 +365,8 @@ def extract_ciphersuites_tags():
                         differences[field] = ciphers[cipher][field]
             final_ciphers[cipher]["releases"][release] = differences if differences else True
             final_ciphers["ciphers_per_release"][release].append(cipher)
+
+
     with open("../configs/compliance/ciphersuites_tags.json", "w") as f:
         json.dump(final_ciphers, f, indent=4)
 
