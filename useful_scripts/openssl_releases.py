@@ -1,13 +1,15 @@
-import pprint
+import json
+import os
+import shutil
+import tarfile
+import time
 
 import requests
-import os
-import tarfile
-import shutil
-import json
-import time
+
 # dentro ssl/ssl.h c'è # define SSL_DEFAULT_CIPHER_LIST "ALL:!EXPORT:!aNULL:!eNULL:!SSLv2"
 releases = ["0.9.x", "1.0.0", "1.0.1", "1.0.2", "1.1.0", "1.1.1", "3.0", "3.1", "3.2"]
+
+
 # THIS SCRIPT IS USED TO DOWNLOAD THE OPENSSL RELEASES AND EXTRACT THE SIGALGS
 # FROM THE SOURCE CODE. THE SIGALGS ARE THEN USED IN THE CONFIGURATION FILES
 # FOR THE COMPLIANCE MODULE.
@@ -45,6 +47,7 @@ def download_releases():
     with open("urls.json", "w") as f:
         json.dump(urls, f, indent=4, sort_keys=True)
     return urls
+
 
 def extract_files():
     if not os.path.exists("urls.json"):
@@ -88,6 +91,7 @@ def extract_file(release, file):
                 os.mkdir(f"tmp/{release}")
             shutil.rmtree(f"tmp/{first_name}")
 
+
 def extract_tables():
     pairs = {
         "sigalg_lookup_tbl[]": {
@@ -127,6 +131,7 @@ def extract_tables():
     extract_sigalgs(tables)
     extract_groups(tables)
 
+
 def extract_groups(releases_data):
     groups_dict = {}
     for release in releases_data:
@@ -148,10 +153,10 @@ def extract_groups(releases_data):
     with open("../configs/compliance/groups.json", "w") as f:
         json.dump(groups_dict, f, indent=4, sort_keys=True)
 
+
 def extract_sigalgs(releases_data):
     sigalgs_dict = {}
     sigalgs_table = {}
-    print(releases_data.keys())
     for release in releases_data:
         lines = releases_data[release].get("sigalgs", [])
         sigalgs = []
@@ -202,7 +207,33 @@ def extract_sigalgs(releases_data):
     with open("../configs/compliance/sigalgs_iana_to_ietf.json", "w") as f:
         json.dump(iana_to_ietf, f, indent=4, sort_keys=True)
 
+
+def get_ciphersuites_mapping():
+    ciphersuites_mapping = {}
+    ssl3 = "https://raw.githubusercontent.com/openssl/openssl/master/include/openssl/ssl3.h"
+    tl1 = "https://raw.githubusercontent.com/openssl/openssl/master/include/openssl/tls1.h"
+    data = requests.get(ssl3).text
+    data += requests.get(tl1).text
+    lines = data.split("\n")
+    valid_tokens = ["SSL3_TXT", "TLS1_TXT", "TLS1_3_RFC"]
+    for line in lines:
+        if any(valid_token in line for valid_token in valid_tokens):
+            tokens = line.split(" ")
+            tokens = [t.strip() for t in tokens if t.strip()]
+            macro_name = ""
+            cipher_string = ""
+            for token in tokens:
+                if any(valid_token in token for valid_token in valid_tokens):
+                    macro_name = token.strip()
+                elif "\"" in token:
+                    cipher_string = token.strip("\"")
+            if macro_name and cipher_string:
+                ciphersuites_mapping[macro_name] = cipher_string
+    return ciphersuites_mapping
+
+
 def extract_ciphersuites_tags():
+    ciphersuites_mapping = get_ciphersuites_mapping()
     final_ciphers = {
         "releases_default": {},
         "ciphers_per_release": {}
@@ -346,8 +377,9 @@ def extract_ciphersuites_tags():
                                 ciphers[cipher][to_insert.pop(0)] = alg
                 for cipher in ciphers:
                     if ciphers[cipher].get("*name"):
-                        tmp[ciphers[cipher]["*name"]] = ciphers[cipher]
-                        del tmp[ciphers[cipher]["*name"]]["*name"]
+                        name = ciphersuites_mapping.get(ciphers[cipher]["*name"], ciphers[cipher]["*name"])
+                        tmp[name] = ciphers[cipher]
+                        del tmp[name]["*name"]
                     elif not isinstance(cipher, int):
                         tmp[cipher] = ciphers[cipher]
                 ciphers = tmp
@@ -366,17 +398,13 @@ def extract_ciphersuites_tags():
             final_ciphers[cipher]["releases"][release] = differences if differences else True
             final_ciphers["ciphers_per_release"][release].append(cipher)
 
-
     with open("../configs/compliance/ciphersuites_tags.json", "w") as f:
         json.dump(final_ciphers, f, indent=4)
-
-
-
 
 
 if __name__ == "__main__":
     if not os.path.exists("tmp"):
         os.mkdir("tmp")
-    #extract_files()
+    # extract_files()
     extract_tables()
     extract_ciphersuites_tags()
