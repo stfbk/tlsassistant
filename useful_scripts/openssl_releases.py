@@ -327,6 +327,24 @@ def get_actual_text(line, counter, counter_to_field, count, dictionary):
     return counter
 
 
+def prune_mapping(mapping):
+    to_remove = []
+    for tag in mapping.keys():
+        if mapping[tag].get("mask"):
+            del mapping[tag]["mask"]
+    for tag in mapping:
+        for field in mapping[tag]:
+            if mapping[tag][field] in ["0", "NULL", ""]:
+                to_remove.append((tag, field))
+    for tag, field in to_remove:
+        del mapping[tag][field]
+    to_remove = []
+    for tag in mapping:
+        if len(mapping[tag]) == 1:
+            to_remove.append(tag)
+    for tag in to_remove:
+        del mapping[tag]
+
 def extract_ciphersuites_tags():
     final_tags_aliases = {}
     final_ciphers = {
@@ -478,6 +496,7 @@ def extract_ciphersuites_tags():
                         differences[field] = ciphers[cipher][field]
             final_ciphers[cipher]["releases"][release] = differences if differences else True
             final_ciphers["ciphers_per_release"][release].append(cipher)
+    prune_mapping(final_tags_aliases)
     with open("../configs/compliance/tags_mapping.json", "w") as f:
         json.dump(final_tags_aliases, f, indent=4)
     with open("../configs/compliance/ciphersuites_tags.json", "w") as f:
