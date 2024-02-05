@@ -65,7 +65,8 @@ def extract_files():
             with open(f"tmp/{release}.tar.gz", "wb") as f:
                 f.write(r.content)
         # unzip only the necessary files
-        files = ["t1_lib.c", "ssl_local.h", "s3_lib.c", "s2_lib.c", "ssl.h", "ssl_ciph.c"]
+        files = ["t1_lib.c", "ssl_local.h", "s3_lib.c", "s2_lib.c", "ssl.h", "ssl_ciph.c", "ssl_locl.h", "ssl3.h",
+                 "tls1.h"]
         for file in files:
             if not os.path.exists(f"tmp/{release}/{file}"):
                 extract_file(release, file)
@@ -78,14 +79,17 @@ def extract_file(release, file):
     first_name = tar.getnames()[0]
     if "/" in first_name:
         first_name = first_name.split("/")[0]
+    names = tar.getnames()
     member_string = f"{first_name}/ssl/{file}"
-    if member_string in tar.getnames():
+    if member_string not in names:
+        member_string = f"{first_name}/include/openssl/{file}"
+    if member_string in names and not os.path.exists(f"tmp/{release}/{file}"):
         obj = tar.getmember(member_string)
         tar.extract(obj, path=f"tmp/")
         tar.close()
         if not os.path.isdir(f"tmp/{release}"):
             os.mkdir(f"tmp/{release}")
-        shutil.move(f"tmp/{first_name}/ssl/{file}", f"tmp/{release}/{file}")
+        shutil.move("tmp/" + member_string, f"tmp/{release}/{file}")
         if first_name != release:
             if not os.path.exists(f"tmp/{release}"):
                 os.mkdir(f"tmp/{release}")
@@ -208,14 +212,14 @@ def extract_sigalgs(releases_data):
         json.dump(iana_to_ietf, f, indent=4, sort_keys=True)
 
 
-def get_ciphersuites_mapping():
+def get_ciphersuites_mapping(release):
     ciphersuites_mapping = {}
-    ssl3 = "https://raw.githubusercontent.com/openssl/openssl/master/include/openssl/ssl3.h"
-    tl1 = "https://raw.githubusercontent.com/openssl/openssl/master/include/openssl/tls1.h"
-    data = requests.get(ssl3).text
-    data += requests.get(tl1).text
-    lines = data.split("\n")
+    lines = []
     valid_tokens = ["SSL3_TXT", "TLS1_TXT", "TLS1_3_RFC"]
+    for file in ["ssl3.h", "tls1.h"]:
+        with open(f"tmp/{release}/{file}", "r") as f:
+            data = f.read()
+            lines += data.split("\n")
     for line in lines:
         if any(valid_token in line for valid_token in valid_tokens):
             tokens = line.split(" ")
@@ -232,59 +236,115 @@ def get_ciphersuites_mapping():
     return ciphersuites_mapping
 
 
+def get_tags_mapping(release):
+    file = "ssl_local.h" if os.path.isfile(f"tmp/{release}/ssl_local.h") else "ssl_locl.h"
+    tags_mapping = {}
+    with open(f"tmp/{release}/{file}", "r") as f:
+        line = "a"
+        while line:
+            line = f.readline()
+            if "SSL_" in line and "define" in line:
+                tokens = line.split("define")
+                tokens = [t.strip() for t in tokens if t.strip()]
+                if len(tokens) > 1:
+                    tokens = tokens[1].split()
+                    if len(tokens) > 1:
+                        tag = tokens[0]
+                        value = tokens[1]
+                        # We only need the tags that are not defined as hex values
+                        # like PSK that becomes (SSL_kPSK | SSL_kRSAPSK | SSL_kECDHEPSK | SSL_kDHEPSK)
+                        if "0x" not in value:
+                            tags_mapping[tag] = value
+    return tags_mapping
+
+
+def update_ciphersuites_struct(release, dictionary, dictionary_mapping):
+    tmp = {}
+    if release.startswith("0.9"):
+        for tag in dictionary:
+            algs = dictionary[tag].pop("algorithms", "")
+            if algs:
+                algs = algs.split("|")
+                to_insert = ["algorithm_mkey", "algorithm_auth", "algorithm_enc", "algorithm_mac",
+                             "algorithm_ssl"]
+                for alg in algs:
+                    dictionary[tag][to_insert.pop(0)] = alg
+    for tag in dictionary:
+        if dictionary[tag].get("*name"):
+            name = dictionary_mapping.get(dictionary[tag]["*name"], dictionary[tag]["*name"])
+            tmp[name] = dictionary[tag]
+            del tmp[name]["*name"]
+        elif not isinstance(tag, int):
+            tmp[tag] = dictionary[tag]
+    return tmp
+
+
+def get_counter_to_field(path, final_ciphers, release):
+    counter_to_field = {}
+    with open(path, "r") as f:
+        line = "a"
+        start = False
+        counter = 0
+        tls_1_2 = ""
+        tls_1_3 = ""
+        while line:
+            line = f.readline()
+            if "SSL_DEFAULT_CIPHER_LIST" in line:
+                default_ciphers = line.split("\"")[1].strip("\"")
+                tls_1_2 = default_ciphers
+            elif "TLS_DEFAULT_CIPHERSUITES" in line:
+                while "\\" in line:
+                    default_ciphers = line.split("\"")[1].strip("\"")
+                    tls_1_3 += default_ciphers
+                    line = f.readline()
+            if "ssl_cipher_st" in line and "SSL_CIPHER" not in line:
+                start = True
+            elif "};" in line or (start and "SSL_CIPHER;" in line):
+                line = None
+            elif start and ";" in line:
+                field_name = line.split(";")[0].strip().split(" ")[-1]
+                counter_to_field[counter] = field_name
+                counter += 1
+    actual_data = final_ciphers["releases_default"].get(release, "")
+    if tls_1_3 and (isinstance(actual_data, str) or not actual_data):
+        tls_1_2 = tls_1_2 if tls_1_2 else actual_data
+        final_ciphers["releases_default"][release] = (tls_1_2, tls_1_3)
+    elif tls_1_2 and not actual_data:
+        final_ciphers["releases_default"][release] = tls_1_2
+    elif tls_1_2 and isinstance(actual_data, tuple):
+        final_ciphers["releases_default"][release] = (tls_1_2, actual_data[1])
+    return counter_to_field
+
+
+def get_actual_text(line, counter, counter_to_field, count, dictionary):
+    line = line.split("/*")[0] if "/*" in line else line
+    content = line.split(",") if line.count(",") > 1 else [line]
+    content = [c.strip().strip(",") for c in content if c.strip().strip(",")]
+    for i in range(0, len(content)):
+        content[i] = content[i].strip("{").strip("}")
+        dictionary[count][counter_to_field[counter]] = content[i]
+        counter += 1
+    return counter
+
+
 def extract_ciphersuites_tags():
-    ciphersuites_mapping = get_ciphersuites_mapping()
+    final_tags_aliases = {}
     final_ciphers = {
         "releases_default": {},
         "ciphers_per_release": {}
     }
     releases_list = [r for r in os.listdir("tmp") if r[-2:] != "gz" and r[-3:] != "csv"]
     releases_list.sort()
+    ciphersuites_mapping = get_ciphersuites_mapping(releases_list[-1])
     for release in releases_list:
         release = release.lower().replace("openssl", "")[1:]
         final_ciphers["ciphers_per_release"][release] = []
     for release in releases_list:
+        tags_mapping = get_tags_mapping(release)
         file_release = release
         release = release.lower().replace("openssl", "")[1:]
         print("Release: ", release)
         counter_to_field = {}
-        # at the moment we consider only ciphersuites from openssl 1.0.0 onwards
-        file = "ssl.h"
-        if not os.path.exists(f"tmp/{file_release}/{file}"):
-            file = "ssl_local.h"
-        if os.path.exists(f"tmp/{file_release}/{file}"):
-            with open(f"tmp/{file_release}/{file}", "r") as f:
-                line = "a"
-                start = False
-                counter = 0
-                while line:
-                    line = f.readline()
-                    if "SSL_DEFAULT_CIPHER_LIST" in line:
-                        default_ciphers = line.split("\"")[1].strip("\"")
-                        final_ciphers["releases_default"][release] = default_ciphers
-                    if "ssl_cipher_st" in line and "SSL_CIPHER" not in line:
-                        start = True
-                    elif "};" in line or (start and "SSL_CIPHER;" in line):
-                        line = None
-                    elif start and ";" in line:
-                        field_name = line.split(";")[0].strip().split(" ")[-1]
-                        counter_to_field[counter] = field_name
-                        counter += 1
-        if not counter_to_field:
-            values_to_add = ["valid", "*name", "id", "algorithm_mkey", "algorithm_auth", "algorithm_enc",
-                             "algorithm_mac",
-                             "min_tls", "max_tls", "min_dtls", "max_dtls", "algo_strength", "algorithm2",
-                             "strength_bits", "alg_bits"]
-            if release.startswith("1.1.1"):
-                values_to_add.insert(2, "*stdname")
-            elif release.startswith("1.1.0-pre"):
-                values_to_add[7] = "algorithm_ssl"
-                values_to_add.remove("max_tls")
-                values_to_add.remove("min_dtls")
-                values_to_add.remove("max_dtls")
-            counter_to_field = {}
-            for i, v in enumerate(values_to_add):
-                counter_to_field[i] = v
         if not final_ciphers["releases_default"].get(release) and os.path.isfile(f"tmp/{file_release}/ssl_ciph.c"):
             with open(f"tmp/{file_release}/ssl_ciph.c", "r") as f:
                 line = "a"
@@ -305,11 +365,58 @@ def extract_ciphersuites_tags():
                             tls1_3_ciphers += line.split(" ")[-1].strip("\";\n")
                     elif start and "}" in line:
                         start = 0
-                if not (tls1_2_ciphers and tls1_3_ciphers):
-                    # If the ciphersuites are not defined in ssl_ciph.c, we use the default ones
-                    final_ciphers["releases_default"][release] = "ALL:!aNULL:!eNULL"
-                else:
+                if tls1_2_ciphers and tls1_3_ciphers:
                     final_ciphers["releases_default"][release] = (tls1_2_ciphers, tls1_3_ciphers)
+
+        file = "ssl.h"
+        if os.path.exists(f"tmp/{file_release}/{file}"):
+            path = f"tmp/{file_release}/{file}"
+            counter_to_field = get_counter_to_field(path, final_ciphers, release)
+        file = "ssl_local.h" if os.path.isfile(f"tmp/{file_release}/ssl_local.h") else "ssl_locl.h"
+        if not counter_to_field and os.path.exists(f"tmp/{file_release}/{file}"):
+            path = f"tmp/{file_release}/{file}"
+            counter_to_field = get_counter_to_field(path, final_ciphers, release)
+        if os.path.isfile(f"tmp/{file_release}/ssl_ciph.c"):
+            alias_mapping = {}
+            with open(f"tmp/{file_release}/ssl_ciph.c", "r") as f:
+                line = "a"
+                start = 0
+                counter = 0
+                while line:
+                    line = f.readline()
+                    if "SSL_CIPHER cipher_aliases" in line:
+                        start = 1
+                        counter = 0
+                        tags_count = 0
+                    elif start and "};" in line:
+                        start = 0
+                        line = None
+                    elif start and ("{" in line or "}" in line):
+                        if alias_mapping.get(tags_count) is None:
+                            alias_mapping[tags_count] = {}
+                            counter = 0
+                        if counter_to_field.get(counter):
+                            counter = get_actual_text(line, counter, counter_to_field, tags_count, alias_mapping)
+                        else:
+                            print("Error: ", line, file, release, counter_to_field, counter)
+                            input()
+                        if "}" in line:
+                            tags_count += 1
+            alias_mapping = update_ciphersuites_struct(release, alias_mapping, tags_mapping)
+            for tag in alias_mapping:
+                differences = {}
+                if not final_tags_aliases.get(tag):
+                    final_tags_aliases[tag] = alias_mapping[tag]
+                    final_tags_aliases[tag]["releases"] = {}
+                else:
+                    for field in alias_mapping[tag]:
+                        if field not in final_tags_aliases[tag]:
+                            final_tags_aliases[tag][field] = alias_mapping[tag][field]
+                        elif (field != "releases" and field != "source" and
+                              final_tags_aliases[tag][field].replace(" ", "") != alias_mapping[tag][field].
+                                      replace(" ", "")):
+                            differences[field] = alias_mapping[tag][field]
+                final_tags_aliases[tag]["releases"][release] = differences if differences else True
 
         ciphers = {}
         for file in ["s2_lib.c", "s3_lib.c"]:
@@ -347,42 +454,16 @@ def extract_ciphersuites_tags():
                                     line = None
                         elif read > 0 and skipping == 0:
                             if counter_to_field.get(counter):
-                                line = line.split("/*")[0] if "/*" in line else line
-                                content = line.split(",") if line.count(",") > 1 else [line]
-                                content = [c.strip().strip(",") for c in content if c.strip().strip(",")]
-                                ciphers[ciphers_counter][counter_to_field[counter]] = content[0]
-                                i = 0
-                                if len(content) > 1:
-                                    i += 1
-                                    counter += 1
-                                    ciphers[ciphers_counter][counter_to_field[counter]] = content[i]
+                                counter = get_actual_text(line, counter, counter_to_field, ciphers_counter, ciphers)
                             else:
                                 print("Error: ", line_counter, line, file, release, counter_to_field, counter)
                                 input()
-                            counter += 1
                         elif "{" in line:
                             read += 1
                             ciphers_counter += 1
                             ciphers[ciphers_counter] = {}
                 # make the name field the new key for each element that has a number as its key
-                tmp = {}
-                if release.startswith("0.9"):
-                    for cipher in ciphers:
-                        algs = ciphers[cipher].pop("algorithms", "")
-                        if algs:
-                            algs = algs.split("|")
-                            to_insert = ["algorithm_mkey", "algorithm_auth", "algorithm_enc", "algorithm_mac",
-                                         "algorithm_ssl"]
-                            for alg in algs:
-                                ciphers[cipher][to_insert.pop(0)] = alg
-                for cipher in ciphers:
-                    if ciphers[cipher].get("*name"):
-                        name = ciphersuites_mapping.get(ciphers[cipher]["*name"], ciphers[cipher]["*name"])
-                        tmp[name] = ciphers[cipher]
-                        del tmp[name]["*name"]
-                    elif not isinstance(cipher, int):
-                        tmp[cipher] = ciphers[cipher]
-                ciphers = tmp
+                ciphers = update_ciphersuites_struct(release, ciphers, ciphersuites_mapping)
         for cipher in ciphers:
             differences = {}
             if not final_ciphers.get(cipher):
@@ -397,7 +478,8 @@ def extract_ciphersuites_tags():
                         differences[field] = ciphers[cipher][field]
             final_ciphers[cipher]["releases"][release] = differences if differences else True
             final_ciphers["ciphers_per_release"][release].append(cipher)
-
+    with open("../configs/compliance/tags_mapping.json", "w") as f:
+        json.dump(final_tags_aliases, f, indent=4)
     with open("../configs/compliance/ciphersuites_tags.json", "w") as f:
         json.dump(final_ciphers, f, indent=4)
 

@@ -111,49 +111,130 @@
         "1.0.2q": "ALL:!EXPORT:!LOW:!aNULL:!eNULL:!SSLv2",
         "1.0.2s": "ALL:!EXPORT:!LOW:!aNULL:!eNULL:!SSLv2",
         "1.0.2u": "ALL:!EXPORT:!LOW:!aNULL:!eNULL:!SSLv2",
-        "1.1.0": "ALL:!aNULL:!eNULL",
-        "1.1.0-pre1": "ALL:!aNULL:!eNULL",
-        "1.1.0-pre2": "ALL:!aNULL:!eNULL",
-        "1.1.0-pre3": "ALL:!aNULL:!eNULL",
-        "1.1.0b": "ALL:!aNULL:!eNULL",
-        "1.1.0c": "ALL:!aNULL:!eNULL",
-        "1.1.0d": "ALL:!aNULL:!eNULL",
-        "1.1.0e": "ALL:!aNULL:!eNULL",
-        "1.1.0f": "ALL:!aNULL:!eNULL",
-        "1.1.0h": "ALL:!aNULL:!eNULL",
-        "1.1.0i": "ALL:!aNULL:!eNULL",
-        "1.1.0j": "ALL:!aNULL:!eNULL",
-        "1.1.0k": "ALL:!aNULL:!eNULL",
-        "1.1.0l": "ALL:!aNULL:!eNULL",
-        "1.1.1": "ALL:!aNULL:!eNULL",
-        "1.1.1-pre1": "ALL:!aNULL:!eNULL",
-        "1.1.1-pre2": "ALL:!aNULL:!eNULL",
-        "1.1.1-pre3": "ALL:!aNULL:!eNULL",
-        "1.1.1-pre4": "ALL:!aNULL:!eNULL",
-        "1.1.1-pre5": "ALL:!aNULL:!eNULL",
-        "1.1.1-pre6": "ALL:!aNULL:!eNULL",
-        "1.1.1-pre7": "ALL:!aNULL:!eNULL",
-        "1.1.1-pre8": "ALL:!aNULL:!eNULL",
-        "1.1.1-pre9": "ALL:!aNULL:!eNULL",
-        "1.1.1b": "ALL:!aNULL:!eNULL",
-        "1.1.1c": "ALL:!aNULL:!eNULL",
-        "1.1.1d": "ALL:!aNULL:!eNULL",
-        "1.1.1e": "ALL:!aNULL:!eNULL",
-        "1.1.1f": "ALL:!aNULL:!eNULL",
-        "1.1.1h": "ALL:!aNULL:!eNULL",
-        "1.1.1i": "ALL:!aNULL:!eNULL",
-        "1.1.1j": "ALL:!aNULL:!eNULL",
-        "1.1.1k": "ALL:!aNULL:!eNULL",
-        "1.1.1l": "ALL:!aNULL:!eNULL",
-        "1.1.1m": "ALL:!aNULL:!eNULL",
-        "1.1.1n": "ALL:!aNULL:!eNULL",
-        "1.1.1o": "ALL:!aNULL:!eNULL",
-        "1.1.1p": "ALL:!aNULL:!eNULL",
-        "1.1.1q": "ALL:!aNULL:!eNULL",
-        "1.1.1s": "ALL:!aNULL:!eNULL",
-        "1.1.1u": "ALL:!aNULL:!eNULL",
-        "1.1.1v": "ALL:!aNULL:!eNULL",
-        "1.1.1w": "ALL:!aNULL:!eNULL",
+        "1.1.0": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.0-pre1": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.0-pre2": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.0-pre3": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.0b": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.0c": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.0d": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.0e": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.0f": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.0h": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.0i": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.0j": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.0k": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.0l": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.1": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1-pre1": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.1-pre2": "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+        "1.1.1-pre3": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1-pre4": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1-pre5": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1-pre6": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1-pre7": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1-pre8": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1-pre9": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1b": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1c": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1d": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1e": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1f": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1h": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1i": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1j": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1k": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1l": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1m": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1n": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1o": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1p": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1q": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1s": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1u": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1v": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
+        "1.1.1w": [
+            "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
+            "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:"
+        ],
         "3.0.0": [
             "ALL:!COMPLEMENTOFDEFAULT:!eNULL",
             "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256"
@@ -56534,6 +56615,16 @@
         "id": "SSL3_CK_SCSV",
         "algorithm_mkey": "0",
         "algorithm_auth": "0",
+        "algorithm_enc": "0",
+        "algorithm_mac": "0",
+        "min_tls": "0",
+        "max_tls": "0",
+        "min_dtls": "0",
+        "max_dtls": "0",
+        "algo_strength": "0",
+        "algorithm2": "0",
+        "strength_bits": "0",
+        "alg_bits": "0",
         "releases": {
             "1.1.1": true,
             "1.1.1-pre3": true,
@@ -56612,6 +56703,16 @@
         "id": "SSL3_CK_FALLBACK_SCSV",
         "algorithm_mkey": "0",
         "algorithm_auth": "0",
+        "algorithm_enc": "0",
+        "algorithm_mac": "0",
+        "min_tls": "0",
+        "max_tls": "0",
+        "min_dtls": "0",
+        "max_dtls": "0",
+        "algo_strength": "0",
+        "algorithm2": "0",
+        "strength_bits": "0",
+        "alg_bits": "0",
         "releases": {
             "1.1.1": true,
             "1.1.1-pre3": true,
