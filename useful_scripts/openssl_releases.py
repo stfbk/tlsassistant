@@ -272,6 +272,7 @@ def update_ciphersuites_struct(release, dictionary, dictionary_mapping):
     for tag in dictionary:
         if dictionary[tag].get("*name"):
             name = dictionary_mapping.get(dictionary[tag]["*name"], dictionary[tag]["*name"])
+            name = name.strip("\"")
             tmp[name] = dictionary[tag]
             del tmp[name]["*name"]
         elif not isinstance(tag, int):
@@ -327,23 +328,22 @@ def get_actual_text(line, counter, counter_to_field, count, dictionary):
     return counter
 
 
-def prune_mapping(mapping):
+def prune_tags_mapping(mapping):
     to_remove = []
-    for tag in mapping.keys():
-        if mapping[tag].get("mask"):
-            del mapping[tag]["mask"]
-    for tag in mapping:
-        for field in mapping[tag]:
-            if mapping[tag][field] in ["0", "NULL", ""]:
-                to_remove.append((tag, field))
-    for tag, field in to_remove:
-        del mapping[tag][field]
+    for version in mapping:
+        for tag in mapping[version]:
+            for field in mapping[version][tag]:
+                if mapping[version][tag][field] in ["0", "NULL", ""]:
+                    to_remove.append((version, tag, field))
+    for version, tag, field in to_remove:
+        del mapping[version][tag][field]
     to_remove = []
-    for tag in mapping:
-        if len(mapping[tag]) == 1:
-            to_remove.append(tag)
-    for tag in to_remove:
-        del mapping[tag]
+    for version in mapping:
+        for tag in mapping[version]:
+            if not mapping[version][tag]:
+                to_remove.append(version, tag)
+    for version, tag in to_remove:
+        del mapping[version, tag]
 
 def extract_ciphersuites_tags():
     final_tags_aliases = {}
@@ -423,18 +423,23 @@ def extract_ciphersuites_tags():
             alias_mapping = update_ciphersuites_struct(release, alias_mapping, tags_mapping)
             for tag in alias_mapping:
                 differences = {}
-                if not final_tags_aliases.get(tag):
-                    final_tags_aliases[tag] = alias_mapping[tag]
-                    final_tags_aliases[tag]["releases"] = {}
+                category = release[:2]
+                tags_to_remove = ["*stdname", "max_tls", "min_dtls", "max_dtls", "mask", "mask_strength", "id", "valid"]
+                for tmp in tags_to_remove:
+                    alias_mapping[tag].pop(tmp, None)
+                if not final_tags_aliases.get(category):
+                    final_tags_aliases[category] = {}
+                if not final_tags_aliases[category].get(tag):
+                    final_tags_aliases[category][tag] = alias_mapping[tag]
+                    final_tags_aliases[category][tag]["releases"] = {}
                 else:
                     for field in alias_mapping[tag]:
-                        if field not in final_tags_aliases[tag]:
-                            final_tags_aliases[tag][field] = alias_mapping[tag][field]
-                        elif (field != "releases" and field != "source" and
-                              final_tags_aliases[tag][field].replace(" ", "") != alias_mapping[tag][field].
-                                      replace(" ", "")):
+                        if field not in final_tags_aliases[category][tag]:
                             differences[field] = alias_mapping[tag][field]
-                final_tags_aliases[tag]["releases"][release] = differences if differences else True
+                        elif (field != "releases" and final_tags_aliases[category][tag][field].replace(" ", "") !=
+                              alias_mapping[tag][field].replace(" ", "")):
+                            differences[field] = alias_mapping[tag][field]
+                final_tags_aliases[category][tag]["releases"][release] = differences if differences else True
 
         ciphers = {}
         for file in ["s2_lib.c", "s3_lib.c"]:
@@ -496,7 +501,7 @@ def extract_ciphersuites_tags():
                         differences[field] = ciphers[cipher][field]
             final_ciphers[cipher]["releases"][release] = differences if differences else True
             final_ciphers["ciphers_per_release"][release].append(cipher)
-    prune_mapping(final_tags_aliases)
+    prune_tags_mapping(final_tags_aliases)
     with open("../configs/compliance/tags_mapping.json", "w") as f:
         json.dump(final_tags_aliases, f, indent=4)
     with open("../configs/compliance/ciphersuites_tags.json", "w") as f:
