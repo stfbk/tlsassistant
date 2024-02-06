@@ -94,3 +94,39 @@ class NginxConfiguration(ConfigurationMaker):
 
         with open(self._config_output, "w") as f:
             f.write(nginx_build(self._template["config"][0]["parsed"], header=True))
+
+    def get_conf_data(self, dictionary: dict):
+        user_configuration = {}
+        for directive in self.reverse_mapping:
+            first_entry = ""
+            name = self.reverse_mapping[directive]
+            if " " in directive:
+                tokens = directive.split(" ")
+                directive = tokens[0]
+                first_entry = tokens[1]
+            if not user_configuration.get(name):
+                user_configuration[name] = []
+            for block in self.configuration["config"][0]["parsed"][1]["block"]:
+                if first_entry and block.get("directive") == directive and block["args"][0] == first_entry:
+                    user_configuration[name].extend(block["args"][1:])
+                elif block.get("directive") == directive and not first_entry:
+                    user_configuration[name].extend(block["args"])
+        self._set_defaults(user_configuration)
+        for directive in user_configuration:
+            if directive == "Protocol":
+                dictionary[directive] = {}
+                protocols = user_configuration[directive]
+                for protocol in protocols:
+                    protocol = protocol.replace("v", " ")
+                    dictionary[directive][protocol] = "!" not in protocol and "-" not in protocol
+            elif directive in ["CipherSuites", "CipherSuitesTLS1.3"]:
+                ciphers = user_configuration[directive][0]
+                directive = "CipherSuite"
+                if not dictionary.get(directive):
+                    dictionary[directive] = []
+                ciphers = self.prepare_ciphers(ciphers)
+                dictionary[directive].extend(self.expand_ciphers(ciphers))
+            elif directive == "Groups":
+                groups = user_configuration[directive][0]
+                dictionary[directive] = groups.split(":") if ":" in groups else [groups]
+        dictionary["CipherSuite"] = set(dictionary["CipherSuite"])

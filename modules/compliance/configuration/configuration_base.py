@@ -26,6 +26,10 @@ class ConfigurationMaker:
         self._actions = Actions(openssl_version)
         self._logger = Logger("Configuration maker")
         self.signature_algorithms = load_configuration("sigalgs", "configs/compliance/")
+        self._tags_mapping = load_configuration("tags_mapping", "configs/compliance/")
+        self._tags = set()
+        self._ciphers_tags = load_configuration("ciphersuites_tags", "configs/compliance/")
+        self._groups_defaults = load_configuration("groups_defaults", "configs/compliance/")
         self._database_instance = Database()
 
     def set_out_file(self, output_file):
@@ -172,7 +176,7 @@ class ConfigurationMaker:
         return actual_string, comment
 
     def set_openssl_version(self, version):
-        self._actions._openssl_version = version
+        self._actions.openssl_version = version
 
     def set_security(self, security):
         self._actions._security = security
@@ -180,6 +184,125 @@ class ConfigurationMaker:
     @property
     def output_dict(self):
         return self._output_dict
+
+    def get_conf_data(self, dictionary):
+        raise NotImplementedError("This method should be reimplemented")
+
+    def _set_defaults(self, user_configuration: dict):
+        openssl_version = self._actions.openssl_version
+        if not user_configuration.get("CipherSuites"):
+            default_ciphers = self._ciphers_tags["releases_default"].get(openssl_version, "")
+            if not default_ciphers:
+                self._logger.warning("No default ciphersuites found for the current openssl version")
+            elif isinstance(default_ciphers, tuple):
+                default_ciphers = default_ciphers[0]
+            user_configuration["CipherSuites"] = default_ciphers
+        if not user_configuration.get("CipherSuitesTLS1.3"):
+            default_ciphers = self._ciphers_tags["releases_default"].get(openssl_version, "")
+            if not default_ciphers:
+                self._logger.warning("No default ciphersuites found for the current openssl version")
+            elif isinstance(default_ciphers, tuple):
+                default_ciphers = default_ciphers[1]
+            elif isinstance(default_ciphers, str):
+                default_ciphers = ""
+            user_configuration["CipherSuites"] = default_ciphers
+        if not user_configuration.get("Groups"):
+            user_configuration["Groups"] = self._groups_defaults.get(openssl_version, "")
+            if not user_configuration["Groups"]:
+                self._logger.warning("No default groups found for the current openssl version")
+
+    @staticmethod
+    def prepare_ciphers(ciphers: str):
+        ciphers = ciphers.split(":") if ":" in ciphers else [ciphers]
+        ciphers_list = []
+        for i, cipher in enumerate(ciphers):
+            status = "enabled"
+            if cipher[0] == "!":
+                status = "killed"
+                cipher = cipher[1:]
+            elif cipher[0] == "-":
+                status = "removed"
+                cipher = cipher[1:]
+            ciphers_list.append((cipher, status))
+        return ciphers_list
+
+    def expand_ciphers(self, ciphers: list):
+        openssl_version = self._actions.openssl_version
+        tags_mapping = self._tags_mapping[openssl_version[:2]]
+        to_remove = set()
+        killed = set()
+        new_list = [cipher[0] for cipher in ciphers]
+        for i, cipher in enumerate(ciphers):
+            cipher_name = cipher[0]
+            cipher_status = cipher[1]
+            if cipher_name in tags_mapping:
+                to_remove.add(cipher_name)
+                ciphers_list = self._ciphers_list(cipher_name)
+                ciphers_list = set(ciphers_list)
+                if cipher_status == "removed":
+                    to_remove.update(ciphers_list)
+                elif cipher_status == "killed":
+                    killed.update(ciphers_list)
+                else:
+                    for el in ciphers_list:
+                        new_list.insert(i, el)
+                        if el in to_remove:
+                            to_remove.remove(el)
+            elif cipher_status == "killed":
+                killed.add(cipher_name)
+            elif cipher_status == "removed":
+                to_remove.add(cipher_name)
+
+        to_remove.update(killed)
+        for el in new_list:
+            if el in to_remove:
+                new_list.remove(el)
+        return new_list
+
+    def _ciphers_list(self, cipher):
+        openssl_version = self._actions.openssl_version
+        tags_mapping = self._tags_mapping[openssl_version[:2]]
+        ciphers = []
+        filters = {}
+        for entry in tags_mapping[cipher]:
+            if entry != "releases":
+                filters[entry] = tags_mapping[cipher][entry]
+        update = tags_mapping[cipher]["releases"].get(openssl_version, {})
+        if update is None:
+            return []
+        if isinstance(update, dict):
+            for key in update:
+                filters[key] = update[key]
+        positive_filers = set()
+        negative_filters = set()
+        for tag in filters:
+            final_tag = filters[tag]
+            if "&" in final_tag:
+                final_tags = final_tag.split("&")
+            elif "|" in final_tag:
+                final_tags = final_tag.split("|")
+            else:
+                final_tags = [final_tag]
+
+            for final_tag in final_tags:
+                if final_tag[0] == "~":
+                    negative_filters.add(final_tag[1:])
+                else:
+                    positive_filers.add(final_tag)
+        for ciphersuite in self._ciphers_tags:
+            if "release" in ciphersuite:
+                continue
+            tmp_values = list(self._ciphers_tags[ciphersuite].values())
+            to_remove = None
+            for i, el in enumerate(tmp_values):
+                if isinstance(el, dict):
+                    to_remove = i
+            if to_remove:
+                tmp_values.pop(to_remove)
+            value = set(tmp_values)
+            if positive_filers.issubset(value) and not negative_filters.intersection(value):
+                ciphers.append(ciphersuite)
+        return ciphers
 
 
 # This class is used to define the actions that can be taken after a field has been prepared and before it gets added to
@@ -190,7 +313,7 @@ class Actions:
         self.validator = Validator()
         self._ciphers_converter = load_configuration("iana_to_openssl", "configs/compliance/")
         self._database = Database()
-        self._openssl_version = openssl_version
+        self.openssl_version = openssl_version
         self._logger = Logger("Configuration actions")
         self._openssl = OpenSSL()
         self._sigalgs_table = load_configuration("sigalgs_iana_to_ietf", "configs/compliance/")
@@ -272,7 +395,7 @@ class Actions:
         string = kwargs.get("value", None)
         self.validator.string(string)
         groups = string.split(":") if ":" in string else [string]
-        if self._openssl.less_than(self._openssl_version, "1.0.2"):
+        if self._openssl.less_than(self.openssl_version, "1.0.2"):
             self._logger.warning(
                 "The provided openssl version can not use multiple groups, only the first one will be used.")
             groups = groups[:1]
@@ -305,7 +428,7 @@ class Actions:
             sigalgs[i] = self._sigalgs_table.get(sigalg, sigalg)
             string = string.replace(sigalg, sigalgs[i])
         for sigalg in sigalgs:
-            if sigalg not in self.signature_algorithms[self._openssl_version]:
+            if sigalg not in self.signature_algorithms[self.openssl_version]:
                 self._logger.info(f"Signature algorithm {sigalg} can not be enabled with the current openssl version")
                 string = string.replace(sigalg, "")
         string = self.clean_final_string(string)

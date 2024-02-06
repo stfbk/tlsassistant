@@ -172,7 +172,23 @@ class Compliance:
                     f"Couldn't parse config as apache: {e}\ntrying with nginx..."
                 )
                 self._config_class = NginxConfiguration(actual_configuration)
-            self.prepare_configuration(self._config_class.configuration)
+            if (isinstance(self._config_class, ApacheConfiguration) and
+                    "VirtualHost" not in self._config_class.configuration.keys()):
+                self._config_class = NginxConfiguration(actual_configuration)
+            self._config_class.get_conf_data(self._user_configuration)
+            # Without the certificate it is only possible to check a subset of the guidelines
+            check_only = ["Protocol", "CipherSuite", "Extension", "Groups"]
+            self._logging.warning(
+                "Using a configuration file to check the guidelines, only the following sheets will be checked: "
+                f"{', '.join(check_only)}"
+            )
+            to_remove = []
+            for sheet in sheets_to_check.keys():
+                if sheet not in check_only:
+                    to_remove.append(sheet)
+            for sheet in to_remove:
+                del sheets_to_check[sheet]
+
         elif self.hostname and self._validator.string(self.hostname) and self.hostname != "placeholder":
             test_ssl_output = {}
             dump_folder = "testssl_dumps"
@@ -478,24 +494,6 @@ class Compliance:
             to_return.append(sig_alg)
             self._user_configuration["CertificateSignature"].add(sig_alg.lower())
         return to_return
-
-    def prepare_configuration(self, actual_configuration):
-        for field in actual_configuration:
-            new_field = actual_configuration[field]
-            if isinstance(new_field, str):
-                if "Cipher" in field:
-                    new_field = new_field.split(":") if ":" in new_field else new_field
-                elif "Protocol" in field and " " in new_field:
-                    tmp_dict = {}
-                    for version in new_field.split(" "):
-                        accepted = False if version[0] == '-' else True
-                        new_version_name = version.replace("-", "").replace("v", " ")
-                        if new_version_name[-2] != '.' and new_version_name != "all":
-                            new_version_name += ".0"
-                        tmp_dict[new_version_name] = accepted
-                    new_field = tmp_dict
-            field_name = self._config_class.reverse_mapping.get(field, field)
-            self._user_configuration[field_name] = new_field
 
     @staticmethod
     def find_cert_index(field: str):

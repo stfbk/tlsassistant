@@ -165,6 +165,23 @@ class Tlsa:
                 ignore_openssl = args.ignore_openssl,
                 compliance_args = args.compliance_args
             )
+        elif args.file and any(module in ["compare_one", "compare_many"] for module in args.configuration):
+            args.compliance_args.get("compare_one", {})["actual_configuration_path"]=args.file
+            args.compliance_args.get("compare_many", {})["actual_configuration_path"]=args.file
+            Core(
+                hostname_or_path=args.file,
+                configuration=config_or_modules,
+                output=args.output,
+                output_type=self.__to_report_type(args.output_type),
+                type_of_analysis=Core.Analysis.COMPLIANCE,
+                to_exclude=args.exclude,
+                group_by=args.group_by,
+                apply_fix=args.apply_fix,
+                stix=args.stix,
+                openssl_version=args.openssl,
+                ignore_openssl=args.ignore_openssl,
+                compliance_args=args.compliance_args
+            )
         elif args.file:
             if isinstance(args.configuration, list):
                 self.__logging.warning(

@@ -74,3 +74,53 @@ class ApacheConfiguration(ConfigurationMaker):
 
         with open(self._config_output, "w") as f:
             f.write(self._template + self._string_to_add)
+
+    def get_conf_data(self, dictionary):
+        user_configuration = {}
+        for directive in self.reverse_mapping:
+            first_entry = ""
+            name = self.reverse_mapping[directive]
+            if " " in directive:
+                tokens = directive.split(" ")
+                directive = tokens[0]
+                first_entry = tokens[1]
+            user_configuration[name] = []
+            value = self.configuration.get(directive)
+            if first_entry and isinstance(value, list):
+                start = None
+                for i, entry in enumerate(value):
+                    if first_entry in entry:
+                        start = i
+                        break
+                if start is not None:
+                    value = value[start]
+                    value = value.split(" ")[1]
+            user_configuration[name] = value
+        self._set_defaults(user_configuration)
+        for directive in user_configuration:
+            if directive == "Protocol":
+                if not dictionary.get(directive):
+                    dictionary[directive] = {}
+                protocols = user_configuration[directive].split(" ") if " " in user_configuration[directive] \
+                    else user_configuration[directive]
+                for protocol in protocols:
+                    protocol = protocol.replace("v", " ")
+                    enabled = protocol[0] == "+"
+                    if protocol[0] in ["!", "-", "+"]:
+                        protocol = protocol[1:]
+                    dictionary[directive][protocol] = enabled
+            elif directive in ["CipherSuites", "CipherSuitesTLS1.3"]:
+                if directive == "CipherSuitesTLS1.3":
+                    ciphers = user_configuration["CipherSuitesTLS1.3"]
+                else:
+                    ciphers = user_configuration[directive]
+                directive = "CipherSuite"
+                if not dictionary.get(directive):
+                    dictionary[directive] = []
+                ciphers = self.prepare_ciphers(ciphers)
+                dictionary[directive].extend(self.expand_ciphers(ciphers))
+            elif directive == "Groups":
+                dictionary[directive] = user_configuration[directive].split(":") if ":" in user_configuration[directive] \
+                    else user_configuration[directive]
+        dictionary["CipherSuite"] = set(dictionary["CipherSuite"])
+        print(user_configuration)
