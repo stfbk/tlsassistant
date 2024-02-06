@@ -66,10 +66,12 @@ def extract_files():
                 f.write(r.content)
         # unzip only the necessary files
         files = ["t1_lib.c", "ssl_local.h", "s3_lib.c", "s2_lib.c", "ssl.h", "ssl_ciph.c", "ssl_locl.h", "ssl3.h",
-                 "tls1.h"]
+                 "tls1.h", "ssl.h.in"]
         for file in files:
             if not os.path.exists(f"tmp/{release}/{file}"):
                 extract_file(release, file)
+            if file == "ssl.h.in" and os.path.exists(f"tmp/{release}/{file}"):
+                shutil.move(f"tmp/{release}/{file}", f"tmp/{release}/ssl.h")
         if os.path.isdir(f"tmp/{release}/ssl"):
             shutil.rmtree(f"tmp/{release}/ssl")
 
@@ -154,7 +156,7 @@ def extract_groups(releases_data):
             groups = ["prime256v1"]
         release = release.lower().replace("openssl", "")[1:]
         groups_dict[release] = groups
-    with open("../configs/compliance/groups.json", "w") as f:
+    with open("../configs/compliance/groups_defaults.json", "w") as f:
         json.dump(groups_dict, f, indent=4, sort_keys=True)
 
 
@@ -236,7 +238,7 @@ def get_ciphersuites_mapping(release):
     return ciphersuites_mapping
 
 
-def get_tags_mapping(release):
+def get_tags_aliases_mapping(release):
     file = "ssl_local.h" if os.path.isfile(f"tmp/{release}/ssl_local.h") else "ssl_locl.h"
     tags_mapping = {}
     with open(f"tmp/{release}/{file}", "r") as f:
@@ -255,6 +257,22 @@ def get_tags_mapping(release):
                         # like PSK that becomes (SSL_kPSK | SSL_kRSAPSK | SSL_kECDHEPSK | SSL_kDHEPSK)
                         if "0x" not in value:
                             tags_mapping[tag] = value
+    return tags_mapping
+
+
+def get_tags_mapping(release):
+    tags_mapping = {}
+    with open(f"tmp/{release}/ssl.h", "r") as f:
+        line = "a"
+        while line:
+            line = f.readline()
+            if "SSL_TXT_" in line and "define" in line:
+                tokens = line.split("define")
+                if "/" in tokens[1]:
+                    tokens[1] = tokens[1].split("/")[0]
+                tokens = tokens[1].split()
+                tokens = [t.strip() for t in tokens if t.strip()]
+                tags_mapping[tokens[0].strip()] = tokens[1].strip().strip("\"")
     return tags_mapping
 
 

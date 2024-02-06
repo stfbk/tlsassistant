@@ -1,6 +1,6 @@
 {
     "0.": {
-        "SSL_TXT_ALL": {
+        "ALL": {
             "algo_strength": "SSL_ALL",
             "algorithm_mkey": "SSL_ALL & ~SSL_eNULL",
             "releases": {
@@ -111,7 +111,7 @@
                 }
             }
         },
-        "SSL_TXT_kRSA": {
+        "kRSA": {
             "algorithm_mkey": "SSL_kRSA",
             "releases": {
                 "0.9.6": true,
@@ -163,7 +163,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_kDHr": {
+        "kDHr": {
             "algorithm_mkey": "SSL_kDHr",
             "releases": {
                 "0.9.6": true,
@@ -215,7 +215,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_kDHd": {
+        "kDHd": {
             "algorithm_mkey": "SSL_kDHd",
             "releases": {
                 "0.9.6": true,
@@ -267,7 +267,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_kEDH": {
+        "kEDH": {
             "algorithm_mkey": "SSL_kEDH",
             "releases": {
                 "0.9.6": true,
@@ -319,7 +319,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_kFZA": {
+        "kFZA": {
             "algorithm_mkey": "SSL_kFZA",
             "releases": {
                 "0.9.6": true,
@@ -371,7 +371,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_DH": {
+        "DH": {
             "algorithm_mkey": "SSL_DH",
             "releases": {
                 "0.9.6": true,
@@ -423,7 +423,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_EDH": {
+        "EDH": {
             "algorithm_mkey": "SSL_EDH",
             "releases": {
                 "0.9.6": true,
@@ -475,7 +475,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_aRSA": {
+        "aRSA": {
             "algorithm_mkey": "SSL_aRSA",
             "releases": {
                 "0.9.6": true,
@@ -527,7 +527,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_aDSS": {
+        "aDSS": {
             "algorithm_mkey": "SSL_aDSS",
             "releases": {
                 "0.9.6": true,
@@ -579,7 +579,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_aFZA": {
+        "aFZA": {
             "algorithm_mkey": "SSL_aFZA",
             "releases": {
                 "0.9.6": true,
@@ -631,7 +631,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_aNULL": {
+        "aNULL": {
             "algorithm_mkey": "SSL_aNULL",
             "releases": {
                 "0.9.6": true,
@@ -683,7 +683,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_aDH": {
+        "aDH": {
             "algorithm_mkey": "SSL_aDH",
             "releases": {
                 "0.9.6": true,
@@ -735,7 +735,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_DSS": {
+        "DSS": {
             "algorithm_mkey": "SSL_DSS",
             "releases": {
                 "0.9.6": true,
@@ -787,7 +787,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_DES": {
+        "DES": {
             "algorithm_mkey": "SSL_DES",
             "releases": {
                 "0.9.6": true,
@@ -839,7 +839,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_3DES": {
+        "3DES": {
             "algorithm_mkey": "SSL_3DES",
             "releases": {
                 "0.9.6": true,
@@ -891,7 +891,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_RC4": {
+        "RC4": {
             "algorithm_mkey": "SSL_RC4",
             "releases": {
                 "0.9.6": true,
@@ -943,7 +943,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_RC2": {
+        "RC2": {
             "algorithm_mkey": "SSL_RC2",
             "releases": {
                 "0.9.6": true,
@@ -995,7 +995,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_IDEA": {
+        "IDEA": {
             "algorithm_mkey": "SSL_IDEA",
             "releases": {
                 "0.9.6": true,
@@ -1047,7 +1047,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_eNULL": {
+        "eNULL": {
             "algorithm_mkey": "SSL_eNULL",
             "releases": {
                 "0.9.6": true,
@@ -1099,7 +1099,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_eFZA": {
+        "eFZA": {
             "algorithm_mkey": "SSL_eFZA",
             "releases": {
                 "0.9.6": true,
@@ -1151,7 +1151,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_MD5": {
+        "MD5": {
             "algorithm_mkey": "SSL_MD5",
             "releases": {
                 "0.9.6": true,
@@ -1203,7 +1203,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_SHA1": {
+        "SHA1": {
             "algorithm_mkey": "SSL_SHA1",
             "releases": {
                 "0.9.6": true,
@@ -1255,7 +1255,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_SHA": {
+        "SHA": {
             "algorithm_mkey": "SSL_SHA",
             "releases": {
                 "0.9.6": true,
@@ -1307,7 +1307,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_NULL": {
+        "NULL": {
             "algorithm_mkey": "SSL_NULL",
             "releases": {
                 "0.9.6": true,
@@ -1359,7 +1359,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_RSA": {
+        "RSA": {
             "algorithm_mkey": "SSL_RSA",
             "releases": {
                 "0.9.6": true,
@@ -1411,7 +1411,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_ADH": {
+        "ADH": {
             "algorithm_mkey": "SSL_ADH",
             "releases": {
                 "0.9.6": true,
@@ -1463,7 +1463,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_FZA": {
+        "FZA": {
             "algorithm_mkey": "SSL_FZA",
             "releases": {
                 "0.9.6": true,
@@ -1515,7 +1515,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_SSLV2": {
+        "SSLv2": {
             "algorithm_mkey": "SSL_SSLV2",
             "releases": {
                 "0.9.6": true,
@@ -1567,7 +1567,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_SSLV3": {
+        "SSLv3": {
             "algorithm_mkey": "SSL_SSLV3",
             "releases": {
                 "0.9.6": true,
@@ -1619,7 +1619,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_TLSV1": {
+        "TLSv1": {
             "algorithm_mkey": "SSL_TLSV1",
             "releases": {
                 "0.9.6": true,
@@ -1671,7 +1671,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_EXP": {
+        "EXP": {
             "algo_strength": "SSL_EXPORT",
             "releases": {
                 "0.9.6": true,
@@ -1723,7 +1723,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_EXPORT": {
+        "EXPORT": {
             "algo_strength": "SSL_EXPORT",
             "releases": {
                 "0.9.6": true,
@@ -1775,7 +1775,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_EXP40": {
+        "EXPORT40": {
             "algo_strength": "SSL_EXP40",
             "releases": {
                 "0.9.6": true,
@@ -1827,7 +1827,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_EXP56": {
+        "EXPORT56": {
             "algo_strength": "SSL_EXP56",
             "releases": {
                 "0.9.6": true,
@@ -1879,7 +1879,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_LOW": {
+        "LOW": {
             "algo_strength": "SSL_LOW",
             "releases": {
                 "0.9.6": true,
@@ -1931,7 +1931,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_MEDIUM": {
+        "MEDIUM": {
             "algo_strength": "SSL_MEDIUM",
             "releases": {
                 "0.9.6": true,
@@ -1983,7 +1983,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_HIGH": {
+        "HIGH": {
             "algo_strength": "SSL_HIGH",
             "releases": {
                 "0.9.6": true,
@@ -2035,7 +2035,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_CMPALL": {
+        "COMPLEMENTOFALL": {
             "algorithm_mkey": "SSL_eNULL",
             "releases": {
                 "0.9.7": true,
@@ -2081,7 +2081,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_CMPDEF": {
+        "COMPLEMENTOFDEFAULT": {
             "algorithm_mkey": "SSL_ADH",
             "releases": {
                 "0.9.7": true,
@@ -2131,7 +2131,7 @@
                 }
             }
         },
-        "SSL_TXT_kKRB5": {
+        "kKRB5": {
             "algorithm_mkey": "SSL_kKRB5",
             "releases": {
                 "0.9.7": true,
@@ -2177,7 +2177,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_aKRB5": {
+        "aKRB5": {
             "algorithm_mkey": "SSL_aKRB5",
             "releases": {
                 "0.9.7": true,
@@ -2223,7 +2223,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_AES": {
+        "AES": {
             "algorithm_mkey": "SSL_AES",
             "releases": {
                 "0.9.7": true,
@@ -2269,7 +2269,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_KRB5": {
+        "KRB5": {
             "algorithm_mkey": "SSL_KRB5",
             "releases": {
                 "0.9.7": true,
@@ -2315,7 +2315,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_FIPS": {
+        "FIPS": {
             "algo_strength": "SSL_FIPS",
             "releases": {
                 "0.9.7e": true,
@@ -2350,7 +2350,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_ECC": {
+        "ECCdraft": {
             "algorithm_mkey": "(SSL_kECDH",
             "algorithm_auth": "SSL_kECDHE)",
             "releases": {
@@ -2385,7 +2385,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_CAMELLIA": {
+        "CAMELLIA": {
             "algorithm_mkey": "SSL_CAMELLIA",
             "releases": {
                 "0.9.8c": true,
@@ -2417,7 +2417,7 @@
                 "0.9.8zh": true
             }
         },
-        "SSL_TXT_SEED": {
+        "SEED": {
             "algorithm_mkey": "SSL_SEED",
             "releases": {
                 "0.9.8f": true,
@@ -2448,7 +2448,7 @@
         }
     },
     "1.": {
-        "SSL_TXT_ALL": {
+        "ALL": {
             "algorithm_enc": "~SSL_eNULL",
             "releases": {
                 "1.0.0": true,
@@ -2562,7 +2562,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_CMPALL": {
+        "COMPLEMENTOFALL": {
             "algorithm_enc": "SSL_eNULL",
             "releases": {
                 "1.0.0": true,
@@ -2676,7 +2676,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_CMPDEF": {
+        "COMPLEMENTOFDEFAULT": {
             "algorithm_auth": "SSL_aNULL",
             "algorithm_enc": "~SSL_eNULL",
             "algorithm_ssl": "~SSL_SSLV2",
@@ -3220,7 +3220,7 @@
                 }
             }
         },
-        "SSL_TXT_kRSA": {
+        "kRSA": {
             "algorithm_mkey": "SSL_kRSA",
             "releases": {
                 "1.0.0": true,
@@ -3334,7 +3334,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_kDHr": {
+        "kDHr": {
             "algorithm_mkey": "SSL_kDHr",
             "releases": {
                 "1.0.0": true,
@@ -3404,7 +3404,7 @@
                 "1.1.0-pre1": true
             }
         },
-        "SSL_TXT_kDHd": {
+        "kDHd": {
             "algorithm_mkey": "SSL_kDHd",
             "releases": {
                 "1.0.0": true,
@@ -3474,7 +3474,7 @@
                 "1.1.0-pre1": true
             }
         },
-        "SSL_TXT_kDH": {
+        "kDH": {
             "algorithm_mkey": "SSL_kDHr | SSL_kDHd",
             "releases": {
                 "1.0.0": true,
@@ -3544,7 +3544,7 @@
                 "1.1.0-pre1": true
             }
         },
-        "SSL_TXT_kEDH": {
+        "kEDH": {
             "algorithm_mkey": "SSL_kEDH",
             "releases": {
                 "1.0.0": true,
@@ -3743,7 +3743,7 @@
                 }
             }
         },
-        "SSL_TXT_DH": {
+        "DH": {
             "algorithm_mkey": "SSL_kDHr | SSL_kDHd | SSL_kEDH",
             "releases": {
                 "1.0.0": true,
@@ -3942,7 +3942,7 @@
                 }
             }
         },
-        "SSL_TXT_kKRB5": {
+        "kKRB5": {
             "algorithm_mkey": "SSL_kKRB5",
             "releases": {
                 "1.0.0": true,
@@ -4011,7 +4011,7 @@
                 "1.0.2u": true
             }
         },
-        "SSL_TXT_kECDHr": {
+        "kECDHr": {
             "algorithm_mkey": "SSL_kECDHr",
             "releases": {
                 "1.0.0": true,
@@ -4082,7 +4082,7 @@
                 "1.1.0-pre2": true
             }
         },
-        "SSL_TXT_kECDHe": {
+        "kECDHe": {
             "algorithm_mkey": "SSL_kECDHe",
             "releases": {
                 "1.0.0": true,
@@ -4153,7 +4153,7 @@
                 "1.1.0-pre2": true
             }
         },
-        "SSL_TXT_kECDH": {
+        "kECDH": {
             "algorithm_mkey": "SSL_kECDHr | SSL_kECDHe",
             "releases": {
                 "1.0.0": true,
@@ -4224,7 +4224,7 @@
                 "1.1.0-pre2": true
             }
         },
-        "SSL_TXT_kEECDH": {
+        "kEECDH": {
             "algorithm_mkey": "SSL_kEECDH",
             "releases": {
                 "1.0.0": true,
@@ -4423,7 +4423,7 @@
                 }
             }
         },
-        "SSL_TXT_ECDH": {
+        "ECDH": {
             "algorithm_mkey": "SSL_kECDHr | SSL_kECDHe | SSL_kEECDH",
             "releases": {
                 "1.0.0": true,
@@ -4622,7 +4622,7 @@
                 }
             }
         },
-        "SSL_TXT_kPSK": {
+        "kPSK": {
             "algorithm_mkey": "SSL_kPSK",
             "releases": {
                 "1.0.0": true,
@@ -4736,7 +4736,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_kGOST": {
+        "kGOST": {
             "algorithm_mkey": "SSL_kGOST",
             "releases": {
                 "1.0.0": true,
@@ -4850,7 +4850,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_aRSA": {
+        "aRSA": {
             "algorithm_auth": "SSL_aRSA",
             "releases": {
                 "1.0.0": true,
@@ -4964,7 +4964,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_aDSS": {
+        "aDSS": {
             "algorithm_auth": "SSL_aDSS",
             "releases": {
                 "1.0.0": true,
@@ -5078,7 +5078,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_DSS": {
+        "DSS": {
             "algorithm_auth": "SSL_aDSS",
             "releases": {
                 "1.0.0": true,
@@ -5192,7 +5192,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_aKRB5": {
+        "aKRB5": {
             "algorithm_auth": "SSL_aKRB5",
             "releases": {
                 "1.0.0": true,
@@ -5261,7 +5261,7 @@
                 "1.0.2u": true
             }
         },
-        "SSL_TXT_aNULL": {
+        "aNULL": {
             "algorithm_auth": "SSL_aNULL",
             "releases": {
                 "1.0.0": true,
@@ -5375,7 +5375,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_aDH": {
+        "aDH": {
             "algorithm_auth": "SSL_aDH",
             "releases": {
                 "1.0.0": true,
@@ -5445,7 +5445,7 @@
                 "1.1.0-pre1": true
             }
         },
-        "SSL_TXT_aECDH": {
+        "aECDH": {
             "algorithm_auth": "SSL_aECDH",
             "releases": {
                 "1.0.0": true,
@@ -5516,7 +5516,7 @@
                 "1.1.0-pre2": true
             }
         },
-        "SSL_TXT_aECDSA": {
+        "aECDSA": {
             "algorithm_auth": "SSL_aECDSA",
             "releases": {
                 "1.0.0": true,
@@ -5630,7 +5630,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_ECDSA": {
+        "ECDSA": {
             "algorithm_auth": "SSL_aECDSA",
             "releases": {
                 "1.0.0": true,
@@ -5744,7 +5744,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_aPSK": {
+        "aPSK": {
             "algorithm_auth": "SSL_aPSK",
             "releases": {
                 "1.0.0": true,
@@ -5858,7 +5858,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_aGOST94": {
+        "aGOST94": {
             "algorithm_auth": "SSL_aGOST94",
             "releases": {
                 "1.0.0": true,
@@ -5927,7 +5927,7 @@
                 "1.0.2u": true
             }
         },
-        "SSL_TXT_aGOST01": {
+        "aGOST01": {
             "algorithm_auth": "SSL_aGOST01",
             "releases": {
                 "1.0.0": true,
@@ -6041,7 +6041,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_aGOST": {
+        "aGOST": {
             "algorithm_auth": "SSL_aGOST94 | SSL_aGOST01",
             "releases": {
                 "1.0.0": true,
@@ -6240,7 +6240,7 @@
                 }
             }
         },
-        "SSL_TXT_EDH": {
+        "EDH": {
             "algorithm_mkey": "SSL_kEDH",
             "algorithm_auth": "~SSL_aNULL",
             "releases": {
@@ -6440,7 +6440,7 @@
                 }
             }
         },
-        "SSL_TXT_EECDH": {
+        "EECDH": {
             "algorithm_mkey": "SSL_kEECDH",
             "algorithm_auth": "~SSL_aNULL",
             "releases": {
@@ -6640,7 +6640,7 @@
                 }
             }
         },
-        "SSL_TXT_NULL": {
+        "NULL": {
             "algorithm_enc": "SSL_eNULL",
             "releases": {
                 "1.0.0": true,
@@ -6754,7 +6754,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_KRB5": {
+        "KRB5": {
             "algorithm_mkey": "SSL_kKRB5",
             "algorithm_auth": "SSL_aKRB5",
             "releases": {
@@ -6824,7 +6824,7 @@
                 "1.0.2u": true
             }
         },
-        "SSL_TXT_RSA": {
+        "RSA": {
             "algorithm_mkey": "SSL_kRSA",
             "algorithm_auth": "SSL_aRSA",
             "releases": {
@@ -6939,7 +6939,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_ADH": {
+        "ADH": {
             "algorithm_mkey": "SSL_kEDH",
             "algorithm_auth": "SSL_aNULL",
             "releases": {
@@ -7139,7 +7139,7 @@
                 }
             }
         },
-        "SSL_TXT_AECDH": {
+        "AECDH": {
             "algorithm_mkey": "SSL_kEECDH",
             "algorithm_auth": "SSL_aNULL",
             "releases": {
@@ -7339,7 +7339,7 @@
                 }
             }
         },
-        "SSL_TXT_PSK": {
+        "PSK": {
             "algorithm_mkey": "SSL_kPSK",
             "algorithm_auth": "SSL_aPSK",
             "releases": {
@@ -7543,7 +7543,7 @@
                 }
             }
         },
-        "SSL_TXT_DES": {
+        "DES": {
             "algorithm_enc": "SSL_DES",
             "releases": {
                 "1.0.0": true,
@@ -7615,7 +7615,7 @@
                 "1.1.0-pre3": true
             }
         },
-        "SSL_TXT_3DES": {
+        "3DES": {
             "algorithm_enc": "SSL_3DES",
             "releases": {
                 "1.0.0": true,
@@ -7729,7 +7729,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_RC4": {
+        "RC4": {
             "algorithm_enc": "SSL_RC4",
             "releases": {
                 "1.0.0": true,
@@ -7843,7 +7843,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_RC2": {
+        "RC2": {
             "algorithm_enc": "SSL_RC2",
             "releases": {
                 "1.0.0": true,
@@ -7957,7 +7957,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_IDEA": {
+        "IDEA": {
             "algorithm_enc": "SSL_IDEA",
             "releases": {
                 "1.0.0": true,
@@ -8071,7 +8071,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_SEED": {
+        "SEED": {
             "algorithm_enc": "SSL_SEED",
             "releases": {
                 "1.0.0": true,
@@ -8185,7 +8185,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_eNULL": {
+        "eNULL": {
             "algorithm_enc": "SSL_eNULL",
             "releases": {
                 "1.0.0": true,
@@ -8299,7 +8299,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_AES128": {
+        "AES128": {
             "algorithm_enc": "SSL_AES128",
             "releases": {
                 "1.0.0": true,
@@ -8582,7 +8582,7 @@
                 }
             }
         },
-        "SSL_TXT_AES256": {
+        "AES256": {
             "algorithm_enc": "SSL_AES256",
             "releases": {
                 "1.0.0": true,
@@ -8865,7 +8865,7 @@
                 }
             }
         },
-        "SSL_TXT_AES": {
+        "AES": {
             "algorithm_enc": "SSL_AES128 | SSL_AES256",
             "releases": {
                 "1.0.0": true,
@@ -9148,7 +9148,7 @@
                 }
             }
         },
-        "SSL_TXT_CAMELLIA128": {
+        "CAMELLIA128": {
             "algorithm_enc": "SSL_CAMELLIA128",
             "releases": {
                 "1.0.0": true,
@@ -9262,7 +9262,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_CAMELLIA256": {
+        "CAMELLIA256": {
             "algorithm_enc": "SSL_CAMELLIA256",
             "releases": {
                 "1.0.0": true,
@@ -9376,7 +9376,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_CAMELLIA": {
+        "CAMELLIA": {
             "algorithm_enc": "SSL_CAMELLIA128 | SSL_CAMELLIA256",
             "releases": {
                 "1.0.0": true,
@@ -9571,7 +9571,7 @@
                 }
             }
         },
-        "SSL_TXT_MD5": {
+        "MD5": {
             "algorithm_mac": "SSL_MD5",
             "releases": {
                 "1.0.0": true,
@@ -9685,7 +9685,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_SHA1": {
+        "SHA1": {
             "algorithm_mac": "SSL_SHA1",
             "releases": {
                 "1.0.0": true,
@@ -9799,7 +9799,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_SHA": {
+        "SHA": {
             "algorithm_mac": "SSL_SHA1",
             "releases": {
                 "1.0.0": true,
@@ -9913,7 +9913,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_GOST94": {
+        "GOST94": {
             "algorithm_mac": "SSL_GOST94",
             "releases": {
                 "1.0.0": true,
@@ -10027,7 +10027,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_GOST89MAC": {
+        "GOST89MAC": {
             "algorithm_mac": "SSL_GOST89MAC",
             "releases": {
                 "1.0.0": true,
@@ -10226,7 +10226,7 @@
                 }
             }
         },
-        "SSL_TXT_SSLV2": {
+        "SSLv2": {
             "algorithm_ssl": "SSL_SSLV2",
             "releases": {
                 "1.0.0": true,
@@ -10295,7 +10295,7 @@
                 "1.0.2u": true
             }
         },
-        "SSL_TXT_SSLV3": {
+        "SSLv3": {
             "algorithm_ssl": "SSL_SSLV3",
             "releases": {
                 "1.0.0": true,
@@ -10487,7 +10487,7 @@
                 }
             }
         },
-        "SSL_TXT_TLSV1": {
+        "TLSv1": {
             "algorithm_ssl": "SSL_TLSV1",
             "releases": {
                 "1.0.0": true,
@@ -10685,7 +10685,7 @@
                 }
             }
         },
-        "SSL_TXT_EXP": {
+        "EXP": {
             "algo_strength": "SSL_EXPORT",
             "releases": {
                 "1.0.0": true,
@@ -10754,7 +10754,7 @@
                 "1.0.2u": true
             }
         },
-        "SSL_TXT_EXPORT": {
+        "EXPORT": {
             "algo_strength": "SSL_EXPORT",
             "releases": {
                 "1.0.0": true,
@@ -10823,7 +10823,7 @@
                 "1.0.2u": true
             }
         },
-        "SSL_TXT_EXP40": {
+        "EXPORT40": {
             "algo_strength": "SSL_EXP40",
             "releases": {
                 "1.0.0": true,
@@ -10892,7 +10892,7 @@
                 "1.0.2u": true
             }
         },
-        "SSL_TXT_EXP56": {
+        "EXPORT56": {
             "algo_strength": "SSL_EXP56",
             "releases": {
                 "1.0.0": true,
@@ -10961,7 +10961,7 @@
                 "1.0.2u": true
             }
         },
-        "SSL_TXT_LOW": {
+        "LOW": {
             "algo_strength": "SSL_LOW",
             "releases": {
                 "1.0.0": true,
@@ -11153,7 +11153,7 @@
                 }
             }
         },
-        "SSL_TXT_MEDIUM": {
+        "MEDIUM": {
             "algo_strength": "SSL_MEDIUM",
             "releases": {
                 "1.0.0": true,
@@ -11345,7 +11345,7 @@
                 }
             }
         },
-        "SSL_TXT_HIGH": {
+        "HIGH": {
             "algo_strength": "SSL_HIGH",
             "releases": {
                 "1.0.0": true,
@@ -11537,7 +11537,7 @@
                 }
             }
         },
-        "SSL_TXT_FIPS": {
+        "FIPS": {
             "algorithm_enc": "~SSL_eNULL",
             "algo_strength": "SSL_FIPS",
             "releases": {
@@ -11730,7 +11730,7 @@
                 }
             }
         },
-        "SSL_TXT_kSRP": {
+        "kSRP": {
             "algorithm_mkey": "SSL_kSRP",
             "releases": {
                 "1.0.1": true,
@@ -11822,7 +11822,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_SRP": {
+        "SRP": {
             "algorithm_mkey": "SSL_kSRP",
             "releases": {
                 "1.0.1": true,
@@ -11914,7 +11914,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_AES_GCM": {
+        "AESGCM": {
             "algorithm_enc": "SSL_AES128GCM|SSL_AES256GCM",
             "releases": {
                 "1.0.1": true,
@@ -12006,7 +12006,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_SHA256": {
+        "SHA256": {
             "algorithm_mac": "SSL_SHA256",
             "releases": {
                 "1.0.1": true,
@@ -12098,7 +12098,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_SHA384": {
+        "SHA384": {
             "algorithm_mac": "SSL_SHA384",
             "releases": {
                 "1.0.1": true,
@@ -12190,7 +12190,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_TLSV1_2": {
+        "TLSv1.2": {
             "algorithm_ssl": "SSL_TLSV1_2",
             "releases": {
                 "1.0.1d": true,
@@ -12354,7 +12354,7 @@
                 }
             }
         },
-        "SSL_TXT_aSRP": {
+        "aSRP": {
             "algorithm_auth": "SSL_aSRP",
             "releases": {
                 "1.0.1i": true,
@@ -12435,7 +12435,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_kDHE": {
+        "kDHE": {
             "algorithm_mkey": "SSL_kEDH",
             "releases": {
                 "1.0.2": true,
@@ -12588,7 +12588,7 @@
                 }
             }
         },
-        "SSL_TXT_kECDHE": {
+        "kECDHE": {
             "algorithm_mkey": "SSL_kEECDH",
             "releases": {
                 "1.0.2": true,
@@ -12741,7 +12741,7 @@
                 }
             }
         },
-        "SSL_TXT_DHE": {
+        "DHE": {
             "algorithm_mkey": "SSL_kEDH",
             "algorithm_auth": "~SSL_aNULL",
             "releases": {
@@ -12895,7 +12895,7 @@
                 }
             }
         },
-        "SSL_TXT_ECDHE": {
+        "ECDHE": {
             "algorithm_mkey": "SSL_kEECDH",
             "algorithm_auth": "~SSL_aNULL",
             "releases": {
@@ -13183,7 +13183,7 @@
                 "1.0.2u": true
             }
         },
-        "SSL_TXT_kRSAPSK": {
+        "kRSAPSK": {
             "algorithm_mkey": "SSL_kRSAPSK",
             "releases": {
                 "1.1.0": true,
@@ -13237,7 +13237,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_kECDHEPSK": {
+        "kECDHEPSK": {
             "algorithm_mkey": "SSL_kECDHEPSK",
             "releases": {
                 "1.1.0": true,
@@ -13291,7 +13291,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_kDHEPSK": {
+        "kDHEPSK": {
             "algorithm_mkey": "SSL_kDHEPSK",
             "releases": {
                 "1.1.0": true,
@@ -13345,7 +13345,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_aGOST12": {
+        "aGOST12": {
             "algorithm_auth": "SSL_aGOST12",
             "releases": {
                 "1.1.0": true,
@@ -13399,7 +13399,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_GOST": {
+        "GOST89": {
             "algorithm_enc": "SSL_eGOST2814789CNT | SSL_eGOST2814789CNT12",
             "releases": {
                 "1.1.0": true,
@@ -13453,7 +13453,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_AES_CCM": {
+        "AESCCM": {
             "releases": {
                 "1.1.0": true,
                 "1.1.0-pre1": {
@@ -13599,7 +13599,7 @@
                 }
             }
         },
-        "SSL_TXT_AES_CCM_8": {
+        "AESCCM8": {
             "algorithm_enc": "SSL_AES128CCM8 | SSL_AES256CCM8",
             "releases": {
                 "1.1.0": true,
@@ -13662,7 +13662,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_CHACHA20": {
+        "CHACHA20": {
             "algorithm_enc": "SSL_CHACHA20",
             "releases": {
                 "1.1.0": true,
@@ -13710,7 +13710,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_GOST12": {
+        "GOST12": {
             "algorithm_mac": "SSL_GOST12_256",
             "releases": {
                 "1.1.0": true,
@@ -14472,7 +14472,7 @@
                 }
             }
         },
-        "SSL_TXT_ARIA": {
+        "ARIA": {
             "algorithm_enc": "SSL_ARIA",
             "releases": {
                 "1.1.1": true,
@@ -14506,7 +14506,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_ARIA_GCM": {
+        "ARIAGCM": {
             "algorithm_enc": "SSL_ARIA128GCM | SSL_ARIA256GCM",
             "releases": {
                 "1.1.1": true,
@@ -14540,7 +14540,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_ARIA128": {
+        "ARIA128": {
             "algorithm_enc": "SSL_ARIA128GCM",
             "releases": {
                 "1.1.1": true,
@@ -14574,7 +14574,7 @@
                 "1.1.1w": true
             }
         },
-        "SSL_TXT_ARIA256": {
+        "ARIA256": {
             "algorithm_enc": "SSL_ARIA256GCM",
             "releases": {
                 "1.1.1": true,
@@ -14610,7 +14610,7 @@
         }
     },
     "3.": {
-        "SSL_TXT_ALL": {
+        "ALL": {
             "algorithm_enc": "~SSL_eNULL",
             "releases": {
                 "3.0.0": true,
@@ -14657,7 +14657,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_CMPALL": {
+        "COMPLEMENTOFALL": {
             "algorithm_enc": "SSL_eNULL",
             "releases": {
                 "3.0.0": true,
@@ -14704,7 +14704,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_CMPDEF": {
+        "COMPLEMENTOFDEFAULT": {
             "algo_strength": "SSL_NOT_DEFAULT",
             "releases": {
                 "3.0.0": true,
@@ -14751,7 +14751,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_kRSA": {
+        "kRSA": {
             "algorithm_mkey": "SSL_kRSA",
             "releases": {
                 "3.0.0": true,
@@ -14798,7 +14798,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_kEDH": {
+        "kEDH": {
             "algorithm_mkey": "SSL_kDHE",
             "releases": {
                 "3.0.0": true,
@@ -14845,7 +14845,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_kDHE": {
+        "kDHE": {
             "algorithm_mkey": "SSL_kDHE",
             "releases": {
                 "3.0.0": true,
@@ -14892,7 +14892,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_DH": {
+        "DH": {
             "algorithm_mkey": "SSL_kDHE",
             "releases": {
                 "3.0.0": true,
@@ -14939,7 +14939,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_kEECDH": {
+        "kEECDH": {
             "algorithm_mkey": "SSL_kECDHE",
             "releases": {
                 "3.0.0": true,
@@ -14986,7 +14986,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_kECDHE": {
+        "kECDHE": {
             "algorithm_mkey": "SSL_kECDHE",
             "releases": {
                 "3.0.0": true,
@@ -15033,7 +15033,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_ECDH": {
+        "ECDH": {
             "algorithm_mkey": "SSL_kECDHE",
             "releases": {
                 "3.0.0": true,
@@ -15080,7 +15080,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_kPSK": {
+        "kPSK": {
             "algorithm_mkey": "SSL_kPSK",
             "releases": {
                 "3.0.0": true,
@@ -15127,7 +15127,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_kRSAPSK": {
+        "kRSAPSK": {
             "algorithm_mkey": "SSL_kRSAPSK",
             "releases": {
                 "3.0.0": true,
@@ -15174,7 +15174,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_kECDHEPSK": {
+        "kECDHEPSK": {
             "algorithm_mkey": "SSL_kECDHEPSK",
             "releases": {
                 "3.0.0": true,
@@ -15221,7 +15221,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_kDHEPSK": {
+        "kDHEPSK": {
             "algorithm_mkey": "SSL_kDHEPSK",
             "releases": {
                 "3.0.0": true,
@@ -15268,7 +15268,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_kSRP": {
+        "kSRP": {
             "algorithm_mkey": "SSL_kSRP",
             "releases": {
                 "3.0.0": true,
@@ -15315,7 +15315,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_kGOST": {
+        "kGOST": {
             "algorithm_mkey": "SSL_kGOST",
             "releases": {
                 "3.0.0": true,
@@ -15362,7 +15362,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_kGOST18": {
+        "kGOST18": {
             "algorithm_mkey": "SSL_kGOST18",
             "releases": {
                 "3.0.0": true,
@@ -15407,7 +15407,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_aRSA": {
+        "aRSA": {
             "algorithm_auth": "SSL_aRSA",
             "releases": {
                 "3.0.0": true,
@@ -15454,7 +15454,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_aDSS": {
+        "aDSS": {
             "algorithm_auth": "SSL_aDSS",
             "releases": {
                 "3.0.0": true,
@@ -15501,7 +15501,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_DSS": {
+        "DSS": {
             "algorithm_auth": "SSL_aDSS",
             "releases": {
                 "3.0.0": true,
@@ -15548,7 +15548,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_aNULL": {
+        "aNULL": {
             "algorithm_auth": "SSL_aNULL",
             "releases": {
                 "3.0.0": true,
@@ -15595,7 +15595,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_aECDSA": {
+        "aECDSA": {
             "algorithm_auth": "SSL_aECDSA",
             "releases": {
                 "3.0.0": true,
@@ -15642,7 +15642,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_ECDSA": {
+        "ECDSA": {
             "algorithm_auth": "SSL_aECDSA",
             "releases": {
                 "3.0.0": true,
@@ -15689,7 +15689,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_aPSK": {
+        "aPSK": {
             "algorithm_auth": "SSL_aPSK",
             "releases": {
                 "3.0.0": true,
@@ -15736,7 +15736,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_aGOST01": {
+        "aGOST01": {
             "algorithm_auth": "SSL_aGOST01",
             "releases": {
                 "3.0.0": true,
@@ -15783,7 +15783,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_aGOST12": {
+        "aGOST12": {
             "algorithm_auth": "SSL_aGOST12",
             "releases": {
                 "3.0.0": true,
@@ -15830,7 +15830,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_aGOST": {
+        "aGOST": {
             "algorithm_auth": "SSL_aGOST01 | SSL_aGOST12",
             "releases": {
                 "3.0.0": true,
@@ -15877,7 +15877,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_aSRP": {
+        "aSRP": {
             "algorithm_auth": "SSL_aSRP",
             "releases": {
                 "3.0.0": true,
@@ -15924,7 +15924,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_EDH": {
+        "EDH": {
             "algorithm_mkey": "SSL_kDHE",
             "algorithm_auth": "~SSL_aNULL",
             "releases": {
@@ -15972,7 +15972,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_DHE": {
+        "DHE": {
             "algorithm_mkey": "SSL_kDHE",
             "algorithm_auth": "~SSL_aNULL",
             "releases": {
@@ -16020,7 +16020,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_EECDH": {
+        "EECDH": {
             "algorithm_mkey": "SSL_kECDHE",
             "algorithm_auth": "~SSL_aNULL",
             "releases": {
@@ -16068,7 +16068,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_ECDHE": {
+        "ECDHE": {
             "algorithm_mkey": "SSL_kECDHE",
             "algorithm_auth": "~SSL_aNULL",
             "releases": {
@@ -16116,7 +16116,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_NULL": {
+        "NULL": {
             "algorithm_enc": "SSL_eNULL",
             "releases": {
                 "3.0.0": true,
@@ -16163,7 +16163,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_RSA": {
+        "RSA": {
             "algorithm_mkey": "SSL_kRSA",
             "algorithm_auth": "SSL_aRSA",
             "releases": {
@@ -16211,7 +16211,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_ADH": {
+        "ADH": {
             "algorithm_mkey": "SSL_kDHE",
             "algorithm_auth": "SSL_aNULL",
             "releases": {
@@ -16259,7 +16259,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_AECDH": {
+        "AECDH": {
             "algorithm_mkey": "SSL_kECDHE",
             "algorithm_auth": "SSL_aNULL",
             "releases": {
@@ -16307,7 +16307,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_PSK": {
+        "PSK": {
             "algorithm_mkey": "SSL_PSK",
             "releases": {
                 "3.0.0": true,
@@ -16354,7 +16354,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_SRP": {
+        "SRP": {
             "algorithm_mkey": "SSL_kSRP",
             "releases": {
                 "3.0.0": true,
@@ -16401,7 +16401,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_3DES": {
+        "3DES": {
             "algorithm_enc": "SSL_3DES",
             "releases": {
                 "3.0.0": true,
@@ -16448,7 +16448,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_RC4": {
+        "RC4": {
             "algorithm_enc": "SSL_RC4",
             "releases": {
                 "3.0.0": true,
@@ -16495,7 +16495,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_RC2": {
+        "RC2": {
             "algorithm_enc": "SSL_RC2",
             "releases": {
                 "3.0.0": true,
@@ -16542,7 +16542,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_IDEA": {
+        "IDEA": {
             "algorithm_enc": "SSL_IDEA",
             "releases": {
                 "3.0.0": true,
@@ -16589,7 +16589,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_SEED": {
+        "SEED": {
             "algorithm_enc": "SSL_SEED",
             "releases": {
                 "3.0.0": true,
@@ -16636,7 +16636,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_eNULL": {
+        "eNULL": {
             "algorithm_enc": "SSL_eNULL",
             "releases": {
                 "3.0.0": true,
@@ -16683,7 +16683,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_GOST": {
+        "GOST89": {
             "algorithm_enc": "SSL_eGOST2814789CNT | SSL_eGOST2814789CNT12 | SSL_MAGMA | SSL_KUZNYECHIK",
             "releases": {
                 "3.0.0": true,
@@ -16734,7 +16734,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_AES128": {
+        "AES128": {
             "algorithm_enc": "SSL_AES128 | SSL_AES128GCM | SSL_AES128CCM | SSL_AES128CCM8",
             "releases": {
                 "3.0.0": true,
@@ -16781,7 +16781,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_AES256": {
+        "AES256": {
             "algorithm_enc": "SSL_AES256 | SSL_AES256GCM | SSL_AES256CCM | SSL_AES256CCM8",
             "releases": {
                 "3.0.0": true,
@@ -16828,7 +16828,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_AES": {
+        "AES": {
             "algorithm_enc": "SSL_AES",
             "releases": {
                 "3.0.0": true,
@@ -16875,7 +16875,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_AES_GCM": {
+        "AESGCM": {
             "algorithm_enc": "SSL_AES128GCM | SSL_AES256GCM",
             "releases": {
                 "3.0.0": true,
@@ -16922,7 +16922,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_AES_CCM": {
+        "AESCCM": {
             "algorithm_enc": "SSL_AES128CCM | SSL_AES256CCM | SSL_AES128CCM8 | SSL_AES256CCM8",
             "releases": {
                 "3.0.0": true,
@@ -16969,7 +16969,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_AES_CCM_8": {
+        "AESCCM8": {
             "algorithm_enc": "SSL_AES128CCM8 | SSL_AES256CCM8",
             "releases": {
                 "3.0.0": true,
@@ -17016,7 +17016,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_CAMELLIA128": {
+        "CAMELLIA128": {
             "algorithm_enc": "SSL_CAMELLIA128",
             "releases": {
                 "3.0.0": true,
@@ -17063,7 +17063,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_CAMELLIA256": {
+        "CAMELLIA256": {
             "algorithm_enc": "SSL_CAMELLIA256",
             "releases": {
                 "3.0.0": true,
@@ -17110,7 +17110,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_CAMELLIA": {
+        "CAMELLIA": {
             "algorithm_enc": "SSL_CAMELLIA",
             "releases": {
                 "3.0.0": true,
@@ -17157,7 +17157,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_CHACHA20": {
+        "CHACHA20": {
             "algorithm_enc": "SSL_CHACHA20",
             "releases": {
                 "3.0.0": true,
@@ -17204,7 +17204,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_GOST2012_GOST8912_GOST8912": {
+        "GOST2012-GOST8912-GOST8912": {
             "algorithm_enc": "SSL_eGOST2814789CNT12",
             "releases": {
                 "3.0.0": true,
@@ -17251,7 +17251,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_ARIA": {
+        "ARIA": {
             "algorithm_enc": "SSL_ARIA",
             "releases": {
                 "3.0.0": true,
@@ -17298,7 +17298,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_ARIA_GCM": {
+        "ARIAGCM": {
             "algorithm_enc": "SSL_ARIA128GCM | SSL_ARIA256GCM",
             "releases": {
                 "3.0.0": true,
@@ -17345,7 +17345,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_ARIA128": {
+        "ARIA128": {
             "algorithm_enc": "SSL_ARIA128GCM",
             "releases": {
                 "3.0.0": true,
@@ -17392,7 +17392,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_ARIA256": {
+        "ARIA256": {
             "algorithm_enc": "SSL_ARIA256GCM",
             "releases": {
                 "3.0.0": true,
@@ -17439,7 +17439,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_CBC": {
+        "CBC": {
             "algorithm_enc": "SSL_CBC",
             "releases": {
                 "3.0.0": true,
@@ -17483,7 +17483,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_MD5": {
+        "MD5": {
             "algorithm_mac": "SSL_MD5",
             "releases": {
                 "3.0.0": true,
@@ -17530,7 +17530,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_SHA1": {
+        "SHA1": {
             "algorithm_mac": "SSL_SHA1",
             "releases": {
                 "3.0.0": true,
@@ -17577,7 +17577,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_SHA": {
+        "SHA": {
             "algorithm_mac": "SSL_SHA1",
             "releases": {
                 "3.0.0": true,
@@ -17624,7 +17624,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_GOST94": {
+        "GOST94": {
             "algorithm_mac": "SSL_GOST94",
             "releases": {
                 "3.0.0": true,
@@ -17671,7 +17671,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_GOST89MAC": {
+        "GOST89MAC": {
             "algorithm_mac": "SSL_GOST89MAC | SSL_GOST89MAC12",
             "releases": {
                 "3.0.0": true,
@@ -17718,7 +17718,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_SHA256": {
+        "SHA256": {
             "algorithm_mac": "SSL_SHA256",
             "releases": {
                 "3.0.0": true,
@@ -17765,7 +17765,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_SHA384": {
+        "SHA384": {
             "algorithm_mac": "SSL_SHA384",
             "releases": {
                 "3.0.0": true,
@@ -17812,7 +17812,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_GOST12": {
+        "GOST12": {
             "algorithm_mac": "SSL_GOST12_256",
             "releases": {
                 "3.0.0": true,
@@ -17859,7 +17859,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_SSLV3": {
+        "SSLv3": {
             "min_tls": "SSL3_VERSION",
             "releases": {
                 "3.0.0": true,
@@ -17906,7 +17906,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_TLSV1": {
+        "TLSv1": {
             "min_tls": "TLS1_VERSION",
             "releases": {
                 "3.0.0": true,
@@ -18000,7 +18000,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_TLSV1_2": {
+        "TLSv1.2": {
             "min_tls": "TLS1_2_VERSION",
             "releases": {
                 "3.0.0": true,
@@ -18047,7 +18047,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_LOW": {
+        "LOW": {
             "algo_strength": "SSL_LOW",
             "releases": {
                 "3.0.0": true,
@@ -18094,7 +18094,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_MEDIUM": {
+        "MEDIUM": {
             "algo_strength": "SSL_MEDIUM",
             "releases": {
                 "3.0.0": true,
@@ -18141,7 +18141,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_HIGH": {
+        "HIGH": {
             "algo_strength": "SSL_HIGH",
             "releases": {
                 "3.0.0": true,
@@ -18188,7 +18188,7 @@
                 "3.2.0-beta1": true
             }
         },
-        "SSL_TXT_FIPS": {
+        "FIPS": {
             "algorithm_enc": "~SSL_eNULL",
             "algo_strength": "SSL_FIPS",
             "releases": {
