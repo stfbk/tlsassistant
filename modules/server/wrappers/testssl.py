@@ -68,7 +68,7 @@ class Testssl:
         """
         Loads testssl variables.
         """
-        self.__testssl = f"dependencies{sep}v3.2rc3{sep}testssl.sh-3.2rc3{sep}testssl.sh"
+        self.__testssl = f"dependencies{sep}testssl.sh{sep}testssl.sh"
         self.__input_dict = {}
 
     def input(self, **kwargs):

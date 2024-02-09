@@ -1,16 +1,45 @@
 {
   "Entry": {
-    "Name": "Compliance report for Key Lengths",
+    "Name": "Key Lengths compliance",
     "Extended Name": "Compliance report for Key Lengths",
     "Description": "Compliance report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
-      "Textual": "TODO: verificare se basta parlare di certificati o bisogna descrivere anche le cose riguardanti i sig_algs<br/>Regenerate the certificate using the following signature algorithms with the respective key length:{add}<br/>Don't use the following signature algorithms and keys:{remove}",
-      "Apache": "No snippet available",
-      "Nginx": "No snippet available"
+      "Textual": "<br/>Enable the following key lengths:{add}<br/>Do not use the following signature algorithms and key lengths:{remove}<br/>NOTE: to enable/disable ECDSA, RSA or DSA keys, you have to re-issue the certificate with a valid key length.",
+      "Apache": "{total_string}",
+      "Nginx": "{total_string}"
     }
   },
   "#ConfigurationInstructions": {
-    "mode": "no_config"
+    "mode": "specific_mitigation",
+    "ECDSA_224": "<br/>- ECDSA 224 bits: {action}",
+    "ECDSA_256": "<br/>- ECDSA 256 bits: {action}",
+    "DSA_2048": "<br/>- DSA 2048 bits: {action}",
+    "DSA_3076": "<br/>- DSA 3076 bits: {action}",
+    "RSA_1024": "<br/>- RSA 1024 bits: {action}",
+    "RSA_2048": "<br/>- RSA 2048 bits: {action}",
+    "RSA_3076": "<br/>- RSA 3076 bits: {action}",
+    "ECDH_224": "<br/>- ECDH 224 bits: {action}",
+    "ECDH_256": "<br/>- ECDH 256 bits: {action}",
+    "DH_1024": "<br/>- DH 1024 bits: {action}",
+    "DH_1024_config": {
+      "Apache": "<p>Run the following command to generate 1024 bits DH parameters: <code>openssl dhparam 1024 >> /path/to/cert</code>.<br/>To remove DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.</p>",
+      "Nginx": "<p>Run the following command to generate 1024 bits DH parameters: <code>openssl dhparam 1024 > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>.</p>"
+    },
+    "DH_2048": "<br/>- DH 2048 bits: {action}",
+    "DH_2048_config": {
+      "Apache": "<p>To add a 2048 bits DH key run the following command: <code>cat configs/compliance/ffdhe/ffdhe2048.txt >> /path/to/cert</code>.<br/>To remove DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.</p>",
+      "Nginx": "<p>To add a 2048 bits DH key run the following command: <code>cat configs/compliance/ffdhe/ffdhe2048.txt > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.</p>"
+    },
+    "DH_3072": "<br/>- DH 3072 bits: {action}",
+    "DH_3072_config": {
+      "Apache": "<p>To add a 3072 bits DH key run the following command: <code>cat configs/compliance/ffdhe/ffdhe3072.txt >> /path/to/cert</code>.<br/>To remove DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.</p>",
+      "Nginx": "<p>To add a 3072 bits DH key run the following command: <code>cat configs/compliance/ffdhe/ffdhe3072.txt > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.</p>"
+    },
+    "openssl_dependency": {
+      ">= 1.0.2": {
+        "Textual": "<br/>NOTE: with your openssl version in order to fix DH keys it may be enough to follow the mitigation of the Key Lengths section."
+      }
+    }
   },
   "#omit-xml-declaration": "yes"
 }

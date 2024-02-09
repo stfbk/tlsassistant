@@ -1,61 +1,44 @@
 <img src="assets/logo.png" alt="logo" style="zoom:35%;" />
 
-# TLSAssistant v2
+# TLSAssistant v3
 
-**TLSAssistant v2** is the (soon-to-be-released) latest version of TLSAssistant. A complete Python redesign performed to convert the standalone analyzer in a modular framework, extensible with new features and thus capable of streamlining the mitigation process of known and newly discovered TLS attacks even for non-expert users.
+**TLSAssistant v3** is the latest version of TLSAssistant, a modular state-of-the-art TLS analyzer, extensible with new features and thus capable of streamlining the mitigation process of known and newly discovered TLS attacks even for non-expert users. TODO: aggiungere link companion page
 
-⚠`Disclaimer`⚠ TLSAssistant v2 is currently under development, it can be used to preview the newest features but, for everyday use, we suggest to download the latest [stable](https://github.com/stfbk/tlsassistant/releases) release.
+The latest release introduces a redesigned PDF report and a novel module able to perform a compliance analysis against five agency-issued technical guidelines:
+- **AgID** [ver.2020-01](https://cert-agid.gov.it/wp-content/uploads/2020/11/AgID-RACCSECTLS-01.pdf)
+- **ANSSI** [v1.2](https://cyber.gouv.fr/sites/default/files/2017/07/anssi-guide-recommandations_de_securite_relatives_a_tls-v1.2.pdf)
+- **BSI** [TR-02102-2](https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TG02102/BSI-TR-02102-2.html) and [TR-03116-4](https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR03116/BSI-TR-03116-4.html)
+- **Mozilla** [v5.7](https://wiki.mozilla.org/Security/Server_Side_TLS)
+- **NIST** [SP 800-52 Rev. 2](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r2.pdf) (and related)
 
-![report](assets/report.png)
+![report](assets/report_vuln.png)
+TODO*Vulnerability analysis report*
+
+![report](assets/report_compliance.png)
+TODO*Compliance analysis report*
+
+## TODOFeatures
+<details>
+
+<summary>Vulnerability analysis</summary>
+TODO
+</details>
+<details>
+
+<summary>Compliance analysis</summary>
+⚠`Disclaimer`⚠ AAAAAAAAAAAAAA v2 is currently under development, it can be used to preview the newest features but, for everyday use, we suggest to download the latest [stable](https://github.com/stfbk/tlsassistant/releases) release.
+</details>
 
 ## Download
-You can either download the (new) *in-development* version or the (old) *stable* version of the tool.
 
-### New version (v2.3.1 beta)
-
-#### One Liner (TL;DR)
+### One Liner
 To install the tool (in a virtual environment), execute the following command:
 ```bash
   sudo apt update && sudo apt install git python3-dev python3-pip python3-venv -y && git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant && python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt && python3 install.py -v
 ```
 ---
-
-#### Docker
-
-Recommended for non-ubuntu users:
-
-Since it does use APT and install dependencies, we can use the Dockerfile to build the image and contain the installation process.
-
-<details>
-<summary>Docker build and run tutorial</summary>
-
-clone the repository:
-
-```bash
-  git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant
-```
-Build the docker image:
-```bash
-  docker build -t tlsassistant .
-```
-Run the docker image:
-
-```bash
-docker run --rm -v ${PWD}/results:/tlsassistant/results -t tlsassistant -s fbk.eu
-```
-add all the `args` that we want to pass after the `tlsassistant` keyword.
-
-
-We can use the `-v` flag to mount directories with the TLS configuration files.
-
-```bash
-docker run --rm -v ${PWD}/results:/tlsassistant/results -v ${PWD}/configurations_to_mount:/tlsassistant/config_mounted -t tlsassistant -f config_mounted/apache.conf
-```
-</details>
-
----
-#### Step by Step
-If you want to execute step by step instead of a one liner:
+### Step by Step
+If you want to download and install by executing every step:
 <details>
 
 <summary>Show single steps</summary>
@@ -89,17 +72,50 @@ git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant
   ```bash
   python3 install.py
   ```
-⚠ Note that the installation of `wkhtmltopdf` is slow. 
-To see precisely what the installer is doing, run the command with `-v`.
 </details>
 
-#### Usage
+---
+
+### Docker
+
+Recommended for non-ubuntu users:
+
+Since it does use APT and install dependencies, we can use the Dockerfile to build the image and contain the installation process.
+
+<details>
+<summary>Docker build and run tutorial</summary>
+
+clone the repository:
+
+```bash
+  git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant
+```
+Build the docker image:
+```bash
+  docker build -t tlsassistant .
+```
+Run the docker image:
+
+```bash
+docker run --rm -v ${PWD}/results:/tlsassistant/results -t tlsassistant -s fbk.eu
+```
+add all the `args` that we want to pass after the `tlsassistant` keyword.
+
+
+We can use the `-v` flag to mount directories with the TLS configuration files.
+
+```bash
+docker run --rm -v ${PWD}/results:/tlsassistant/results -v ${PWD}/configurations_to_mount:/tlsassistant/config_mounted -t tlsassistant -f config_mounted/apache.conf
+```
+</details>
+
+## Usage
 ```bash
 python3 run.py -h
 ```
 <details>
 
-<summary>Show raw output</summary>
+<summary>TODO Show raw output</summary>
 
 ```
 usage: TLSAssistant [-h] [--version] [-v] [--openssl OPENSSL | --ignore-openssl] [-ot {pdf,html}] [-o OUTPUT] [--group-by {host,module}] (-s SERVER | -f FILE | -d DOMAIN_FILE | -l [LIST] | -a APK)
@@ -146,13 +162,10 @@ optional arguments:
                         List of modules to exclude
                         For example
                                 -e breach crime
-
-https://st.fbk.eu -  Security and Trust, FBK Research Unit
-
 ```
 </details>
 
-##### Examples 
+### Examples 
 <details>
 <summary>Show advanced examples</summary>
 
@@ -238,10 +251,12 @@ we execute:
 python3 run.py -d domains_list.log
 ```
 
+- TODO Analyze AAAAAAAAAAAAAAAAAAAAA
+
 </details>
 
 
-##### Avaliable analysis modules
+### Avaliable analysis modules
 
 <details>
 <summary>Show modules list</summary>
@@ -264,8 +279,14 @@ Android:
         trustmanager
         weak_algorithms
         webview_ssl_errors
+Compliance:
+        compare_one
+        compare_many
+        generate_one
+        generate_many
 Server:
         3shake
+        alpaca
         beast
         breach
         ccs_injection
@@ -281,8 +302,11 @@ Server:
         lucky13
         mitzvah
         nomore
+        padding_oracle
         pfs
-        poodle
+        sslpoodle
+        tlspoodle
+        raccoon
         renegotiation
         robot
         sloth
@@ -297,32 +321,8 @@ Use
 
 ---
 
-### Old version (v1.\*)
-You can download the latest stable release by
-- clicking [here](https://github.com/stfbk/tlsassistant/releases);
-- cloning from the stable branch by running
-    ```bash
-    git clone -b v1.x https://github.com/stfbk/tlsassistant.git
-    ```
-    and then running the `INSTALL.sh` script to install all the dependencies.
-
-## Roadmap
-
-- [x] Design of a **standard** for 
-  - [x] module *creation* (to allow the creation of additional modules)
-  - [x] module *configuration* (to create new analysis flows using existing modules)
-- [x] Refine modules' output
-- [x] Design a new report template
-- [ ] Documentation writing (ongoing)
-- [ ] Creation of new *Output* modules
-  - [ ] Configuration analysis
-  - [ ] Attack Tree `matching TLSAssistant v1.x output`
-  - [x] STIX `matching TLSAssistant v1.x output`
-  - [ ] Scoreboard
-- [ ] Improve webserver coverage
-
 ## Analysis types
-The various types of analysis that can (currently) be requested are:
+The various types of analysis that can (currently) be performed are:
 
 ### Single Host
 Since most of the vulnerabilities analyzed by the tool are covered by testssl.sh tool, we decided to make the analysis more efficient by performing a pre-analysis to populate a cache with its result. These will be used by the corresponding testssl.sh modules such as POODLE (an attack that exploits the availability of SSLv3 to downgrade the strength of the connection), during current and future analysis. Thus, in Step 3a the arguments of each individual module related to testssl.sh are obtained. These arguments will be provided to the method in order to perform the testssl.sh pre-analysis and populate the cache with the results. Once this is done, the individual modules are executed (Step 3b) and mitigations added if vulnerable.
@@ -335,6 +335,9 @@ We perform a Single Host analysis on each one of the domains specified in an inp
 
 ### TLS Configuration and Fixes
 If a configuration file is provided, a WhiteBox analysis is performed by loading the TLS configuration into memory and performing a complete check of all available modules (Step 3b). Otherwise, if a configuration file is provided along with a valid hostname, a singlehost analysis is performed and then the fixes are integrated in the provided TLS configuration. We refer to this analysis as Hybrid: we perform a BlackBox analysis on the hostname and then we apply the fixes on the configuration file.
+
+## TODOHow to contribute
+Please read the related Wiki page
 
 ## External/related projects
 
@@ -363,6 +366,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-Developed within [Security & Trust](https://st.fbk.eu/) Research Unit at [Fondazione Bruno Kessler](https://www.fbk.eu/en/) (Italy)
+Developed within the [Security & Trust](https://st.fbk.eu/) research unit, part of the [Center for Cybersecurity](https://cs.fbk.eu/)  at [Fondazione Bruno Kessler](https://www.fbk.eu/en/) (Italy)
 
 

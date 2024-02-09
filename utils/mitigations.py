@@ -2,7 +2,7 @@ import json
 import logging
 from pathlib import Path
 from os.path import sep
-
+from copy import deepcopy
 
 def load_mitigation(mitigation_name: str, raise_error=False, force=False) -> dict:
     """
@@ -57,7 +57,7 @@ class MitigationLoader:
                 self.__cache[mitigation_name] = mitigation_data.copy()
         else:
             if mitigation_name in self.__cache:
-                mitigation_data = self.__cache[mitigation_name].copy()
+                mitigation_data = deepcopy(self.__cache[mitigation_name])
             else:
                 mitigation_data = self.load_mitigation(
                     mitigation_name, raise_error, force=True

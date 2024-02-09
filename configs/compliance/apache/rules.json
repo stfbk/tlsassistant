@@ -1,5 +1,5 @@
 {
-  "ProtocolList": {
+  "Protocol": {
     "enable": "+name",
     "disable": "-name",
     "separator": " ",
@@ -9,11 +9,12 @@
       ".0": ""
     }
   },
-  "CipherSuiteList": {
+  "CipherSuites": {
     "enable": "name",
     "disable": "",
     "separator": ":",
     "added_negatives": false,
+    "enable_optional": true,
     "post_actions": {
       "convert_ciphers": "",
       "prepend_after": {
@@ -28,10 +29,16 @@
     "separator": "",
     "enable_one_time": true,
     "post_actions": {
-      "comment": "You should run `openssl dhparam {} >> /path/to/cert_chain`",
+      "comment": "You should run {} >> /path/to/cert_chain`",
       "comment_format": {
         "0": "dhparam"
       }
     }
+  },
+  "StaplingCache": {
+    "enable": "\"shmcb:/usr/local/apache/logs/ssl_gcache_data(512000)\"",
+    "disable": "",
+    "separator": "",
+    "enable_one_time": true
   }
 }

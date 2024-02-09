@@ -14,10 +14,11 @@ class CompareMany(Compliance):
             raise ValueError("No configuration provided")
         columns = ["name", "level", "condition", "guidelineName"]
         # fill the entries field with the data from the sheets
-        self._retrieve_entries(sheets_to_check, columns)
-        self._evaluate_entries(sheets_to_check, columns)
-        for sheet in self.evaluated_entries:
-            for entry_dict in self.evaluated_entries[sheet].values():
+        entries = self._retrieve_entries(sheets_to_check, columns)
+        evaluated_entries = self._evaluate_entries(sheets_to_check, columns, entries)
+        for sheet in evaluated_entries:
+            for entry_dict in evaluated_entries[sheet].values():
+                original_sheet = sheet
                 entry = entry_dict["entry"]
                 columns = ["name", "level", "condition", "guidelineName"]
                 # If the sheet isn't in the dictionary then I can use the default value
@@ -30,7 +31,12 @@ class CompareMany(Compliance):
                 enabled = entry_dict["enabled"]
                 valid_condition = entry_dict["valid_condition"]
                 note = entry_dict["note"]
-
+                # Filter for TLS1.3 ciphers
+                if name in self.tls1_3_ciphers:
+                    sheet = "CipherSuitesTLS1.3"
                 self.update_result(sheet, name, level, enabled, entry_dict["source"], valid_condition, hostname)
-                if note and self._output_dict[hostname][sheet].get(name) is not None:
-                    self._output_dict[hostname][sheet][name]["notes"] = entry_dict.get("note")
+                if note and self._output_dict[sheet].get(name) is not None:
+                    self._output_dict[sheet][name]["notes"] = entry_dict.get("note")
+                if sheet == "KeyLengths" and enabled and valid_condition and level in ["recommended", "must"]:
+                    self.valid_keysize = True
+                sheet = original_sheet

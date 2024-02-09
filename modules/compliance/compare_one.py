@@ -13,8 +13,10 @@ class CompareOne(Compliance):
         if not self._user_configuration:
             raise ValueError("No configuration provided")
         for sheet in sheets_to_check:
+            original_sheet = sheet
             columns_orig = ["name", "level", "condition", "guidelineName"]
             # If the sheet isn't in the dictionary then I can use the default value
+            query_filter = self.get_filters(sheet)
             columns = self.sheet_columns.get(sheet, {"columns": columns_orig})["columns"]
             name_index = columns.index("name")
             name_columns = self.sheet_columns.get(sheet, {}).get("name_columns", [name_index])
@@ -22,8 +24,7 @@ class CompareOne(Compliance):
             condition_index = columns.index("condition")
             guideline = list(sheets_to_check[sheet].keys())[0]
             table_name = self._database_instance.get_table_name(sheet, guideline, sheets_to_check[sheet][guideline])
-            self._database_instance.input([table_name])
-            data = self._database_instance.output(columns)
+            data = self._database_instance.run(tables=[table_name], columns=columns, other_filter=query_filter)
             config_field = sheet
             for entry in data:
                 if config_field:
@@ -46,7 +47,7 @@ class CompareOne(Compliance):
                         if self._condition_parser.entry_updates.get("levels"):
                             levels = self._condition_parser.entry_updates.get("levels")
                             levels.insert(0, level)
-                            to_use = self.level_to_use(levels)
+                            to_use = self.level_to_use(levels, self._security)
                             level = levels[to_use]
 
                     has_alternative = self._condition_parser.entry_updates.get("has_alternative")
@@ -67,10 +68,16 @@ class CompareOne(Compliance):
                     #     valid_condition = True
                     # if it has multiple name_columns they get only shown in the output
                     name = "_".join([str(entry[i]) for i in name_columns])
+                    # Filter for TLS1.3 ciphers
+                    if name in self.tls1_3_ciphers:
+                        sheet = "CipherSuitesTLS1.3"
                     self.update_result(sheet, name, level, enabled, entry[-1], valid_condition, hostname)
                     if additional_notes:
                         note += "\nNOTE: "
                         note += "\n".join(additional_notes)
                     note += conditional_notes
-                    if self._output_dict[hostname][sheet].get(name) is not None:
-                        self._output_dict[hostname][sheet][name]["notes"] = note
+                    if self._output_dict[sheet].get(name) is not None:
+                        self._output_dict[sheet][name]["notes"] = note
+                    if sheet == "KeyLengths" and enabled and valid_condition and level in ["recommended", "must"]:
+                        self.valid_keysize = True
+                    sheet = original_sheet

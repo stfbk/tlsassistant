@@ -1,8 +1,10 @@
 {
-    "ProtocolList": "SSLProtocol",
-    "CipherSuiteList": "SSLCipherSuite",
+    "Protocol": "SSLProtocol",
+    "CipherSuites": "SSLCipherSuite",
+    "CipherSuitesTLS1.3": "SSLOpenSSLConfCmd ciphersuites",
     "SessionTickets": "SSLSessionTickets",
     "Stapling": "SSLUseStapling",
+    "StaplingCache": "SSLStaplingCache",
     "DHParams": "",
     "Groups": "SSLOpenSSLConfCmd groups"
 }

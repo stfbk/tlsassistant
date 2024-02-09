@@ -1,12 +1,12 @@
 {
   "Entry": {
-    "Name": "Compliance report for Signature Algorithms",
+    "Name": "Signature Algorithms compliance",
     "Extended Name": "Compliance report for Signature Algorithms",
     "Description": "Compliance report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
       "Textual": "Enable the following signature algorithms:{add}<br/>Disable the following signature algorithms:{remove}<br/>{notes}",
-      "Apache": "-Quick solution: Replace the instruction of the directive <code>SSLOpenSSLConfCmd ClientSignatureAlgorithms</code> with the following string:<br/> {total_string}</br>-Advanced solution: Check the directive <code>SSLOpenSSLConfCmd ClientSignatureAlgorithms</code> and for each element in the Textual section, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element you have to remove it from the string.",
-      "Nginx": "-Quick solution: Replace the instruction of the directive <code>ssl_conf_command SignatureAlgorithms</code> with the following string:<br/> {total_string}</br>-Advanced solution: Check the directive <code>ssl_conf_command SignatureAlgorithms</code> and for each element in the Textual section, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element you have to remove it from the string."
+      "Apache": "<p>- <b>Quick solution</b>: replace the instruction of the directive <code>SSLOpenSSLConfCmd ClientSignatureAlgorithms</code> with the following string:<br/> {total_string}</br>- <b>Advanced solution</b>: check the directive <code>SSLOpenSSLConfCmd ClientSignatureAlgorithms</code> and for each element in the <b>Textual</b> section above, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element you have to remove it from the string.</p>",
+      "Nginx": "<p>- <b>Quick solution</b>: replace the instruction of the directive <code>ssl_conf_command SignatureAlgorithms</code> with the following string:<br/> {total_string}</br>- <b>Advanced solution</b>: check the directive <code>ssl_conf_command SignatureAlgorithms</code> and for each element in the <b>Textual</b> section above, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element you have to remove it from the string.</p>"
     }
   },
   "#ConfigurationInstructions": {
@@ -18,12 +18,12 @@
     "mode": "standard",
     "openssl_dependency": {
       "< 1.1.1": {
-        "Textual": "<br/>NOTE: In order to use signature algorithms, you need to upgrade to OpenSSL 1.1.1 or later.",
-        "Nginx": "<br/>NOTE: This directive is only supported by NGINX 1.19.4 or higher."
+        "Textual": "<br/>NOTE: in order to use signature algorithms, you need to upgrade to OpenSSL 1.1.1 or later.",
+        "Nginx": "<p><br/>NOTE: this directive is only supported by Nginx 1.19.4 or higher.</p>"
       },
       "> 1.0.2": {
-        "Textual": "<br/>NOTE: Your OpenSSL version may not support all the signature algorithms listed in this section. The mitigations provided in this report only show the supported ones.",
-        "Nginx": "<br/>NOTE: This directive is only supported by NGINX 1.19.4 or higher."
+        "Textual": "<br/>NOTE: your OpenSSL version may not support all the signature algorithms listed in this section. The mitigations provided in this report only show the supported ones.",
+        "Nginx": "<p><br/>NOTE: this directive is only supported by Nginx 1.19.4 or higher.</p>"
       }
     },
     "actions_on_final_string": {

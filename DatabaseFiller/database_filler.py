@@ -1,4 +1,5 @@
 import sqlite3
+from copy import deepcopy
 from typing import Tuple
 
 import pandas as pd
@@ -198,6 +199,8 @@ if __name__ == "__main__":
                             level = get_cell_for_df(guidelines_dataframe, row[0], (guideline, level_column))
                             # If the cell is empty and the level isn’t negative (must not, not recommended)
                             # then "must not" is used as the level.
+                            if level == "<Not mentioned>":
+                                content = level
                             if pd.notna(content) or level in ["not recommended", "must not"]:
                                 if content not in ["recommended", "must"]:
                                     content = level
@@ -250,11 +253,11 @@ if __name__ == "__main__":
                         for other_guideline in tokens[1:]:
                             other_name = get_guideline_name_for_database(other_guideline)
                             other_table = sheet_mapped + other_name + version_name
-                            values_dict[other_table] = values_dict[table_name]
+                            values_dict[other_table] = deepcopy(values_dict[table_name])
                             for el in values_dict[other_table]:
                                 # Update the guideline name
                                 for i, entry in enumerate(values_dict[other_table][el]):
-                                    if isinstance(entry, str) and entry.upper() == base_guideline:
+                                    if isinstance(entry, str) and entry.upper() == base_guideline.upper():
                                         values_dict[other_table][el][i] = other_name
 
             # Convert all the data into tuples to add them to the database and group them by guideline name
@@ -285,10 +288,10 @@ if __name__ == "__main__":
                         # skip first element
                         if index == 0:
                             continue
-                        if len(entry) > 3 and pd.notna(entry[-1]) and pd.notna(entries[index-1][-1]):
-                            if entry[-2] != entries[index-1][-2]:
+                        if len(entry) > 3 and pd.notna(entry[-1]) and pd.notna(entries[index - 1][-1]):
+                            if entry[-2] != entries[index - 1][-2]:
                                 entry[-1] = None
-                                entries[index-1][-1] = None
+                                entries[index - 1][-1] = None
 
                 if not values_groups.get(table):
                     values_groups[table] = []

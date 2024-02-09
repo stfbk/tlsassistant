@@ -66,7 +66,7 @@ class Alpaca(TLS_Scanner_base):
                 """
                 result['mitigation']['Entry']['Mitigation']['Apache'] += """
                 To enable Strict SNI in Apache: <br/> 
-                1. The first step is to create a dummy certificate for localhost with a 100-year lifespan (unless you feel like setting up a cron job that regenerates a 90-day certificate every 30 days or so):<br/>
+                1. The first step is to create a dummy certificate for localhost with a 100-year lifespan:<br/>
                 <code>
                 sudo openssl genrsa -out /etc/ssl/private/localhost.key 2048<br/>
                 sudo openssl req -new -key /etc/ssl/private/localhost.key -subj /CN=localhost -out /etc/ssl/certs/localhost.csr<br/>

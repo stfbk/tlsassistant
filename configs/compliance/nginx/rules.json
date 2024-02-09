@@ -1,5 +1,5 @@
 {
-  "ProtocolList": {
+  "Protocol": {
     "enable": "name",
     "disable": "",
     "separator": ":",
@@ -18,7 +18,7 @@
     "separator": "",
     "enable_one_time": true,
     "post_actions": {
-      "comment": "To use the directive below you have to run `openssl dhparam {} >> /path/to/dhparam`",
+      "comment": "To use the directive below you have to run {} >> /path/to/dhparam`",
       "comment_format": {
         "0": "dhparam"
       }

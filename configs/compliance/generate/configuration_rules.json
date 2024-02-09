@@ -1,5 +1,5 @@
 {
-  "ProtocolList": {
+  "Protocol": {
     "enable": "name",
     "disable": "-name",
     "separator": " ",
@@ -9,14 +9,24 @@
       ".0": ""
     }
   },
-  "CipherSuiteList": {
+  "CipherSuites": {
     "enable": "name",
     "disable": "",
     "separator": ":",
     "added_negatives": false,
+    "enable_optional": true,
     "post_actions": {
       "convert_ciphers": "",
       "prepend": "-ALL:"
+    }
+  },
+  "CipherSuitesTLS1.3": {
+    "enable": "name",
+    "disable": "!name",
+    "separator": ":",
+    "added_negatives": true,
+    "post_actions": {
+      "convert_ciphers": ""
     }
   },
   "SessionTickets": {
