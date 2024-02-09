@@ -108,6 +108,7 @@ class Https:
     def __init__(self):
         self.__input_dict = {}
         self.__logging = Logger("HTTPS_HSTS")
+        self.invalid_cert = False
 
     def input(self, **kwargs):
         """
@@ -196,7 +197,6 @@ class Https:
                 self.__input_dict["type"],
                 force,
             )
-
         return self.output(hostname=link)
 
     def __chose_results(self, type: int, response: requests.Response):
@@ -260,9 +260,11 @@ class Https:
                 self.__logging.warning(
                     "The HTTPS_HSTS analysis cannot proceed and result will be set as vulnerable."
                 )
+                # default response
+                self.invalid_cert = True
                 return self.__chose_results(
                     type, requests.Response()
-                )  # default response
+                )
             except (
                 requests.exceptions.ConnectTimeout,
                 requests.exceptions.ConnectTimeout,

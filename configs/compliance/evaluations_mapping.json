@@ -1,0 +1,18 @@
+{
+    "security": {
+        "must": 0,
+        "must not": 0,
+        "not recommended": 1,
+        "recommended": 2,
+        "optional": 3,
+        "<Not mentioned>": 4
+    },
+    "legacy": {
+        "must": 0,
+        "must not": 0,
+        "recommended": 1,
+        "not recommended": 2,
+        "optional": 3,
+        "<Not mentioned>": 4
+    }
+}

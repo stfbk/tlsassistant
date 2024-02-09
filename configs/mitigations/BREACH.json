@@ -1,7 +1,7 @@
 {
   "Entry": {
     "Name": "BREACH",
-    "ExtendedName": "<strong>B</strong>rowser <strong>R</strong>econnaissance and <strong>E</strong>xfiltration via <strong>A</strong>daptive <strong>C</strong>ompression of </strong>H</strong>ypertext",
+    "ExtendedName": "<strong>B</strong>rowser <strong>R</strong>econnaissance and <strong>E</strong>xfiltration via <strong>A</strong>daptive <strong>C</strong>ompression of <strong>H</strong>ypertext",
     "CVE": "2013-3587",
     "CVSS3": "5.9 (Medium)",
     "#comment": " CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N ",

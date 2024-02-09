@@ -1,0 +1,74 @@
+{
+    "Protocol": {
+        "NIST": "CUSTOMERFACING",
+        "BSI": "CUSTOMERFACING",
+        "ANSSI": "",
+        "AGID": "",
+        "MOZILLA": "INTERMEDIATE"
+    },
+    "CipherSuite": {
+        "NIST": "PREFERRED1",
+        "BSI": "PREFERRED1",
+        "ANSSI": "",
+        "MOZILLA": "INTERMEDIATE",
+        "AGID": "INTERMEDIATE"
+    },
+    "Extension": {
+        "NIST": "",
+        "BSI": "",
+        "ANSSI": "",
+        "AGID": ""
+    },
+    "CertificateSignature": {
+        "NIST": "",
+        "BSI": "",
+        "ANSSI": "",
+        "MOZILLA": "INTERMEDIATE",
+        "AGID": "INTERMEDIATE"
+    },
+    "Hash": {
+        "NIST": "",
+        "BSI": "",
+        "ANSSI": "",
+        "MOZILLA": "INTERMEDIATE",
+        "AGID": "INTERMEDIATE"
+    },
+    "Signature": {
+        "NIST": "",
+        "BSI": "CLIENT_SERVERSIGNATURES",
+        "ANSSI": "",
+        "MOZILLA": "INTERMEDIATE",
+        "AGID": "INTERMEDIATE"
+    },
+    "Groups": {
+        "NIST": "",
+        "BSI": "CUSTOMERFACING",
+        "ANSSI": "",
+        "MOZILLA": "INTERMEDIATE",
+        "AGID": "INTERMEDIATE"
+    },
+    "KeyLengths": {
+        "ANSSI": "",
+        "MOZILLA": "INTERMEDIATE",
+        "AGID": "INTERMEDIATE",
+        "NIST": "",
+        "BSI": ""
+    },
+    "Certificate": {
+        "NIST": "",
+        "BSI": "",
+        "ANSSI": "",
+        "MOZILLA": ""
+    },
+    "CertificateExtensions": {
+        "NIST": "",
+        "BSI": "",
+        "ANSSI": "",
+        "MOZILLA": ""
+    },
+    "Misc": {
+        "NIST": "",
+        "BSI": "",
+        "AGID": ""
+    }
+}

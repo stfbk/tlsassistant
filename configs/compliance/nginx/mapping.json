@@ -1,0 +1,10 @@
+{
+    "Protocol": "ssl_protocols",
+    "CipherSuites": "ssl_ciphers",
+    "CipherSuitesTLS1.3": "ssl_conf_command ciphersuites",
+    "SessionTickets": "ssl_session_tickets",
+    "Stapling": "ssl_stapling",
+    "EarlyData": "ssl_early_data",
+    "DHParams": "ssl_dhparam",
+    "Groups": "ssl_ecdh_curve"
+}

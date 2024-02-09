@@ -1,7 +1,7 @@
-from utils.validation import Validator
-from utils.urls import url_domain, port_parse
-from utils.mitigations import load_mitigation
 from modules.server.wrappers.https_hsts import Https
+from utils.mitigations import load_mitigation
+from utils.urls import url_domain
+from utils.validation import Validator
 
 
 class Hsts_base:
@@ -10,10 +10,11 @@ class Hsts_base:
     It is used to obtain the results of the analysis.
     """
 
+    _instance = Https()
+
     def __init__(self):
         self._input_dict = {}
         self._arguments = []
-        self._instance = Https()
         self._output_dict = {}
         self._mitigations = {}
         self._set_arguments()

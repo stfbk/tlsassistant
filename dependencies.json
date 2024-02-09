@@ -20,12 +20,48 @@
     "url": "https://github.com/SUPERAndroidAnalyzer/super/releases/download/0.5.1/super-analyzer_0.5.1_ubuntu_amd64.deb"
   },
   {
-    "type": "zip",
-    "url": "https://github.com/drwetter/testssl.sh/archive/3.0.4.zip"
+    "type": "git",
+    "url": "https://github.com/drwetter/testssl.sh"
   },
-    {
+  {
     "type": "apt",
-    "url": "wkhtmltopdf"
+    "url": "libcairo2-dev"
+  },
+  {
+    "type": "pip",
+    "url": "z3c.rml==4.4.0"
+  },
+  {
+    "type": "zip",
+    "url": "https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-unhinted.zip"
+  },
+  {
+    "type": "git",
+    "url": "https://github.com/IvanValentini/TLS-Scanner"
+  },
+  {
+    "type": "apt",
+    "url": "default-jre"
+  },
+  {
+    "type": "apt",
+    "url": "maven"
+  },
+  {
+    "type": "compile_maven",
+    "path": "TLS-Scanner"
+  },
+  {
+    "type": "git-submodule",
+    "cmd": "update --init --recursive",
+    "path": "TLS-Scanner"
+  },
+  {
+    "type": "git",
+    "url": "https://github.com/stfbk/tls-table"
+  },
+  {
+    "type": "python3",
+    "path": "ciphersuites_converter.py"
   }
-
 ]

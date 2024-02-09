@@ -1,0 +1,14 @@
+{
+  "Entry": {
+    "Name": "HSTS not preloaded",
+    "ExtendedName": "HSTS not preloaded",
+    "Description": "If the HSTS header is preloaded but the webserver does not have a valid certificate, the user will not be able to access the target website.",
+    "Mitigation": {
+      "Textual": "Check if your certificate has expired or it is not valid. If it is not valid, get a new certificate and deploy it on your server. If it has expired, renew it and deploy it on your server.",
+      "Apache": "No snippet available",
+      "Nginx": "No snippet available"
+
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}

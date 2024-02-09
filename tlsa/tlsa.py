@@ -1,15 +1,24 @@
 import logging
-from pathlib import Path
-
-from utils.logger import Logger
-from utils.colors import Color
-from utils.loader import load_configuration
-from utils.configuration import pretty
-from utils.loader import load_list_of_domains
-from modules.core import Core
 from os import listdir
 from os.path import isfile, join, sep
+from pathlib import Path
 
+from modules.core import Core
+from utils.colors import Color
+from utils.configuration import pretty
+from utils.loader import load_configuration
+from utils.loader import load_list_of_domains
+from modules.core import Core
+from utils.type import WebserverType
+from os import listdir
+from os.path import isfile, join, sep
+from utils.logger import Logger
+
+config_types_mapping = {
+    "apache": WebserverType.APACHE,
+    "nginx": WebserverType.NGINX,
+    "auto": WebserverType.AUTO
+}
 
 class Tlsa:
     def __init__(self, args):
@@ -103,12 +112,26 @@ class Tlsa:
                 f"default{'_android.json' if args.apk else '_server.json'}"
             )
         config_or_modules = args.configuration
-
-        if args.apply_fix or args.file:
+        if args.config_type:
+            args.config_type = config_types_mapping.get(args.config_type.lower(), WebserverType.AUTO)
+        if args.compliance_args:
+            assert "guidelines" in args.compliance_args, "Guideline Argument Missing!"
+            all_args=args.compliance_args.copy()
+            comp_one_or_many="compare_one" if "," not in all_args['guidelines'] else "compare_many"
+            gen_one_or_many="generate_one" if "," not in all_args['guidelines'] else "generate_many"
+            args.compliance_args={
+                comp_one_or_many:all_args,
+                gen_one_or_many:all_args
+            }
+            
+        if args.apply_fix or args.file or args.compliance_args:
             # checks for openssl and ignore-openssl flag
             if not args.ignore_openssl and not args.openssl:
+                reason = "OpenSSL is required to fix the TLSA records."
+                if args.compliance_args:
+                    reason = "\nOpenSSL is required to generate the compliance reports."
                 raise AssertionError(
-                    f"\n{Color.WARNING}OpenSSL is required to fix the TLSA records.{Color.ENDC}"
+                    f"\n{Color.WARNING}{reason}{Color.ENDC}"
                     f"\nIgnore the checks with \n\t{Color.CBEIGE}--ignore-openssl{Color.ENDC}\n"
                     f"or insert an openssl version with\n\t{Color.CBEIGE}--openssl [VERSION]{Color.ENDC}"
                 )
@@ -124,6 +147,12 @@ class Tlsa:
                 group_by=args.group_by,
                 apply_fix=args.apply_fix,
                 stix=args.stix,
+                webhook=args.webhook,
+                prometheus=args.prometheus,
+                config_type=args.config_type,
+                openssl_version=args.openssl,
+                ignore_openssl=args.ignore_openssl,
+                compliance_args=args.compliance_args
             )
         elif args.apk:
             Core(
@@ -135,6 +164,9 @@ class Tlsa:
                 type_of_analysis=Core.Analysis.APK,
                 group_by=args.group_by,
                 stix=args.stix,
+                webhook=args.webhook,
+                prometheus=args.prometheus,
+                config_type = args.config_type
             )
         elif args.domain_file:
             Core(
@@ -146,6 +178,29 @@ class Tlsa:
                 type_of_analysis=Core.Analysis.DOMAINS,
                 group_by=args.group_by,
                 stix=args.stix,
+                webhook=args.webhook,
+                prometheus=args.prometheus,
+                config_type=args.config_type,
+                openssl_version = args.openssl,
+                ignore_openssl = args.ignore_openssl,
+                compliance_args = args.compliance_args
+            )
+        elif args.file and any(module in ["compare_one", "compare_many"] for module in args.configuration):
+            args.compliance_args.get("compare_one", {})["actual_configuration_path"]=args.file
+            args.compliance_args.get("compare_many", {})["actual_configuration_path"]=args.file
+            Core(
+                hostname_or_path=args.file,
+                configuration=config_or_modules,
+                output=args.output,
+                output_type=self.__to_report_type(args.output_type),
+                type_of_analysis=Core.Analysis.COMPLIANCE,
+                to_exclude=args.exclude,
+                group_by=args.group_by,
+                apply_fix=args.apply_fix,
+                stix=args.stix,
+                openssl_version=args.openssl,
+                ignore_openssl=args.ignore_openssl,
+                compliance_args=args.compliance_args
             )
         elif args.file:
             if isinstance(args.configuration, list):
@@ -164,6 +219,24 @@ class Tlsa:
                 stix=args.stix,
                 openssl_version=args.openssl,
                 ignore_openssl=args.ignore_openssl,
+                webhook=args.webhook,
+                prometheus=args.prometheus,
+                config_type=args.config_type
+            )
+        elif any(module in ["generate_one", "generate_many"] for module in args.configuration):
+            Core(
+                hostname_or_path="placeholder",
+                configuration=config_or_modules,
+                output=args.output,
+                output_type=self.__to_report_type(args.output_type),
+                type_of_analysis=Core.Analysis.COMPLIANCE,
+                to_exclude=args.exclude,
+                group_by=args.group_by,
+                apply_fix=args.apply_fix,
+                stix=args.stix,
+                openssl_version=args.openssl,
+                ignore_openssl=args.ignore_openssl,
+                compliance_args=args.compliance_args
             )
 
         else:  # must be args.list, unless argparse throws error.

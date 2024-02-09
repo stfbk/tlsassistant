@@ -155,3 +155,6 @@ results/
 
 # tmp files and folders
 tmp*
+
+# testssl results folder
+testssl_dumps/

@@ -1,0 +1,45 @@
+{
+  "input": [
+    {
+      "name": "guidelines_to_check",
+      "type": "str",
+      "description": "string containing the name of the guideline that should be checked in the form: guideline_version1_version2",
+      "required": "True"
+    }, {
+      "name": "actual_configuration_path",
+      "type": "str",
+      "description": "The configuration to check, not needed if generating",
+      "required": "False"
+    }, {
+      "name": "hostname",
+      "type": "str",
+      "description": "Hostname on which testssl should be used to retrieve the information",
+      "required": "True"
+    }, {
+      "name": "apache",
+      "type": "str",
+      "description": "Configuration type for generator. Default to True, if false nginx will be used",
+      "required": "False"
+    }, {
+      "name": "config_output",
+      "type": "str",
+      "description": "The path and name of the output file",
+      "required": "False"
+    }, {
+      "name": "custom_guidelines",
+      "type": "dict",
+      "description": "dictionary with form: { sheet : {guideline: name: {\"level\":level}}",
+      "required": "False"
+    }
+  ],
+  "description": "This modules runs the compliance check against a single guideline.",
+  "path": "modules/compliance/compare_one.py",
+  "class_name": "CompareOne",
+  "output": [
+    {
+      "name": "results",
+      "type": "dict",
+      "description": "results of the scan"
+    }
+  ]
+}

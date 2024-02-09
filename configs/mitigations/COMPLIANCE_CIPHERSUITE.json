@@ -1,0 +1,28 @@
+{
+  "Entry": {
+    "Name": "Cipher Suites compliance",
+    "Extended Name": "Compliance report for Cipher Suites",
+    "Description": "Compliance report for {sheet} against {guidelines} guidelines",
+    "Mitigation": {
+      "Textual": "Add the following cipher suites to the server configuration:{add}<br/>Remove the following cipher suites from the server configuration:{remove}",
+      "Apache": "<p>- <b>Quick solution</b>: replace the instruction of the directive <code>SSLCipherSuite</code> with the following string:<br/> {total_string}<br/>- <b>Advanced solution</b>: check the directive <code>SSLCipherSuite</code> and, for each element in the <b>Textual</b> section above, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element you can add either <code>-</code> (remove once) or <code>!</code> (kill) in front of it.</p>",
+      "Nginx": "<p>- <b>Quick solution</b>: replace the instruction of the directive <code>ssl_ciphers</code> with the following string:<br/> {total_string}<br/><p>- <b>Advanced solution</b>: check the directive <code>ssl_ciphers</code> and for each element in the <b>Textual</b> section above, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element you can add either <code>-</code> (remove once) or <code>!</code> (kill) in front of it.</p>"
+    }
+  },
+  "#ConfigurationInstructions": {
+    "must not": "!name",
+    "not recommended": "-name",
+    "recommended": "name",
+    "must": "name",
+    "connector": ":",
+    "mode": "standard",
+    "actions_on_final_string": {
+      "convert_ciphers": "",
+      "replace": {
+        ":;": ";"
+      }
+    }
+  },
+  "#todo": "mettere un textbox al Textual perché è troppo grande",
+  "#omit-xml-declaration": "yes"
+}

@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<script>
+    class CodeTwo extends HTMLElement {
+    constructor() {
+        super();
+    }
+}
+customElements.define('custom_font_code-2', CodeTwo);
+</script>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -11,8 +20,15 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700&amp;display=swap">
     <link rel="stylesheet" href="assets/css/styles.min.css">
+    <style>
+        custom_font_code-2 {
+          text-underline: #000000;
+          display: inline; /* or block if you want it to behave like a block element */
+        }
+    </style>
 </head>
 
+{% set ns = namespace(accordion_count=0) %}
 <body>
     <header class="header-blue" style="color: var(--bs-blue);background: #0068b4;">
         <nav class="navbar navbar-dark navbar-expand-md navigavtion-clean-search">
@@ -25,7 +41,7 @@
             </div>
         </nav>
         <div class="container" style="background: #ffffff;border-radius: 10px;max-width: 90%;">
-            
+
             <h2
                 style="color: #0068b4;font-family: Roboto, sans-serif;padding-top: 8px;padding-bottom: 0px;padding-left: 7px;padding-right: 8px;">
                 Detailed Results</h2>
@@ -37,6 +53,26 @@
                 Modules: {% for module in modules%} {{module}} {%endfor%} </h6>
             {%if results%}
             <div class="card" style="background: rgba(235,235,235,0.59);">
+                {% if "errors" in results %}
+                    {% for host in results["errors"] %}
+                        {%if host != "raw" %}
+                            <div class="card" style="background: rgba(235,235,235,0.59);">
+                                <div class="card-body">
+                                    <h3 class="card-title" style="color: red;font-family: Roboto, sans-serif;">Errors for {{host}}</h3>
+                                </div>
+                                <div class="card-body">
+                                    {% for error in results["errors"][host] %}
+                                        <p class="card-text" style="color: #000000;font-family: Roboto, sans-serif;">
+                                                {% if error != "raw" %}
+                                                    {{error}}: {{results["errors"][host][error]}}
+                                                {% endif %}
+                                        </p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
                 {% for module in modules %}
                 {% if module in results and results[module]%}
                 <div class="card">
@@ -49,9 +85,11 @@
                                 {% set i = i+1 %}
                             {% endfor %}
                         </h6>
-                        <h6 class="text-muted card-subtitle mb-2"
-                            style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[module]['extendedname']}}
-                        </h6>
+                        {% if results[module]["extendedname"] != results[module]["name"] %}
+                            <h6 class="text-muted card-subtitle mb-2"
+                                style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[module]['extendedname']}}
+                            </h6>
+                        {% endif %}
                         <p class="card-text"
                             style="font-family: 'Roboto Condensed', sans-serif;color: #6c757d;font-style: italic;">
                             {{results[module]['description']}}
@@ -60,7 +98,7 @@
                         <div class="card" style="border-style: none;padding: 2px;margin: 0px;">
                             <h5 style="color: #000000;font-family: Roboto, sans-serif;">Mitigation</h5>
                             <ul class="list-group list-group-flush" style="border-style: solid;border-color: #8db53d;">
-                                
+
                                 {% for key,mitigation in results[module]['mitigation'].items() %}
                                 <li class="list-group-item" style="border-radius: 4px;border-style: none;">
                                     <h5 class="mb-0"
@@ -72,21 +110,22 @@
                                 </li>
                                 {% endfor %}
                             </ul>
-                            
+
                         </div>
                         {% endif %}
                         {% if 'raw' in results[module] %}
                         <div class="card" style="border-style: none;padding: 2px;margin: 0px;">
-                            <div class="accordion" role="tablist" id="accordion-1"
+                            {%set ns.accordion_count = ns.accordion_count + 1%}
+                            <div class="accordion" role="tablist" id="accordion-{{ns.accordion_count}}"
                                 style="border-width: 3px;border-radius: 0px,0px,3px,3px;">
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" role="tab"><button class="accordion-button collapsed"
-                                            data-bs-toggle="collapse" data-bs-target="#accordion-1 .item-1"
-                                            aria-expanded="false" aria-controls="accordion-1 .item-1"
+                                            data-bs-toggle="collapse" data-bs-target="#accordion-{{ns.accordion_count}} .item-1"
+                                            aria-expanded="false" aria-controls="accordion-{{ns.accordion_count}} .item-1"
                                             style="border-style: solid;border-color: #8db53d;font-weight: bold;font-family: Roboto, sans-serif;color: #000000;">RAW
                                             Output</button></h2>
                                     <div class="accordion-collapse collapse item-1" role="tabpanel"
-                                        data-bs-parent="#accordion-1"
+                                        data-bs-parent="#accordion-{{ns.accordion_count}}"
                                         style="border-style: solid;border-color: #0068b4;border-top-style: none;border-bottom-style: none;height: 200px;">
                                         <div class="accordion-body"><textarea onclick="this.focus();this.select()"
                                                 style="max-width: 100%;min-width: 100%;width: 100%;height: 150px;min-height: 0px;max-height: none;border-radius: 3px;font-family: 'Roboto Mono', monospace;background: #f5faff;color: #0068b4;border-width: 3px;border-color: #0068b4;border-top-style: none;border-right-color: #acd5fe;border-bottom-style: none;border-left-color: #acd5fe;padding: 12px;margin: 0px;font-size: 13px;margin-top: 10px;"
@@ -101,8 +140,13 @@
                             <div class="card-body"
                                 style="border-right-style: solid;border-right-color: var(--bs-red);border-left-style: solid;border-left-color: var(--bs-red);">
                                 <h4 class="text-center card-title"
-                                    style="color: var(--bs-red);font-family: Roboto, sans-serif;">Vulnerable
-                                    Websites</h4>
+                                    style="color: var(--bs-red);font-family: Roboto, sans-serif;">
+                                    {% if module.startswith("compare_") %}
+                                        Non Compliant Websites
+                                    {% else %}
+                                        Vulnerable Websites
+                                    {% endif %}
+                                </h4>
                                 <h6 class="text-muted card-subtitle mb-2"
                                     style="text-align: center;font-family: 'Roboto Mono', monospace;">
                                     {%for host in results[module]['hosts']%}{{host}}<br>{%endfor%}</h6>
@@ -133,7 +177,7 @@
         </div>
         <footer class="text-center footer-basic"
             style="background: rgba(255,255,255,0);padding-bottom: 5px;padding-top: 72px;"><img class="img-fluid"
-                src="assets/img/ST.png" style="width: 150px;">
+                src="assets/img/FBK_Cybersecurity_white.png" style="width: 150px;">
             <p class="copyright" style="color: #a5a5a5;font-family: Roboto, sans-serif;font-size: 14px;">FBK - Security
                 And Trust Unit © 2021</p>
         </footer><label class="form-label"></label>

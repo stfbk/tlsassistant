@@ -12,6 +12,17 @@ class Logger:
         :type obj: str or obj
         :raise TypeError: If string or obj different
         """
+        self.__class_name = None
+        self.set_class_name(obj)
+
+    def set_class_name(self, obj):
+        """
+        Set the class name.
+
+        :param obj: Obj (automatically gets type name) or name as a string.
+        :type obj: str or obj
+        :raise TypeError: If string or obj different
+        """
         if isinstance(obj, str):
             self.__class_name = obj
         elif isinstance(obj, object):
