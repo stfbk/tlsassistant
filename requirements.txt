@@ -11,3 +11,4 @@ stix2==3.0.1
 stix2-patterns==1.3.2
 pyopenssl
 beautifulsoup4
+pyasn1
