@@ -150,13 +150,14 @@ class Compliance:
 
         if isinstance(self._certificate_index, int):
             self._certificate_index = str(self._certificate_index)
-        if ignore_openssl[0]:
-            self._openssl_version = "1.1.1"
+        if ignore_openssl and ignore_openssl[0]:
+            self._openssl_version = "3.0.12"
+            self._logging.info("Using the latest LTS OpenSSL release: 3.0.12")
         elif openssl_version:
             self._openssl_version = openssl_version[0]
         if self._openssl_version not in self._configuration_maker.signature_algorithms:
-            self._logging.warning(f"OpenSSL version {openssl_version[0]} is not supported, using 1.1.1")
-            self._openssl_version = "1.1.1"
+            self._logging.warning(f"OpenSSL version {openssl_version[0]} is not supported, using 3.0.12")
+            self._openssl_version = "3.0.12"
         self._configuration_maker.set_openssl_version(self._openssl_version)
 
         # guidelines evaluation
@@ -262,7 +263,7 @@ class Compliance:
             total_string_apache = total_string_nginx = "<code>"
             conf_instructions = mitigation["#ConfigurationInstructions"]
             if self._output_dict[sheet]["entries_add"]:
-                add_string = "<br/>-{name} {action} according to {source}"
+                add_string = "<br/>- {name} {action} according to {source}"
                 add_list = []
                 total_string_apache, total_string_nginx = self.format_output_string(add_string, sheet,
                                                                                     conf_instructions,
@@ -272,7 +273,7 @@ class Compliance:
                                                                                     add_list,
                                                                                     to_append)
                 # this is necessary to avoid having an extra empty line
-                textual = textual.format(add=";".join(add_list), remove="{remove}", notes="{notes}")
+                textual = textual.format(add="".join(add_list), remove="{remove}", notes="{notes}")
             else:
                 # remove the line that contains {add}
                 lines = textual.split("<br/>")
@@ -282,7 +283,7 @@ class Compliance:
                 lines = textual.split("<br/>")
                 textual = "<br/>".join(lines[1:])
             if self._output_dict[sheet]["entries_remove"]:
-                remove_string = "<br/>-{name} {action} according to {source}"
+                remove_string = "<br/>- {name} {action} according to {source}"
                 remove_list = []
                 total_string_apache, total_string_nginx = self.format_output_string(remove_string, sheet,
                                                                                     conf_instructions,
@@ -292,7 +293,7 @@ class Compliance:
                                                                                     remove_list,
                                                                                     to_append)
                 textual = textual.replace("{add}<br/>{remove}", "{add}{remove}")
-                textual = textual.format(remove=";".join(remove_list), notes="{notes}")
+                textual = textual.format(remove="".join(remove_list), notes="{notes}")
             else:
                 # remove the line that contains {remove}
                 lines = textual.split("<br/>")
@@ -307,7 +308,7 @@ class Compliance:
                                                                                     "notes",
                                                                                     notes_list,
                                                                                     to_append)
-                textual = textual.format(notes=";".join(notes_list))
+                textual = textual.format(notes="".join(notes_list))
             else:
                 # remove the line that contains {notes}
                 lines = textual.split("<br/>")
@@ -416,8 +417,11 @@ class Compliance:
                                                action=self._output_dict[sheet][entry]["action"],
                                                source=self._output_dict[sheet][entry]["source"])
                 if self._output_dict[sheet][entry].get("notes"):
-                    tmp_string += "; " + self._output_dict[sheet][entry]["notes"]
+                    tmp_string += "<br/>&nbsp;&nbsp;" + self._output_dict[sheet][entry]["notes"]
                 tmp_string, _ = self._configuration_maker.perform_post_actions(conf_instructions, tmp_string, source)
+                if sheet == "Groups":
+                    if "/" in entry_name:
+                        tmp_string = re.sub("/ (.*?) ", "(also appearing as \\1) ", tmp_string)
                 strings_list.append(tmp_string)
         total_string_apache, _ = self._configuration_maker.perform_post_actions(conf_instructions, total_string_apache,
                                                                                 source,

@@ -1,10 +1,10 @@
 {
   "Entry": {
-    "Name": "Compliance report for Hash Algorithms",
+    "Name": "Hash Algorithms compliance",
     "Extended Name": "Compliance report for Hash Algorithms",
     "Description": "Compliance report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
-      "Textual": "TODO decide what to write here:<br/>{add}<br/>TODO decide what to write here:<br/>{remove}",
+      "Textual": "Enable the following hash algorithms:{add}<br/>Remove the following hash algorithms:{remove}<br/>NOTE: By complying with the Signature Algorithms requirements, the Hash Algorithms compliance will also be addressed.",
       "Apache": "No snippet available",
       "Nginx": "No snippet available"
     }

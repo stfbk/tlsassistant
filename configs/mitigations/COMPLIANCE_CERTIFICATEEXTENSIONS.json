@@ -1,26 +1,26 @@
 {
   "Entry": {
-    "Name": "Compliance report for Certificate Extensions",
+    "Name": "Certificate Extensions compliance",
     "Extended Name": "Compliance report for Certificate Extensions",
     "Description": "Compliance report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
-      "Textual": "Your certificate has the following issues in its extensions:<br/>{add}<br/>{remove}<br/>You should regenerate it following the constraints in the notes for each field.<br/>Additional notes: {notes}",
+      "Textual": "Your certificate has the following issues in its extensions:<br/>{add}<br/>{remove}<br/>You should re-issue it following the constraints in the notes for each field.<br/>Additional notes: {notes}",
       "Apache": "No snippet available",
       "Nginx": "No snippet available"
     }
   },
   "#ConfigurationInstructions": {
     "mode": "specific_mitigation",
-    "authorityKeyIdentifier": "<br/>-AuthorityKeyIdentifier {action}",
-    "subjectKeyIdentifier": "<br/>-SubjectKeyIdentifier {action}",
-    "keyUsage": "<br/>-KeyUsage {action}",
-    "extendedKeyUsage": "<br/>-ExtendedKeyUsage {action}",
-    "Certificate Policies": "<br/>-CertificatePolicies {action}",
-    "subjectAltName": "<br/>-SubjectAlternativeName {action}",
-    "authorityInfoAccess": "<br/>-AuthorityInfoAccess {action}",
-    "crlDistributionPoints": "<br/>-CRLDistributionPoints {action}",
-    "ct_precert_scts": "<br/>-ct_precert_scts {action}",
-    "OCSP must staple extension": "<br/>-OCSPMustStaple {action}",
+    "authorityKeyIdentifier": "<br/>- AuthorityKeyIdentifier {action}",
+    "subjectKeyIdentifier": "<br/>- SubjectKeyIdentifier {action}",
+    "keyUsage": "<br/>- KeyUsage {action}",
+    "extendedKeyUsage": "<br/>- ExtendedKeyUsage {action}",
+    "Certificate Policies": "<br/>- CertificatePolicies {action}",
+    "subjectAltName": "<br/>- SubjectAlternativeName {action}",
+    "authorityInfoAccess": "<br/>- AuthorityInfoAccess {action}",
+    "crlDistributionPoints": "<br/>- CRLDistributionPoints {action}",
+    "ct_precert_scts": "<br/>- ct_precert_scts {action}",
+    "OCSP must staple extension": "<br/>- OCSPMustStaple {action}",
     "post_actions": {
       "replace": {
         "be enabled;": "be fixed;",

@@ -20,8 +20,8 @@
     "url": "https://github.com/SUPERAndroidAnalyzer/super/releases/download/0.5.1/super-analyzer_0.5.1_ubuntu_amd64.deb"
   },
   {
-    "type": "zip",
-    "url": "https://github.com/drwetter/testssl.sh/archive/refs/tags/v3.2rc3.zip"
+    "type": "git",
+    "url": "https://github.com/drwetter/testssl.sh"
   },
   {
     "type": "apt",
