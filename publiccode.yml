@@ -7,87 +7,48 @@ categories:
   - it-security
 description:
   it:
+    documentation: 'https://github.com/stfbk/tlsassistant/wiki'
     features:
-      - analisi di webserver Apache e nginx
-      - analisi di apk Android
+      - analisi di vulnerabilità per webserver Apache e nginx
+      - analisi di conformità per webserver Apache e nginx
       - |-
-        report contenenti l'elenco delle vulnerabilità rilevate, una spiegazione
-        del loro funzionamento
-      - |-
-        report contenenti frammenti di codice da copia-incollare per mitigare le
-        vulnerabilità
-      - |-
-        generazione di attack tree in grado di rappresentare graficamente le
-        vulnerabilità presenti
-      - |-
-        output opzionale in STIX per un'integrazione diretta con sistemi
-        compatibili
+        report contenenti frammenti di codice da copia-incollare per mitigare i
+        problemi rilevati
     genericName: tool d'analisi TLS
     longDescription: |
       TLSAssistant è un tool di ricerca sviluppato per facilitare il lavoro
-
-
-
-      degli amministratori di sistema alle prese con server TLS.
-
-
-
+      degli amministratori di sistema e sviluppatori Android alle prese con
+      implementazioni TLS.
 
 
       Il suo utilizzo permette di analizzare i webserver (in locale o da remoto)
+      e le app Android per valutarne lo stato di sicurezza e la totalità delle
+      vulnerabilità TLS che potrebbero essere sfruttate per mettere in pericolo
+      la sicurezza delle trasmissioni.
 
 
-
-      per valutarne lo stato di sicurezza e la totalità delle vulnerabilità TLS
-
-
-
-      che potrebbero essere sfruttate per mettere in pericolo la sicurezza delle
-
-
-
-      trasmissioni.
-
-
-
-
-
-      Il punto di forza di TLSAssistant è la generazione di un report in grado
-
-
-
-      di elencare le vulnerabilità presenti, spiegare il loro impatto e guidare
-
-
-
-      \*passo passo\* verso la loro risoluzione.
-
-
-
+      TLSAssistant è anche in grado di verificare il grado di conformità di un
+      implementazione rispetto a una serie di cinque linee guida nazionali e
+      sovranazionali
 
 
       ​
 
 
+      Il punto di forza di TLSAssistant è la generazione di un report in grado
+      di elencare le vulnerabilità presenti, spiegare il loro impatto e guidare
+      passo passo verso la loro risoluzione.
 
+
+      ​
 
 
       Le mitigazioni sono state collezionate estraendo informazioni dalla
-
-
-
       letteratura scientifica e dai manuali tecnici forniti da ogni produttore.
-    screenshots:
-      - |-
-        https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report.png
-      - |-
-        https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/atree_output.png
-      - |-
-        https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/stix_output.jpg
     shortDescription: |-
-      Tool in grado di analizzare server TLS e apk Android, scoprirne le vulnerabilità e 
-
-       suggerire le mitigazioni necessarie per correggerne i problemi
+      Analizza implementazioni TLS per scoprirne le vulnerabilità, il grado di
+      conformità e suggerire le mitigazioni necessarie per correggerne i
+      problemi
 developmentStatus: stable
 it:
   conforme:
@@ -101,11 +62,8 @@ it:
     cie: false
     pagopa: false
     spid: false
-landingURL: 'https://st.fbk.eu/tools/TLSAssistant'
 legal:
   license: Apache-2.0
-  mainCopyrightOwner: Fondazione Bruno Kessler
-  repoOwner: Security and Trust Research Unit
 localisation:
   availableLanguages:
     - en
@@ -113,18 +71,20 @@ localisation:
 maintenance:
   contacts:
     - affiliation: Fondazione Bruno Kessler
-      email: smanfredi@fbk.eu
+      email: tlsa-cs@fbk.eu
       name: Salvatore Manfredi
+      phone: '+390461314193'
     - affiliation: Fondazione Bruno Kessler
-      email: mrizzi@fbk.eu
       name: Matteo Rizzi
+    - affiliation: Fondazione Bruno Kessler
+      name: Riccardo Germenia
   type: internal
 name: TLSAssistant
 platforms:
   - linux
-releaseDate: '2021-11-19'
-softwareType: configurationFiles
-softwareVersion: 1.3.1
+releaseDate: '2024-02-09'
+softwareType: standalone/desktop
+softwareVersion: 3.0.0
 url: 'https://github.com/stfbk/tlsassistant'
 usedBy:
   - Poligrafico e Zecca dello Stato
