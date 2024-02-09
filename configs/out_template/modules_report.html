@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<script>
+    class CodeTwo extends HTMLElement {
+    constructor() {
+        super();
+    }
+}
+customElements.define('custom_font_code-2', CodeTwo);
+</script>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -11,6 +20,12 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700&amp;display=swap">
     <link rel="stylesheet" href="assets/css/styles.min.css">
+    <style>
+        custom_font_code-2 {
+          text-underline: #000000;
+          display: inline; /* or block if you want it to behave like a block element */
+        }
+    </style>
 </head>
 
 {% set ns = namespace(accordion_count=0) %}
@@ -125,8 +140,13 @@
                             <div class="card-body"
                                 style="border-right-style: solid;border-right-color: var(--bs-red);border-left-style: solid;border-left-color: var(--bs-red);">
                                 <h4 class="text-center card-title"
-                                    style="color: var(--bs-red);font-family: Roboto, sans-serif;">Vulnerable
-                                    Websites</h4>
+                                    style="color: var(--bs-red);font-family: Roboto, sans-serif;">
+                                    {% if module.startswith("compare_") %}
+                                        Non Compliant Websites
+                                    {% else %}
+                                        Vulnerable Websites
+                                    {% endif %}
+                                </h4>
                                 <h6 class="text-muted card-subtitle mb-2"
                                     style="text-align: center;font-family: 'Roboto Mono', monospace;">
                                     {%for host in results[module]['hosts']%}{{host}}<br>{%endfor%}</h6>
@@ -157,7 +177,7 @@
         </div>
         <footer class="text-center footer-basic"
             style="background: rgba(255,255,255,0);padding-bottom: 5px;padding-top: 72px;"><img class="img-fluid"
-                src="assets/img/ST.png" style="width: 150px;">
+                src="assets/img/FBK_Cybersecurity_white.png" style="width: 150px;">
             <p class="copyright" style="color: #a5a5a5;font-family: Roboto, sans-serif;font-size: 14px;">FBK - Security
                 And Trust Unit © 2021</p>
         </footer><label class="form-label"></label>

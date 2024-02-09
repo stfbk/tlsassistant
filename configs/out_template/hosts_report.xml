@@ -30,9 +30,10 @@
         <paraStyle name = "vulnerable_websites_list" fontName = "Roboto Italic" fontSize = "12" alignment="left" spaceAfter="5"/>
         <paraStyle name = "not_vulnerable" fontName="Roboto"/>
         <paraStyle name = "potentially_vulnerable" fontName="Roboto Bold" textColor="red"/>
+        <paraStyle name = "custom_font_code-2" fontName="Roboto" fontSize="12" backColor="yellow"/>
         <blockTableStyle id="report">
             <lineStyle start="0,0" stop="-1,-1" kind="grid" thickness="0.25" colorName="black" cap="default"/>
-            <blockFont start="0,0" stop="1,0" name="Roboto Bold" size="12"/>
+            <blockFont start="0,0" stop="-1,0" name="Roboto Bold" size="12"/>
             <blockFont start="0, 1" stop="-1,-1" name="Roboto"/>
             <!-- <blockTopPadding length="0.1cm" start="0,0" stop="-1,1"/>
                 <blockBottomPadding length="0.25cm" start="0,0" stop="-1,1"/>
@@ -85,7 +86,7 @@
                 <image x="{{logo_x}}" y = "{{logo_y}}" file="{{image_path}}logo_only2.png" width = "{{logo_w}}" height = "{{logo_h}}"/>
                 <image x="{{name_x}}" y = "{{name_y}}" file="{{image_path}}name2.png" width = "{{name_w}}" height = "{{name_h}}"/>
                 <setFont name="Roboto Bold Italic" size="12"/>
-                <drawRightString x="{{version_x}}" y="{{version_y}}" text="Version {{version}}"/>
+                <drawRightString x="{{version_x}}" y="{{version_y}}">Version {{version}}</drawRightString>
                 <stroke color="#4160b0"/>
                 <rect x = "0" y = "{{footer_line_y}}" width = "{{page_w}}" height = "1"/>
                 <place x = "{{frame_x}}" y="{{footer_frame_y}}" width="{{frame_w}}" height="{{footer_frame_h}}">
@@ -121,13 +122,29 @@
         <para style="subtitle">Analysis performed on {{date}}</para>
         <setNextTemplate name="disclaimer"/>
         <nextFrame/>
-        <para style="title">TODO: write a disclaimer</para>
+        <para fontName="Roboto Bold" fontSize="16" leading="20" spaceAfter="5">Confidentiality Disclaimer</para>
+        <para fontName="Roboto" fontSize="10" leading="16" spaceAfter="15">
+        This report contains confidential information intended solely for the use of the individual or entity to whom it is addressed. If you are not the intended recipient, please be advised that any disclosure, copying, distribution, or use of the contents of this report is strictly prohibited. If you have received this report in error, please notify the sender immediately and delete the original message.</para>
+                <para fontName="Roboto Bold" fontSize="16" leading="20" spaceAfter="5">
+        Security Tool Report Disclaimer</para>
+                <para fontName="Roboto" fontSize="10" leading="16" spaceAfter="15">
+        The information provided in this report is the result of security testing conducted by [Your Company/Organization] using TLSAssistant. The purpose of this tool is to assess the security of TLS configurations. The findings and recommendations presented in this report are based on the specific conditions and configurations tested at the time of the assessment. We respectfully recommend verifying the identified vulnerability thoroughly.
+        </para>
+                <para  fontName="Roboto Bold" fontSize="16" leading="20" spaceAfter="5">
+        No Warranty or Guarantee
+        </para>
+                <para fontName="Roboto" fontSize="10" leading="16" spaceAfter="15">
+        This report is provided "as is," without any warranty, express or implied, concerning the accuracy, completeness, legal value or reliability of the information contained herein. [Your Company/Organization] disclaims all warranties, including but not limited to, the implied warranties of merchantability and fitness for a particular purpose.
+        </para>
+                <para fontName="Roboto" fontSize="10" leading="20">
+        By reviewing this report, you acknowledge and agree to the terms and conditions outlined above.
+        </para>
         <setNextTemplate name="standard"/>
         <nextFrame/>
         <h1 style="recap">Recap</h1>
         <blockTable style="report">
             <tr>
-                <td>Hostname / Modules: </td>
+                <td>Modules / Hostname: </td>
                 {% for host in results %}
                     <td>{{host}}</td>
                 {% endfor %}
@@ -138,11 +155,19 @@
                     {% for host in results %}
                         <td>
                         {% if results[host][module] %}
-                            <para style="potentially_vulnerable">Potentially Vulnerable</para>
+                            {% if module.startswith("compare_") %}
+                                <para style="potentially_vulnerable">Not Compliant</para>
+                            {% else %}
+                                <para style="potentially_vulnerable">Potentially Vulnerable</para>
+                            {% endif %}
                         {% elif results[host].get("errors", None) %}
                             <para style="potentially_vulnerable">Error</para>
                         {% else %}
-                            <para style="not_vulnerable">Not Vulnerable</para>
+                            {% if module.startswith("compare_") %}
+                                <para style="not_vulnerable">Compliant</para>
+                            {% else %}
+                                <para style="not_vulnerable">Not Vulnerable</para>
+                            {% endif %}
                         {% endif %}
                         </td>
                     {% endfor %}
@@ -160,7 +185,17 @@
             {% if i_ns.i != results.keys().__len__() %}
                 <!--Insert here text to show if all the hosts had an error-->
             {% endif %}
-            <h1 style="detected_vulnerabilities">Detected vulnerabilities</h1>
+            {% set i_ns.compliance=False%}
+            {% for module in modules %}
+                {% if module.startswith("compare_")%}
+                    {% set i_ns.compliance=True %}
+                {% endif %}
+            {% endfor %}
+            {% if i_ns.compliance %}
+                <h1 style="detected_vulnerabilities">Non Compliant Elements</h1>
+            {% else %}
+                <h1 style="detected_vulnerabilities">Detected vulnerabilities</h1>
+            {% endif %}
             {% for host in results %}
                 <para style="host"> {{host}} </para>
                 {% if results[host].get("errors", None) %}

@@ -20,7 +20,7 @@
     "client_certificate_url": "<br/>- the client_certificate_url extension {action}",
     "trusted_ca_keys": "<br/>- the trusted_ca_keys extension {action}",
     "truncated_hmac": "<br/>- the truncated_hmac extension {action}",
-    "status_request": "<br/>- the <b><i>status_request</i></b> extension {action}",
+    "status_request": "<br/>- the status_request extension {action}",
     "user_mapping": "<br/>- the user_mapping extension {action}",
     "client_authz": "<br/>- the client_authz extension {action}",
     "server_authz": "<br/>- the server_authz extension {action}",

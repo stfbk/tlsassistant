@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<script>
+    class CodeTwo extends HTMLElement {
+    constructor() {
+        super();
+    }
+}
+customElements.define('custom_font_code-2', CodeTwo);
+</script>
+
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -11,6 +21,12 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700&amp;display=swap">
     <link rel="stylesheet" href="assets/css/styles.min.css">
+    <style>
+        custom_font_code-2 {
+          text-underline: #000000;
+          display: inline; /* or block if you want it to behave like a block element */
+        }
+    </style>
 </head>
 
 {% set ns = namespace(accordion_count=0) %}
@@ -35,11 +51,9 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;">
-                                    Hostname/<br>Modules</th>
+                                <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;">Hostname/<br>Modules</th>
                                 {% for module in modules %}
-                                <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;">{{name_mapping.get(module, module)}}
-                                </th>
+                                    <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;">{{name_mapping.get(module, module)}}</th>
                                 {% endfor %}
                             </tr>
                         </thead>
@@ -53,7 +67,12 @@
                                         {% if results[host][module] %}
                                             <td
                                                 style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(255,175,175,0.59);">
-                                                Potentially Vulnerable</td>
+                                                {% if module.startswith("compare_") %}
+                                                    Not Compliant
+                                                {% else %}
+                                                    Potentially Vulnerable
+                                                {% endif %}
+                                            </td>
                                         {% elif results[host].get("errors", None) %}
                                             <td
                                                 style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(255,175,175,0.59);">
@@ -61,7 +80,12 @@
                                         {% else %}
                                             <td
                                                 style="font-family: Roboto, sans-serif;font-style: italic;color: rgb(33, 37, 41);background: rgba(235,235,235,0.59);">
-                                                Not Vulnerable</td>
+                                                {% if module.startswith("compare_") %}
+                                                    Compliant
+                                                {% else %}
+                                                    Not Vulnerable
+                                                {% endif %}
+                                            </td>
                                         {% endif %}
                                     {% endfor %}
 
@@ -85,24 +109,24 @@
             {%if results%}
             {% for host in results %}
             <div class="card" style="background: rgba(235,235,235,0.59);">
-                <h5 class="text-center"
-                    style="font-family: 'Roboto Condensed', sans-serif;color: #a5a5a5;background: rgba(235,235,235,0);">
-                    {{host}}</h5>
-                <div class="card">
-                    <h3 class="card-title" style="color: red;font-family: Roboto, sans-serif;">Errors:</h3>
-                    <div class="card-body">
-                        <p class="card-text"
-                            style="color: #000000;font-family: Roboto, sans-serif;">
-                            {% if results[host].get("errors", None) %}
-                                {% for error in results[host]["errors"] %}
-                                    {% if error != "raw" %}
-                                        {{error}}: {{results[host]["errors"][error]}}
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                        </p>
+                <h5 class="text-center" style="font-family: 'Roboto Condensed', sans-serif;color: #a5a5a5;background: rgba(235,235,235,0);">
+                    {{host}}
+                </h5>
+                {% if results[host].get("errors", None) %}
+                    <div class="card">
+                        <h3 class="card-title" style="color: red;font-family: Roboto, sans-serif;">Errors:</h3>
+                        <div class="card-body">
+                            <p class="card-text"
+                                style="color: #000000;font-family: Roboto, sans-serif;">
+                                    {% for error in results[host]["errors"] %}
+                                        {% if error != "raw" %}
+                                            {{error}}: {{results[host]["errors"][error]}}
+                                        {% endif %}
+                                    {% endfor %}
+                            </p>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
                 {% for module in modules %}
                 {% if results[host][module] %}
                 <div class="card">
@@ -190,7 +214,7 @@
         </div>
         <footer class="text-center footer-basic"
             style="background: rgba(255,255,255,0);padding-bottom: 5px;padding-top: 72px;"><img class="img-fluid"
-                src="assets/img/ST.png" style="width: 150px;">
+                src="assets/img/FBK_Cybersecurity_white.png" style="width: 150px;">
             <p class="copyright" style="color: #a5a5a5;font-family: Roboto, sans-serif;font-size: 14px;">FBK - Security
                 And Trust Unit © 2021</p>
         </footer><label class="form-label"></label>

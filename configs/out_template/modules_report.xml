@@ -121,7 +121,23 @@
         <para style="subtitle">Analysis performed on {{date}}</para>
         <setNextTemplate name="disclaimer"/>
         <nextFrame/>
-        <para style="title">TODO: write a disclaimer</para>
+        <para fontName="Roboto Bold" fontSize="16" leading="20" spaceAfter="5">Confidentiality Disclaimer</para>
+        <para fontName="Roboto" fontSize="10" leading="16" spaceAfter="15">
+        This report contains confidential information intended solely for the use of the individual or entity to whom it is addressed. If you are not the intended recipient, please be advised that any disclosure, copying, distribution, or use of the contents of this report is strictly prohibited. If you have received this report in error, please notify the sender immediately and delete the original message.</para>
+                <para fontName="Roboto Bold" fontSize="16" leading="20" spaceAfter="5">
+        Security Tool Report Disclaimer</para>
+                <para fontName="Roboto" fontSize="10" leading="16" spaceAfter="15">
+        The information provided in this report is the result of security testing conducted by [Your Company/Organization] using TLSAssistant. The purpose of this tool is to assess the security of TLS configurations. The findings and recommendations presented in this report are based on the specific conditions and configurations tested at the time of the assessment. We respectfully recommend verifying the identified vulnerability thoroughly.
+        </para>
+                <para  fontName="Roboto Bold" fontSize="16" leading="20" spaceAfter="5">
+        No Warranty or Guarantee
+        </para>
+                <para fontName="Roboto" fontSize="10" leading="16" spaceAfter="15">
+        This report is provided "as is," without any warranty, express or implied, concerning the accuracy, completeness, legal value or reliability of the information contained herein. [Your Company/Organization] disclaims all warranties, including but not limited to, the implied warranties of merchantability and fitness for a particular purpose.
+        </para>
+                <para fontName="Roboto" fontSize="10" leading="20">
+        By reviewing this report, you acknowledge and agree to the terms and conditions outlined above.
+        </para>
         <setNextTemplate name="standard"/>
         <nextFrame/>
         <h1 style="recap">Recap</h1>
@@ -132,7 +148,7 @@
             </tr>
             {%set i_ns = namespace(i=0)%}
             {% for host in hosts%}
-                {% if results["errors"].get(host, None) %}
+                {% if results.get("errors", {}).get(host, None) %}
                     {% set i_ns.i = i_ns.i + 1%}
                 {% endif %}
             {% endfor %}
@@ -149,17 +165,35 @@
                             {% else %}
                                 {%set hosts_connector = "hosts are"%}
                             {% endif %}
-                            <td><para style="potentially_vulnerable">{{hosts_count}} {{hosts_connector}} potentially vulnerable</para></td>
+                            {% if module.startswith("compare_") %}
+                                <td><para style="potentially_vulnerable">{{hosts_count}} {{hosts_connector}} not compliant</para></td>
+                            {% else %}
+                                <td><para style="potentially_vulnerable">{{hosts_count}} {{hosts_connector}} potentially vulnerable</para></td>
+                            {% endif %}
                         {% endif %}
                     {% else %}
-                        <td><para style="not_vulnerable">No vulnerable hosts found</para></td>
+                        {% if module.startswith("compare_") %}
+                            <td><para style="not_vulnerable">All hosts are compliant</para></td>
+                        {% else %}
+                            <td><para style="not_vulnerable">No vulnerable hosts found</para></td>
+                        {% endif %}
                     {%endif%}
                 </tr>
             {% endfor %}
         </blockTable>
         {% if results %}
             <nextFrame/>
-            <h1 style = "detected_vulnerabilities">Detected vulnerabilities</h1>
+            {% set i_ns.compliance=False%}
+            {% for module in modules %}
+                {% if module.startswith("compare_")%}
+                    {% set i_ns.compliance=True %}
+                {% endif %}
+            {% endfor %}
+            {% if i_ns.compliance %}
+                <h1 style="detected_vulnerabilities">Non Compliant Elements</h1>
+            {% else %}
+                <h1 style="detected_vulnerabilities">Detected vulnerabilities</h1>
+            {% endif %}
             {% if results.get("errors", None) %}
                 <h1 style="detected_errors">Errors for host: {{host}}</h1>
                 {% for host in hosts %}
@@ -208,7 +242,11 @@
                         <para fontName="Roboto">{{results[module]['raw']|e}}</para>
                     {% endif %} #}
                     {% if 'hosts' in results[module] and results[module]['hosts']%}
-                        <h4 style = "vulnerable_websites">Vulnerable websites</h4>
+                        {% if module.startswith("compare_") %}
+                            <h4 style = "vulnerable_websites">Non compliant websites</h4>
+                        {% else %}
+                            <h4 style = "vulnerable_websites">Vulnerable websites</h4>
+                        {% endif %}
                         <para style = "vulnerable_websites_list">
                         {%for host in results[module]['hosts']%}
                             {{host}}
@@ -226,7 +264,11 @@
                 {% endif %}
             {% endfor %}
         {% else %}
-            <para style="no_vulnerabilities_detected">No vulnerabilities detected</para>
+            {% if i_ns.compliance %}
+                <h1 style="no_vulnerabilities_detected">The webserver is fully compliant with the requested guidelines</h1>
+            {% else %}
+                <h1 style="no_vulnerabilities_detected">No vulnerabilities detected</h1>
+            {% endif %}
         {% endif %}
         <namedString id="lastPage"><pageNumber/></namedString>
     </story>

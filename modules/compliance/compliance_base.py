@@ -251,6 +251,8 @@ class Compliance:
 
     def _prepare_output(self):
         for sheet in self._output_dict:
+            if self._output_dict[sheet].get("placeholder"):
+                continue
             to_append = {
                 "Apache": "",
                 "Nginx": ""
@@ -278,10 +280,9 @@ class Compliance:
                 # remove the line that contains {add}
                 lines = textual.split("<br/>")
                 textual = "<br/>".join([line for line in lines if "{add}" not in line])
-            if self._output_dict[sheet].get("only_total_string_add"):
-                # remove the first line from Textual
-                lines = textual.split("<br/>")
-                textual = "<br/>".join(lines[1:])
+            # if self._output_dict[sheet].get("only_total_string_add"):
+            #     # remove the first line from Textual
+            #     textual = "<br/>".join(lines[1:])
             if self._output_dict[sheet]["entries_remove"]:
                 remove_string = "<br/>- {name} {action} according to {source}"
                 remove_list = []
@@ -479,7 +480,10 @@ class Compliance:
                     self._output_dict[sheet]["notes"]:
                 remove_sheets.add(sheet)
         for sheet in remove_sheets:
-            del self._output_dict[sheet]
+            self._output_dict[sheet] = {
+                "placeholder": "No entries to show"
+            }
+            # del self._output_dict[sheet]
 
     def _add_certificate_signature_algorithm(self, alg):
         """
