@@ -672,7 +672,7 @@ class Core:
                 config_type=self.__input_dict["config_type"]
             )  # TODO: better output report
         else:
-            if type_of_analysis == self.Analysis.HOST:
+            if type_of_analysis == self.Analysis.HOST and hostname_or_path != "placeholder":
                 try:
                     _ = socket.gethostbyname(hostname_or_path)
                 except socket.error as e:
