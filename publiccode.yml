@@ -45,6 +45,11 @@ description:
 
       Le mitigazioni sono state collezionate estraendo informazioni dalla
       letteratura scientifica e dai manuali tecnici forniti da ogni produttore.
+    screenshots:
+      - |-
+        https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_vuln.png
+      - |-
+        https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_compliance.png
     shortDescription: |-
       Analizza implementazioni TLS per scoprirne le vulnerabilità, il grado di
       conformità e suggerire le mitigazioni necessarie per correggerne i
