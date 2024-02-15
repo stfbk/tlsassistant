@@ -673,6 +673,8 @@ class Core:
             )  # TODO: better output report
         else:
             if type_of_analysis == self.Analysis.HOST and hostname_or_path != "placeholder":
+                if not "www." in hostname_or_path and not all([c.isalnum() or c == "." for c in hostname_or_path]):
+                    hostname_or_path = f"www.{hostname_or_path}"
                 try:
                     _ = socket.gethostbyname(hostname_or_path)
                 except socket.error as e:

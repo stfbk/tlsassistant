@@ -7,7 +7,7 @@ FROM ubuntu:latest
 
 ENV LC_ALL=en_US.UTF-8
 
-RUN apt-get update && apt-get install -y git python3-dev python3-pip sudo bsdmainutils locales
+RUN apt-get update && apt-get install -y git python3-dev python3-pip sudo bsdmainutils locales dnsutils
 
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
     locale-gen
