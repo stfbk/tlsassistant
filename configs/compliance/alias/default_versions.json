@@ -1,6 +1,6 @@
 {
     "Protocol": {
-        "NIST": "CUSTOMERFACING",
+        "NIST": "1_1_2024CUSTOMERFACING",
         "BSI": "CUSTOMERFACING",
         "ANSSI": "",
         "AGID": "",
@@ -52,7 +52,7 @@
         "MOZILLA": "INTERMEDIATE",
         "AGID": "INTERMEDIATE",
         "NIST": "",
-        "BSI": ""
+        "BSI": "1_1_2024"
     },
     "Certificate": {
         "NIST": "",
