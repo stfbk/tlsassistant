@@ -196,7 +196,7 @@ if __name__ == "__main__":
         action=ComplianceAction,
         dest="compliance_args",
         help="A string containing the names of the guidelines that should be checked in the form: "
-             "guideline_version1_version2 in the case of multiple guidelines they should be comma separated. "
+             "guideline_profile_variant in the case of multiple guidelines they should be comma separated. "
              "Use \"list\" for a list of valid strings and \"aliases\" for a list of aliases."
     )
 
