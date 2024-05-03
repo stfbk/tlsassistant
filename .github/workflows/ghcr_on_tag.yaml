@@ -1,0 +1,27 @@
+name: Build and Push Docker Image
+
+permissions:
+  contents: read
+  packages: write
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build docker image
+        run: docker build -t ghcr.io/${{ github.repository }}:${{ github.ref_name }} .
+
+      - name: Push Docker image to ghcr
+        run: |
+          # Log in to GitHub Container Registry and push the image
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin && \
+          docker push ghcr.io/${{ github.repository }}:${{ github.ref_name }}
