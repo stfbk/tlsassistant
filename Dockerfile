@@ -3,7 +3,7 @@
 
 #NOTE: any output file (html and png) will be created within the tlsassistant/Report folder
 
-FROM ubuntu:latest
+FROM ubuntu:22.04
 
 ENV PATH="/root/.local/bin:$PATH"
 
