@@ -37,15 +37,11 @@
   },
   {
     "type": "git",
-    "url": "https://github.com/stfbk/TLS-Scanner"
+    "url": "https://github.com/IvanValentini/TLS-Scanner"
   },
   {
     "type": "apt",
     "url": "default-jre"
-  },
-  {
-    "type": "apt",
-    "url": "default-jdk"
   },
   {
     "type": "apt",
@@ -67,5 +63,9 @@
   {
     "type": "python3",
     "path": "ciphersuites_converter.py"
+  },
+  {
+    "type": "git",
+    "url": "https://github.com/talos-security/SEBASTiAn"
   }
 ]

@@ -512,7 +512,7 @@ class Core:
             results[name] = module.run(**args)
         return results
 
-    def __call_output_modules(self, res: dict):
+    def __call_output_modules(self, res: dict, type_of_analysis: Analysis):
 
         """
         Call output modules
@@ -533,7 +533,8 @@ class Core:
                 mode=Report_module.Mode.MODULES
                 if "group_by" in self.__input_dict
                 and self.__input_dict["group_by"] == "module"
-                else Report_module.Mode.HOSTS,
+                else Report_module.Mode.HOSTS if type_of_analysis == self.Analysis.HOST
+                else Report_module.Mode.APK,
                 stix=self.__input_dict["stix"],
                 webhook=self.__input_dict["webhook"],
                 prometheus=self.__input_dict["prometheus"],
@@ -626,7 +627,7 @@ class Core:
                 res, hostname_or_path, type_of_analysis, configuration, port
             )
         self.__logging.info(f"Generating output..")
-        self.__call_output_modules(res)
+        self.__call_output_modules(res,type_of_analysis)
 
     def __exec_anaylsis(
         self,
