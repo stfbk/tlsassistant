@@ -109,7 +109,7 @@ class Tlsa:
         self.__logging.debug("Initializing Core element.")
         if isinstance(args.configuration, str) and args.configuration == "default":
             args.configuration = (
-                f"default{'_android.json' if args.apk else '_server.json'}"
+                f"default{'_android.json' if args.apk else '_ios.json' if args.ipa else '_server.json'}"
             )
         config_or_modules = args.configuration
         if args.config_type:
@@ -167,6 +167,20 @@ class Tlsa:
                 webhook=args.webhook,
                 prometheus=args.prometheus,
                 config_type = args.config_type
+            )
+        elif args.ipa:
+            Core(
+                hostname_or_path=args.ipa,
+                configuration=config_or_modules,
+                output=args.output,
+                output_type=self.__to_report_type(args.output_type),
+                to_exclude=args.exclude,
+                type_of_analysis=Core.Analysis.IPA,
+                group_by=args.group_by,
+                stix=args.stix,
+                webhook=args.webhook,
+                prometheus=args.prometheus,
+                config_type = args.config_type  
             )
         elif args.domain_file:
             Core(

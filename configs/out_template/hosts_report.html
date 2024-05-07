@@ -51,7 +51,7 @@ customElements.define('custom_font_code-2', CodeTwo);
                     <table class="table">
                         <thead>
                             <tr>
-                                <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;"> {% if type == "HOSTS" %} Hostname {% elif type == "APK" %} APK {% else %} bondai  {% endif %}  /<br> Modules</th>
+                                <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;"> {% if type == "HOSTS" %} Hostname {% elif type == "APK" %} APK {% else %} IPA  {% endif %}  /<br> Modules</th>
                                 {% for module in modules %}
                                     <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;">{{name_mapping.get(module, module)}}</th>
                                 {% endfor %}

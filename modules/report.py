@@ -37,6 +37,7 @@ class Report:
         HOSTS = 0
         MODULES = 1
         APK = 2 
+        IPA = 3
 
     def __init__(self):
         self.__input_dict = {}
@@ -191,6 +192,11 @@ class Report:
             self.__logging.info(f"Generating APK report..")
             template = env.get_template(f"hosts_report.{file_extension}")
             to_process["type"] = "APK"
+            to_process["results"] = self.__hosts_report_formatter(results)
+        elif mode == self.Mode.IPA:
+            self.__logging.info(f"Generating IPA report..")
+            template = env.get_template(f"hosts_report.{file_extension}")
+            to_process["type"] = "IPA"
             to_process["results"] = self.__hosts_report_formatter(results)
         else:
             raise ValueError(f"Unknown mode: {mode}")

@@ -121,6 +121,13 @@ if __name__ == "__main__":
         action="store",
         help="The apk path, target of the analysis.",
     )
+    hostname_or_apk.add_argument(
+        "-i",
+        "--ipa",
+        type=str,
+        action="store",
+        help="The ipa path, target of the analysis."
+    )
     parser.add_argument(
         "--apply-fix",
         dest="apply_fix",

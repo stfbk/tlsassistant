@@ -180,6 +180,8 @@ class Parser:
             ]:  # check if parent folder is android
                 if mod_folder == "android":  # to know if android or not
                     self.__cache[mod_path.stem][0].is_android = True
+                elif mod_folder == "ios":
+                    self.__cache[mod_path.stem][0].is_ios = True
 
     def output(self):
         """
