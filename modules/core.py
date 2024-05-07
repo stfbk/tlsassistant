@@ -691,7 +691,7 @@ class Core:
                 if module.startswith("compare"):
                     # A full analysis is needed with these modules
                     full_analysis = True
-            if type_of_analysis == self.Analysis.HOST:
+            if type_of_analysis != self.Analysis.APK and type_of_analysis != self.Analysis.IPA:
                 self.__preanalysis_testssl(
                     testssl_args, type_of_analysis, hostname_or_path, port, full_analysis
                 )

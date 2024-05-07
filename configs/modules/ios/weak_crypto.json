@@ -1,0 +1,20 @@
+{
+    "input":[
+       {
+          "name":"path",
+          "type":"str",
+          "description":"Path of the IPA to analyze",
+          "required":"True"
+       }
+    ],
+    "description":"This modules ecks if the binary uses some weak crypto API(s).",
+    "path":"modules/ios/weak_crypto.py",
+    "class_name":"WeakCrypto",
+    "output":[
+       {
+          "name":"results",
+          "type":"dict",
+          "description":"results of the scan"
+       }
+    ]
+ }

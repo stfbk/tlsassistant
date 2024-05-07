@@ -2,6 +2,10 @@
     "name": "default_ios_configuration",
     "description": "Default ios analysis configuration",
     "modules": [
-        
+        "allow_http_plist",
+        "insecure_connection_plist",
+        "insecure_tls_version_plist",
+        "no_forward_secrecy_plist",
+        "weak_crypto"
     ]
   }

@@ -1,0 +1,20 @@
+{
+    "input":[
+       {
+          "name":"path",
+          "type":"str",
+          "description":"Path of the IPA to analyze",
+          "required":"True"
+       }
+    ],
+    "description":"This modules checks if the app disables the server’s requirement to support Perfect Forward Secrecy (PFS) through Elliptic Curve Diffie–Hellman Ephemeral (ECDHE)",
+    "path":"modules/ios/no_forward_secrecy_plist.py",
+    "class_name":"NoForwardSecrecyPlist",
+    "output":[
+       {
+          "name":"results",
+          "type":"dict",
+          "description":"results of the scan"
+       }
+    ]
+ }

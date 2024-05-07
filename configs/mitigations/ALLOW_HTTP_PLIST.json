@@ -1,0 +1,11 @@
+{
+    "Entry": {
+      "Name": "Allow Http Plist",
+      "ExtendedName": "Allow Http Plist",
+      "Description": "By exploiting an incorrectly designed/configured TrustManager, an attacker is able to break the confidentiality of a transmission by impersonating a server with a fake certificate.",
+      "Mitigation": {
+        "Textual": "The only acceptable mitigation is to check the related methods to fix the vulnerability or switch the app to an external TLS library (e.g. OkHttp)."
+      }
+    },
+    "#omit-xml-declaration": "yes"
+  }

@@ -2,6 +2,7 @@ import logging
 from os import listdir
 from os.path import isfile, join, sep
 from pathlib import Path
+import zipfile
 
 from modules.core import Core
 from utils.colors import Color
@@ -107,6 +108,10 @@ class Tlsa:
         logging.basicConfig(level=logging.DEBUG if args.verbosity else logging.INFO)
         self.__logging.debug("Started anaylsis with verbosity on.")
         self.__logging.debug("Initializing Core element.")
+        if args.ipa and zipfile.is_zipfile(args.ipa):
+            raise ValueError("The provided file is not a valid IPA file.")
+        if args.apk and not zipfile.is_zipfile(args.apk):
+            raise ValueError("The provided file is not a valid APK file.")
         if isinstance(args.configuration, str) and args.configuration == "default":
             args.configuration = (
                 f"default{'_android.json' if args.apk else '_ios.json' if args.ipa else '_server.json'}"
