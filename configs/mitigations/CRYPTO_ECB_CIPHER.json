@@ -2,13 +2,12 @@
     "Entry": {
       "Name": "Crypto Ecb Cipher",
       "ExtendedName": "Crypto Ecb Cipher",
-      "Description": "This app does not check the validation of the CN (Common Name) in the SSL certificate (`\"ALLOW_ALL_HOSTNAME_VERIFIER\"` field or `\"AllowAllHostnameVerifier\"` class). This is a critical vulnerability and allows attackers to implement MitM attacks with their valid certificate without your knowledge. Deprecated from Android API 22. This behavior also represents a violation in OWASP Mobile TOP 10 Security Risks.",
+      "Description": "Apps that use a Block Cipher algorithm in ECB mode for encrypting sensitive information are vulnerable to exposing leaking information. The Android platform allows developers to specify the block cipher algorithm and mode they wish to use through the Cipher API.<br/> This behavior is problematic because ECB is not secure for encrypting sensitive information.",
       "Mitigation": {
-        "Textual": "Please remove all the code that skips SSL certificate validation and relies on default implementations. The compliant solution may vary, depending on the app implementation. For examples of secure implementation please refer to best practices like those presented in \"Android Secure Coding\" book [[1]].<br/> Further information on the SSL Security can be found in the official Android developers guide [[2]], while information on security risks can be found in the OWASP Mobile TOP 10 [[3]]"
+        "Textual": "Please use an encryption mode other than ECB, like CBC (Cipher Block Chaining) or GCM (Galois/Counter Mode) with an initialization vector (IV).<br/> Further information at this links [<a href='https://developer.android.com/reference/javax/crypto/Cipher.html'>1</a>] [<a href='https://medium.com/@manuaravindpta/implementation-of-aes-encryption-in-android-dca250525b4'>2</a>]"
       }
     },
-    "#comment": "http://www.jssec.org/dl/android_securecoding.pdf",
-    "#comment1": "http://developer.android.com/training/articles/security-ssl.html",
-    "#comment2": "https://www.owasp.org/index.php/Mobile_Top_10_2016-M3-Insecure_Communication",
+    "#comment": "https://developer.android.com/reference/javax/crypto/Cipher.html",
+    "#comment1": "https://medium.com/@manuaravindpta/implementation-of-aes-encryption-in-android-dca250525b4",
     "#omit-xml-declaration": "yes"
   }

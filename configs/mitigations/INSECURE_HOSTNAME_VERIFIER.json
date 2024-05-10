@@ -2,13 +2,12 @@
     "Entry": {
       "Name": "Insecure Hostname Verifier",
       "ExtendedName": "Insecure Hostname Verifier",
-      "Description": "This app allows self-defined HOSTNAME VERIFIER to accept all Common Names (CN). This is a critical vulnerability and allows attackers to do MitM attacks with their valid certificate without your knowledge. This behavior also represents a violation in OWASP Mobile TOP 10 Security Risks.",
+      "Description": "This app allows self-defined HOSTNAME VERIFIER to accept all Common Names (CN). This implementations can lead to vulnerabilities which can be used to perform MiTM (Man-in-The-Middle) attacks on network traffic from the victim application.",
       "Mitigation": {
-        "Textual": "Please remove all the code that skips SSL certificate validation and relies on default implementations. The compliant solution may vary, depending on the app implementation. For examples of secure implementation please refer to best practices like those presented in \"Android Secure Coding\" book [[1]]. <br/> Further information on the SSL Security can be found in the official Android developers guide [[2]], while information on security risks can be found in the OWASP Mobile TOP 10 [[3]]."
+        "Textual": "To strengthen security, any code that bypasses SSL certificate validation should be removed and app should relied to default implementations.<br/>  The solution may vary, depending on the app implementation. <br/> You can find more information on this links [<a href='http://developer.android.com/training/articles/security-ssl.html'>1</a>] [<a href='https://developer.android.com/privacy-and-security/risks/unsafe-hostname'>2</a>]"
       }
     },
-    "#comment": "http://www.jssec.org/dl/android_securecoding.pdf",
-    "#comment1": "http://developer.android.com/training/articles/security-ssl.html",
-    "#comment2": "https://www.owasp.org/index.php/Mobile_Top_10_2016-M3-Insecure_Communication",
+    "#comment": "http://developer.android.com/training/articles/security-ssl.html",
+    "#comment1": "https://developer.android.com/privacy-and-security/risks/unsafe-hostname",
     "#omit-xml-declaration": "yes"
   }

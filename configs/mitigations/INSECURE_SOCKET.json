@@ -2,13 +2,11 @@
     "Entry": {
       "Name": "Insecure Socket",
       "ExtendedName": "Insecure Socket",
-      "Description": "This app does not check the validation of the CN (Common Name) in the SSL certificate (`\"ALLOW_ALL_HOSTNAME_VERIFIER\"` field or `\"AllowAllHostnameVerifier\"` class). This is a critical vulnerability and allows attackers to implement MitM attacks with their valid certificate without your knowledge. Deprecated from Android API 22. This behavior also represents a violation in OWASP Mobile TOP 10 Security Risks.",
+      "Description": "Using 'SSLCertificateSocketFactory.createSocket()' without parameters or with an 'InetAddress' as the first parameter does not perform hostname verification by default, leaving these sockets susceptible to Man-in-the-Middle (MitM) attacks.",
       "Mitigation": {
-        "Textual": "Please remove all the code that skips SSL certificate validation and relies on default implementations. The compliant solution may vary, depending on the app implementation. For examples of secure implementation please refer to best practices like those presented in \"Android Secure Coding\" book [[1]].<br/> Further information on the SSL Security can be found in the official Android developers guide [[2]], while information on security risks can be found in the OWASP Mobile TOP 10 [[3]]"
+        "Textual": "Class SSLCertificateSocketFactory was deprecated in API level 29. If application use this class as described previously, it is imperative to verify the server's identity manually after establishing the socket connection.<br/> It's recommended to use use less error-prone alternatives provided by standard APIs for creating SSLSocket instances and verifying hostnames, like SSLSocketFactory#getDefault() or SSLContext.getSocketFactory().<br/> Further information at this <a href='https://developer.android.com/reference/android/net/SSLCertificateSocketFactory.html#createSocket(java.net.InetAddress'>link</a>."
       }
     },
-    "#comment": "http://www.jssec.org/dl/android_securecoding.pdf",
-    "#comment1": "http://developer.android.com/training/articles/security-ssl.html",
-    "#comment2": "https://www.owasp.org/index.php/Mobile_Top_10_2016-M3-Insecure_Communication",
+    "#comment": "https://developer.android.com/reference/android/net/SSLCertificateSocketFactory.html#createSocket(java.net.InetAddress",
     "#omit-xml-declaration": "yes"
   }

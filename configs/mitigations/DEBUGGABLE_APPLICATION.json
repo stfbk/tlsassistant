@@ -2,13 +2,12 @@
     "Entry": {
       "Name": "Debuggable Application",
       "ExtendedName": "Debuggable Application",
-      "Description": "This app does not check the validation of the CN (Common Name) in the SSL certificate (`\"ALLOW_ALL_HOSTNAME_VERIFIER\"` field or `\"AllowAllHostnameVerifier\"` class). This is a critical vulnerability and allows attackers to implement MitM attacks with their valid certificate without your knowledge. Deprecated from Android API 22. This behavior also represents a violation in OWASP Mobile TOP 10 Security Risks.",
+      "Description": "The DEBUG mode is currently ACTIVE (android:debuggable='true' in AndroidManifest.xml). It's crucial to avoid enabling DEBUG mode in production environments, as it allows malicious users to debug the app and intercept detailed error information via Logcat.",
       "Mitigation": {
-        "Textual": "Please remove all the code that skips SSL certificate validation and relies on default implementations. The compliant solution may vary, depending on the app implementation. For examples of secure implementation please refer to best practices like those presented in \"Android Secure Coding\" book [[1]].<br/> Further information on the SSL Security can be found in the official Android developers guide [[2]], while information on security risks can be found in the OWASP Mobile TOP 10 [[3]]"
+        "Textual": "Please set the <a href='https://developer.android.com/privacy-and-security/risks/android-debuggable'>debuggable</a> flag to FALSE if it is a production application.<br/> Further informations about <a href='https://developer.android.com/studio/debug/index.html'>debugging your app</a>."
       }
     },
-    "#comment": "http://www.jssec.org/dl/android_securecoding.pdf",
-    "#comment1": "http://developer.android.com/training/articles/security-ssl.html",
-    "#comment2": "https://www.owasp.org/index.php/Mobile_Top_10_2016-M3-Insecure_Communication",
+    "#comment": "https://developer.android.com/privacy-and-security/risks/android-debuggable",
+    "#comment1": "https://developer.android.com/studio/debug/index.html",
     "#omit-xml-declaration": "yes"
   }
