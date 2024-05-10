@@ -1,7 +1,8 @@
 {
     "Entry": {
       "Name": "Insecure Connection",
-      "ExtendedName": "The presence of URLs within your application that are not secured with SSL poses a significant security risk, as it allows for the interception and modification of data transmitted through these URLs by malicious actors.",
+      "ExtendedName": "Insecure Connection",
+      "Description": "The presence of URLs within your application that are not secured with SSL poses a significant security risk, as it allows for the interception and modification of data transmitted through these URLs by malicious actors.",
       "Mitigation": {
         "Textual": "Please meticulously review each URL and apply SSL wherever feasible. Ensure that all data transmitted via HTTP, including session cookies, is not security-sensitive.<br/> For further information on using Android with HTTPS and SSL please refer to the <a href='https://developer.android.com/training/articles/security-ssl.html'>official guide</a>.<br/> For further information on managing sessions and cookies, please refer to this <a href='https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html'>guide</a>."
       }
