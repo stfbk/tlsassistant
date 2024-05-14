@@ -287,5 +287,4 @@ if __name__ == "__main__":
     # todo add default aliases configurations for analysis
     # configurations.add_argument()
     args = parser.parse_args()
-    print(args)
     tlsa = Tlsa(args)
