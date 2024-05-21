@@ -15,6 +15,8 @@ from os import listdir
 from os.path import isfile, join, sep
 from utils.logger import Logger
 
+import sys
+sys.path.append("dependencies/SEBASTiAn/src")
 from dependencies.SEBASTiAn.src.SEBASTiAn.util import check_valid_apk_file, check_valid_ipa_file
 
 config_types_mapping = {

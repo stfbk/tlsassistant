@@ -27,11 +27,24 @@ class Sebastian:
     __instance = None
 
     def __init__(self) -> None:
-        logging.getLogger("SEBASTiAn").setLevel(
-            logging.ERROR
-            if not logging.getLogger().isEnabledFor(logging.DEBUG)
-            else logging.DEBUG
-        )  # remove annoying info messages
+        loggers_to_set = [
+            "AllowAllHostname",
+            "CryptoEcbCipher",
+            "DebuggableApplication",
+            "DefaultSchemeHttp",
+            "InsecureConnection",
+            "InsecureHostnameVerifier",
+            "InsecureSocket",
+            "InsecureSocketFactory",
+            "InvalidServerCertificate",
+            "SEBASTiAN"
+        ]
+        for logger_name in loggers_to_set:
+            logger = logging.getLogger(logger_name)
+            logger.setLevel(
+                logging.CRITICAL if not logger.isEnabledFor(logging.DEBUG) else logging.DEBUG
+            )
+
         self.__logging = Logger("sebastian")
         self.__sebastian = f"dependencies{os.sep}SEBASTiAn{os.sep}src{os.sep}SEBASTiAn{os.sep}main.py"
         self.__instance = load_module(self.__sebastian, "sebastian")
