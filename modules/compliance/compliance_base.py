@@ -1,5 +1,6 @@
 import itertools
 import json
+import logging
 import os.path
 import re
 from pathlib import Path
@@ -18,6 +19,7 @@ from utils.database import get_standardized_level
 from utils.loader import load_configuration
 from utils.logger import Logger
 from utils.mitigations import MitigationLoader
+from utils.prune import pruner
 from utils.validation import Validator
 
 
@@ -85,6 +87,7 @@ class Compliance:
         self.valid_keysize = False
         self.tls1_3_ciphers = get_1_3_ciphers()
         self._no_psk = None
+        self._guidelines_string = ""
 
     @staticmethod
     def level_to_use(levels, security):
@@ -143,6 +146,7 @@ class Compliance:
                 self._custom_guidelines = json.load(f)
 
         guidelines_string = kwargs.get("guidelines")
+        self._guidelines_string = guidelines_string
         openssl_version = kwargs.get("openssl_version")
         ignore_openssl = kwargs.get("ignore_openssl")
         self._no_psk = kwargs.get("no_psk", False)
@@ -244,6 +248,12 @@ class Compliance:
         return self.output()
 
     def output(self):
+        if logging.getLogger().level == logging.DEBUG:
+            with open(f"testssl_dumps/report_{self.hostname}_{self._guidelines_string}.json", "w") as f:
+                for category in self._output_dict:
+                    if self._output_dict[category].get("guidelines"):
+                        self._output_dict[category]["guidelines"] = list(self._output_dict[category]["guidelines"])
+                json.dump(self._output_dict, f, indent=4)
         if not self._output_dict.get("error"):
             self.prune_output()
             self._prepare_output()
@@ -494,11 +504,9 @@ class Compliance:
         to_return = []
         if isinstance(alg, str):
             alg = [alg]
-
         for sig_alg in alg:
-            sig_alg = sig_alg.replace("RSASSA-PSS", "RSA")
             if sig_alg.lower() not in self._cert_sig_algs:
-                sig_alg = "anonymous"
+                self._logging.warning(f"Signature algorithm {sig_alg} not found in the database")
             to_return.append(sig_alg)
             self._user_configuration["CertificateSignature"].add(sig_alg.lower())
         return to_return
@@ -726,13 +734,15 @@ class Compliance:
                 "level": information_level,
                 "action": action,
                 "source": source,
-                "total_string_only": total_string_only
+                "total_string_only": total_string_only,
+                "original_level": entry_level
             }
         elif name not in self._output_dict[sheet]:
             self._output_dict[sheet][name] = {
                 "level": "INFO",
                 "action": "NOTE: ",
                 "source": source,
+                "original_level": entry_level
             }
             self._output_dict[sheet]["notes"].append(name)
         if not self._output_dict[sheet].get("guidelines"):
@@ -1073,7 +1083,9 @@ class Generator(Compliance):
         self._fill_user_configuration()
         self._condition_parser = ConditionParser(self._user_configuration)
         self._check_conditions()
-        return self._config_class.configuration_output()
+        output_dict = self._config_class.configuration_output()
+        output_dict = pruner(output_dict)
+        return output_dict
 
     def get_sheet_filter(self, sheet):
         # Dictionaries are used for specific things like a directive that enables an extension for this reason it is
@@ -1201,18 +1213,19 @@ class AliasParser:
             for i, sheet in enumerate(self._sheets_versions_dict):
                 if sheets_to_check.get(sheet) is None:
                     sheets_to_check[sheet] = {}
-                for token in tokens[1:]:
-                    token = token.upper()
-                    # If it is an abbreviation get the complete name.
-                    token = self._aliases.get(token, token)
-                    if sheet + guideline + token in self._database_instance.table_names:
-                        sheets_to_check[sheet][guideline] = token
                 if sheets_to_check[sheet].get(guideline) is None:
                     version = self._default_versions[sheet].get(guideline)
                     if version is not None:
                         sheets_to_check[sheet][guideline] = version
                     else:
                         self.__logging.info(f"Skipping {guideline} in {sheet} because no version is available.")
+                for token in tokens[1:]:
+                    token = token.upper()
+                    # If it is an abbreviation get the complete name.
+                    token = self._aliases.get(token, token)
+                    if sheet + guideline + token in self._database_instance.table_names and \
+                        not (token == "" and sheets_to_check[sheet].get(guideline)):
+                        sheets_to_check[sheet][guideline] = token
             for sheet in custom_guidelines:
                 if sheets_to_check.get(sheet):
                     for guideline in custom_guidelines[sheet]:
