@@ -12,7 +12,11 @@ class Mallodroid:
     Mallodroid is a tool to perform static analysis of Android applications.
     This wrapper is a python wrapper to mallodroid.py.
     """
-
+    logging.getLogger("dad").setLevel(
+            logging.CRITICAL
+            if not logging.getLogger().isEnabledFor(logging.DEBUG)
+            else logging.DEBUG
+        )  # remove annoying info messages
     __cache = {}
     __instance = None
 

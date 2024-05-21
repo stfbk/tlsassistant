@@ -1,8 +1,5 @@
 import logging
-import signal
-import threading
 from pathlib import Path
-import time
 import os
 
 from utils.logger import Logger
@@ -11,12 +8,10 @@ from utils.loader import load_module
 
 import sys
 sys.path.append("dependencies/SEBASTiAn/src")
-#from SEBASTiAn.main import perform_analysis_with_timeout
+#from SEBASTiAn.main import perform_analysis_with_timeout # this line is commented out because the wrapper is used instead of calling SEBASTIAN's method
 import logging
 import os
-from datetime import datetime
 from typing import List
-from pebble import ProcessPool
 from SEBASTiAn import util
 from SEBASTiAn.analysis import AndroidAnalysis, IOSAnalysis
 from SEBASTiAn.manager import AndroidVulnerabilityManager, IOSVulnerabilityManager
@@ -115,7 +110,7 @@ class Sebastian:
                 f"Analysis of {file_id} (cache miss or forced by call)"
             )
             try:
-                self.__cache[file_id] = self.perform_analysis_with_timeout(file_id,plugins=["AllowAllHostname","CryptoEcbCipher","DebuggableApplication","DefaultSchemeHttp","InsecureConnection","InsecureHostnameVerifier","InsecureSocket","InsecureSocketFactory","InvalidServerCertificate","SEBASTiAn"],timeout=600)
+                self.__cache[file_id] = self.perform_analysis_without_timeout(file_id,plugins=["AllowAllHostname","CryptoEcbCipher","DebuggableApplication","DefaultSchemeHttp","InsecureConnection","InsecureHostnameVerifier","InsecureSocket","InsecureSocketFactory","InvalidServerCertificate"])
             except Exception as e:
                 self.__logging.error(f"Analysis of {file_id} crashed: {e}")
         else:
@@ -124,7 +119,7 @@ class Sebastian:
 
 
     ############################################
-    #         Wrappers of SEBASTiAn            #
+    #         Wrapper of SEBASTiAn            #
     ############################################
     def perform_analysis_without_timeout(
         self,
@@ -137,7 +132,7 @@ class Sebastian:
         plugins: List[str] = None,  
     ) -> dict:
         """
-        This method wrap the method SEBASTiAn, allowing you to choose which plugin to analyze
+        This method wrap the method perform_analysis_without_timeout of SEBASTiAn, allowing you to choose which plugin to analyze
         """
         analysis = None
         found_vulnerabilities: List[VulnerabilityDetails] = []
@@ -182,32 +177,3 @@ class Sebastian:
                 "vulnerabilities": VulnerabilityDetails.Schema().dump(found_vulnerabilities, many=True)
             }
             return result
-        
-    def perform_analysis_with_timeout(
-        self,
-        input_app_path: str,
-        language: str = "en",
-        ignore_libs: bool = False,
-        fail_fast: bool = False,
-        keep_files: bool = False,
-        timeout: int = None,
-        generate_report: bool = False,
-        plugins: List[str] = None,  # Aggiungi il parametro plugins
-    ) -> dict:
-        '''
-        This method wrap the method SEBASTiAn, allowing you to choose which plugin to analyze
-        '''
-        with ProcessPool(1) as pool:
-            return pool.schedule(
-                self.perform_analysis_without_timeout,
-                args=[
-                    input_app_path,
-                    language,
-                    ignore_libs,
-                    fail_fast,
-                    keep_files,
-                    generate_report,
-                    plugins,  # Passa il parametro plugins qui
-                ],
-                timeout=timeout,
-            ).result()
