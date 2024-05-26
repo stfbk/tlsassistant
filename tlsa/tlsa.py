@@ -127,22 +127,23 @@ class Tlsa:
         self.__logging.debug("Started anaylsis with verbosity on.")
         self.__logging.debug("Initializing Core element.")
         platform = None
-        try:
-            check_valid_apk_file(args.app)
-            platform = "Android"
-            self.__logging.debug(f"File '{args.app}' is an Android application")
-        except ValueError:
-            pass
-        if not platform:
+        if args.app:
             try:
-                check_valid_ipa_file(args.app)
-                platform = "iOS"
-                self.__logging.debug(f"File '{args.app}' is an iOS application")
+                check_valid_apk_file(args.app)
+                platform = "Android"
+                self.__logging.debug(f"File '{args.app}' is an Android application")
             except ValueError:
                 pass
-        if not platform:
-            self.__logging.error(f"File '{args.app}' is not a valid mobile application")
-            raise ValueError(f"File '{args.app}' is not a valid mobile application")
+            if not platform:
+                try:
+                    check_valid_ipa_file(args.app)
+                    platform = "iOS"
+                    self.__logging.debug(f"File '{args.app}' is an iOS application")
+                except ValueError:
+                    pass
+            if not platform:
+                self.__logging.error(f"File '{args.app}' is not a valid mobile application")
+                raise ValueError(f"File '{args.app}' is not a valid mobile application")
 
         if isinstance(args.configuration, str) and args.configuration == "default":
             args.configuration = (

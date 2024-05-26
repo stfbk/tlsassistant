@@ -6,21 +6,15 @@ from utils.logger import Logger
 from utils.validation import Validator  
 from utils.loader import load_module
 
-import sys
-sys.path.append("dependencies/SEBASTiAn/src")
 #from SEBASTiAn.main import perform_analysis_with_timeout # this line is commented out because the wrapper is used instead of calling SEBASTIAN's method
-import logging
-import os
 from typing import List
-from SEBASTiAn import util
-from SEBASTiAn.analysis import AndroidAnalysis, IOSAnalysis
-from SEBASTiAn.manager import AndroidVulnerabilityManager, IOSVulnerabilityManager
-from SEBASTiAn.vulnerability import VulnerabilityDetails
+from dependencies.SEBASTiAn.src.SEBASTiAn.analysis import AndroidAnalysis
+from dependencies.SEBASTiAn.src.SEBASTiAn.vulnerability import VulnerabilityDetails
+from dependencies.SEBASTiAn.src.SEBASTiAn.manager import AndroidVulnerabilityManager
 
 class Sebastian:
     """
     SEBESTiAn is a tool to perform static analysis of Android applications.
-    This wrapper is a python wrapper to cly.py.
     """ 
 
     __cache = {}
@@ -37,7 +31,7 @@ class Sebastian:
             "InsecureSocket",
             "InsecureSocketFactory",
             "InvalidServerCertificate",
-            "SEBASTiAN"
+            "SEBASTiAn"
         ]
         for logger_name in loggers_to_set:
             logger = logging.getLogger(logger_name)
