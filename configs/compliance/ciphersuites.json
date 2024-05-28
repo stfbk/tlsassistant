@@ -2079,13 +2079,13 @@
         "GnuTLS": "",
         "IANA": "TLS_SHA256_SHA256",
         "NSS": "",
-        "OpenSSL": "TLS_SHA256_SHA256"
+        "OpenSSL": ""
     },
     "0xC0,0xB5": {
         "GnuTLS": "",
         "IANA": "TLS_SHA384_SHA384",
         "NSS": "",
-        "OpenSSL": "TLS_SHA384_SHA384"
+        "OpenSSL": ""
     },
     "0xC1,0x00": {
         "GnuTLS": "",

@@ -11,9 +11,7 @@ class CustomAndroidVulnerabilityManager(AndroidVulnerabilityManager):
     def get_all_vulnerability_checks(self):
         all_plugins = sorted(self.manager.getAllPlugins(), key=lambda x: x.name)
         tls_plugins = [
-            "AllowAllHostname", "CryptoEcbCipher", "DebuggableApplication",
-            "DefaultSchemeHttp", "InsecureConnection", "InsecureHostnameVerifier",
-            "InsecureSocket", "InsecureSocketFactory", "InvalidServerCertificate"
+            "AllowAllHostname", "CryptoEcbCipher", "DebuggableApplication", "DefaultSchemeHttp", "InsecureConnection", "InsecureHostnameVerifier", "InsecureSocket", "InsecureSocketFactory", "InvalidServerCertificate"
         ]
         filtered_checks = [item for item in all_plugins if item.plugin_object.__class__.__name__ in tls_plugins]
         return filtered_checks
@@ -28,6 +26,7 @@ class Sebastian:
     __instance = None
 
     def __init__(self) -> None:
+        # remove annoying info messages
         loggers_to_set = [
             "AllowAllHostname",
             "CryptoEcbCipher",
@@ -123,7 +122,6 @@ class Sebastian:
             )
             try:
                 self.__cache[file_id] = perform_analysis_with_timeout(file_id,timeout=600)
-                #self.__cache[file_id] = self.perform_analysis_without_timeout(file_id,plugins=["AllowAllHostname","CryptoEcbCipher","DebuggableApplication","DefaultSchemeHttp","InsecureConnection","InsecureHostnameVerifier","InsecureSocket","InsecureSocketFactory","InvalidServerCertificate"])
             except Exception as e:
                 self.__logging.error(f"Analysis of {file_id} crashed: {e}")
         else:

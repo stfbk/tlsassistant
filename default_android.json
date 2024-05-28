@@ -2,9 +2,8 @@
   "name": "default_android_configuration",
   "description": "Default android analysis configuration",
   "modules": [
-    "allow_all_hostname",
     "accepting_all_certificates",
-
+    "allow_all_hostname",
     "certificate_keystore_disclosure",
     "crypto_ecb_cipher",
     "debuggable_application",

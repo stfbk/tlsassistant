@@ -4,18 +4,24 @@ import os
 
 from utils.logger import Logger
 from utils.validation import Validator  
-from utils.loader import load_module
 
-#from SEBASTiAn.main import perform_analysis_with_timeout
-from typing import List
-from dependencies.SEBASTiAn.src.SEBASTiAn.analysis import IOSAnalysis
-from dependencies.SEBASTiAn.src.SEBASTiAn.vulnerability import VulnerabilityDetails
-from dependencies.SEBASTiAn.src.SEBASTiAn.manager import IOSVulnerabilityManager
+from SEBASTiAn.main import perform_analysis_with_timeout
+from SEBASTiAn.manager import IOSVulnerabilityManager
+            
+class CustomAndroidVulnerabilityManager(IOSVulnerabilityManager):
+    def get_all_vulnerability_checks(self):
+        all_plugins = sorted(self.manager.getAllPlugins(), key=lambda x: x.name)
+        tls_plugins = [
+           "AllowHttpPlist","InsecureTlsVersionPlist","InsecureTlsVersionPlist","NoForwardSecrecyPlist","WeakCrypto"
+        ]
+        filtered_checks = [item for item in all_plugins if item.plugin_object.__class__.__name__ in tls_plugins]
+        return filtered_checks
+        
+IOSVulnerabilityManager.get_all_vulnerability_checks = CustomAndroidVulnerabilityManager.get_all_vulnerability_checks
 
 class Sebastian:
     """
-    SEBESTiAn is a tool to perform static analysis of IOS applications.
-    This wrapper is a python wrapper to cly.py.
+    SEBESTiAn is a tool to perform static analysis of iOS applications.
     """ 
 
     __cache = {}
@@ -23,13 +29,11 @@ class Sebastian:
 
     def __init__(self) -> None:
         logging.getLogger("SEBASTiAn").setLevel(
-            logging.ERROR
+            logging.CRITICAL
             if not logging.getLogger().isEnabledFor(logging.DEBUG)
             else logging.DEBUG
         )  # remove annoying info messages
         self.__logging = Logger("sebastian")
-        self.__sebastian = f"dependencies{os.sep}SEBASTiAn{os.sep}src{os.sep}SEBASTiAn{os.sep}main.py"
-        self.__instance = load_module(self.__sebastian, "sebastian")
         self.__input_dict = {}
         self.__correct_path = None
 
@@ -105,69 +109,11 @@ class Sebastian:
                 f"Analysis of {file_id} (cache miss or forced by call)"
             )
             try:
-                self.__cache[file_id] = self.perform_analysis_with_timeout(file_id,plugins=["AllowHttpPlist","InsecureTlsVersionPlist","InsecureTlsVersionPlist","NoForwardSecrecyPlist","WeakCrypto"])
+                self.__cache[file_id] = perform_analysis_with_timeout(file_id,timeout=600)
             except Exception as e:
                 self.__logging.error(f"Analysis of {file_id} crashed: {e}")
         else:
             if file_id not in self.__cache:  # if not in cache, force analysis
                 self.__worker(path, args, force=True)
 
-    ############################################
-    #         Wrapper of SEBASTiAn            #
-    ############################################
-    def perform_analysis_without_timeout(
-        self,
-        input_app_path: str,
-        language: str = "en",
-        ignore_libs: bool = False,
-        fail_fast: bool = False,
-        keep_files: bool = False,
-        generate_report: bool = False,
-        plugins: List[str] = None,  
-    ) -> dict:
-        """
-        This method wrap the method perform_analysis_without_timeout of SEBASTiAn, allowing you to choose which plugin to analyze
-        """
-        analysis = None
-        found_vulnerabilities: List[VulnerabilityDetails] = []
-        failures = 0
-        platform="Android"
-        try:
-            manager = IOSVulnerabilityManager()
-            analysis = IOSAnalysis(
-                input_app_path, language, ignore_libs, generate_report
-            )
-            analysis.initialize()
-
-            # Get the list of all available plugins
-            all_plugins = [item.plugin_object.__class__.__name__ for item in manager.get_all_vulnerability_checks()]
-            if plugins:
-                # Verify if the specified plugins exist
-                non_existing_plugins = [plugin for plugin in plugins if plugin not in all_plugins]
-                if non_existing_plugins:
-                    self.__logging.error(f"The following specified plugins do not exist: {', '.join(non_existing_plugins)}")
-                # Filter the vulnerability checks to include only the specified plugins
-                filtered_checks = [item for item in manager.get_all_vulnerability_checks() if item.plugin_object.__class__.__name__ in plugins]
-            else:
-                filtered_checks = manager.get_all_vulnerability_checks()
-            for item in filtered_checks:
-                try:
-                    vulnerability_details = item.plugin_object.check_vulnerability(analysis)
-                    if vulnerability_details:
-                        found_vulnerabilities.append(vulnerability_details)
-                except Exception:
-                    failures += 1
-                    if fail_fast:
-                        # Make the entire vulnerability analysis fail only if the
-                        # corresponding flag is enabled.
-                        raise
-                    
-        except Exception as e:
-            self.__logging.error(f"Vulnerability analysis failed: {e}")
-            raise
-
-        else:
-            result = {
-                "vulnerabilities": VulnerabilityDetails.Schema().dump(found_vulnerabilities, many=True)
-            }
-            return result
+ 
