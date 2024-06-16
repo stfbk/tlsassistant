@@ -1,13 +1,12 @@
 {
-    "Entry": {
-      "Name": "Allow All Hostname",
-      "ExtendedName": "Allow All Hostname",
-      "Description": "This app does not check the validation of the CN (Common Name) in the SSL certificate (`\"ALLOW_ALL_HOSTNAME_VERIFIER\"` field or `\"AllowAllHostnameVerifier\"` class). This implementations can lead to vulnerabilities which can be used to perform MiTM (Man-in-The-Middle) attacks on network traffic from the victim application.",
-      "Mitigation": {
-        "Textual": "To strengthen security, any code that bypasses SSL certificate validation should be removed and app should relied to default implementations.<br/>  The solution may vary, depending on the app implementation. <br/> You can find more information on this links [<a href='http://developer.android.com/training/articles/security-ssl.html'>1</a>] [<a href='https://developer.android.com/privacy-and-security/risks/unsafe-hostname'>2</a>]"
-      }
-    },
-    "#comment": "http://developer.android.com/training/articles/security-ssl.html",
-    "#comment1": "https://developer.android.com/privacy-and-security/risks/unsafe-hostname",
-    "#omit-xml-declaration": "yes"
-  }
+  "Entry": {
+    "Name": "Allow All Hostname",
+    "ExtendedName": "Allow All Hostname - apache",
+    "Description": "This app does not validate the CN (Common Name) field in the X.509 certificate ('ALLOW_ALL_HOSTNAME_VERIFIER' field of 'SSLSocketFactory' class or 'AllowAllHostnameVerifier' class or 'NoopHostnameVerifier' class). These implementations may allow a malicious actor to perform MiTM (Man-in-The-Middle) attacks and read the encrypted network traffic.",
+    "Mitigation": {
+      "Textual": "To strengthen security, any code that bypasses the CN validation should be removed. Classes <a href='https://developer.android.com/reference/org/apache/http/conn/ssl/AllowAllHostnameVerifier'>AllowAllHostnameVerifier</a> and <a href='https://developer.android.com/reference/org/apache/http/conn/ssl/SSLSocketFactory'>SSLSocketFactory</a> are deprecated from API level 22 (Android 5.1).",
+      "Suggested Steps": "1. Open an IDE (e.g., Android Studio);<br/>2. Search for the 'AllowAllHostnameVerifier' class or 'ALLOW_ALL_HOSTNAME_VERIFIER' field;<br/>3. Replace all the instances of the insecure classes with 'DefaultHostnameVerifier' or use 'SSLConnectionSocketFactory.getDefaultHostnameVerifier()' instead of SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER as a parameter."
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}

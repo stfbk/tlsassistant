@@ -1,13 +1,11 @@
 {
     "Entry": {
       "Name": "Insecure Hostname Verifier",
-      "ExtendedName": "Insecure Hostname Verifier",
-      "Description": "This app allows self-defined HOSTNAME VERIFIER to accept all Common Names (CN). This implementations can lead to vulnerabilities which can be used to perform MiTM (Man-in-The-Middle) attacks on network traffic from the victim application.",
+      "ExtendedName": "Insecure Hostname Verifier - javax",
+      "Description": "This app does not validate the CN (Common Name) field in the X.509 certificate. These implementations may allow a malicious actor to perform MiTM (Man-in-The-Middle) attacks and read the encrypted network traffic.",
       "Mitigation": {
-        "Textual": "To strengthen security, any code that bypasses SSL certificate validation should be removed and app should relied to default implementations.<br/>  The solution may vary, depending on the app implementation. <br/> You can find more information on this links [<a href='http://developer.android.com/training/articles/security-ssl.html'>1</a>] [<a href='https://developer.android.com/privacy-and-security/risks/unsafe-hostname'>2</a>]"
+        "Textual": "To strengthen security, any code that bypasses the CN validation should be removed.<br/> It's important to avoid the use of <a href='https://developer.android.com/reference/javax/net/ssl/HttpsURLConnection#setDefaultHostnameVerifier(javax.net.ssl.HostnameVerifier)'>'setDefaultHostnameVerifier'</a> method and not override the 'verify' method of 'HostnameVerifier' interface.<br/>The recommended mitigation is to use the default HostnameVerifier, via the 'getHostnameVerifier' method."
       }
     },
-    "#comment": "http://developer.android.com/training/articles/security-ssl.html",
-    "#comment1": "https://developer.android.com/privacy-and-security/risks/unsafe-hostname",
     "#omit-xml-declaration": "yes"
   }

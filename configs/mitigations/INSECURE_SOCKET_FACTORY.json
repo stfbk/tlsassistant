@@ -1,13 +1,12 @@
 {
-    "Entry": {
-      "Name": "Insecure Socket Factory",
-      "ExtendedName": "Insecure Socket Factory",
-      "Description": "This application employs instances of socket factories with all SSL security checks disabled, utilizing an optional handshake timeout and SSL session cache. Such configurations render the sockets susceptible to Man-in-the-Middle (MitM) attacks.",
-      "Mitigation": {
-        "Textual": "Please remove all the insecure code that use method <a href='https://developer.android.com/reference/android/net/SSLCertificateSocketFactory#getInsecure(int,%20android.net.SSLSessionCache)'>getInsecure</a>, and prefer using Default SSL Socket Factory.<br/> Further informations <a href='https://developer.android.com/reference/javax/net/ssl/SSLSocketFactory'>here</a>. "
-      }
-    },
-    "#comment": "https://developer.android.com/reference/android/net/SSLCertificateSocketFactory#getInsecure(int,%20android.net.SSLSessionCache)",
-    "#comment1": "https://developer.android.com/reference/javax/net/ssl/SSLSocketFactory",
-    "#omit-xml-declaration": "yes"
-  }
+  "Entry": {
+    "Name": "Insecure Socket Factory",
+    "ExtendedName": "Insecure Socket Factory",
+    "Description": "This application uses socket factory instances with all SSL security checks disabled, using an optional handshake timeout and SSL session cache. Such configurations make sockets susceptible to Man-in-the-Middle (MitM) attacks.",
+    "Mitigation": {
+      "Textual": "Please remove all the insecure code that use method <a href='https://developer.android.com/reference/android/net/SSLCertificateSocketFactory#getInsecure(int,%20android.net.SSLSessionCache)'>'getInsecure'</a>, and prefer using 'SSLSocketFactory.getDefault()'.",
+      "Solution Steps": "1. Open an IDE (e.g., Android Studio);<br/>2. Search for the 'SSLCertificateSocketFactory.getInsecure()' in the code;<br/>3. Replace the 'SSLCertificateSocketFactory.getInsecure()' with 'SSLSocketFactory.getDefault()'."
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}

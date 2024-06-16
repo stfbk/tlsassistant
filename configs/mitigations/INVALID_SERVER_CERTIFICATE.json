@@ -2,12 +2,10 @@
     "Entry": {
       "Name": "Invalid Server Certificate",
       "ExtendedName": "Invalid Server Certificate",
-      "Description": "This app does not validate SSL Certificates. It permits the use of self-signed, expired, or mismatched CN certificates for SSL connections. This represents a critical vulnerability, enabling attackers to carry out Man-in-the-Middle (MitM) attacks undetected.",
+      "Description": "This app does not check the validation of X.509 certificates. This represents a critical vulnerability, enabling attackers to carry out Man-in-the-Middle (MitM) attacks undetected.",
       "Mitigation": {
-        "Textual": "Please remove the vulnerable code. Avoid attempting to instantiate a X509Certificate and override checkClientTrusted, checkServerTrusted, and getAcceptedIssuers methods with empty implementations. <br/> It's recommended to stick with the <a href='https://developer.android.com/reference/javax/net/ssl/X509TrustManager'>existing API</a> instead of coming up with your own X509Certificate class. You can find an example of implementation <a href='https://www.ibm.com/docs/en/sdk-java-technology/8?topic=interface-creating-your-own-x509trustmanager'>here</a>"
+        "Textual": "Avoid attempting to override checkClientTrusted, checkServerTrusted, and getAcceptedIssuers methods with empty implementations. <br/> It's recommended to stick with the <a href='https://developer.android.com/reference/javax/net/ssl/X509TrustManager'>existing API</a> instead of coming up with your own X509Certificate class. You can find further information <a href='https://www.ibm.com/docs/en/sdk-java-technology/8?topic=interface-creating-x509trustmanager'>here</a>."
       }
     },
-    "#comment": "https://developer.android.com/reference/javax/net/ssl/X509TrustManager",
-    "#comment1": "https://www.ibm.com/docs/en/sdk-java-technology/8?topic=interface-creating-your-own-x509trustmanager",
     "#omit-xml-declaration": "yes"
   }

@@ -2,12 +2,10 @@
     "Entry": {
       "Name": "Insecure Connection",
       "ExtendedName": "Insecure Connection",
-      "Description": "The presence of URLs within your application that are not secured with SSL poses a significant security risk, as it allows for the interception and modification of data transmitted through these URLs by malicious actors.",
+      "Description": "By using the HTTP schema, a malicious user may force the app to fetch unsecure content. This can lead to wrong information being displayed (e.g., phishing attacks).",
       "Mitigation": {
-        "Textual": "Please meticulously review each URL and apply SSL wherever feasible. Ensure that all data transmitted via HTTP, including session cookies, is not security-sensitive.<br/> For further information on using Android with HTTPS and SSL please refer to the <a href='https://developer.android.com/training/articles/security-ssl.html'>official guide</a>.<br/> For further information on managing sessions and cookies, please refer to this <a href='https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html'>guide</a>."
+        "Code Snippet": "1. Open an IDE (e.g., Android Studio);<br/>2. Find and replace all the 'http://' occurrencies with 'https://'."
       }
     },
-    "#comment": "https://developer.android.com/training/articles/security-ssl.html",
-    "#comment1": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html",
     "#omit-xml-declaration": "yes"
   }
