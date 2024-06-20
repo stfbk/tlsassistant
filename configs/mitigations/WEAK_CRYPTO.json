@@ -2,9 +2,10 @@
     "Entry": {
       "Name": "Weak Crypto",
       "ExtendedName": "Weak Crypto",
-      "Description": "By exploiting an incorrectly designed/configured TrustManager, an attacker is able to break the confidentiality of a transmission by impersonating a server with a fake certificate.",
+      "Description": "By using weak ciphers, the encrypted data can be easily read by a malicious actor even without knowing the decryption key.",
       "Mitigation": {
-        "Textual": "The only acceptable mitigation is to check the related methods to fix the vulnerability or switch the app to an external TLS library (e.g. OkHttp)."
+        "Textual": "The only acceptable mitigation is to use more safe and strong encryption algorithms, based on AES.",
+        "Suggested Steps": "1. Open an IDE (e.g., Xcode);<br/>2. Search for the type of encryption algorithms of the CommonCrypto library in the code;<br/>3. Replace the encryption algorithms so that they all use AES;<br/>4. For example from 'kCCAlgorithmDES' to 'kCCAlgorithmAES'."
       }
     },
     "#omit-xml-declaration": "yes"

@@ -2,9 +2,10 @@
     "Entry": {
       "Name": "Allow Http Plist",
       "ExtendedName": "Allow Http Plist",
-      "Description": "By exploiting an incorrectly designed/configured TrustManager, an attacker is able to break the confidentiality of a transmission by impersonating a server with a fake certificate.",
+      "Description": "This app allows insecure HTTP loads for the specified domain. This behavior can be exploited by an attacker by intercepting the traffic and obtaining the transmitted information, since HTTP does not encrypt the data",
       "Mitigation": {
-        "Textual": "The only acceptable mitigation is to check the related methods to fix the vulnerability or switch the app to an external TLS library (e.g. OkHttp)."
+        "Textual": "Please do not set the value of the NSExceptionAllowsInsecureHTTPLoads key to 'true' in the NSExceptionDomains dictionary in the Info.plist file. Instead of modify the value, please rely on the default implementation of the NSExceptionRequiresForwardSecrecy key, which is 'false'.",
+        "Suggested Steps": "1. Open an IDE (e.g., Xcode);<br/>2. Search the Info.plist file in the project;<br/>3. In case there is NSExceptionAllowsInsecureHTTPLoads set to 'true' inside the NSAppTransportSecurity dictionary, remove the 'false' value;<br/>4. For example from <br/><code><key>NSExceptionAllowsInsecureHTTPLoads</key></code><br/><code><false/></code> to <br/><code><key>NSExceptionAllowsInsecureHTTPLoads</key></code>"
       }
     },
     "#omit-xml-declaration": "yes"

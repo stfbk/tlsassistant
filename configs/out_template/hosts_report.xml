@@ -16,7 +16,7 @@
         <paraStyle name = "no_vulnerabilities_detected" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30" textColor="green" spaceBefore="20"/>
         <paraStyle name = "module_list" fontName = "Roboto" fontSize="10" alignment="left" textColor="grey" spaceAfter="5"/>
         <paraStyle name = "module" fontName = "Roboto Bold" fontSize="20" alignment="left" spaceAfter="15" spaceBefore="10"/>
-        <paraStyle name = "host" fontName = "Roboto Bold" fontSize = "25" alignment="centre" spaceAfter="25" spaceBefore="20" textColor="#4d4d4d"/>
+        <paraStyle name = "host" fontName = "Roboto Bold" fontSize = "20" alignment="centre" spaceAfter="25" spaceBefore="20" textColor="#4d4d4d"/>
         <paraStyle name = "module_full_name" fontName = "Roboto" fontSize="12" alignment="left" textColor="grey" spaceAfter="5"/>
         <paraStyle name = "cvss" fontName = "Roboto" fontSize="12" alignment="left" textColor="grey" spaceAfter="5"/>
         <paraStyle name = "description" fontName = "Roboto Italic" fontSize="12" alignment="left" textColor="grey" spaceAfter="10"/>
@@ -117,7 +117,7 @@
         {% elif hosts.__len__() > 1 %}
             <para style="title"><b>Target: <i>multiple hosts</i></b></para>
         {% else %}
-            <para style="title"><b>NO HOST LIST FOUND</b></para>
+            <para style="title"><b>No {{type}} list found</b></para>
         {% endif %}
         <para style="subtitle">Analysis performed on {{date}}</para>
         <setNextTemplate name="disclaimer"/>
@@ -144,7 +144,7 @@
         <h1 style="recap">Recap</h1>
         <blockTable style="report">
             <tr>
-                <td>Modules / Hostname: </td>
+                <td>Modules / {% if type == "HOSTS" %} Hostname {% elif type == "APK" %} APK {% else %} IPA {% endif %}: </td>
                 {% for host in results %}
                     <td>{{host}}</td>
                 {% endfor %}

@@ -7,7 +7,7 @@
           "required":"True"
        }
     ],
-    "description":"This modules ecks if the binary uses some weak crypto API(s).",
+    "description":"This modules checks if the binary uses some weak crypto API(s).",
     "path":"modules/ios/weak_crypto.py",
     "class_name":"WeakCrypto",
     "output":[

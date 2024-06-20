@@ -7,7 +7,7 @@
           "required":"True"
        }
     ],
-    "description":"This modules checks if the app disables the server’s requirement to support Perfect Forward Secrecy (PFS) through Elliptic Curve Diffie–Hellman Ephemeral (ECDHE)",
+    "description":"This modules checks if the app disables the server’s requirement to support Perfect Forward Secrecy.",
     "path":"modules/ios/no_forward_secrecy_plist.py",
     "class_name":"NoForwardSecrecyPlist",
     "output":[

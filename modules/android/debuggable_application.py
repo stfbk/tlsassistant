@@ -6,7 +6,7 @@ from utils.mitigations import load_mitigation
 
 class DebuggableApplication(Sebastian_base):
     """
-    Check if the DEBUG mode is on inside the app. Debug mode is discouraged in production since malicious users can debug the app and sniff verbose error information through Logcat.
+    Check if the debug mode is on inside the app.
 
     """
 

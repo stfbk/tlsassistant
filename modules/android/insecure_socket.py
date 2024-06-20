@@ -6,7 +6,7 @@ from utils.mitigations import load_mitigation
 
 class InsecureSocket(Sebastian_base):
     """
-    Check the usage of SSLCertificateSocket- Factory.createSocket-(). The created socket can be vulnerable to Man-in-the-Middle (MitM) attacks.
+    Check the usage of SSLCertificateSocket- Factory.createSocket(). The created socket can be vulnerable to Man-in-the-Middle (MitM) attacks.
 
     """
 

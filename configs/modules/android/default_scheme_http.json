@@ -7,7 +7,7 @@
           "required":"True"
        }
     ],
-    "description":"This modules checks if the APK is accepting all SSL certificates.",
+    "description":"This modules checks if the app uses HttpHost but its default scheme is HTTP.",
     "path":"modules/android/default_scheme_http.py",
     "class_name":"DefaultSchemeHttp",
     "output":[
