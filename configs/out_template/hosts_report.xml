@@ -142,9 +142,21 @@
         <setNextTemplate name="standard"/>
         <nextFrame/>
         <h1 style="recap">Recap</h1>
+        {% macro has_empty_value(results) %} <!--This macro checks if there is no vulnerabilities, so if is true the pdf shows only modules-->
+            {% if not results %}
+                {{ True }}
+            {% else %}
+                {% for value in results.values() %}
+                    {% if value == '' %}
+                        {{ True }}
+                    {% endif %}
+                {% endfor %}
+                {{ False }}
+            {% endif %}
+        {% endmacro %}
         <blockTable style="report">
             <tr>
-                <td>Modules / {% if type == "HOSTS" %} Hostname {% elif type == "APK" %} APK {% else %} IPA {% endif %}: </td>
+                <td>Modules {% if type == "HOSTS" %} {% if not has_empty_value(results) %} / Hostname {% endif %} {% elif type == "APK" %} {% if not has_empty_value(results) %} / APK {% endif %} {% else %} {% if not has_empty_value(results) %} / IPA {% endif %} {% endif %}</td>
                 {% for host in results %}
                     <td>{{host}}</td>
                 {% endfor %}

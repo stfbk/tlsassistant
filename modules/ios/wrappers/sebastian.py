@@ -12,7 +12,7 @@ class CustomAndroidVulnerabilityManager(IOSVulnerabilityManager):
     def get_all_vulnerability_checks(self):
         all_plugins = sorted(self.manager.getAllPlugins(), key=lambda x: x.name)
         tls_plugins = [
-           "AllowHttpPlist","InsecureTlsVersionPlist","InsecureTlsVersionPlist","NoForwardSecrecyPlist","WeakCrypto"
+           "AllowHttpPlist","InsecureConnectionPlist","InsecureTlsVersionPlist","NoForwardSecrecyPlist","WeakCrypto"
         ]
         filtered_checks = [item for item in all_plugins if item.plugin_object.__class__.__name__ in tls_plugins]
         return filtered_checks
@@ -28,11 +28,20 @@ class Sebastian:
     __instance = None
 
     def __init__(self) -> None:
-        logging.getLogger("SEBASTiAn").setLevel(
-            logging.CRITICAL
-            if not logging.getLogger().isEnabledFor(logging.DEBUG)
-            else logging.DEBUG
-        )  # remove annoying info messages
+        loggers_to_set = [
+            "AllowHttpPlist",
+            "InsecureConnectionPlist",
+            "InsecureTlsVersionPlist",
+            "NoForwardSecrecyPlist",
+            "WeakCrypto",
+            "SEBASTiAn"
+        ]
+        for logger_name in loggers_to_set:
+            logger = logging.getLogger(logger_name)
+            logger.setLevel(
+                logging.CRITICAL if not logger.isEnabledFor(logging.DEBUG) else logging.DEBUG
+            ) 
+
         self.__logging = Logger("sebastian")
         self.__input_dict = {}
         self.__correct_path = None
