@@ -142,23 +142,11 @@
         <setNextTemplate name="standard"/>
         <nextFrame/>
         <h1 style="recap">Recap</h1>
-        {% macro has_empty_value(results) %} <!--This macro checks if there is no vulnerabilities, so if is true the pdf shows only modules-->
-            {% if not results %}
-                {{ True }}
-            {% else %}
-                {% for value in results.values() %}
-                    {% if value == '' %}
-                        {{ True }}
-                    {% endif %}
-                {% endfor %}
-                {{ False }}
-            {% endif %}
-        {% endmacro %}
         <blockTable style="report">
             <tr>
-                <td>Modules {% if type == "HOSTS" %} {% if not has_empty_value(results) %} / Hostname {% endif %} {% elif type == "APK" %} {% if not has_empty_value(results) %} / APK {% endif %} {% else %} {% if not has_empty_value(results) %} / IPA {% endif %} {% endif %}</td>
+                <td>Modules</td>
                 {% for host in results %}
-                    <td>{{host}}</td>
+                    <td>{{ host[:35] + '...' if host|length > 35 else host }}</td> <!-->The limit is to avoid too long file name that modify table layout-->
                 {% endfor %}
             </tr>
             {% for module in modules %}
