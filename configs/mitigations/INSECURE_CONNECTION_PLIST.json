@@ -1,13 +1,13 @@
 {
-    "Entry": {
-      "Name": "Insecure Connection Plist",
-      "ExtendedName": "Insecure Connection Plist",
-      "Description": "By setting NSAllowsArbitraryLoads equals to 'true' in the Info.plist file, the application allows insecure connections to be established, disabling the ATS (App Transport Security) restrictions for all domains not specified in the NSExceptionDomains dictionary. This is a critical vulnerability that allows an attacker to intercept and read the communication between the application and the server.",
-      "Mitigation": {
-        "Textual": "Please set NSAllowsArbitraryLoads to 'false' in the Info.plist file to enforce ATS (App Transport Security) restrictions for all domains.",
-        "Suggested Steps": "1. Open an IDE (e.g., Xcode);<br/>2. Search the Info.plist file in the project;<br/>3. In case there is NSAllowsArbitraryLoads set to true' inside the NSAppTransportSecurity dictionary, remove the the value and replace it with 'false';<br/>4. For example from <br/><code><key>NSAllowsArbitraryLoads</key></code><br/><code><true/></code> to <br/><code><key>NSAllowsArbitraryLoads</key></code><br/><code><false/></code>"
+  "Entry": {
+    "Name": "Insecure Connection Plist",
+    "ExtendedName": "Insecure Connection Plist",
+    "Description": "By setting NSAllowsArbitraryLoads equals to 'true' in the Info.plist file, the application allows insecure connections to be established, disabling the ATS (App Transport Security) restrictions for all domains not specified in the NSExceptionDomains dictionary. This is a critical vulnerability that allows an attacker to intercept and read the communication between the application and the server.",
+    "Mitigation": {
+      "Textual": "Please set NSAllowsArbitraryLoads to 'false' in the Info.plist file to enforce ATS (App Transport Security) restrictions for all domains.",
+      "Suggested Steps": "1. Open an IDE (e.g., Xcode);<br/>2. Search the Info.plist file in the project;<br/>3. In case there is NSAllowsArbitraryLoads set to true' inside the NSAppTransportSecurity dictionary, remove the the value and replace it with 'false';<br/>4. For example from <br/><code>&lt;key&gt;NSAllowsArbitraryLoads&lt;/key&gt;</code><br/><code>&lt;true/&gt;</code> <br/>to <br/><code>&lt;key&gt;NSAllowsArbitraryLoads&lt;/key&gt;</code><br/><code>&lt;false/&gt;</code>."
 
-      }
-    },
-    "#omit-xml-declaration": "yes"
-  }
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}

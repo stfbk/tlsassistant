@@ -5,7 +5,7 @@
       "Description": "This app allows connections to servers that do not support Forward Secrecy, by setting the NSExceptionRequiresForwardSecrecy key to 'false' in the NSAppTransportSecurity dictionary in the Info.plist file. This can lead to a compromise of the confidentiality and integrity of data transmitted between the app and the server (by using chiphers less secure for the communication).",
       "Mitigation": {
         "Textual": "Please do not set the value of the NSExceptionRequiresForwardSecrecy key to 'false' in the NSAppTransportSecurity dictionary in the Info.plist file. Instead of modify the value, please rely on the default implementation of the NSExceptionRequiresForwardSecrecy key, which is 'true'.",
-        "Suggested Steps": "1. Open an IDE (e.g., Xcode);<br/>2. Search the Info.plist file in the project;<br/>3. In case there is NSExceptionRequiresForwardSecrecy set to 'false' inside the NSAppTransportSecurity dictionary, remove the 'false' value;<br/>4. For example from <br/><code><key>NSExceptionRequiresForwardSecrecy</key></code><br/><code><false/></code> to <br/><code><key>NSExceptionRequiresForwardSecrecy</key></code>"
+        "Suggested Steps": "1. Open an IDE (e.g., Xcode);<br/>2. Search the Info.plist file in the project;<br/>3. In case there is NSExceptionRequiresForwardSecrecy set to 'false' inside the NSAppTransportSecurity dictionary, remove the 'false' value;<br/>4. For example from <br/><code>&lt;key&gt;NSExceptionRequiresForwardSecrecy&lt;/key&gt;</code><br/><code>&lt;/false&gt;</code> <br/>to <br/><code>&lt;key&gt;NSExceptionRequiresForwardSecrecy&lt;/key&gt;</code>."
       }
     },
     "#omit-xml-declaration": "yes"

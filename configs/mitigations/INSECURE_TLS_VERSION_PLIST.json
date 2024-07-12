@@ -1,12 +1,12 @@
 {
-    "Entry": {
-      "Name": "Insecure Tls Version Plist",
-      "ExtendedName": "Insecure Tls Version Plist",
-      "Description": "By setting the version of TLS < 1.2, the application is vulnerable to attacks that exploit known vulnerabilities in the older versions of the protocol.",
-      "Mitigation": {
-        "Textual": "Please use TLS versions >= 1.2.",
-        "Suggested Steps": "1. Open an IDE (e.g., Xcode);<br/>2. Search the Info.plist file in the project;<br/>3. In case there is NSExceptionMinimumTLSVersion set to 'TLSv1.0' or 'TLSv1.1' inside the NSAppTransportSecurity dictionary, remove the the value and replace it with 'TLSv1.2' (default value) or 'TLSv1.3';<br/>4. For example from <br/><code><key>NSExceptionMinimumTLSVersion</key></code><br/><code><string>TLSv1.1</string></code> to <br/><code><key>NSExceptionMinimumTLSVersion</key></code><br/><code><string>TLSv1.3</string></code>"
-        }
-    },
-    "#omit-xml-declaration": "yes"
-  }
+  "Entry": {
+    "Name": "Insecure Tls Version Plist",
+    "ExtendedName": "Insecure Tls Version Plist",
+    "Description": "By setting the version of TLS < 1.2, the application is vulnerable to attacks that exploit known vulnerabilities in the older versions of the protocol.",
+    "Mitigation": {
+      "Textual": "Please use TLS versions >= 1.2.",
+      "Suggested Steps": "1. Open an IDE (e.g., Xcode);<br/>2. Search the Info.plist file in the project;<br/>3. In case there is NSExceptionMinimumTLSVersion set to 'TLSv1.0' or 'TLSv1.1' inside the NSAppTransportSecurity dictionary, remove the the value and replace it with 'TLSv1.2' (default value) or 'TLSv1.3';<br/>4. For example from <br/><code>&lt;key&gt;NSExceptionMinimumTLSVersion&lt;key&gt;</code><br/><code>&lt;string&gt;TLSv1.1&lt;/string&gt;</code> <br/>to <br/><code>&lt;key&gt;NSExceptionMinimumTLSVersion&lt;key&gt;</code><br/><code>&lt;string&gt;TLSv1.3&lt/string&gt;</code>."
+      }
+  },
+  "#omit-xml-declaration": "yes"
+}
