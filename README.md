@@ -151,7 +151,7 @@ Build the docker image:
 Run the docker image:
 
 ```bash
-docker run --rm -v ${PWD}/results:/tlsassistant/results -t tlsassistant -s fbk.eu
+docker run --rm -v ${PWD}/results:/tlsassistant/results -t tlsassistant -s www.fbk.eu
 ```
 add all the `args` that we want to pass after the `tlsassistant` keyword.
 
