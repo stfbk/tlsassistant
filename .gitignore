@@ -157,3 +157,6 @@ tmp*
 
 # testssl results folder
 testssl_dumps/
+
+# poetry lock
+poetry.lock

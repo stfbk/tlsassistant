@@ -41,11 +41,11 @@
   },
   {
     "type": "apt",
-    "url": "default-jre"
+    "url": "openjdk-21-jre"
   },
   {
     "type": "apt",
-    "url": "default-jdk"
+    "url": "openjdk-21-jdk"
   },
   {
     "type": "apt",
