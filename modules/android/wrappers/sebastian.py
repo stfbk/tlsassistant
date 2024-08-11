@@ -56,7 +56,7 @@ class Sebastian:
         :param kwargs:
         :Keyword Arguments:
             path: path to the file to be analyzed
-            args: list of arguments to be passed to mallodroid
+            args: list of arguments to be passed to SEBASTiAn
             force: force the analysis of the file (default: False)
         """
         self.__input_dict = kwargs
@@ -85,7 +85,7 @@ class Sebastian:
         :param kwargs:
         :Keyword Arguments:
             path: path to the file to be analyzed
-            args: list of arguments to be passed to mallodroid
+            args: list of arguments to be passed to SEBASTiAn
             force: force the analysis of the file ignoring cache (default: False)
         """
         self.input(**kwargs)
@@ -109,7 +109,7 @@ class Sebastian:
         This method is the worker method to be executed by run()
 
         :param path: path to the file to be analyzed
-        :param args: list of arguments to be passed to mallodroid
+        :param args: list of arguments to be passed to SEBASTiAn
         :param force: force the analysis of the file ignoring cache (default: False)
 
         """
