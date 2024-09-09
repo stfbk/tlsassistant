@@ -13,3 +13,4 @@ pyopenssl
 beautifulsoup4
 pyasn1
 tldextract
+async-timeout   
