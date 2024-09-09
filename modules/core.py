@@ -1,26 +1,27 @@
+import datetime
+import socket
+from enum import Enum
 from os.path import sep
 from pathlib import Path
+import tldextract
 
 from modules.configuration.configuration import Configuration
+from modules.parse_input_conf import Parser
 from modules.server.testssl_base import Testssl_base
-from modules.server.tlsscanner_base import TLS_Scanner_base 
+from modules.server.tlsscanner_base import TLS_Scanner_base
 from modules.server.wrappers.testssl import Testssl
 from modules.server.wrappers.tlsscanner import TLS_Scanner
 from modules.server.webserver_type import WebserverType as WebserverType_module
 from utils.booleanize import boolean_results
 from utils.logger import Logger
 from utils.colors import Color
-from utils.validation import Validator, is_apk
-from modules.parse_input_conf import Parser
-import datetime
-import socket
-from enum import Enum
-from modules.report import Report as Report_module
 from utils.configuration import get_aliases
+from utils.subdomain_enumeration import enumerate
+from utils.type import WebserverType
 from utils.urls import link_sep
 from utils.urls import has_wildcard, remove_wildcard
-from utils.type import WebserverType
-from utils.subdomain_enumeration import enumerate
+from utils.validation import Validator, is_apk
+from modules.report import Report as Report_module
 
 
 class Core:
@@ -673,7 +674,7 @@ class Core:
             )  # TODO: better output report
         else:
             if type_of_analysis == self.Analysis.HOST and hostname_or_path != "placeholder":
-                if not "www." in hostname_or_path and not all([c.isalnum() or c == "." for c in hostname_or_path]):
+                if not tldextract.extract(hostname_or_path).subdomain:
                     hostname_or_path = f"www.{hostname_or_path}"
                 try:
                     _ = socket.gethostbyname(hostname_or_path)
