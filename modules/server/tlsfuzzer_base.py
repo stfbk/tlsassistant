@@ -123,7 +123,8 @@ class Tlsfuzzer_base:
                     self.__logging.warning(
                         f"Results won't make sense for script {script}, sanity check failed."
                     )
-                self.__logging.info(f"Ignoring {script} analysis.\n" + reason)
+                if reason != "Reason: ":
+                    self.__logging.info(f"Ignoring {script} analysis.\n" + reason)
         return out
 
     def _worker(self, results):

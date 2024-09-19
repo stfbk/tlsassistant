@@ -1,7 +1,7 @@
 {
   "Entry": {
     "Name": "RC4 NOMORE",
-    "ExtendedName": "RC4 <strong>N</strong>umerous <strong>O</strong>ccurrence <strong>MO</strong>nitoring & <strong>R</strong>ecovery <strong>E</strong>xploit",
+    "ExtendedName": "RC4 <strong>N</strong>umerous <strong>O</strong>ccurrence <strong>MO</strong>nitoring &amp; <strong>R</strong>ecovery <strong>E</strong>xploit",
     "CVE": "Not available",
     "CVSS3": "Not available",
     "Description": "Given the biases existing in the key generation algorithm, an attacker can use statistics to guess information. The capture of the session cookie is operated by surrounding the token itself with known plaintext and repeatedly connecting to the server. After collecting a fair amount of packets, the attacker can exploit the biases to calculate the cookie.",
