@@ -6,7 +6,7 @@ from utils.logger import Logger
 
 
 class Database:
-    database_file = "configs/compliance/requirements.db"
+    database_file = "dependencies/requirements.db"
 
     def __init__(self, file: str = database_file):
         self.database_file = file

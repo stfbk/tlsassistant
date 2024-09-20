@@ -37,6 +37,7 @@ class Install:
         cfgs = []
         apts = []
         pips = []
+        files = []
         git_submodules = {}
         maven_paths = []
         python3_scripts = []
@@ -69,6 +70,9 @@ class Install:
             elif dependency["type"] == "python3":
                 python3_scripts.append(dependency["path"])
                 logger.debug(f"Added dependency python3 {dependency['path']}")
+            elif dependency["type"] == "file":
+                files.append(dependency["url"])
+                logger.debug(f"Added dependency file {dependency['url']}")
             else:  # if not found, throw warning
                 logger.warning(
                     f"Ignoring dependency {dependency['url']}, type {dependency['type']} is not recognized."
@@ -101,6 +105,10 @@ class Install:
             self.git_submodules_init(path,git_submodules[path])  # initialize submodules
             logger.info(f"Submodules of {path} done.")
 
+        logger.debug(files)
+        logger.debug("Getting all files...")
+        loop = asyncio.get_event_loop()
+        results_files = loop.run_until_complete(self.download(files))
         logger.info("Installing dependencies...")
         logger.warning(
             "This may take a while... Rerun the tool with -v to see the detailed installation."

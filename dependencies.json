@@ -61,6 +61,10 @@
     "url": "https://github.com/stfbk/tls-table"
   },
   {
+    "type": "file",
+    "url": "https://github.com/stfbk/tls-compliance-dataset/releases/latest/download/requirements.db"
+  },
+  {
     "type": "python3",
     "path": "ciphersuites_converter.py"
   },
