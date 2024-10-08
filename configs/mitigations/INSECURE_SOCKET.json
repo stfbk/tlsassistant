@@ -1,0 +1,12 @@
+{
+  "Entry": {
+    "Name": "Insecure Socket",
+    "ExtendedName": "Insecure Socket",
+    "Description": "Using 'SSLCertificateSocketFactory.createSocket()' without parameters or with an 'InetAddress' as the first parameter does not perform hostname verification by default, leaving these sockets susceptible to Man-in-the-Middle (MitM) attacks.",
+    "Mitigation": {
+      "Textual": "Class <a href='https://developer.android.com/reference/android/net/SSLCertificateSocketFactory.html#createSocket(java.net.InetAddress'>'SSLCertificateSocketFactory'</a> was deprecated in API level 29.<br/> It's recommended to use less error-prone alternatives provided by standard APIs for creating SSLSocket instances and verifying hostnames, like SSLSocketFactory.getDefault() or SSLContext.getSocketFactory().",
+      "Solution Steps": "1. Open an IDE (e.g., Android Studio);<br/>2. Search for 'createSocket()' method of 'SSLCertificateSocketFactory' class in the code;<br/>3. Replace the 'SSLCertificateSocketFactory.createSocket()' with 'SSLSocketFactory.getDefault().createSocket()';<br/>4. Do the same in case you have InetAddress as a parameter, replacing 'SSLCertificateSocketFactory.createSocket(InetAddress)' with 'SSLSocketFactory.getDefault().createSocket(InetAddress)'."
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}

@@ -52,6 +52,17 @@ def is_apk(module):
     """
     return hasattr(module, "is_android")
 
+def is_ipa(module):
+    """
+    Check if a module is IPA related.
+
+    :param module: The module to check.
+    :type module: Module
+    :return: True if the module is IPA related.
+    :rtype: bool
+    """
+    return hasattr(module, "is_ios")
+
 
 class Validator:
     """

@@ -94,11 +94,16 @@ def load_configuration(module: str, configs_path=None) -> dict:
         android_path = Path(
             f"configs{sep}modules{sep}android{sep}{module}.json"
         )  # search for config file in android
+        ios_path = Path(
+            f"configs{sep}modules{sep}ios{sep}{module}.json"
+        )  # search for config file in ios
 
         if server_path.exists():
             module_path = server_path
         elif android_path.exists():
             module_path = android_path
+        elif ios_path.exists():
+            module_path = ios_path
         else:
             raise FileNotFoundError(
                 f"Couldn't find the configuration file of the module {module}.json"

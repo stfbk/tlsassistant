@@ -1,0 +1,20 @@
+{
+    "input":[
+       {
+          "name":"path",
+          "type":"str",
+          "description":"Path of the APK to analyze",
+          "required":"True"
+       }
+    ],
+    "description":"This modules checks whether the app contains code that relies on instances of socket factory with all SSL security checks disabled, using an optional handshake timeout and SSL session cache.",
+    "path":"modules/android/insecure_socket_factory.py",
+    "class_name":"InsecureSocketFactory",
+    "output":[
+       {
+          "name":"results",
+          "type":"dict",
+          "description":"results of the scan"
+       }
+    ]
+ }

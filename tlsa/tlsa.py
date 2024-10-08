@@ -2,6 +2,7 @@ import logging
 from os import listdir
 from os.path import isfile, join, sep
 from pathlib import Path
+import zipfile
 
 from modules.core import Core
 from utils.colors import Color
@@ -14,6 +15,10 @@ from os import listdir
 from os.path import isfile, join, sep
 from utils.logger import Logger
 
+import sys
+sys.path.append("dependencies/SEBASTiAn/src")
+from dependencies.SEBASTiAn.src.SEBASTiAn.util import check_valid_apk_file, check_valid_ipa_file
+
 config_types_mapping = {
     "apache": WebserverType.APACHE,
     "nginx": WebserverType.NGINX,
@@ -23,6 +28,9 @@ config_types_mapping = {
 class Tlsa:
     def __init__(self, args):
         logging.getLogger("filelock").setLevel(
+            logging.ERROR
+        )  # remove annoying info messages
+        logging.getLogger("androguard").setLevel(
             logging.ERROR
         )  # remove annoying info messages
         self.args = args
@@ -90,7 +98,18 @@ class Tlsa:
                         ]
                     )
                 )
-                all_modules = f"{android_modules}\n{server_modules}"
+                ios_modules = (
+                    f"{Color.CBLUE}iOS:{Color.ENDC}\n\t"
+                    + "\n\t".join(
+                        [
+                            f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
+                            for f in listdir(f"configs{sep}modules{sep}ios{sep}")
+                            if f.endswith(".json")
+                            and isfile(join(f"configs{sep}modules{sep}ios{sep}", f))
+                        ]
+                    )
+                )
+                all_modules = f"{android_modules}\n{server_modules}\n{ios_modules}"
 
             print(
                 f"Here's a list of all the modules available:\n{all_modules}"
@@ -107,9 +126,28 @@ class Tlsa:
         logging.basicConfig(level=logging.DEBUG if args.verbosity else logging.INFO)
         self.__logging.debug("Started anaylsis with verbosity on.")
         self.__logging.debug("Initializing Core element.")
+        platform = None
+        if args.app:
+            try:
+                check_valid_apk_file(args.app)
+                platform = "Android"
+                self.__logging.debug(f"File '{args.app}' is an Android application")
+            except ValueError:
+                pass
+            if not platform:
+                try:
+                    check_valid_ipa_file(args.app)
+                    platform = "iOS"
+                    self.__logging.debug(f"File '{args.app}' is an iOS application")
+                except ValueError:
+                    pass
+            if not platform:
+                self.__logging.error(f"File '{args.app}' is not a valid mobile application")
+                raise ValueError(f"File '{args.app}' is not a valid mobile application")
+
         if isinstance(args.configuration, str) and args.configuration == "default":
             args.configuration = (
-                f"default{'_android.json' if args.apk else '_server.json'}"
+                f"default{'_android.json' if platform == 'Android' else '_ios.json' if platform == 'iOS' else '_server.json'}"
             )
         config_or_modules = args.configuration
         if args.config_type:
@@ -154,20 +192,20 @@ class Tlsa:
                 ignore_openssl=args.ignore_openssl,
                 compliance_args=args.compliance_args
             )
-        elif args.apk:
-            Core(
-                hostname_or_path=args.apk,
+        elif args.app:
+             Core(
+                hostname_or_path=args.app,
                 configuration=config_or_modules,
                 output=args.output,
                 output_type=self.__to_report_type(args.output_type),
                 to_exclude=args.exclude,
-                type_of_analysis=Core.Analysis.APK,
+                type_of_analysis=Core.Analysis.APK if platform == 'Android' else Core.Analysis.IPA,
                 group_by=args.group_by,
                 stix=args.stix,
                 webhook=args.webhook,
                 prometheus=args.prometheus,
                 config_type = args.config_type
-            )
+                )
         elif args.domain_file:
             Core(
                 hostname_or_path=load_list_of_domains(args.domain_file),

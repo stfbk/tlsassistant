@@ -12,16 +12,16 @@ from modules.server.tlsscanner_base import TLS_Scanner_base
 from modules.server.wrappers.testssl import Testssl
 from modules.server.wrappers.tlsscanner import TLS_Scanner
 from modules.server.webserver_type import WebserverType as WebserverType_module
+from modules.report import Report as Report_module
 from utils.booleanize import boolean_results
 from utils.logger import Logger
 from utils.colors import Color
+from utils.validation import Validator, is_apk, is_ipa
 from utils.configuration import get_aliases
 from utils.subdomain_enumeration import enumerate
 from utils.type import WebserverType
 from utils.urls import link_sep
 from utils.urls import has_wildcard, remove_wildcard
-from utils.validation import Validator, is_apk
-from modules.report import Report as Report_module
 
 
 class Core:
@@ -49,6 +49,7 @@ class Core:
         DOMAINS = 2
         CONFIGURATION = 3
         COMPLIANCE = 4
+        IPA = 5
 
     def __init__(
         self,
@@ -449,10 +450,10 @@ class Core:
                 self.__logging.debug(f"Loading {name}...")
                 if self.__input_dict["type_of_analysis"] == self.Analysis.APK:
                     assert is_apk(Module), f"The module {name} isn't APK related!"
+                elif self.__input_dict["type_of_analysis"] == self.Analysis.IPA:
+                    assert is_ipa(Module), f"The module {name} isn't IPA related!"
                 else:
-                    assert not is_apk(
-                        Module
-                    ), f"The module {name} isn't Server related!"
+                    assert not is_apk(Module) and not is_ipa(Module), f"The module {name} isn't Server related!"
 
                 loaded_modules[name] = Module()
                 loaded_arguments[name] = args.copy()
@@ -491,9 +492,9 @@ class Core:
         :rtype: dict
         """
         results = {}
-        if type_of_analysis != self.Analysis.APK:  # server analysis
+        if type_of_analysis != self.Analysis.APK and type_of_analysis != self.Analysis.IPA:  # server analysis
             hostname_or_path_type = "hostname"
-        else:  # android analysis
+        else:  # android or ios analysis
             hostname_or_path_type = "path"
         for name, module in loaded_modules.items():
             if hostname_or_path_type not in loaded_arguments[name]:
@@ -507,13 +508,13 @@ class Core:
                 args["ignore_openssl"]=ignore_openssl
 
             args.update(loaded_arguments[name])
-            if type_of_analysis != self.Analysis.APK:  # server analysis
+            if type_of_analysis != self.Analysis.APK and type_of_analysis != self.Analysis.IPA:  # server analysis
                 args["port"] = port  # set the port
             self.__logging.info(f"{Color.CBEIGE}Running {name} module...")
             results[name] = module.run(**args)
         return results
 
-    def __call_output_modules(self, res: dict):
+    def __call_output_modules(self, res: dict, type_of_analysis: Analysis):
 
         """
         Call output modules
@@ -523,7 +524,7 @@ class Core:
         :loaded_modules: loaded modules
         :type loaded_modules: dict
         """
-
+        
         if (
             self.__input_dict["output_type"] == self.Report.HTML
             or self.__input_dict["output_type"] == self.Report.PDF
@@ -534,7 +535,9 @@ class Core:
                 mode=Report_module.Mode.MODULES
                 if "group_by" in self.__input_dict
                 and self.__input_dict["group_by"] == "module"
-                else Report_module.Mode.HOSTS,
+                else Report_module.Mode.HOSTS if type_of_analysis == self.Analysis.HOST
+                else Report_module.Mode.IPA if type_of_analysis == self.Analysis.IPA
+                else Report_module.Mode.APK,
                 stix=self.__input_dict["stix"],
                 webhook=self.__input_dict["webhook"],
                 prometheus=self.__input_dict["prometheus"],
@@ -627,7 +630,7 @@ class Core:
                 res, hostname_or_path, type_of_analysis, configuration, port
             )
         self.__logging.info(f"Generating output..")
-        self.__call_output_modules(res)
+        self.__call_output_modules(res,type_of_analysis)
 
     def __exec_anaylsis(
         self,
@@ -651,7 +654,7 @@ class Core:
         :rtype: tuple
         """
         self.__logging.info(f"Started analysis on {hostname_or_path}.")
-        if type_of_analysis not in [self.Analysis.APK, self.Analysis.CONFIGURATION]:
+        if type_of_analysis not in [self.Analysis.APK, self.Analysis.IPA, self.Analysis.CONFIGURATION]:
             hostname_or_path, port = link_sep(hostname_or_path)
         configuration_name = configuration
         self.__logging.info(f"Loading configuration {configuration_name} ..")
@@ -689,16 +692,16 @@ class Core:
                 if module.startswith("compare"):
                     # A full analysis is needed with these modules
                     full_analysis = True
-            self.__preanalysis_testssl(
-                testssl_args, type_of_analysis, hostname_or_path, port, full_analysis
-            )
-            self.__preanalysis_webserver_type(
-                hostname_or_path
-            )
-
-            self.__preanalysis_tls_scanner(
-                tls_scanner_args, type_of_analysis, hostname_or_path, port
-            )
+            if type_of_analysis != self.Analysis.APK and type_of_analysis != self.Analysis.IPA:
+                self.__preanalysis_testssl(
+                    testssl_args, type_of_analysis, hostname_or_path, port, full_analysis
+                )
+                self.__preanalysis_webserver_type(
+                    hostname_or_path
+                )
+                self.__preanalysis_tls_scanner(
+                    tls_scanner_args, type_of_analysis, hostname_or_path, port
+                )
 
             results = self.__run_analysis(
                 loaded_modules,

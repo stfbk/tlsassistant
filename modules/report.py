@@ -36,6 +36,8 @@ class Report:
 
         HOSTS = 0
         MODULES = 1
+        APK = 2 
+        IPA = 3
 
     def __init__(self):
         self.__input_dict = {}
@@ -177,6 +179,9 @@ class Report:
         env = Environment(loader=fsl)
         file_extension = "xml" if rml else "html"
         to_process = {"version": version, "date": date, "modules": modules, "hosts": list(results.keys())}
+        for i in range(len(to_process["hosts"])):
+            if results.get(to_process["hosts"][i]) == '': # if the value is empty, we remove it from the dict
+                results.pop(to_process["hosts"][i])
         if mode == self.Mode.MODULES:
             self.__logging.info(f"Generating modules report..")
             template = env.get_template(f"modules_report.{file_extension}")
@@ -184,6 +189,17 @@ class Report:
         elif mode == self.Mode.HOSTS:
             self.__logging.info(f"Generating hosts report..")
             template = env.get_template(f"hosts_report.{file_extension}")
+            to_process["type"] = "HOSTS"
+            to_process["results"] = self.__hosts_report_formatter(results)
+        elif mode == self.Mode.APK:
+            self.__logging.info(f"Generating APK report..")
+            template = env.get_template(f"hosts_report.{file_extension}")
+            to_process["type"] = "APK"
+            to_process["results"] = self.__hosts_report_formatter(results)
+        elif mode == self.Mode.IPA:
+            self.__logging.info(f"Generating IPA report..")
+            template = env.get_template(f"hosts_report.{file_extension}")
+            to_process["type"] = "IPA"
             to_process["results"] = self.__hosts_report_formatter(results)
         else:
             raise ValueError(f"Unknown mode: {mode}")
@@ -369,7 +385,8 @@ class Report:
             self.__logging.debug("Using jinja2 to generate RML...")
             use_rml = True
             output_path = f"{output_file.absolute().parent}{sep}{output_file.stem}.rml"
-
+        if len(results) == 0:
+            results = {list(self.__input_dict['results'].keys())[i]: '' for i in range(len(self.__input_dict['results']))} # I use that to have the name of the hosts/apk/ipa in the pdf output in case of no vunlerabilities detected
         with open(output_path, "w") as f:
             f.write(
                 self.__jinja2__report(

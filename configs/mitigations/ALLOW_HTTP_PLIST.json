@@ -1,0 +1,12 @@
+{
+    "Entry": {
+      "Name": "Allow Http Plist",
+      "ExtendedName": "Allow Http Plist",
+      "Description": "This app allows insecure HTTP loads for the specified domain. This behavior can be exploited by an attacker by intercepting the traffic and obtaining the transmitted information, since HTTP does not encrypt the data.",
+      "Mitigation": {
+        "Textual": "Please do not set the value of the NSExceptionAllowsInsecureHTTPLoads key to 'true' in the NSExceptionDomains dictionary in the Info.plist file. Instead of modify the value, please rely on the default implementation of the NSExceptionRequiresForwardSecrecy key, which is 'false'.",
+        "Suggested Steps": "1. Open an IDE (e.g., Xcode);<br/>2. Search the Info.plist file in the project;<br/>3. In case there is NSExceptionAllowsInsecureHTTPLoads set to 'true' inside the NSAppTransportSecurity dictionary, remove the 'false' value;<br/>4. For example from <br/><code>&lt;key&gt;NSExceptionAllowsInsecureHTTPLoads&lt;/key&gt;</code><br/><code>&lt;false/&gt;</code> <br/>to <br/><code>&lt;key&gt;NSExceptionAllowsInsecureHTTPLoads&lt;/key&gt;</code>."
+      }
+    },
+    "#omit-xml-declaration": "yes"
+  }

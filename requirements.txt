@@ -1,6 +1,5 @@
 aiohttp==3.9.4
-androguard==3.3.5
-tldextract==3.1.0
+androguard==3.4.0a1
 apacheconfig==0.3.2
 crossplane==0.5.7
 tlslite-ng==0.8.0-beta1
@@ -13,4 +12,10 @@ pyopenssl
 beautifulsoup4
 pyasn1
 tldextract
-async-timeout   
+async-timeout
+lief
+biplist
+pebble
+yapsy
+marshmallow
+marshmallow_dataclass

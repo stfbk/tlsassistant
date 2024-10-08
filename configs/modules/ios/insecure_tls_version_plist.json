@@ -1,0 +1,20 @@
+{
+    "input":[
+       {
+          "name":"path",
+          "type":"str",
+          "description":"Path of the IPA to analyze",
+          "required":"True"
+       }
+    ],
+    "description":"This modules checks if the app set minimum value of TLS version TLSv1.0 or TLSv1.1, which are unsafe.",
+    "path":"modules/ios/insecure_tls_version_plist.py",
+    "class_name":"InsecureTlsVersionPlist",
+    "output":[
+       {
+          "name":"results",
+          "type":"dict",
+          "description":"results of the scan"
+       }
+    ]
+ }
