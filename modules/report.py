@@ -179,10 +179,7 @@ class Report:
         env = Environment(loader=fsl)
         file_extension = "xml" if rml else "html"
         to_process = {"version": version, "date": date, "modules": modules, "hosts": list(results.keys())}
-        for i in range(len(to_process["hosts"])):
-            # if the value is empty, we remove it from the dict
-            if results.get(to_process["hosts"][i]) == '': 
-                results.pop(to_process["hosts"][i])
+        
         if mode == self.Mode.MODULES:
             self.__logging.info("Generating modules report..")
             template = env.get_template(f"modules_report.{file_extension}")
@@ -192,6 +189,7 @@ class Report:
             template = env.get_template(f"hosts_report.{file_extension}")
             to_process["type"] = "HOSTS"
             to_process["results"] = self.__hosts_report_formatter(results)
+        # TODO group by module for APK and IPA
         elif mode == self.Mode.APK:
             self.__logging.info("Generating APK report..")
             template = env.get_template(f"hosts_report.{file_extension}")

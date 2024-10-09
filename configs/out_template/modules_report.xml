@@ -1,4 +1,4 @@
-<!DOCTYPE document SYSTEM "rml_1_0.dtd">
+<!DOCTYPE document SYSTEM "rml.dtd">
 <document>
     <docinit>
         <registerTTFont faceName="Roboto" fileName="dependencies/roboto-unhinted/Roboto-Regular.ttf" />
