@@ -277,7 +277,7 @@ class Core:
         if self.__is_testssl(module):
             testssl_args += module._arguments
         return testssl_args
-    
+
     def __is_tls_scanner(self, module: object) -> bool:
         """
         Checks if the module is a tls_scanner module
@@ -305,7 +305,7 @@ class Core:
             for arg in module._arguments:
                 if arg not in tls_scanner_args:
                     tls_scanner_args.append(arg)
-            
+
         return tls_scanner_args
 
     def __conf_analysis(
@@ -389,14 +389,13 @@ class Core:
                 args=testssl_args,
                 force=True,  # this should solve for multiple scans on the same IP with different ports
             )
-            self.__logging.debug(f"Preanalysis testssl done.")
+            self.__logging.debug("Preanalysis testssl done.")
 
     def __preanalysis_webserver_type(self, hostname):
         self.__logging.debug(
             f"Starting preanalysis webserver type for {hostname}..."
         )
         WebserverType_module().run(**{"hosts": [hostname]})
-
 
     def __preanalysis_tls_scanner(
         self, tls_scanner_args: list, type_of_analysis: Analysis, hostname: str, port: str
@@ -428,7 +427,7 @@ class Core:
                 args=tls_scanner_args,
                 force=True,  # this should solve for multiple scans on the same IP with different ports
             )
-            self.__logging.debug(f"Preanalysis tls_scanner done.")
+            self.__logging.debug("Preanalysis tls_scanner done.")
 
     def __load_modules(self, parsed_configuration: dict) -> (dict, dict, list):
         """
@@ -449,11 +448,14 @@ class Core:
                 Module, args = module_args
                 self.__logging.debug(f"Loading {name}...")
                 if self.__input_dict["type_of_analysis"] == self.Analysis.APK:
-                    assert is_apk(Module), f"The module {name} isn't APK related!"
+                    assert is_apk(
+                        Module), f"The module {name} isn't APK related!"
                 elif self.__input_dict["type_of_analysis"] == self.Analysis.IPA:
-                    assert is_ipa(Module), f"The module {name} isn't IPA related!"
+                    assert is_ipa(
+                        Module), f"The module {name} isn't IPA related!"
                 else:
-                    assert not is_apk(Module) and not is_ipa(Module), f"The module {name} isn't Server related!"
+                    assert not is_apk(Module) and not is_ipa(
+                        Module), f"The module {name} isn't Server related!"
 
                 loaded_modules[name] = Module()
                 loaded_arguments[name] = args.copy()
@@ -499,13 +501,14 @@ class Core:
         for name, module in loaded_modules.items():
             if hostname_or_path_type not in loaded_arguments[name]:
                 loaded_arguments[name][hostname_or_path_type] = hostname_or_path
-            args={}
-            if self.__input_dict['compliance_args'] and name in self.__input_dict['compliance_args']: # if we are not checking compliance
+            args = {}
+            # if we are not checking compliance
+            if self.__input_dict['compliance_args'] and name in self.__input_dict['compliance_args']:
                 args = self.__input_dict['compliance_args'][name]
-                openssl_version=self.__input_dict["openssl_version"],
-                ignore_openssl=self.__input_dict["ignore_openssl"],
-                args["openssl_version"]=openssl_version
-                args["ignore_openssl"]=ignore_openssl
+                openssl_version = self.__input_dict["openssl_version"],
+                ignore_openssl = self.__input_dict["ignore_openssl"],
+                args["openssl_version"] = openssl_version
+                args["ignore_openssl"] = ignore_openssl
 
             args.update(loaded_arguments[name])
             if type_of_analysis != self.Analysis.APK and type_of_analysis != self.Analysis.IPA:  # server analysis
@@ -515,7 +518,6 @@ class Core:
         return results
 
     def __call_output_modules(self, res: dict, type_of_analysis: Analysis):
-
         """
         Call output modules
 
@@ -524,7 +526,7 @@ class Core:
         :loaded_modules: loaded modules
         :type loaded_modules: dict
         """
-        
+
         if (
             self.__input_dict["output_type"] == self.Report.HTML
             or self.__input_dict["output_type"] == self.Report.PDF
@@ -629,8 +631,8 @@ class Core:
             self.__wrap_execution(
                 res, hostname_or_path, type_of_analysis, configuration, port
             )
-        self.__logging.info(f"Generating output..")
-        self.__call_output_modules(res,type_of_analysis)
+        self.__logging.info("Generating output..")
+        self.__call_output_modules(res, type_of_analysis)
 
     def __exec_anaylsis(
         self,
@@ -660,13 +662,13 @@ class Core:
         self.__logging.info(f"Loading configuration {configuration_name} ..")
         parsed_configuration = self.__cache[configuration_name]
 
-        self.__logging.info(f"Loading modules..")
+        self.__logging.info("Loading modules..")
         # loading modules
         loaded_modules, loaded_arguments, testssl_args, tls_scanner_args = self.__load_modules(
             parsed_configuration
         )
         # preanalysis if needed
-        self.__logging.info(f"Running analysis..")
+        self.__logging.info("Running analysis..")
         if type_of_analysis == self.Analysis.CONFIGURATION:
             results = self.__conf_analysis(
                 hostname_or_path,
@@ -677,10 +679,12 @@ class Core:
             )  # TODO: better output report
         else:
             if type_of_analysis == self.Analysis.HOST and hostname_or_path != "placeholder":
-                if not tldextract.extract(hostname_or_path).subdomain:
+                extraction = tldextract.extract(hostname_or_path)
+                if not extraction.subdomain:
                     hostname_or_path = f"www.{hostname_or_path}"
                 try:
-                    _ = socket.gethostbyname(hostname_or_path)
+                    _ = socket.gethostbyname(
+                        f"www.{extraction.registered_domain}")
                 except socket.error as e:
                     self.__logging.debug(e)
                     self.__logging.error(
@@ -739,7 +743,8 @@ class Core:
         :rtype: dict
         """
 
-        b_res = boolean_results(modules=loaded_modules, raw_results=raw_results)
+        b_res = boolean_results(modules=loaded_modules,
+                                raw_results=raw_results)
         out = {}
         for module, value in loaded_modules.items():
             if module in b_res and b_res[module]:

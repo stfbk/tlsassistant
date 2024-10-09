@@ -2,14 +2,14 @@ import json
 import os.path
 import re
 from datetime import datetime
-from distutils.dir_util import copy_tree as cp
+from shutil import copytree as cp
 from enum import Enum
 from os import mkdir
 from os.path import sep
 from pathlib import Path
 from pprint import pformat
 
-import requests as requests
+import requests
 from jinja2 import Environment, FileSystemLoader
 from requests.structures import CaseInsensitiveDict
 from z3c.rml import rml2pdf
@@ -174,30 +174,31 @@ class Report:
         :param rml: Whether to apply jinja2 to rml files or not.
         :type rml: bool
         """
-        self.__logging.debug(f"Generating report in jinja2..")
+        self.__logging.debug("Generating report in jinja2..")
         fsl = FileSystemLoader(searchpath=self.__template_dir)
         env = Environment(loader=fsl)
         file_extension = "xml" if rml else "html"
         to_process = {"version": version, "date": date, "modules": modules, "hosts": list(results.keys())}
         for i in range(len(to_process["hosts"])):
-            if results.get(to_process["hosts"][i]) == '': # if the value is empty, we remove it from the dict
+            # if the value is empty, we remove it from the dict
+            if results.get(to_process["hosts"][i]) == '': 
                 results.pop(to_process["hosts"][i])
         if mode == self.Mode.MODULES:
-            self.__logging.info(f"Generating modules report..")
+            self.__logging.info("Generating modules report..")
             template = env.get_template(f"modules_report.{file_extension}")
             to_process["results"] = self.__modules_report_formatter(results, modules)
         elif mode == self.Mode.HOSTS:
-            self.__logging.info(f"Generating hosts report..")
+            self.__logging.info("Generating hosts report..")
             template = env.get_template(f"hosts_report.{file_extension}")
             to_process["type"] = "HOSTS"
             to_process["results"] = self.__hosts_report_formatter(results)
         elif mode == self.Mode.APK:
-            self.__logging.info(f"Generating APK report..")
+            self.__logging.info("Generating APK report..")
             template = env.get_template(f"hosts_report.{file_extension}")
             to_process["type"] = "APK"
             to_process["results"] = self.__hosts_report_formatter(results)
         elif mode == self.Mode.IPA:
-            self.__logging.info(f"Generating IPA report..")
+            self.__logging.info("Generating IPA report..")
             template = env.get_template(f"hosts_report.{file_extension}")
             to_process["type"] = "IPA"
             to_process["results"] = self.__hosts_report_formatter(results)
@@ -248,7 +249,7 @@ class Report:
         """
         if other_params is None:
             other_params = {}
-        self.__logging.debug(f"Sending results to webhook..")
+        self.__logging.debug("Sending results to webhook..")
         try:
             json_data = {
                 result_param: pformat(results, indent=2),
@@ -442,8 +443,6 @@ class Report:
             output_path_prometheus = f"{output_file.absolute().parent}{sep}{output_file.stem}_prometheus.log" if not \
                 self.__input_dict['prometheus'] else self.__input_dict['prometheus']
             Prometheus(results=results, modules=modules).run(output_path_prometheus)
-
-    # todo: add PDF library
 
 
 class Prometheus:
