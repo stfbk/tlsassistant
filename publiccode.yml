@@ -13,37 +13,54 @@ description:
       - analisi di conformità per webserver Apache e nginx
       - |-
         report contenenti frammenti di codice da copia-incollare per mitigare i
+
         problemi rilevati
     genericName: tool d'analisi TLS
     longDescription: |
       TLSAssistant è un tool di ricerca sviluppato per facilitare il lavoro
+
       degli amministratori di sistema e sviluppatori Android alle prese con
+
       implementazioni TLS.
 
 
+
       Il suo utilizzo permette di analizzare i webserver (in locale o da remoto)
+
       e le app Android per valutarne lo stato di sicurezza e la totalità delle
+
       vulnerabilità TLS che potrebbero essere sfruttate per mettere in pericolo
+
       la sicurezza delle trasmissioni.
 
 
+
       TLSAssistant è anche in grado di verificare il grado di conformità di un
+
       implementazione rispetto a una serie di cinque linee guida nazionali e
+
       sovranazionali
 
 
+
       ​
+
 
 
       Il punto di forza di TLSAssistant è la generazione di un report in grado
+
       di elencare le vulnerabilità presenti, spiegare il loro impatto e guidare
+
       passo passo verso la loro risoluzione.
+
 
 
       ​
 
 
+
       Le mitigazioni sono state collezionate estraendo informazioni dalla
+
       letteratura scientifica e dai manuali tecnici forniti da ogni produttore.
     screenshots:
       - |-
@@ -52,7 +69,9 @@ description:
         https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_compliance.png
     shortDescription: |-
       Analizza implementazioni TLS per scoprirne le vulnerabilità, il grado di
+
       conformità e suggerire le mitigazioni necessarie per correggerne i
+
       problemi
 developmentStatus: stable
 it:
@@ -67,6 +86,8 @@ it:
     cie: false
     pagopa: false
     spid: false
+  riuso:
+    codiceIPA: fbk
 legal:
   license: Apache-2.0
 localisation:
