@@ -1,4 +1,4 @@
-aiohttp==3.9.4
+aiohttp==3.10.2
 androguard==3.3.5
 tldextract==3.1.0
 apacheconfig==0.3.2
