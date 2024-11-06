@@ -13,9 +13,3 @@ beautifulsoup4
 pyasn1
 tldextract
 async-timeout
-lief
-biplist
-pebble
-yapsy
-marshmallow
-marshmallow_dataclass
