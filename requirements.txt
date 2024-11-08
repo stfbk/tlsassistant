@@ -1,5 +1,4 @@
 aiohttp==3.9.4
-androguard==3.4.0a1
 apacheconfig==0.3.2
 crossplane==0.5.7
 tlslite-ng==0.8.0-beta1

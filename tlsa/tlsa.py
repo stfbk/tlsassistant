@@ -30,9 +30,6 @@ class Tlsa:
         logging.getLogger("filelock").setLevel(
             logging.ERROR
         )  # remove annoying info messages
-        logging.getLogger("androguard").setLevel(
-            logging.ERROR
-        )  # remove annoying info messages
         self.args = args
         self.__logging = Logger("TLSA")
         self.__start_analysis(args)
