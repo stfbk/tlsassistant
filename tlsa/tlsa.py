@@ -102,8 +102,7 @@ class Tlsa:
                         ]
                     )
                 )
-                all_modules = f"{android_modules}\n{
-                    server_modules}\n{ios_modules}"
+                all_modules = android_modules + "\n" + server_modules + "\n" + ios_modules
 
             print(
                 f"Here's a list of all the modules available:\n{all_modules}"
@@ -123,6 +122,11 @@ class Tlsa:
         self.__logging.debug("Initializing Core element.")
         platform = None
         if args.app:
+            if not isfile(args.app):
+                self.__logging.error(
+                    f"File '{args.app}' does not exist")
+                raise FileNotFoundError(
+                    f"File '{args.app}' does not exist")
             try:
                 check_valid_apk_file(args.app)
                 platform = "Android"
@@ -146,8 +150,7 @@ class Tlsa:
 
         if isinstance(args.configuration, str) and args.configuration == "default":
             args.configuration = (
-                f"default{'_android.json' if platform ==
-                          'Android' else '_ios.json' if platform == 'iOS' else '_server.json'}"
+                f"default{'_android.json' if platform == 'Android' else '_ios.json' if platform == 'iOS' else '_server.json'}"
             )
         config_or_modules = args.configuration
         if args.config_type:
@@ -173,10 +176,8 @@ class Tlsa:
                     reason = "\nOpenSSL is required to generate the compliance reports."
                 raise AssertionError(
                     f"\n{Color.WARNING}{reason}{Color.ENDC}"
-                    f"\nIgnore the checks with \n\t{
-                        Color.CBEIGE}--ignore-openssl{Color.ENDC}\n"
-                    f"or insert an openssl version with\n\t{
-                        Color.CBEIGE}--openssl [VERSION]{Color.ENDC}"
+                    f"\nIgnore the checks with \n\t{Color.CBEIGE}--ignore-openssl{Color.ENDC}\n"
+                    f"or insert an openssl version with\n\t{Color.CBEIGE}--openssl [VERSION]{Color.ENDC}"
                 )
 
         if args.server:

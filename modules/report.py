@@ -202,7 +202,7 @@ class Report:
             to_process["results"] = self.__hosts_report_formatter(results)
         else:
             raise ValueError(f"Unknown mode: {mode}")
-        to_process = {**to_process, **self._replacements}
+        to_process = {**to_process, **self._replacements, **{"pruner": pruner}}
         return template.render(**to_process)
 
     def __extract_results(self, res: dict) -> tuple:
@@ -396,6 +396,7 @@ class Report:
                     rml=use_rml
                 )
             )
+            print(results)
 
         self.__logging.debug("Checking if needs pdf...")
         if self.__path.suffix.lower() == ".pdf":
@@ -403,7 +404,7 @@ class Report:
             try:
                 xml_path = output_path
                 output_path = output_path[:-4] + ".pdf"
-                rml2pdf.go(xml_path, output_path[:-4] + ".pdf")
+                rml2pdf.go(xml_path, output_path)
             except Exception as e:
                 self.__logging.error(f"Error converting to PDF: {e}")
                 self.__logging.debug("Dumping results used by jinja to file")

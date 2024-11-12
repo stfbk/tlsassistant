@@ -180,7 +180,7 @@
                 </tr>
             {% endfor %}
         </blockTable>
-        {% if results %}
+        {% if pruner(results) %}
             <nextFrame/>
             {%set i_ns = namespace(i=0)%}
             {% for host in results%}
