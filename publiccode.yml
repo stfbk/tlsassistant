@@ -89,7 +89,7 @@ platforms:
   - linux
 releaseDate: '2024-02-09'
 softwareType: standalone/desktop
-softwareVersion: 3.0.0
+softwareVersion: 3.1.0
 url: 'https://github.com/stfbk/tlsassistant'
 usedBy:
   - Poligrafico e Zecca dello Stato
