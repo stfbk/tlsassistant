@@ -8,7 +8,7 @@
     </docinit>
     <!--To edit the font of a string edit the corresponding style here-->
     <stylesheet>
-        <paraStyle name = "title" fontSize="39" leading="35" alignment="centre" spaceAfter="20"/>
+        <paraStyle name = "title" fontSize="39" leading="39" alignment="centre" spaceAfter="20"/>
         <paraStyle name = "subtitle" fontName = "Roboto" fontSize="17" alignment="centre" textColor="grey"/>
         <paraStyle name = "recap" fontName = "Roboto Bold" fontSize = "25" alignment="centre" spaceAfter="25"/>
         <paraStyle name = "detected_vulnerabilities" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30"/>
