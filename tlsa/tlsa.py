@@ -11,7 +11,6 @@ from utils.loader import load_configuration, load_list_of_domains
 from utils.logger import Logger
 from utils.type import WebserverType
 
-sys.path.append("dependencies/SEBASTiAn/src")
 from dependencies.SEBASTiAn.src.SEBASTiAn.util import check_valid_apk_file, check_valid_ipa_file
 
 config_types_mapping = {
