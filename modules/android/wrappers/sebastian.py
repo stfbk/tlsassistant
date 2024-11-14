@@ -8,13 +8,19 @@ from SEBASTiAn.main import perform_analysis_with_timeout
 from SEBASTiAn.manager import AndroidVulnerabilityManager
             
 class CustomAndroidVulnerabilityManager(AndroidVulnerabilityManager):
+    tls_plugins = [
+        "AllowAllHostname", "CryptoEcbCipher", "DebuggableApplication", "DefaultSchemeHttp", "InsecureConnection", "InsecureHostnameVerifier", "InsecureSocket", "InsecureSocketFactory", "InvalidServerCertificate"
+    ]
     def get_all_vulnerability_checks(self):
         all_plugins = sorted(self.manager.getAllPlugins(), key=lambda x: x.name)
-        tls_plugins = [
-            "AllowAllHostname", "CryptoEcbCipher", "DebuggableApplication", "DefaultSchemeHttp", "InsecureConnection", "InsecureHostnameVerifier", "InsecureSocket", "InsecureSocketFactory", "InvalidServerCertificate"
-        ]
-        filtered_checks = [item for item in all_plugins if item.plugin_object.__class__.__name__ in tls_plugins]
+        filtered_checks = [item for item in all_plugins if item.plugin_object.__class__.__name__ in CustomAndroidVulnerabilityManager.tls_plugins]
         return filtered_checks
+    
+    def set_plugins(plugins):
+        CustomAndroidVulnerabilityManager.tls_plugins = plugins
+    
+    def get_plugins():
+        return CustomAndroidVulnerabilityManager.tls_plugins
         
 AndroidVulnerabilityManager.get_all_vulnerability_checks = CustomAndroidVulnerabilityManager.get_all_vulnerability_checks
 class Sebastian:
@@ -121,7 +127,7 @@ class Sebastian:
                 f"Analysis of {file_id} (cache miss or forced by call)"
             )
             try:
-                self.__cache[file_id] = perform_analysis_with_timeout(file_id,timeout=600)
+                self.__cache[file_id] = perform_analysis_with_timeout(file_id,timeout=1200)
             except Exception as e:
                 self.__logging.error(f"Analysis of {file_id} crashed: {e}")
         else:

@@ -5,6 +5,7 @@ from os.path import sep
 from pathlib import Path
 import tldextract
 
+from modules.android.wrappers.sebastian import CustomAndroidVulnerabilityManager
 from modules.configuration.configuration import Configuration
 from modules.parse_input_conf import Parser
 from modules.server.testssl_base import Testssl_base
@@ -247,6 +248,16 @@ class Core:
         self.__logging.debug(
             f"Loading configuration {self.__input_dict['configuration']}"
         )
+        if modules and self.__input_dict["type_of_analysis"] == self.Analysis.APK:
+            tmp_modules = ["".join(tmp.split("_"))
+                           if "_" in tmp else tmp for tmp in modules]
+            remaining_plugins = [
+                plugin for plugin in CustomAndroidVulnerabilityManager.get_plugins() if plugin.lower() in tmp_modules
+            ]
+            if remaining_plugins:
+                CustomAndroidVulnerabilityManager.set_plugins(
+                    remaining_plugins)
+
         return Parser(
             self.__input_dict["configuration"] if not modules else modules
         ).output()
