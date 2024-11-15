@@ -86,7 +86,7 @@ class Sebastian_base:
         for key in keys:
             val.string(key)
             for result in results:
-                vulnerabilities = results.get("vulnerabilities") 
+                vulnerabilities = results.get("vulnerabilities", {}) 
                 for vulnerability in vulnerabilities:
                     if vulnerability.get("id") == key:
                         dict_code = {item['full_path']: item for item in vulnerability.get("code")}
@@ -95,6 +95,8 @@ class Sebastian_base:
                             out[key] = []
                         if mit:
                             out[key].append(mit)
+                if result == "errors":
+                    out["errors"] = results["errors"]
 
         return out
 

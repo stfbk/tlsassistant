@@ -145,6 +145,11 @@ class Report:
                 out[hostname]["errors"] = results[hostname]["errors"][hostname]
             for module in results[hostname]:
                 raw_results = {}
+                if "errors" in results[hostname][module]:
+                    if out[hostname].get("errors") is None:
+                        out[hostname]["errors"] = {}
+                    for i, error in enumerate(results[hostname][module]["errors"]):
+                        out[hostname]["errors"][f"{module} error_{i}"] = error
                 if "raw" in results[hostname][module]:
                     raw_results = results[hostname][module]["raw"].copy()
                 if "Entry" in results[hostname][module]:
@@ -396,7 +401,6 @@ class Report:
                     rml=use_rml
                 )
             )
-            print(results)
 
         self.__logging.debug("Checking if needs pdf...")
         if self.__path.suffix.lower() == ".pdf":
