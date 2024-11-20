@@ -1,18 +1,17 @@
-from modules.android.wrappers.mallodroid import Mallodroid
+from modules.ios.wrappers.sebastian import Sebastian
 from utils.validation import Validator
 from utils.mitigations import load_mitigation
-import logging
 
 
-class Mallodroid_base:
+class Sebastian_base:
     """
-    Interface class for Mallodroid vulnerability detection.
+    Interface class for SEBASTiAn vulnerability detection.
     """
 
     def __init__(self):
         self._input_dict = {}
         self._arguments = []
-        self._instance = Mallodroid()
+        self._instance = Sebastian()
         self._output_dict = {}
         self._mitigations = {}
         self._set_arguments()
@@ -26,21 +25,21 @@ class Mallodroid_base:
 
     def input(self, **kwargs):
         """
-        Inputs the arguments for the Mallodroid instance.
+        Inputs the arguments for the SEBASTiAn instance.
 
         :param kwargs:
         :Keyword Arguments:
             - path (str): Path to the apk file.
-            - args (list): List of arguments to be passed to the Mallodroid instance.
-            - force (bool): Force the execution of the Mallodroid instance.
+            - args (list): List of arguments to be passed to the SEBASTiAn instance.
+            - force (bool): Force the execution of the SEBASTiAn instance.
         """
         self._input_dict = kwargs
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         """
-        Sets the mitigations for the Mallodroid instance.
+        Sets the mitigations for the SEBASTiAn instance.
 
-        :param result: The result of the Mallodroid instance.
+        :param result: The result of the SEBASTiAn instance.
         :param key: The key to search for vulnerability in the result.
         :param condition: The condition to be mitigated.
         :return: The result with mitigation.
@@ -73,11 +72,11 @@ class Mallodroid_base:
 
     def _obtain_results(self, results: dict, keys: list):
         """
-        Versatile method to obtain the results from the Mallodroid instance.
+        Versatile method to obtain the results from the SEBASTiAn instance.
 
-        :param results: The result of the Mallodroid instance.
+        :param results: The result of the SEBASTiAn instance.
         :param keys: The keys to search for.
-        :return: The result of the Mallodroid instance contextual to the key.
+        :return: The result of the SEBASTiAn instance contextual to the key.
         :rtype: dict
 
         """
@@ -86,31 +85,30 @@ class Mallodroid_base:
 
         for key in keys:
             val.string(key)
-            for value in results[key]:
-                if "empty" in value:
-                    single = self._set_mitigations(value, key, value["empty"])
-                    # removing useless information atm
-                    single.pop("xref", None)
-                    single.pop("java_b64", None)
+            for result in results:
+                vulnerabilities = results.get("vulnerabilities") 
+                for vulnerability in vulnerabilities:
+                    if vulnerability.get("id") == key:
+                        dict_code = {item['full_path']: item for item in vulnerability.get("code")}
+                        mit = self._set_mitigations(dict_code,key,True)
+                        if key not in out:
+                            out[key] = []
+                        if mit:
+                            out[key].append(mit)
 
-                    if key not in out:
-                        out[key] = []
-                    if single:
-                        out[key].append(single)
         return out
 
     def run(self, **kwargs):
         """
-        Runs the Mallodroid module.
+        Runs the SEBASTiAn module.
 
         :param kwargs:
         :Keyword Arguments:
             - path (str): Path to the apk file.
-            - args (list): List of arguments to be passed to the Mallodroid instance.
-            - force (bool): Force the execution of the Mallodroid instance.
+            - args (list): List of arguments to be passed to the SEBASTiAn instance.
+            - force (bool): Force the execution of the SEBASTiAn instance.
         """
         self.input(**kwargs)
-
         if "path" not in kwargs:
             raise AssertionError("path is missing!")
         Validator([(self._input_dict["path"], str)])
@@ -126,9 +124,10 @@ class Mallodroid_base:
 
     def output(self):
         """
-        Returns the output of the Mallodroid module.
+        Returns the output of the SEBASTiAn module.
 
-        :return: The output of the Mallodroid module.
+        :return: The output of the SEBASTiAn module.
         :rtype: dict
         """
         return self._output_dict
+    

@@ -1,30 +1,48 @@
 import logging
-from os import sep
 from pathlib import Path
+import os
 
 from utils.logger import Logger
-from utils.validation import Validator
-from utils.loader import load_module
+from utils.validation import Validator  
 
+from SEBASTiAn.main import perform_analysis_with_timeout
+from SEBASTiAn.manager import IOSVulnerabilityManager
+            
+class CustomAndroidVulnerabilityManager(IOSVulnerabilityManager):
+    def get_all_vulnerability_checks(self):
+        all_plugins = sorted(self.manager.getAllPlugins(), key=lambda x: x.name)
+        tls_plugins = [
+           "AllowHttpPlist","InsecureConnectionPlist","InsecureTlsVersionPlist","NoForwardSecrecyPlist","WeakCrypto"
+        ]
+        filtered_checks = [item for item in all_plugins if item.plugin_object.__class__.__name__ in tls_plugins]
+        return filtered_checks
+        
+IOSVulnerabilityManager.get_all_vulnerability_checks = CustomAndroidVulnerabilityManager.get_all_vulnerability_checks
 
-class Mallodroid:
+class Sebastian:
     """
-    Mallodroid is a tool to perform static analysis of Android applications.
-    This wrapper is a python wrapper to mallodroid.py.
-    """
+    SEBESTiAn is a tool to perform static analysis of iOS applications.
+    """ 
 
     __cache = {}
     __instance = None
 
-    def __init__(self):
-        logging.getLogger("androguard.analysis").setLevel(
-            logging.ERROR
-            if not logging.getLogger().isEnabledFor(logging.DEBUG)
-            else logging.DEBUG
-        )  # remove annoying info messages
-        self.__logging = Logger("Mallodroid")
-        self.__mallodroid = f"dependencies{sep}mallodroid{sep}mallodroid.py"
-        self.__instance = load_module(self.__mallodroid, "mallodroid")
+    def __init__(self) -> None:
+        loggers_to_set = [
+            "AllowHttpPlist",
+            "InsecureConnectionPlist",
+            "InsecureTlsVersionPlist",
+            "NoForwardSecrecyPlist",
+            "WeakCrypto",
+            "SEBASTiAn"
+        ]
+        for logger_name in loggers_to_set:
+            logger = logging.getLogger(logger_name)
+            logger.setLevel(
+                logging.CRITICAL if not logger.isEnabledFor(logging.DEBUG) else logging.DEBUG
+            ) 
+
+        self.__logging = Logger("sebastian")
         self.__input_dict = {}
         self.__correct_path = None
 
@@ -35,7 +53,7 @@ class Mallodroid:
         :param kwargs:
         :Keyword Arguments:
             path: path to the file to be analyzed
-            args: list of arguments to be passed to mallodroid
+            args: list of arguments to be passed to Sebastian
             force: force the analysis of the file (default: False)
         """
         self.__input_dict = kwargs
@@ -64,7 +82,7 @@ class Mallodroid:
         :param kwargs:
         :Keyword Arguments:
             path: path to the file to be analyzed
-            args: list of arguments to be passed to mallodroid
+            args: list of arguments to be passed to Sebastian
             force: force the analysis of the file ignoring cache (default: False)
         """
         self.input(**kwargs)
@@ -80,7 +98,6 @@ class Mallodroid:
         args = self.__input_dict["args"] if "args" in self.__input_dict else []
         force = self.__input_dict["force"] if "force" in self.__input_dict else False
         Validator([(args, list), (force, bool)])
-
         self.__worker(self.__correct_path, args=args, force=force)
         return self.output(path=str(self.__correct_path.absolute()))
 
@@ -89,27 +106,23 @@ class Mallodroid:
         This method is the worker method to be executed by run()
 
         :param path: path to the file to be analyzed
-        :param args: list of arguments to be passed to mallodroid
+        :param args: list of arguments to be passed to Sebastian
         :param force: force the analysis of the file ignoring cache (default: False)
 
         """
         file_id = str(path.absolute())
         self.__logging.debug(f"Starting analysis of {file_id} ...")
-        args.append("-f")
-        args.append(str(path.absolute()))
+          
         if force:
             self.__logging.debug(
                 f"Analysis of {file_id} (cache miss or forced by call)"
             )
-            self.__cache[file_id] = self.__instance.main(
-                args,
-                stdout_suppress=False
-                if logging.getLogger().isEnabledFor(logging.DEBUG)
-                else True,
-                stderr_suppress=False
-                if logging.getLogger().isEnabledFor(logging.DEBUG)
-                else True,
-            )  # calls main
+            try:
+                self.__cache[file_id] = perform_analysis_with_timeout(file_id,timeout=600)
+            except Exception as e:
+                self.__logging.error(f"Analysis of {file_id} crashed: {e}")
         else:
             if file_id not in self.__cache:  # if not in cache, force analysis
                 self.__worker(path, args, force=True)
+
+ 

@@ -6,13 +6,13 @@
         "OpenSSL": ""
     },
     "0x00,0x01": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_NULL_MD5",
         "IANA": "TLS_RSA_WITH_NULL_MD5",
         "NSS": "TLS_RSA_WITH_NULL_MD5",
         "OpenSSL": ""
     },
     "0x00,0x02": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_NULL_SHA1",
         "IANA": "TLS_RSA_WITH_NULL_SHA",
         "NSS": "TLS_RSA_WITH_NULL_SHA",
         "OpenSSL": ""
@@ -24,13 +24,13 @@
         "OpenSSL": ""
     },
     "0x00,0x04": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_ARCFOUR_128_MD5",
         "IANA": "TLS_RSA_WITH_RC4_128_MD5",
         "NSS": "TLS_RSA_WITH_RC4_128_MD5",
         "OpenSSL": ""
     },
     "0x00,0x05": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_ARCFOUR_128_SHA1",
         "IANA": "TLS_RSA_WITH_RC4_128_SHA",
         "NSS": "TLS_RSA_WITH_RC4_128_SHA",
         "OpenSSL": ""
@@ -60,7 +60,7 @@
         "OpenSSL": ""
     },
     "0x00,0x0A": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_3DES_EDE_CBC_SHA1",
         "IANA": "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
         "NSS": "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
         "OpenSSL": ""
@@ -114,7 +114,7 @@
         "OpenSSL": ""
     },
     "0x00,0x13": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_DSS_3DES_EDE_CBC_SHA1",
         "IANA": "TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA",
         "NSS": "TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA",
         "OpenSSL": ""
@@ -132,7 +132,7 @@
         "OpenSSL": ""
     },
     "0x00,0x16": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_3DES_EDE_CBC_SHA1",
         "IANA": "TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA",
         "NSS": "TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA",
         "OpenSSL": ""
@@ -144,7 +144,7 @@
         "OpenSSL": ""
     },
     "0x00,0x18": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DH_ANON_ARCFOUR_128_MD5",
         "IANA": "TLS_DH_anon_WITH_RC4_128_MD5",
         "NSS": "TLS_DH_anon_WITH_RC4_128_MD5",
         "OpenSSL": ""
@@ -162,7 +162,7 @@
         "OpenSSL": ""
     },
     "0x00,0x1B": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DH_ANON_3DES_EDE_CBC_SHA1",
         "IANA": "TLS_DH_anon_WITH_3DES_EDE_CBC_SHA",
         "NSS": "TLS_DH_anon_WITH_3DES_EDE_CBC_SHA",
         "OpenSSL": ""
@@ -252,25 +252,25 @@
         "OpenSSL": ""
     },
     "0x00,0x2C": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_NULL_SHA1",
         "IANA": "TLS_PSK_WITH_NULL_SHA",
         "NSS": "",
         "OpenSSL": "PSK-NULL-SHA"
     },
     "0x00,0x2D": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_NULL_SHA1",
         "IANA": "TLS_DHE_PSK_WITH_NULL_SHA",
         "NSS": "",
         "OpenSSL": "DHE-PSK-NULL-SHA"
     },
     "0x00,0x2E": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_NULL_SHA1",
         "IANA": "TLS_RSA_PSK_WITH_NULL_SHA",
         "NSS": "",
         "OpenSSL": "RSA-PSK-NULL-SHA"
     },
     "0x00,0x2F": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_AES_128_CBC_SHA1",
         "IANA": "TLS_RSA_WITH_AES_128_CBC_SHA",
         "NSS": "TLS_RSA_WITH_AES_128_CBC_SHA",
         "OpenSSL": "AES128-SHA"
@@ -288,25 +288,25 @@
         "OpenSSL": "DH-RSA-AES128-SHA"
     },
     "0x00,0x32": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_DSS_AES_128_CBC_SHA1",
         "IANA": "TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
         "NSS": "TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
         "OpenSSL": "DHE-DSS-AES128-SHA"
     },
     "0x00,0x33": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_AES_128_CBC_SHA1",
         "IANA": "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
         "NSS": "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
         "OpenSSL": "DHE-RSA-AES128-SHA"
     },
     "0x00,0x34": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DH_ANON_AES_128_CBC_SHA1",
         "IANA": "TLS_DH_anon_WITH_AES_128_CBC_SHA",
         "NSS": "TLS_DH_anon_WITH_AES_128_CBC_SHA",
         "OpenSSL": "ADH-AES128-SHA"
     },
     "0x00,0x35": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_AES_256_CBC_SHA1",
         "IANA": "TLS_RSA_WITH_AES_256_CBC_SHA",
         "NSS": "TLS_RSA_WITH_AES_256_CBC_SHA",
         "OpenSSL": "AES256-SHA"
@@ -324,37 +324,37 @@
         "OpenSSL": "DH-RSA-AES256-SHA"
     },
     "0x00,0x38": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_DSS_AES_256_CBC_SHA1",
         "IANA": "TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
         "NSS": "TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
         "OpenSSL": "DHE-DSS-AES256-SHA"
     },
     "0x00,0x39": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_AES_256_CBC_SHA1",
         "IANA": "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
         "NSS": "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
         "OpenSSL": "DHE-RSA-AES256-SHA"
     },
     "0x00,0x3A": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DH_ANON_AES_256_CBC_SHA1",
         "IANA": "TLS_DH_anon_WITH_AES_256_CBC_SHA",
         "NSS": "TLS_DH_anon_WITH_AES_256_CBC_SHA",
         "OpenSSL": "ADH-AES256-SHA"
     },
     "0x00,0x3B": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_NULL_SHA256",
         "IANA": "TLS_RSA_WITH_NULL_SHA256",
         "NSS": "TLS_RSA_WITH_NULL_SHA256",
         "OpenSSL": "NULL-SHA256"
     },
     "0x00,0x3C": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_AES_128_CBC_SHA256",
         "IANA": "TLS_RSA_WITH_AES_128_CBC_SHA256",
         "NSS": "TLS_RSA_WITH_AES_128_CBC_SHA256",
         "OpenSSL": "AES128-SHA256"
     },
     "0x00,0x3D": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_AES_256_CBC_SHA256",
         "IANA": "TLS_RSA_WITH_AES_256_CBC_SHA256",
         "NSS": "TLS_RSA_WITH_AES_256_CBC_SHA256",
         "OpenSSL": "AES256-SHA256"
@@ -372,13 +372,13 @@
         "OpenSSL": "DH-RSA-AES128-SHA256"
     },
     "0x00,0x40": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_DSS_AES_128_CBC_SHA256",
         "IANA": "TLS_DHE_DSS_WITH_AES_128_CBC_SHA256",
         "NSS": "TLS_DHE_DSS_WITH_AES_128_CBC_SHA256",
         "OpenSSL": "DHE-DSS-AES128-SHA256"
     },
     "0x00,0x41": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_CAMELLIA_128_CBC_SHA1",
         "IANA": "TLS_RSA_WITH_CAMELLIA_128_CBC_SHA",
         "NSS": "TLS_RSA_WITH_CAMELLIA_128_CBC_SHA",
         "OpenSSL": "CAMELLIA128-SHA"
@@ -396,25 +396,25 @@
         "OpenSSL": "DH-RSA-CAMELLIA128-SHA"
     },
     "0x00,0x44": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_DSS_CAMELLIA_128_CBC_SHA1",
         "IANA": "TLS_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA",
         "NSS": "TLS_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA",
         "OpenSSL": "DHE-DSS-CAMELLIA128-SHA"
     },
     "0x00,0x45": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_CAMELLIA_128_CBC_SHA1",
         "IANA": "TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA",
         "NSS": "TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA",
         "OpenSSL": "DHE-RSA-CAMELLIA128-SHA"
     },
     "0x00,0x46": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DH_ANON_CAMELLIA_128_CBC_SHA1",
         "IANA": "TLS_DH_anon_WITH_CAMELLIA_128_CBC_SHA",
         "NSS": "TLS_DH_anon_WITH_CAMELLIA_128_CBC_SHA",
         "OpenSSL": "ADH-CAMELLIA128-SHA"
     },
     "0x00,0x67": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_AES_128_CBC_SHA256",
         "IANA": "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256",
         "NSS": "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256",
         "OpenSSL": "DHE-RSA-AES128-SHA256"
@@ -432,31 +432,31 @@
         "OpenSSL": "DH-RSA-AES256-SHA256"
     },
     "0x00,0x6A": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_DSS_AES_256_CBC_SHA256",
         "IANA": "TLS_DHE_DSS_WITH_AES_256_CBC_SHA256",
         "NSS": "TLS_DHE_DSS_WITH_AES_256_CBC_SHA256",
         "OpenSSL": "DHE-DSS-AES256-SHA256"
     },
     "0x00,0x6B": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_AES_256_CBC_SHA256",
         "IANA": "TLS_DHE_RSA_WITH_AES_256_CBC_SHA256",
         "NSS": "TLS_DHE_RSA_WITH_AES_256_CBC_SHA256",
         "OpenSSL": "DHE-RSA-AES256-SHA256"
     },
     "0x00,0x6C": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DH_ANON_AES_128_CBC_SHA256",
         "IANA": "TLS_DH_anon_WITH_AES_128_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "ADH-AES128-SHA256"
     },
     "0x00,0x6D": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DH_ANON_AES_256_CBC_SHA256",
         "IANA": "TLS_DH_anon_WITH_AES_256_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "ADH-AES256-SHA256"
     },
     "0x00,0x84": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_CAMELLIA_256_CBC_SHA1",
         "IANA": "TLS_RSA_WITH_CAMELLIA_256_CBC_SHA",
         "NSS": "TLS_RSA_WITH_CAMELLIA_256_CBC_SHA",
         "OpenSSL": "CAMELLIA256-SHA"
@@ -474,91 +474,91 @@
         "OpenSSL": "DH-RSA-CAMELLIA256-SHA"
     },
     "0x00,0x87": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_DSS_CAMELLIA_256_CBC_SHA1",
         "IANA": "TLS_DHE_DSS_WITH_CAMELLIA_256_CBC_SHA",
         "NSS": "TLS_DHE_DSS_WITH_CAMELLIA_256_CBC_SHA",
         "OpenSSL": "DHE-DSS-CAMELLIA256-SHA"
     },
     "0x00,0x88": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_CAMELLIA_256_CBC_SHA1",
         "IANA": "TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA",
         "NSS": "TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA",
         "OpenSSL": "DHE-RSA-CAMELLIA256-SHA"
     },
     "0x00,0x89": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DH_ANON_CAMELLIA_256_CBC_SHA1",
         "IANA": "TLS_DH_anon_WITH_CAMELLIA_256_CBC_SHA",
         "NSS": "TLS_DH_anon_WITH_CAMELLIA_256_CBC_SHA",
         "OpenSSL": "ADH-CAMELLIA256-SHA"
     },
     "0x00,0x8A": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_ARCFOUR_128_SHA1",
         "IANA": "TLS_PSK_WITH_RC4_128_SHA",
         "NSS": "",
         "OpenSSL": "PSK-RC4-SHA"
     },
     "0x00,0x8B": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_3DES_EDE_CBC_SHA1",
         "IANA": "TLS_PSK_WITH_3DES_EDE_CBC_SHA",
         "NSS": "",
         "OpenSSL": "PSK-3DES-EDE-CBC-SHA"
     },
     "0x00,0x8C": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_AES_128_CBC_SHA1",
         "IANA": "TLS_PSK_WITH_AES_128_CBC_SHA",
         "NSS": "",
         "OpenSSL": "PSK-AES128-CBC-SHA"
     },
     "0x00,0x8D": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_AES_256_CBC_SHA1",
         "IANA": "TLS_PSK_WITH_AES_256_CBC_SHA",
         "NSS": "",
         "OpenSSL": "PSK-AES256-CBC-SHA"
     },
     "0x00,0x8E": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_ARCFOUR_128_SHA1",
         "IANA": "TLS_DHE_PSK_WITH_RC4_128_SHA",
         "NSS": "",
         "OpenSSL": "DHE-PSK-RC4-SHA"
     },
     "0x00,0x8F": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_3DES_EDE_CBC_SHA1",
         "IANA": "TLS_DHE_PSK_WITH_3DES_EDE_CBC_SHA",
         "NSS": "",
         "OpenSSL": "DHE-PSK-3DES-EDE-CBC-SHA"
     },
     "0x00,0x90": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_AES_128_CBC_SHA1",
         "IANA": "TLS_DHE_PSK_WITH_AES_128_CBC_SHA",
         "NSS": "",
         "OpenSSL": "DHE-PSK-AES128-CBC-SHA"
     },
     "0x00,0x91": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_AES_256_CBC_SHA1",
         "IANA": "TLS_DHE_PSK_WITH_AES_256_CBC_SHA",
         "NSS": "",
         "OpenSSL": "DHE-PSK-AES256-CBC-SHA"
     },
     "0x00,0x92": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_ARCFOUR_128_SHA1",
         "IANA": "TLS_RSA_PSK_WITH_RC4_128_SHA",
         "NSS": "",
         "OpenSSL": "RSA-PSK-RC4-SHA"
     },
     "0x00,0x93": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_3DES_EDE_CBC_SHA1",
         "IANA": "TLS_RSA_PSK_WITH_3DES_EDE_CBC_SHA",
         "NSS": "",
         "OpenSSL": "RSA-PSK-3DES-EDE-CBC-SHA"
     },
     "0x00,0x94": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_AES_128_CBC_SHA1",
         "IANA": "TLS_RSA_PSK_WITH_AES_128_CBC_SHA",
         "NSS": "",
         "OpenSSL": "RSA-PSK-AES128-CBC-SHA"
     },
     "0x00,0x95": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_AES_256_CBC_SHA1",
         "IANA": "TLS_RSA_PSK_WITH_AES_256_CBC_SHA",
         "NSS": "",
         "OpenSSL": "RSA-PSK-AES256-CBC-SHA"
@@ -600,25 +600,25 @@
         "OpenSSL": "ADH-SEED-SHA"
     },
     "0x00,0x9C": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_AES_128_GCM_SHA256",
         "IANA": "TLS_RSA_WITH_AES_128_GCM_SHA256",
         "NSS": "TLS_RSA_WITH_AES_128_GCM_SHA256",
         "OpenSSL": "AES128-GCM-SHA256"
     },
     "0x00,0x9D": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_AES_256_GCM_SHA384",
         "IANA": "TLS_RSA_WITH_AES_256_GCM_SHA384",
         "NSS": "TLS_RSA_WITH_AES_256_GCM_SHA384",
         "OpenSSL": "AES256-GCM-SHA384"
     },
     "0x00,0x9E": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_AES_128_GCM_SHA256",
         "IANA": "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
         "NSS": "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
         "OpenSSL": "DHE-RSA-AES128-GCM-SHA256"
     },
     "0x00,0x9F": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_AES_256_GCM_SHA384",
         "IANA": "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384",
         "NSS": "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384",
         "OpenSSL": "DHE-RSA-AES256-GCM-SHA384"
@@ -636,13 +636,13 @@
         "OpenSSL": "DH-RSA-AES256-GCM-SHA384"
     },
     "0x00,0xA2": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_DSS_AES_128_GCM_SHA256",
         "IANA": "TLS_DHE_DSS_WITH_AES_128_GCM_SHA256",
         "NSS": "TLS_DHE_DSS_WITH_AES_128_GCM_SHA256",
         "OpenSSL": "DHE-DSS-AES128-GCM-SHA256"
     },
     "0x00,0xA3": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_DSS_AES_256_GCM_SHA384",
         "IANA": "TLS_DHE_DSS_WITH_AES_256_GCM_SHA384",
         "NSS": "TLS_DHE_DSS_WITH_AES_256_GCM_SHA384",
         "OpenSSL": "DHE-DSS-AES256-GCM-SHA384"
@@ -660,127 +660,127 @@
         "OpenSSL": "DH-DSS-AES256-GCM-SHA384"
     },
     "0x00,0xA6": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DH_ANON_AES_128_GCM_SHA256",
         "IANA": "TLS_DH_anon_WITH_AES_128_GCM_SHA256",
         "NSS": "",
         "OpenSSL": "ADH-AES128-GCM-SHA256"
     },
     "0x00,0xA7": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DH_ANON_AES_256_GCM_SHA384",
         "IANA": "TLS_DH_anon_WITH_AES_256_GCM_SHA384",
         "NSS": "",
         "OpenSSL": "ADH-AES256-GCM-SHA384"
     },
     "0x00,0xA8": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_AES_128_GCM_SHA256",
         "IANA": "TLS_PSK_WITH_AES_128_GCM_SHA256",
         "NSS": "",
         "OpenSSL": "PSK-AES128-GCM-SHA256"
     },
     "0x00,0xA9": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_AES_256_GCM_SHA384",
         "IANA": "TLS_PSK_WITH_AES_256_GCM_SHA384",
         "NSS": "",
         "OpenSSL": "PSK-AES256-GCM-SHA384"
     },
     "0x00,0xAA": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_AES_128_GCM_SHA256",
         "IANA": "TLS_DHE_PSK_WITH_AES_128_GCM_SHA256",
         "NSS": "TLS_DHE_PSK_WITH_AES_128_GCM_SHA256",
         "OpenSSL": "DHE-PSK-AES128-GCM-SHA256"
     },
     "0x00,0xAB": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_AES_256_GCM_SHA384",
         "IANA": "TLS_DHE_PSK_WITH_AES_256_GCM_SHA384",
         "NSS": "TLS_DHE_PSK_WITH_AES_256_GCM_SHA384",
         "OpenSSL": "DHE-PSK-AES256-GCM-SHA384"
     },
     "0x00,0xAC": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_AES_128_GCM_SHA256",
         "IANA": "TLS_RSA_PSK_WITH_AES_128_GCM_SHA256",
         "NSS": "",
         "OpenSSL": "RSA-PSK-AES128-GCM-SHA256"
     },
     "0x00,0xAD": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_AES_256_GCM_SHA384",
         "IANA": "TLS_RSA_PSK_WITH_AES_256_GCM_SHA384",
         "NSS": "",
         "OpenSSL": "RSA-PSK-AES256-GCM-SHA384"
     },
     "0x00,0xAE": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_AES_128_CBC_SHA256",
         "IANA": "TLS_PSK_WITH_AES_128_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "PSK-AES128-CBC-SHA256"
     },
     "0x00,0xAF": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_AES_256_CBC_SHA384",
         "IANA": "TLS_PSK_WITH_AES_256_CBC_SHA384",
         "NSS": "",
         "OpenSSL": "PSK-AES256-CBC-SHA384"
     },
     "0x00,0xB0": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_NULL_SHA256",
         "IANA": "TLS_PSK_WITH_NULL_SHA256",
         "NSS": "",
         "OpenSSL": "PSK-NULL-SHA256"
     },
     "0x00,0xB1": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_NULL_SHA384",
         "IANA": "TLS_PSK_WITH_NULL_SHA384",
         "NSS": "",
         "OpenSSL": "PSK-NULL-SHA384"
     },
     "0x00,0xB2": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_AES_128_CBC_SHA256",
         "IANA": "TLS_DHE_PSK_WITH_AES_128_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "DHE-PSK-AES128-CBC-SHA256"
     },
     "0x00,0xB3": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_AES_256_CBC_SHA384",
         "IANA": "TLS_DHE_PSK_WITH_AES_256_CBC_SHA384",
         "NSS": "",
         "OpenSSL": "DHE-PSK-AES256-CBC-SHA384"
     },
     "0x00,0xB4": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_NULL_SHA256",
         "IANA": "TLS_DHE_PSK_WITH_NULL_SHA256",
         "NSS": "",
         "OpenSSL": "DHE-PSK-NULL-SHA256"
     },
     "0x00,0xB5": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_NULL_SHA384",
         "IANA": "TLS_DHE_PSK_WITH_NULL_SHA384",
         "NSS": "",
         "OpenSSL": "DHE-PSK-NULL-SHA384"
     },
     "0x00,0xB6": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_AES_128_CBC_SHA256",
         "IANA": "TLS_RSA_PSK_WITH_AES_128_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "RSA-PSK-AES128-CBC-SHA256"
     },
     "0x00,0xB7": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_AES_256_CBC_SHA384",
         "IANA": "TLS_RSA_PSK_WITH_AES_256_CBC_SHA384",
         "NSS": "",
         "OpenSSL": "RSA-PSK-AES256-CBC-SHA384"
     },
     "0x00,0xB8": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_NULL_SHA256",
         "IANA": "TLS_RSA_PSK_WITH_NULL_SHA256",
         "NSS": "",
         "OpenSSL": "RSA-PSK-NULL-SHA256"
     },
     "0x00,0xB9": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_NULL_SHA384",
         "IANA": "TLS_RSA_PSK_WITH_NULL_SHA384",
         "NSS": "",
         "OpenSSL": "RSA-PSK-NULL-SHA384"
     },
     "0x00,0xBA": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_CAMELLIA_128_CBC_SHA256",
         "IANA": "TLS_RSA_WITH_CAMELLIA_128_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "CAMELLIA128-SHA256"
@@ -798,25 +798,25 @@
         "OpenSSL": "DH-RSA-CAMELLIA128-SHA256"
     },
     "0x00,0xBD": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_DSS_CAMELLIA_128_CBC_SHA256",
         "IANA": "TLS_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "DHE-DSS-CAMELLIA128-SHA256"
     },
     "0x00,0xBE": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_CAMELLIA_128_CBC_SHA256",
         "IANA": "TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "DHE-RSA-CAMELLIA128-SHA256"
     },
     "0x00,0xBF": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DH_ANON_CAMELLIA_128_CBC_SHA256",
         "IANA": "TLS_DH_anon_WITH_CAMELLIA_128_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "ADH-CAMELLIA128-SHA256"
     },
     "0x00,0xC0": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_CAMELLIA_256_CBC_SHA256",
         "IANA": "TLS_RSA_WITH_CAMELLIA_256_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "CAMELLIA256-SHA256"
@@ -834,19 +834,19 @@
         "OpenSSL": "DH-RSA-CAMELLIA256-SHA256"
     },
     "0x00,0xC3": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_DSS_CAMELLIA_256_CBC_SHA256",
         "IANA": "TLS_DHE_DSS_WITH_CAMELLIA_256_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "DHE-DSS-CAMELLIA256-SHA256"
     },
     "0x00,0xC4": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_CAMELLIA_256_CBC_SHA256",
         "IANA": "TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "DHE-RSA-CAMELLIA256-SHA256"
     },
     "0x00,0xC5": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DH_ANON_CAMELLIA_256_CBC_SHA256",
         "IANA": "TLS_DH_anon_WITH_CAMELLIA_256_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "ADH-CAMELLIA256-SHA256"
@@ -882,31 +882,31 @@
         "OpenSSL": ""
     },
     "0x13,0x01": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_AES_128_GCM_SHA256",
         "IANA": "TLS_AES_128_GCM_SHA256",
         "NSS": "TLS_AES_128_GCM_SHA256",
         "OpenSSL": "TLS_AES_128_GCM_SHA256"
     },
     "0x13,0x02": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_AES_256_GCM_SHA384",
         "IANA": "TLS_AES_256_GCM_SHA384",
         "NSS": "TLS_AES_256_GCM_SHA384",
         "OpenSSL": "TLS_AES_256_GCM_SHA384"
     },
     "0x13,0x03": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_CHACHA20_POLY1305_SHA256",
         "IANA": "TLS_CHACHA20_POLY1305_SHA256",
         "NSS": "TLS_CHACHA20_POLY1305_SHA256",
         "OpenSSL": "TLS_CHACHA20_POLY1305_SHA256"
     },
     "0x13,0x04": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_AES_128_CCM_SHA256",
         "IANA": "TLS_AES_128_CCM_SHA256",
         "NSS": "",
         "OpenSSL": "TLS_AES_128_CCM_SHA256"
     },
     "0x13,0x05": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_AES_128_CCM_8_SHA256",
         "IANA": "TLS_AES_128_CCM_8_SHA256",
         "NSS": "",
         "OpenSSL": "TLS_AES_128_CCM_8_SHA256"
@@ -1032,31 +1032,31 @@
         "OpenSSL": "ECDH-ECDSA-AES256-SHA"
     },
     "0xC0,0x06": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_NULL_SHA1",
         "IANA": "TLS_ECDHE_ECDSA_WITH_NULL_SHA",
         "NSS": "TLS_ECDHE_ECDSA_WITH_NULL_SHA",
         "OpenSSL": "ECDHE-ECDSA-NULL-SHA"
     },
     "0xC0,0x07": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_ARCFOUR_128_SHA1",
         "IANA": "TLS_ECDHE_ECDSA_WITH_RC4_128_SHA",
         "NSS": "TLS_ECDHE_ECDSA_WITH_RC4_128_SHA",
         "OpenSSL": "ECDHE-ECDSA-RC4-SHA"
     },
     "0xC0,0x08": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_3DES_EDE_CBC_SHA1",
         "IANA": "TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA",
         "NSS": "TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA",
         "OpenSSL": "ECDHE-ECDSA-DES-CBC3-SHA"
     },
     "0xC0,0x09": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_AES_128_CBC_SHA1",
         "IANA": "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
         "NSS": "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
         "OpenSSL": "ECDHE-ECDSA-AES128-SHA"
     },
     "0xC0,0x0A": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_AES_256_CBC_SHA1",
         "IANA": "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
         "NSS": "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
         "OpenSSL": "ECDHE-ECDSA-AES256-SHA"
@@ -1092,127 +1092,127 @@
         "OpenSSL": "ECDH-RSA-AES256-SHA"
     },
     "0xC0,0x10": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_RSA_NULL_SHA1",
         "IANA": "TLS_ECDHE_RSA_WITH_NULL_SHA",
         "NSS": "TLS_ECDHE_RSA_WITH_NULL_SHA",
         "OpenSSL": "ECDHE-RSA-NULL-SHA"
     },
     "0xC0,0x11": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_RSA_ARCFOUR_128_SHA1",
         "IANA": "TLS_ECDHE_RSA_WITH_RC4_128_SHA",
         "NSS": "TLS_ECDHE_RSA_WITH_RC4_128_SHA",
         "OpenSSL": "ECDHE-RSA-RC4-SHA"
     },
     "0xC0,0x12": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_RSA_3DES_EDE_CBC_SHA1",
         "IANA": "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
         "NSS": "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
         "OpenSSL": "ECDHE-RSA-DES-CBC3-SHA"
     },
     "0xC0,0x13": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_RSA_AES_128_CBC_SHA1",
         "IANA": "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
         "NSS": "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
         "OpenSSL": "ECDHE-RSA-AES128-SHA"
     },
     "0xC0,0x14": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_RSA_AES_256_CBC_SHA1",
         "IANA": "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
         "NSS": "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
         "OpenSSL": "ECDHE-RSA-AES256-SHA"
     },
     "0xC0,0x15": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDH_ANON_NULL_SHA1",
         "IANA": "TLS_ECDH_anon_WITH_NULL_SHA",
         "NSS": "TLS_ECDH_anon_WITH_NULL_SHA",
         "OpenSSL": "AECDH-NULL-SHA"
     },
     "0xC0,0x16": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDH_ANON_ARCFOUR_128_SHA1",
         "IANA": "TLS_ECDH_anon_WITH_RC4_128_SHA",
         "NSS": "TLS_ECDH_anon_WITH_RC4_128_SHA",
         "OpenSSL": "AECDH-RC4-SHA"
     },
     "0xC0,0x17": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDH_ANON_3DES_EDE_CBC_SHA1",
         "IANA": "TLS_ECDH_anon_WITH_3DES_EDE_CBC_SHA",
         "NSS": "TLS_ECDH_anon_WITH_3DES_EDE_CBC_SHA",
         "OpenSSL": "AECDH-DES-CBC3-SHA"
     },
     "0xC0,0x18": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDH_ANON_AES_128_CBC_SHA1",
         "IANA": "TLS_ECDH_anon_WITH_AES_128_CBC_SHA",
         "NSS": "TLS_ECDH_anon_WITH_AES_128_CBC_SHA",
         "OpenSSL": "AECDH-AES128-SHA"
     },
     "0xC0,0x19": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDH_ANON_AES_256_CBC_SHA1",
         "IANA": "TLS_ECDH_anon_WITH_AES_256_CBC_SHA",
         "NSS": "TLS_ECDH_anon_WITH_AES_256_CBC_SHA",
         "OpenSSL": "AECDH-AES256-SHA"
     },
     "0xC0,0x1A": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_SRP_SHA_3DES_EDE_CBC_SHA1",
         "IANA": "TLS_SRP_SHA_WITH_3DES_EDE_CBC_SHA",
         "NSS": "",
         "OpenSSL": "SRP-3DES-EDE-CBC-SHA"
     },
     "0xC0,0x1B": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_SRP_SHA_RSA_3DES_EDE_CBC_SHA1",
         "IANA": "TLS_SRP_SHA_RSA_WITH_3DES_EDE_CBC_SHA",
         "NSS": "",
         "OpenSSL": "SRP-RSA-3DES-EDE-CBC-SHA"
     },
     "0xC0,0x1C": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_SRP_SHA_DSS_3DES_EDE_CBC_SHA1",
         "IANA": "TLS_SRP_SHA_DSS_WITH_3DES_EDE_CBC_SHA",
         "NSS": "",
         "OpenSSL": "SRP-DSS-3DES-EDE-CBC-SHA"
     },
     "0xC0,0x1D": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_SRP_SHA_AES_128_CBC_SHA1",
         "IANA": "TLS_SRP_SHA_WITH_AES_128_CBC_SHA",
         "NSS": "",
         "OpenSSL": "SRP-AES-128-CBC-SHA"
     },
     "0xC0,0x1E": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_SRP_SHA_RSA_AES_128_CBC_SHA1",
         "IANA": "TLS_SRP_SHA_RSA_WITH_AES_128_CBC_SHA",
         "NSS": "",
         "OpenSSL": "SRP-RSA-AES-128-CBC-SHA"
     },
     "0xC0,0x1F": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_SRP_SHA_DSS_AES_128_CBC_SHA1",
         "IANA": "TLS_SRP_SHA_DSS_WITH_AES_128_CBC_SHA",
         "NSS": "",
         "OpenSSL": "SRP-DSS-AES-128-CBC-SHA"
     },
     "0xC0,0x20": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_SRP_SHA_AES_256_CBC_SHA1",
         "IANA": "TLS_SRP_SHA_WITH_AES_256_CBC_SHA",
         "NSS": "",
         "OpenSSL": "SRP-AES-256-CBC-SHA"
     },
     "0xC0,0x21": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_SRP_SHA_RSA_AES_256_CBC_SHA1",
         "IANA": "TLS_SRP_SHA_RSA_WITH_AES_256_CBC_SHA",
         "NSS": "",
         "OpenSSL": "SRP-RSA-AES-256-CBC-SHA"
     },
     "0xC0,0x22": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_SRP_SHA_DSS_AES_256_CBC_SHA1",
         "IANA": "TLS_SRP_SHA_DSS_WITH_AES_256_CBC_SHA",
         "NSS": "",
         "OpenSSL": "SRP-DSS-AES-256-CBC-SHA"
     },
     "0xC0,0x23": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_AES_128_CBC_SHA256",
         "IANA": "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
         "NSS": "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
         "OpenSSL": "ECDHE-ECDSA-AES128-SHA256"
     },
     "0xC0,0x24": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_AES_256_CBC_SHA384",
         "IANA": "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384",
         "NSS": "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384",
         "OpenSSL": "ECDHE-ECDSA-AES256-SHA384"
@@ -1230,13 +1230,13 @@
         "OpenSSL": "ECDH-ECDSA-AES256-SHA384"
     },
     "0xC0,0x27": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_RSA_AES_128_CBC_SHA256",
         "IANA": "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
         "NSS": "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
         "OpenSSL": "ECDHE-RSA-AES128-SHA256"
     },
     "0xC0,0x28": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_RSA_AES_256_CBC_SHA384",
         "IANA": "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384",
         "NSS": "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384",
         "OpenSSL": "ECDHE-RSA-AES256-SHA384"
@@ -1254,13 +1254,13 @@
         "OpenSSL": "ECDH-RSA-AES256-SHA384"
     },
     "0xC0,0x2B": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_AES_128_GCM_SHA256",
         "IANA": "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
         "NSS": "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
         "OpenSSL": "ECDHE-ECDSA-AES128-GCM-SHA256"
     },
     "0xC0,0x2C": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_AES_256_GCM_SHA384",
         "IANA": "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
         "NSS": "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
         "OpenSSL": "ECDHE-ECDSA-AES256-GCM-SHA384"
@@ -1278,13 +1278,13 @@
         "OpenSSL": "ECDH-ECDSA-AES256-GCM-SHA384"
     },
     "0xC0,0x2F": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_RSA_AES_128_GCM_SHA256",
         "IANA": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
         "NSS": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
         "OpenSSL": "ECDHE-RSA-AES128-GCM-SHA256"
     },
     "0xC0,0x30": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_RSA_AES_256_GCM_SHA384",
         "IANA": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
         "NSS": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
         "OpenSSL": "ECDHE-RSA-AES256-GCM-SHA384"
@@ -1302,55 +1302,55 @@
         "OpenSSL": "ECDH-RSA-AES256-GCM-SHA384"
     },
     "0xC0,0x33": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_PSK_ARCFOUR_128_SHA1",
         "IANA": "TLS_ECDHE_PSK_WITH_RC4_128_SHA",
         "NSS": "",
         "OpenSSL": "ECDHE-PSK-RC4-SHA"
     },
     "0xC0,0x34": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_PSK_3DES_EDE_CBC_SHA1",
         "IANA": "TLS_ECDHE_PSK_WITH_3DES_EDE_CBC_SHA",
         "NSS": "",
         "OpenSSL": "ECDHE-PSK-3DES-EDE-CBC-SHA"
     },
     "0xC0,0x35": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_PSK_AES_128_CBC_SHA1",
         "IANA": "TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA",
         "NSS": "",
         "OpenSSL": "ECDHE-PSK-AES128-CBC-SHA"
     },
     "0xC0,0x36": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_PSK_AES_256_CBC_SHA1",
         "IANA": "TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA",
         "NSS": "",
         "OpenSSL": "ECDHE-PSK-AES256-CBC-SHA"
     },
     "0xC0,0x37": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_PSK_AES_128_CBC_SHA256",
         "IANA": "TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "ECDHE-PSK-AES128-CBC-SHA256"
     },
     "0xC0,0x38": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_PSK_AES_256_CBC_SHA384",
         "IANA": "TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA384",
         "NSS": "",
         "OpenSSL": "ECDHE-PSK-AES256-CBC-SHA384"
     },
     "0xC0,0x39": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_PSK_NULL_SHA1",
         "IANA": "TLS_ECDHE_PSK_WITH_NULL_SHA",
         "NSS": "",
         "OpenSSL": "ECDHE-PSK-NULL-SHA"
     },
     "0xC0,0x3A": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_PSK_NULL_SHA256",
         "IANA": "TLS_ECDHE_PSK_WITH_NULL_SHA256",
         "NSS": "",
         "OpenSSL": "ECDHE-PSK-NULL-SHA256"
     },
     "0xC0,0x3B": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_PSK_NULL_SHA384",
         "IANA": "TLS_ECDHE_PSK_WITH_NULL_SHA384",
         "NSS": "",
         "OpenSSL": "ECDHE-PSK-NULL-SHA384"
@@ -1680,13 +1680,13 @@
         "OpenSSL": ""
     },
     "0xC0,0x72": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_CAMELLIA_128_CBC_SHA256",
         "IANA": "TLS_ECDHE_ECDSA_WITH_CAMELLIA_128_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "ECDHE-ECDSA-CAMELLIA128-SHA256"
     },
     "0xC0,0x73": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_CAMELLIA_256_CBC_SHA384",
         "IANA": "TLS_ECDHE_ECDSA_WITH_CAMELLIA_256_CBC_SHA384",
         "NSS": "",
         "OpenSSL": "ECDHE-ECDSA-CAMELLIA256-SHA384"
@@ -1704,13 +1704,13 @@
         "OpenSSL": "ECDH-ECDSA-CAMELLIA256-SHA384"
     },
     "0xC0,0x76": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_RSA_CAMELLIA_128_CBC_SHA256",
         "IANA": "TLS_ECDHE_RSA_WITH_CAMELLIA_128_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "ECDHE-RSA-CAMELLIA128-SHA256"
     },
     "0xC0,0x77": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_RSA_CAMELLIA_256_CBC_SHA384",
         "IANA": "TLS_ECDHE_RSA_WITH_CAMELLIA_256_CBC_SHA384",
         "NSS": "",
         "OpenSSL": "ECDHE-RSA-CAMELLIA256-SHA384"
@@ -1728,25 +1728,25 @@
         "OpenSSL": "ECDH-RSA-CAMELLIA256-SHA384"
     },
     "0xC0,0x7A": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_CAMELLIA_128_GCM_SHA256",
         "IANA": "TLS_RSA_WITH_CAMELLIA_128_GCM_SHA256",
         "NSS": "",
         "OpenSSL": ""
     },
     "0xC0,0x7B": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_CAMELLIA_256_GCM_SHA384",
         "IANA": "TLS_RSA_WITH_CAMELLIA_256_GCM_SHA384",
         "NSS": "",
         "OpenSSL": ""
     },
     "0xC0,0x7C": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_CAMELLIA_128_GCM_SHA256",
         "IANA": "TLS_DHE_RSA_WITH_CAMELLIA_128_GCM_SHA256",
         "NSS": "",
         "OpenSSL": ""
     },
     "0xC0,0x7D": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_CAMELLIA_256_GCM_SHA384",
         "IANA": "TLS_DHE_RSA_WITH_CAMELLIA_256_GCM_SHA384",
         "NSS": "",
         "OpenSSL": ""
@@ -1764,13 +1764,13 @@
         "OpenSSL": ""
     },
     "0xC0,0x80": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_DSS_CAMELLIA_128_GCM_SHA256",
         "IANA": "TLS_DHE_DSS_WITH_CAMELLIA_128_GCM_SHA256",
         "NSS": "",
         "OpenSSL": ""
     },
     "0xC0,0x81": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_DSS_CAMELLIA_256_GCM_SHA384",
         "IANA": "TLS_DHE_DSS_WITH_CAMELLIA_256_GCM_SHA384",
         "NSS": "",
         "OpenSSL": ""
@@ -1788,25 +1788,25 @@
         "OpenSSL": ""
     },
     "0xC0,0x84": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DH_ANON_CAMELLIA_128_GCM_SHA256",
         "IANA": "TLS_DH_anon_WITH_CAMELLIA_128_GCM_SHA256",
         "NSS": "",
         "OpenSSL": ""
     },
     "0xC0,0x85": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DH_ANON_CAMELLIA_256_GCM_SHA384",
         "IANA": "TLS_DH_anon_WITH_CAMELLIA_256_GCM_SHA384",
         "NSS": "",
         "OpenSSL": ""
     },
     "0xC0,0x86": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_CAMELLIA_128_GCM_SHA256",
         "IANA": "TLS_ECDHE_ECDSA_WITH_CAMELLIA_128_GCM_SHA256",
         "NSS": "",
         "OpenSSL": ""
     },
     "0xC0,0x87": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_CAMELLIA_256_GCM_SHA384",
         "IANA": "TLS_ECDHE_ECDSA_WITH_CAMELLIA_256_GCM_SHA384",
         "NSS": "",
         "OpenSSL": ""
@@ -1824,13 +1824,13 @@
         "OpenSSL": ""
     },
     "0xC0,0x8A": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_RSA_CAMELLIA_128_GCM_SHA256",
         "IANA": "TLS_ECDHE_RSA_WITH_CAMELLIA_128_GCM_SHA256",
         "NSS": "",
         "OpenSSL": ""
     },
     "0xC0,0x8B": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_RSA_CAMELLIA_256_GCM_SHA384",
         "IANA": "TLS_ECDHE_RSA_WITH_CAMELLIA_256_GCM_SHA384",
         "NSS": "",
         "OpenSSL": ""
@@ -1848,205 +1848,205 @@
         "OpenSSL": ""
     },
     "0xC0,0x8E": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_CAMELLIA_128_GCM_SHA256",
         "IANA": "TLS_PSK_WITH_CAMELLIA_128_GCM_SHA256",
         "NSS": "",
         "OpenSSL": ""
     },
     "0xC0,0x8F": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_CAMELLIA_256_GCM_SHA384",
         "IANA": "TLS_PSK_WITH_CAMELLIA_256_GCM_SHA384",
         "NSS": "",
         "OpenSSL": ""
     },
     "0xC0,0x90": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_CAMELLIA_128_GCM_SHA256",
         "IANA": "TLS_DHE_PSK_WITH_CAMELLIA_128_GCM_SHA256",
         "NSS": "",
         "OpenSSL": ""
     },
     "0xC0,0x91": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_CAMELLIA_256_GCM_SHA384",
         "IANA": "TLS_DHE_PSK_WITH_CAMELLIA_256_GCM_SHA384",
         "NSS": "",
         "OpenSSL": ""
     },
     "0xC0,0x92": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_CAMELLIA_128_GCM_SHA256",
         "IANA": "TLS_RSA_PSK_WITH_CAMELLIA_128_GCM_SHA256",
         "NSS": "",
         "OpenSSL": ""
     },
     "0xC0,0x93": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_CAMELLIA_256_GCM_SHA384",
         "IANA": "TLS_RSA_PSK_WITH_CAMELLIA_256_GCM_SHA384",
         "NSS": "",
         "OpenSSL": ""
     },
     "0xC0,0x94": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_CAMELLIA_128_CBC_SHA256",
         "IANA": "TLS_PSK_WITH_CAMELLIA_128_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "PSK-CAMELLIA128-SHA256"
     },
     "0xC0,0x95": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_CAMELLIA_256_CBC_SHA384",
         "IANA": "TLS_PSK_WITH_CAMELLIA_256_CBC_SHA384",
         "NSS": "",
         "OpenSSL": "PSK-CAMELLIA256-SHA384"
     },
     "0xC0,0x96": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_CAMELLIA_128_CBC_SHA256",
         "IANA": "TLS_DHE_PSK_WITH_CAMELLIA_128_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "DHE-PSK-CAMELLIA128-SHA256"
     },
     "0xC0,0x97": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_CAMELLIA_256_CBC_SHA384",
         "IANA": "TLS_DHE_PSK_WITH_CAMELLIA_256_CBC_SHA384",
         "NSS": "",
         "OpenSSL": "DHE-PSK-CAMELLIA256-SHA384"
     },
     "0xC0,0x98": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_CAMELLIA_128_CBC_SHA256",
         "IANA": "TLS_RSA_PSK_WITH_CAMELLIA_128_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "RSA-PSK-CAMELLIA128-SHA256"
     },
     "0xC0,0x99": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_CAMELLIA_256_CBC_SHA384",
         "IANA": "TLS_RSA_PSK_WITH_CAMELLIA_256_CBC_SHA384",
         "NSS": "",
         "OpenSSL": "RSA-PSK-CAMELLIA256-SHA384"
     },
     "0xC0,0x9A": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_PSK_CAMELLIA_128_CBC_SHA256",
         "IANA": "TLS_ECDHE_PSK_WITH_CAMELLIA_128_CBC_SHA256",
         "NSS": "",
         "OpenSSL": "ECDHE-PSK-CAMELLIA128-SHA256"
     },
     "0xC0,0x9B": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_PSK_CAMELLIA_256_CBC_SHA384",
         "IANA": "TLS_ECDHE_PSK_WITH_CAMELLIA_256_CBC_SHA384",
         "NSS": "",
         "OpenSSL": "ECDHE-PSK-CAMELLIA256-SHA384"
     },
     "0xC0,0x9C": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_AES_128_CCM",
         "IANA": "TLS_RSA_WITH_AES_128_CCM",
         "NSS": "",
         "OpenSSL": "AES128-CCM"
     },
     "0xC0,0x9D": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_AES_256_CCM",
         "IANA": "TLS_RSA_WITH_AES_256_CCM",
         "NSS": "",
         "OpenSSL": "AES256-CCM"
     },
     "0xC0,0x9E": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_AES_128_CCM",
         "IANA": "TLS_DHE_RSA_WITH_AES_128_CCM",
         "NSS": "",
         "OpenSSL": "DHE-RSA-AES128-CCM"
     },
     "0xC0,0x9F": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_AES_256_CCM",
         "IANA": "TLS_DHE_RSA_WITH_AES_256_CCM",
         "NSS": "",
         "OpenSSL": "DHE-RSA-AES256-CCM"
     },
     "0xC0,0xA0": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_AES_128_CCM_8",
         "IANA": "TLS_RSA_WITH_AES_128_CCM_8",
         "NSS": "",
         "OpenSSL": "AES128-CCM8"
     },
     "0xC0,0xA1": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_AES_256_CCM_8",
         "IANA": "TLS_RSA_WITH_AES_256_CCM_8",
         "NSS": "",
         "OpenSSL": "AES256-CCM8"
     },
     "0xC0,0xA2": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_AES_128_CCM_8",
         "IANA": "TLS_DHE_RSA_WITH_AES_128_CCM_8",
         "NSS": "",
         "OpenSSL": "DHE-RSA-AES128-CCM8"
     },
     "0xC0,0xA3": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_AES_256_CCM_8",
         "IANA": "TLS_DHE_RSA_WITH_AES_256_CCM_8",
         "NSS": "",
         "OpenSSL": "DHE-RSA-AES256-CCM8"
     },
     "0xC0,0xA4": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_AES_128_CCM",
         "IANA": "TLS_PSK_WITH_AES_128_CCM",
         "NSS": "",
         "OpenSSL": "PSK-AES128-CCM"
     },
     "0xC0,0xA5": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_AES_256_CCM",
         "IANA": "TLS_PSK_WITH_AES_256_CCM",
         "NSS": "",
         "OpenSSL": "PSK-AES256-CCM"
     },
     "0xC0,0xA6": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_AES_128_CCM",
         "IANA": "TLS_DHE_PSK_WITH_AES_128_CCM",
         "NSS": "",
         "OpenSSL": "DHE-PSK-AES128-CCM"
     },
     "0xC0,0xA7": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_AES_256_CCM",
         "IANA": "TLS_DHE_PSK_WITH_AES_256_CCM",
         "NSS": "",
         "OpenSSL": "DHE-PSK-AES256-CCM"
     },
     "0xC0,0xA8": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_AES_128_CCM_8",
         "IANA": "TLS_PSK_WITH_AES_128_CCM_8",
         "NSS": "",
         "OpenSSL": "PSK-AES128-CCM8"
     },
     "0xC0,0xA9": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_AES_256_CCM_8",
         "IANA": "TLS_PSK_WITH_AES_256_CCM_8",
         "NSS": "",
         "OpenSSL": "PSK-AES256-CCM8"
     },
     "0xC0,0xAA": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_AES_128_CCM_8",
         "IANA": "TLS_PSK_DHE_WITH_AES_128_CCM_8",
         "NSS": "",
         "OpenSSL": "DHE-PSK-AES128-CCM8"
     },
     "0xC0,0xAB": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_AES_256_CCM_8",
         "IANA": "TLS_PSK_DHE_WITH_AES_256_CCM_8",
         "NSS": "",
         "OpenSSL": "DHE-PSK-AES256-CCM8"
     },
     "0xC0,0xAC": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_AES_128_CCM",
         "IANA": "TLS_ECDHE_ECDSA_WITH_AES_128_CCM",
         "NSS": "",
         "OpenSSL": "ECDHE-ECDSA-AES128-CCM"
     },
     "0xC0,0xAD": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_AES_256_CCM",
         "IANA": "TLS_ECDHE_ECDSA_WITH_AES_256_CCM",
         "NSS": "",
         "OpenSSL": "ECDHE-ECDSA-AES256-CCM"
     },
     "0xC0,0xAE": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_AES_128_CCM_8",
         "IANA": "TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8",
         "NSS": "",
         "OpenSSL": "ECDHE-ECDSA-AES128-CCM8"
     },
     "0xC0,0xAF": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_AES_256_CCM_8",
         "IANA": "TLS_ECDHE_ECDSA_WITH_AES_256_CCM_8",
         "NSS": "",
         "OpenSSL": "ECDHE-ECDSA-AES256-CCM8"
@@ -2079,13 +2079,13 @@
         "GnuTLS": "",
         "IANA": "TLS_SHA256_SHA256",
         "NSS": "",
-        "OpenSSL": ""
+        "OpenSSL": "TLS_SHA256_SHA256"
     },
     "0xC0,0xB5": {
         "GnuTLS": "",
         "IANA": "TLS_SHA384_SHA384",
         "NSS": "",
-        "OpenSSL": ""
+        "OpenSSL": "TLS_SHA384_SHA384"
     },
     "0xC1,0x00": {
         "GnuTLS": "",
@@ -2136,43 +2136,43 @@
         "OpenSSL": ""
     },
     "0xCC,0xA8": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_RSA_CHACHA20_POLY1305",
         "IANA": "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
         "NSS": "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
         "OpenSSL": "ECDHE-RSA-CHACHA20-POLY1305"
     },
     "0xCC,0xA9": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_ECDSA_CHACHA20_POLY1305",
         "IANA": "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
         "NSS": "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
         "OpenSSL": "ECDHE-ECDSA-CHACHA20-POLY1305"
     },
     "0xCC,0xAA": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_RSA_CHACHA20_POLY1305",
         "IANA": "TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
         "NSS": "TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
         "OpenSSL": "DHE-RSA-CHACHA20-POLY1305"
     },
     "0xCC,0xAB": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_PSK_CHACHA20_POLY1305",
         "IANA": "TLS_PSK_WITH_CHACHA20_POLY1305_SHA256",
         "NSS": "",
         "OpenSSL": "PSK-CHACHA20-POLY1305"
     },
     "0xCC,0xAC": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_ECDHE_PSK_CHACHA20_POLY1305",
         "IANA": "TLS_ECDHE_PSK_WITH_CHACHA20_POLY1305_SHA256",
         "NSS": "TLS_ECDHE_PSK_WITH_CHACHA20_POLY1305_SHA256",
         "OpenSSL": "ECDHE-PSK-CHACHA20-POLY1305"
     },
     "0xCC,0xAD": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_DHE_PSK_CHACHA20_POLY1305",
         "IANA": "TLS_DHE_PSK_WITH_CHACHA20_POLY1305_SHA256",
         "NSS": "TLS_DHE_PSK_WITH_CHACHA20_POLY1305_SHA256",
         "OpenSSL": "DHE-PSK-CHACHA20-POLY1305"
     },
     "0xCC,0xAE": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_RSA_PSK_CHACHA20_POLY1305",
         "IANA": "TLS_RSA_PSK_WITH_CHACHA20_POLY1305_SHA256",
         "NSS": "",
         "OpenSSL": "RSA-PSK-CHACHA20-POLY1305"

@@ -1,0 +1,12 @@
+{
+    "Entry": {
+      "Name": "Debuggable Application",
+      "ExtendedName": "Debuggable Application",
+      "Description": "By enabling the DEBUG mode, an malicious user is able to instrument and take control of the app by overcoming its security controls.",
+      "Mitigation": {
+        "Textual": "Please set the <a href='https://developer.android.com/privacy-and-security/risks/android-debuggable'>debuggable</a> flag to FALSE within the AndroidManifest.xml file.",
+        "Code Snippet": "1. Open an IDE (e.g., Android Studio);<br/>2. Search for the 'android:debuggable='true'' in the AndroidManifest.xml file;<br/>3. Replace the 'true' value with 'false'."
+      }
+    },
+    "#omit-xml-declaration": "yes"
+  }

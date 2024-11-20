@@ -2,23 +2,23 @@ import logging
 from os import listdir
 from os.path import isfile, join, sep
 from pathlib import Path
+import sys
 
 from modules.core import Core
 from utils.colors import Color
 from utils.configuration import pretty
-from utils.loader import load_configuration
-from utils.loader import load_list_of_domains
-from modules.core import Core
-from utils.type import WebserverType
-from os import listdir
-from os.path import isfile, join, sep
+from utils.loader import load_configuration, load_list_of_domains
 from utils.logger import Logger
+from utils.type import WebserverType
+
+from dependencies.SEBASTiAn.src.SEBASTiAn.util import check_valid_apk_file, check_valid_ipa_file
 
 config_types_mapping = {
     "apache": WebserverType.APACHE,
     "nginx": WebserverType.NGINX,
     "auto": WebserverType.AUTO
 }
+
 
 class Tlsa:
     def __init__(self, args):
@@ -90,7 +90,18 @@ class Tlsa:
                         ]
                     )
                 )
-                all_modules = f"{android_modules}\n{server_modules}"
+                ios_modules = (
+                    f"{Color.CBLUE}iOS:{Color.ENDC}\n\t"
+                    + "\n\t".join(
+                        [
+                            f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
+                            for f in listdir(f"configs{sep}modules{sep}ios{sep}")
+                            if f.endswith(".json")
+                            and isfile(join(f"configs{sep}modules{sep}ios{sep}", f))
+                        ]
+                    )
+                )
+                all_modules = android_modules + "\n" + server_modules + "\n" + ios_modules
 
             print(
                 f"Here's a list of all the modules available:\n{all_modules}"
@@ -104,26 +115,58 @@ class Tlsa:
         :param args: the arguments provided to the module
         :type args: argparse.Namespace
         """
-        logging.basicConfig(level=logging.DEBUG if args.verbosity else logging.INFO)
+        logging.basicConfig(
+            level=logging.DEBUG if args.verbosity else logging.INFO)
         self.__logging.debug("Started anaylsis with verbosity on.")
         self.__logging.debug("Initializing Core element.")
+        platform = None
+        if args.app:
+            if not isfile(args.app):
+                self.__logging.error(
+                    f"File '{args.app}' does not exist")
+                raise FileNotFoundError(
+                    f"File '{args.app}' does not exist")
+            try:
+                check_valid_apk_file(args.app)
+                platform = "Android"
+                self.__logging.debug(
+                    f"File '{args.app}' is an Android application")
+            except ValueError:
+                pass
+            if not platform:
+                try:
+                    check_valid_ipa_file(args.app)
+                    platform = "iOS"
+                    self.__logging.debug(
+                        f"File '{args.app}' is an iOS application")
+                except ValueError:
+                    pass
+            if not platform:
+                self.__logging.error(
+                    f"File '{args.app}' is not a valid mobile application")
+                raise ValueError(
+                    f"File '{args.app}' is not a valid mobile application")
+
         if isinstance(args.configuration, str) and args.configuration == "default":
             args.configuration = (
-                f"default{'_android.json' if args.apk else '_server.json'}"
+                f"default{'_android.json' if platform == 'Android' else '_ios.json' if platform == 'iOS' else '_server.json'}"
             )
         config_or_modules = args.configuration
         if args.config_type:
-            args.config_type = config_types_mapping.get(args.config_type.lower(), WebserverType.AUTO)
+            args.config_type = config_types_mapping.get(
+                args.config_type.lower(), WebserverType.AUTO)
         if args.compliance_args:
             assert "guidelines" in args.compliance_args, "Guideline Argument Missing!"
-            all_args=args.compliance_args.copy()
-            comp_one_or_many="compare_one" if "," not in all_args['guidelines'] else "compare_many"
-            gen_one_or_many="generate_one" if "," not in all_args['guidelines'] else "generate_many"
-            args.compliance_args={
-                comp_one_or_many:all_args,
-                gen_one_or_many:all_args
+            all_args = args.compliance_args.copy()
+            comp_one_or_many = "compare_one" if "," not in all_args['guidelines'] \
+                else "compare_many"
+            gen_one_or_many = "generate_one" if "," not in all_args['guidelines'] \
+                else "generate_many"
+            args.compliance_args = {
+                comp_one_or_many: all_args,
+                gen_one_or_many: all_args
             }
-            
+
         if args.apply_fix or args.file or args.compliance_args:
             # checks for openssl and ignore-openssl flag
             if not args.ignore_openssl and not args.openssl:
@@ -154,19 +197,19 @@ class Tlsa:
                 ignore_openssl=args.ignore_openssl,
                 compliance_args=args.compliance_args
             )
-        elif args.apk:
+        elif args.app:
             Core(
-                hostname_or_path=args.apk,
+                hostname_or_path=args.app,
                 configuration=config_or_modules,
                 output=args.output,
                 output_type=self.__to_report_type(args.output_type),
                 to_exclude=args.exclude,
-                type_of_analysis=Core.Analysis.APK,
+                type_of_analysis=Core.Analysis.APK if platform == 'Android' else Core.Analysis.IPA,
                 group_by=args.group_by,
                 stix=args.stix,
                 webhook=args.webhook,
                 prometheus=args.prometheus,
-                config_type = args.config_type
+                config_type=args.config_type
             )
         elif args.domain_file:
             Core(
@@ -181,13 +224,16 @@ class Tlsa:
                 webhook=args.webhook,
                 prometheus=args.prometheus,
                 config_type=args.config_type,
-                openssl_version = args.openssl,
-                ignore_openssl = args.ignore_openssl,
-                compliance_args = args.compliance_args
+                openssl_version=args.openssl,
+                ignore_openssl=args.ignore_openssl,
+                compliance_args=args.compliance_args
             )
-        elif args.file and any(module in ["compare_one", "compare_many"] for module in args.configuration):
-            args.compliance_args.get("compare_one", {})["actual_configuration_path"]=args.file
-            args.compliance_args.get("compare_many", {})["actual_configuration_path"]=args.file
+        elif args.file and any(module in ["compare_one", "compare_many"]
+                               for module in args.configuration):
+            args.compliance_args.get("compare_one", {})[
+                "actual_configuration_path"] = args.file
+            args.compliance_args.get("compare_many", {})[
+                "actual_configuration_path"] = args.file
             Core(
                 hostname_or_path=args.file,
                 configuration=config_or_modules,

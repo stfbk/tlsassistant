@@ -1,22 +1,22 @@
-from modules.android.mallodroid_base import Mallodroid_base
+
+from modules.ios.sebastian_base import Sebastian_base
 from modules.stix.stix_base import Bundled
 from utils.logger import Logger
 from utils.mitigations import load_mitigation
 
 
-class Hostnameverifier(Mallodroid_base):
+class AllowHttpPlist(Sebastian_base):
     """
-    Checks if the device has a custom hostname.
-
+    Checks if the app allows the use of the HTTP protocol
     """
 
-    stix = Bundled(mitigation_object=load_mitigation("HOSTNAME_VERIFIER"))
+    stix = Bundled(mitigation_object=load_mitigation("ALLOW_HTTP_PLIST"))
 
     def _get_logger(self):
         """
         Returns the module logger
         """
-        return Logger("HostnameVerifier")
+        return Logger("AllowHttpPlist")
 
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         """
@@ -30,8 +30,8 @@ class Hostnameverifier(Mallodroid_base):
         """
         if condition:
             result["mitigation"] = load_mitigation(
-                "HOSTNAME_VERIFIER", raise_error=False
-            )  # todo: we are missing a mitigation!
+                "ALLOW_HTTP_PLIST", raise_error=False
+            ) 
         return result if condition else {}
 
     # to override
@@ -51,5 +51,5 @@ class Hostnameverifier(Mallodroid_base):
         :rtype: dict
         """
         return self._obtain_results(
-            results, ["customhostnameverifier", "allowallhostnameverifier"]
+            results, ["AllowHttpPlist"]
         )

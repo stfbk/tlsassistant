@@ -1,0 +1,20 @@
+{
+    "input":[
+       {
+          "name":"path",
+          "type":"str",
+          "description":"Path of the APK to analyze",
+          "required":"True"
+       }
+    ],
+    "description":"The module checks whether the app allows self-defined HOSTNAME VERIFIER to accept all Common Names.",
+    "path":"modules/android/insecure_hostname_verifier.py",
+    "class_name":"InsecureHostnameVerifier",
+    "output":[
+       {
+          "name":"results",
+          "type":"dict",
+          "description":"results of the scan"
+       }
+    ]
+ }

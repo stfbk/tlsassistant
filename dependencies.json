@@ -1,9 +1,5 @@
 [
   {
-    "type": "git",
-    "url": "https://github.com/stfbk/mallodroid"
-  },
-  {
     "type": "cfg",
     "url": "https://chromium.googlesource.com/chromium/src/net/+/main/http/transport_security_state_static.json?format=TEXT"
   },
@@ -37,15 +33,11 @@
   },
   {
     "type": "git",
-    "url": "https://github.com/stfbk/TLS-Scanner"
+    "url": "https://github.com/IvanValentini/TLS-Scanner"
   },
   {
     "type": "apt",
     "url": "openjdk-21-jre"
-  },
-  {
-    "type": "apt",
-    "url": "openjdk-21-jdk"
   },
   {
     "type": "apt",
@@ -71,5 +63,13 @@
   {
     "type": "python3",
     "path": "ciphersuites_converter.py"
+  },
+  {
+    "type": "git",
+    "url": "https://github.com/talos-security/SEBASTiAn"
+  },
+  {
+    "type": "pip",
+    "url": "-r dependencies/SEBASTiAn/src/requirements.txt"
   }
 ]

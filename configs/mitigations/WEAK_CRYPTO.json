@@ -1,0 +1,12 @@
+{
+    "Entry": {
+      "Name": "Weak Crypto",
+      "ExtendedName": "Weak Crypto",
+      "Description": "By using weak ciphers, the encrypted data can be easily read by a malicious actor even without knowing the decryption key.",
+      "Mitigation": {
+        "Textual": "The only acceptable mitigation is to use more safe and strong encryption algorithms, based on AES.<br/>This vulnerability can give false positives regarding the 3des cipher if it is used to authenticate eletronic cards (e.g. CIE)",
+        "Suggested Steps": "1. Open an IDE (e.g., Xcode);<br/>2. Search for the type of encryption algorithms of the CommonCrypto library in the code;<br/>3. Replace the encryption algorithms so that they all use AES;<br/>4. For example from 'kCCAlgorithmDES' to 'kCCAlgorithmAES'."
+      }
+    },
+    "#omit-xml-declaration": "yes"
+  }

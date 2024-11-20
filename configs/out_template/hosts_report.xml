@@ -1,4 +1,4 @@
-<!DOCTYPE document SYSTEM "rml-1.0.dtd">
+<!DOCTYPE document SYSTEM "rml.dtd">
 <document>
     <docinit>
         <registerTTFont faceName="Roboto" fileName="dependencies/roboto-unhinted/Roboto-Regular.ttf" />
@@ -8,15 +8,15 @@
     </docinit>
 <!--To edit the font of a string edit the corresponding style here-->
     <stylesheet>
-        <paraStyle name = "title" fontSize="39" leading="35" alignment="centre" spaceAfter="20"/>
-        <paraStyle name = "subtitle" fontName = "Roboto" fontSize="17" alignment="centre" textColor="grey"/>
+        <paraStyle name = "title" fontSize="39" leading="39" alignment="centre" spaceAfter="20"/>
+        <paraStyle name = "subtitle" fontName = "Roboto" fontSize="17" alignment="centre" textColor="grey" spaceAfter="20"/>
         <paraStyle name = "recap" fontName = "Roboto Bold" fontSize = "25" alignment="centre" spaceAfter="25"/>
         <paraStyle name = "detected_vulnerabilities" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30"/>
         <paraStyle name = "detected_errors" fontName = "Roboto Bold" fontSize = "28" alignment="left" spaceAfter="30" textColor="red"/>
         <paraStyle name = "no_vulnerabilities_detected" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30" textColor="green" spaceBefore="20"/>
         <paraStyle name = "module_list" fontName = "Roboto" fontSize="10" alignment="left" textColor="grey" spaceAfter="5"/>
         <paraStyle name = "module" fontName = "Roboto Bold" fontSize="20" alignment="left" spaceAfter="15" spaceBefore="10"/>
-        <paraStyle name = "host" fontName = "Roboto Bold" fontSize = "25" alignment="centre" spaceAfter="25" spaceBefore="20" textColor="#4d4d4d"/>
+        <paraStyle name = "host" fontName = "Roboto Bold" fontSize = "25" leading = "25" alignment="centre" spaceAfter="25" spaceBefore="20" textColor="#4d4d4d"/>
         <paraStyle name = "module_full_name" fontName = "Roboto" fontSize="12" alignment="left" textColor="grey" spaceAfter="5"/>
         <paraStyle name = "cvss" fontName = "Roboto" fontSize="12" alignment="left" textColor="grey" spaceAfter="5"/>
         <paraStyle name = "description" fontName = "Roboto Italic" fontSize="12" alignment="left" textColor="grey" spaceAfter="10"/>
@@ -111,13 +111,17 @@
     <story>
         <!--cercare template per scrivre disclaimer stile approver (confidenziale) (PAGINA 2)-->
         <!--forse mettere il comando usato per generare il report-->
-        {% if hosts.__len__() == 1 %}
+        {% if type in ["APK", "IPA"] and "/" in hosts[0] %}
+            {%set host = hosts[0]%}
+            <para style="title"><b>Target: {{host.split('/')[-1]}}</b></para>
+            <para style="subtitle">Path: {{"/".join(host.split("/")[:-1])}}</para>
+        {% elif hosts.__len__() == 1 %}
             {%set host = hosts[0]%}
             <para style="title"><b>Target: {{host}}</b></para>
         {% elif hosts.__len__() > 1 %}
             <para style="title"><b>Target: <i>multiple hosts</i></b></para>
         {% else %}
-            <para style="title"><b>NO HOST LIST FOUND</b></para>
+            <para style="title"><b>NO {{type}} LIST FOUND</b></para>
         {% endif %}
         <para style="subtitle">Analysis performed on {{date}}</para>
         <setNextTemplate name="disclaimer"/>
@@ -142,13 +146,19 @@
         <setNextTemplate name="standard"/>
         <nextFrame/>
         <h1 style="recap">Recap</h1>
+
         <blockTable style="report">
-            <tr>
-                <td>Modules / Hostname: </td>
-                {% for host in results %}
+        <tr>
+            <td>Modules</td>
+            {% for host in results %}
+                {% if type in ["APK", "IPA"] %}
+                    {% set file_name = host.split('/')[-1] %}
+                    <td>{{ file_name.split('/')[-1][:35] + '...' if file_name|length > 35 else file_name }}</td>
+                {% else %}
                     <td>{{host}}</td>
-                {% endfor %}
-            </tr>
+                {% endif %}
+            {% endfor %}
+        </tr>
             {% for module in modules %}
                 <tr>
                     <td>{{name_mapping.get(module, module)}}</td>
@@ -174,7 +184,7 @@
                 </tr>
             {% endfor %}
         </blockTable>
-        {% if results %}
+        {% if pruner(results) %}
             <nextFrame/>
             {%set i_ns = namespace(i=0)%}
             {% for host in results%}
