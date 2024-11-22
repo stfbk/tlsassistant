@@ -37,7 +37,7 @@
   },
   {
     "type": "apt",
-    "url": "openjdk-21-jre"
+    "url": "openjdk-8-jre"
   },
   {
     "type": "apt",
