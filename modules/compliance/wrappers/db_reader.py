@@ -4,6 +4,9 @@ import utils.database as db_utils
 from utils.loader import load_configuration
 from utils.logger import Logger
 
+# Configs from the tls-compliance-dataset repository
+from configs import sheets_mapping
+
 
 class Database:
     database_file = "dependencies/requirements.db"
@@ -12,10 +15,11 @@ class Database:
         self.database_file = file
         self.connection = sqlite3.connect(self.database_file)
         self.cursor = self.connection.cursor()
-        self.sheet_mapping = load_configuration("sheet_mapping", "configs/compliance/")
+        self.sheet_mapping = sheets_mapping
 
         # Retrieve the list of tables from the database
-        self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        self.cursor.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'")
         self.table_names = [table[0] for table in self.cursor.fetchall()]
         self.__input_dict = {}
         self._logging = Logger("Database wrapper")
@@ -43,7 +47,7 @@ class Database:
         """
         return self.sheet_mapping.get(sheet, default_value)
 
-    def input(self, tables, join_condition="1==1", other_filter=""):
+    def input(self, tables, join_condition="1==1", other_filter="", raw=None):
         """
         Set the input parameters
 
@@ -53,11 +57,14 @@ class Database:
         :type join_condition: str
         :param: other_filter -- (Optional) A filter to add to the query the WHERE/AND part will be handled automatically
         :type other_filter: str
+        :param: raw -- (Optional) A raw query to execute, if defined the other parameters will be ignored
+        :type raw: str
         """
         self.__input_dict = {
             "tables": tables,
             "other_filter": other_filter,
-            "join_condition": join_condition
+            "join_condition": join_condition,
+            "raw": raw
         }
 
     def output(self, columns="*"):
@@ -67,6 +74,12 @@ class Database:
         :param: tables -- List of tables from which data should be retrieved
         :type columns: list
         """
+        raw = self.__input_dict.get("raw")
+        if raw:
+            self._logging.debug(raw)
+            self.cursor.execute(raw)
+            return self.cursor.fetchall()
+
         query = f"SELECT {', '.join(columns)} FROM "
         first = 2
         other_filter = self.__input_dict.get("other_filter")
@@ -89,7 +102,7 @@ class Database:
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
-    def run(self, tables, join_condition="1==1", other_filter="", columns="*"):
+    def run(self, tables, join_condition="1==1", other_filter="", columns="*", raw=None):
         """
         Retrieve data from the database
 
@@ -101,6 +114,8 @@ class Database:
         :type other_filter: str
         :param: tables -- List of tables from which data should be retrieved
         :type columns: list
+        :param: raw -- (Optional) A raw query to execute, if defined the other parameters will be ignored
+        :type raw: str
         """
-        self.input(tables, join_condition, other_filter)
+        self.input(tables, join_condition, other_filter, raw)
         return self.output(columns)

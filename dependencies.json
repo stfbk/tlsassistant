@@ -57,6 +57,10 @@
     "url": "https://github.com/stfbk/tls-table"
   },
   {
+    "type": "git",
+    "url": "https://github.com/stfbk/tls-compliance-dataset"
+  },
+  {
     "type": "file",
     "url": "https://github.com/stfbk/tls-compliance-dataset/releases/latest/download/requirements.db"
   },
