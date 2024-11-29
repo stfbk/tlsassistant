@@ -16,6 +16,7 @@ from modules.configuration.configuration_base import OpenSSL
 from modules.server.wrappers.testssl import Testssl
 from utils.ciphersuites import get_1_3_ciphers
 from utils.database import get_standardized_level
+from utils.globals import DEFAULT_COLUMNS
 from utils.loader import load_configuration
 from utils.logger import Logger
 from utils.mitigations import MitigationLoader
@@ -103,7 +104,7 @@ class Compliance:
 
     def prepare_sheet_columns(self):
         resulting_dict = {}
-        columns_base = ["name", "level", "condition", "guidelineName"]
+        columns_base = DEFAULT_COLUMNS
         for guideline in different_names_pos:
             columns_nums = different_names_pos[guideline]
             guideline = sheets_mapping[guideline]

@@ -1,5 +1,5 @@
 from modules.compliance.compliance_base import Compliance
-
+from utils.globals import DEFAULT_COLUMNS
 
 class CompareOne(Compliance):
     def _worker(self, sheets_to_check, hostname):
@@ -14,7 +14,7 @@ class CompareOne(Compliance):
             raise ValueError("No configuration provided")
         for sheet in sheets_to_check:
             original_sheet = sheet
-            columns_orig = ["name", "level", "condition", "guidelineName"]
+            columns_orig = DEFAULT_COLUMNS
             # If the sheet isn't in the dictionary then I can use the default value
             query_filter = self.get_filters(sheet)
             columns = self.sheet_columns.get(sheet, {"columns": columns_orig})["columns"]
