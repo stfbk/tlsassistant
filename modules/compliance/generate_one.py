@@ -1,11 +1,11 @@
 from modules.compliance.compliance_base import Generator
-
+from utils.globals import DEFAULT_COLUMNS
 
 class GenerateOne(Generator):
     def _worker(self, sheets_to_check, hostname):
         if not self._config_class.output_file():
             raise ValueError("No output file path provided")
-        columns = ["name", "level", "condition", "guidelineName"]
+        columns = DEFAULT_COLUMNS
         conf_mapping = self._configuration_mapping
         for field in conf_mapping:
             if not self._output_dict.get(field):
