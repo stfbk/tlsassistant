@@ -695,21 +695,21 @@ class Core:
                 extraction = tldextract.extract(hostname_or_path)
                 if not extraction.subdomain and hostname_or_path != "localhost" and \
                         not validate_ip(hostname_or_path):
-                    try:
-                        _ = socket.gethostbyname(
-                            f"www.{extraction.registered_domain}")
-                    except socket.error as e:
-                        self.__logging.debug(e)
-                        self.__logging.error(
-                            f"Hostname {hostname_or_path} not found, skipping.."
-                        )
-                        return loaded_modules, {
-                            "errors":
-                            {
-                                hostname_or_path:
-                                {"Invalid hostname": "Critical"}
-                            }
+                    hostname_or_path = f"www.{hostname_or_path}"
+                try:
+                    _ = socket.gethostbyname(hostname_or_path)
+                except socket.error as e:
+                    self.__logging.debug(e)
+                    self.__logging.error(
+                        f"Hostname {hostname_or_path} not found, skipping.."
+                    )
+                    return loaded_modules, {
+                        "errors":
+                        {
+                            hostname_or_path:
+                            {"Invalid hostname": "Critical"}
                         }
+                    }
             full_analysis = False
             for module in loaded_modules:
                 if module.startswith("compare"):

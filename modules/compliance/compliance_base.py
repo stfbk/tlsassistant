@@ -629,8 +629,9 @@ class Compliance:
                     for ex in extensions:
                         # the [1] is the iana code
                         tokens = ex.split("/#")
-                        extensions_pairs[tokens[1]
-                                         ] = tokens[0].lower().replace(" ", "_")
+                        if len(tokens) > 1:
+                            extensions_pairs[tokens[1]
+                                            ] = tokens[0].lower().replace(" ", "_")
                     self._user_configuration["Extension"] = extensions_pairs
 
                 # From the certificate signature algorithm is possible to extract both CertificateSignature and Hash
