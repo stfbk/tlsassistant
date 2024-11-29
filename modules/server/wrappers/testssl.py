@@ -10,7 +10,7 @@ from utils.urls import url_strip, link_sep, validate_ip
 
 class Parser:
     """
-    Class used to parse tlsfuzzer results.
+    Class used to parse testssl results.
     The results are parsed and grouped by IP/SITE.
     """
 
@@ -28,10 +28,7 @@ class Parser:
     def __parse(self):  # parse method
         for result in self.__results:  # for each result
             site, ip = result["ip"].rsplit("/", 1)  # split ip, it usually is website/ip
-            if site == "" or validate_ip(
-                site
-            ):  # if site value is missing or it's an IP
-                site = "IP_SCANS"  # group them by IP SCAN
+            site = ip if site == "" else site  # if site is empty, we use the ip
             if ip != "":  # if the ip is missing, it's nothing we care about.
                 if (
                     site not in self.__output

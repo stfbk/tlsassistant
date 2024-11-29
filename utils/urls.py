@@ -1,6 +1,7 @@
 import re
 from tldextract import extract
 from utils.logger import Logger
+import ipaddress
 
 
 def port_parse(port: str) -> str:
@@ -108,13 +109,8 @@ def validate_ip(ip: str) -> bool:
     :return: True if ip param it's an IP, false otherwise.
     :rtype: bool
     """
-    a = ip.rsplit(":", 1)[0].split(".")
-    if len(a) != 4:
+    try:
+        _ = ipaddress.ip_address(ip)
+        return True
+    except ValueError:
         return False
-    for x in a:
-        if not x.isdigit():
-            return False
-        i = int(x)
-        if i < 0 or i > 255:
-            return False
-    return True

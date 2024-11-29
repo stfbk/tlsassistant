@@ -23,6 +23,7 @@ class Stix:
 
         HOSTS = 0
         MODULES = 1
+        DOMAINS = 4
 
     def __init__(self, type_of_analysis: Type):
         self.bundle = None

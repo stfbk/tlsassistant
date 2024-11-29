@@ -38,6 +38,7 @@ class Report:
         MODULES = 1
         APK = 2 
         IPA = 3
+        DOMAINS = 4
 
     def __init__(self):
         self.__input_dict = {}
@@ -184,12 +185,12 @@ class Report:
         env = Environment(loader=fsl)
         file_extension = "xml" if rml else "html"
         to_process = {"version": version, "date": date, "modules": modules, "hosts": list(results.keys())}
-        
+
         if mode == self.Mode.MODULES:
             self.__logging.info("Generating modules report..")
             template = env.get_template(f"modules_report.{file_extension}")
             to_process["results"] = self.__modules_report_formatter(results, modules)
-        elif mode == self.Mode.HOSTS:
+        elif mode == self.Mode.HOSTS or mode == self.Mode.DOMAINS:
             self.__logging.info("Generating hosts report..")
             template = env.get_template(f"hosts_report.{file_extension}")
             to_process["type"] = "HOSTS"

@@ -22,8 +22,7 @@ from utils.validation import Validator, is_apk, is_ipa
 from utils.configuration import get_aliases
 from utils.subdomain_enumeration import enumerate
 from utils.type import WebserverType
-from utils.urls import link_sep
-from utils.urls import has_wildcard, remove_wildcard
+from utils.urls import has_wildcard, link_sep, remove_wildcard, validate_ip
 
 
 class Core:
@@ -550,6 +549,7 @@ class Core:
                 if "group_by" in self.__input_dict
                 and self.__input_dict["group_by"] == "module"
                 else Report_module.Mode.HOSTS if type_of_analysis == self.Analysis.HOST
+                else Report_module.Mode.DOMAINS if type_of_analysis == self.Analysis.DOMAINS
                 else Report_module.Mode.IPA if type_of_analysis == self.Analysis.IPA
                 else Report_module.Mode.APK,
                 stix=self.__input_dict["stix"],
@@ -690,28 +690,26 @@ class Core:
                 config_type=self.__input_dict["config_type"]
             )  # TODO: better output report
         else:
-            if type_of_analysis == self.Analysis.HOST and hostname_or_path != "placeholder":
+            if type_of_analysis in [self.Analysis.HOST, self.Analysis.DOMAINS] \
+                    and hostname_or_path != "placeholder":
                 extraction = tldextract.extract(hostname_or_path)
-                if not extraction.subdomain and hostname_or_path != "localhost":
+                if not extraction.subdomain and hostname_or_path != "localhost" and \
+                        not validate_ip(hostname_or_path):
                     try:
-                        ipaddress.ip_address(hostname_or_path)
-                    except ValueError:
-                        hostname_or_path = f"www.{hostname_or_path}"
-                        try:
-                            _ = socket.gethostbyname(
-                                f"www.{extraction.registered_domain}")
-                        except socket.error as e:
-                            self.__logging.debug(e)
-                            self.__logging.error(
-                                f"Hostname {hostname_or_path} not found, skipping.."
-                            )
-                            return loaded_modules, {
-                                "errors":
-                                {
-                                    hostname_or_path:
-                                    {"Invalid hostname": "Critical"}
-                                }
+                        _ = socket.gethostbyname(
+                            f"www.{extraction.registered_domain}")
+                    except socket.error as e:
+                        self.__logging.debug(e)
+                        self.__logging.error(
+                            f"Hostname {hostname_or_path} not found, skipping.."
+                        )
+                        return loaded_modules, {
+                            "errors":
+                            {
+                                hostname_or_path:
+                                {"Invalid hostname": "Critical"}
                             }
+                        }
             full_analysis = False
             for module in loaded_modules:
                 if module.startswith("compare"):
