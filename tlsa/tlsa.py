@@ -115,8 +115,8 @@ class Tlsa:
         :param args: the arguments provided to the module
         :type args: argparse.Namespace
         """
-        logging.basicConfig(
-            level=logging.DEBUG if args.verbosity else logging.INFO)
+        tmp = logging.basicConfig(
+            level=logging.DEBUG if args.verbosity else logging.INFO, force=True)
         self.__logging.debug("Started anaylsis with verbosity on.")
         self.__logging.debug("Initializing Core element.")
         platform = None
