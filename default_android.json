@@ -8,16 +8,13 @@
     "crypto_ecb_cipher",
     "debuggable_application",
     "default_scheme_http",
-    "hostnameverifier",
     "insecure_connection",
     "insecure_hostname_verifier",
     "insecure_socket",
     "insecure_socket_factory",
     "invalid_server_certificate",
     "obfuscated_code",
-    "ssl_error",
     "ssl_getinsecure_method",
-    "trustmanager",
     "weak_algorithms",
     "webview_ssl_errors"
   ]
