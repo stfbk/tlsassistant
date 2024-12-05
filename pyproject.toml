@@ -9,7 +9,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-aiohttp = "3.10.2"
+aiohttp = "3.10.11"
 tldextract = "3.1.0"
 apacheconfig = "0.3.2"
 crossplane = "0.5.7"
