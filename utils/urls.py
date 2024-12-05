@@ -114,3 +114,16 @@ def validate_ip(ip: str) -> bool:
         return True
     except ValueError:
         return False
+
+def cache_name(hostname: str, port: str=443):
+    """
+    Create a cache name for the hostname and port.
+
+    :param hostname: The hostname
+    :type hostname: str
+    :param port: The port
+    :type port: str
+    :return: The cache name
+    :rtype: str
+    """
+    return f"{hostname}_{port}" if port != "" else hostname

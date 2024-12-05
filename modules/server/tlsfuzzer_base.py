@@ -4,7 +4,7 @@ from modules.server.wrappers.testssl import Testssl
 from modules.server.wrappers.tlsfuzzer import Tlsfuzzer
 from utils.counter import count_occurrencies as grep
 from utils.mitigations import load_mitigation
-from utils.urls import url_domain, port_parse
+from utils.urls import url_domain, port_parse, cache_name
 from utils.validation import Validator
 
 
@@ -108,23 +108,28 @@ class Tlsfuzzer_base:
                     out[script]["code"] = (
                         split[1] if len(split) > 1 else results[script]
                     )
-                    out = self._set_mitigations(out, list_of_checks["MITIGATION"], True)
+                    out = self._set_mitigations(
+                        out, list_of_checks["MITIGATION"], True)
             else:
                 reason = "Reason: "
                 if script == "test-certificate-verify" and "Unexpected message from peer: Handshake(server_hello_done)" in \
                         results[script]:
                     reason += "Server did not send a CertificateVerify message, the test cannot be performed."
                 elif script == "test-clienthello-md5" and "Alert(fatal, handshake_failure)" in results[script] and \
-                        not self._testssl.output(**{"hostname": self._input_dict["hostname"]}).get("cipher-tls1_2_x6b",
-                                                                                                   False):
-                    reason += ("Server does not support cipher `TLS_DHE_RSA_WITH_AES_256_CBC_SHA256`, "
-                               "the test cannot be performed.")
+                        not self._testssl.output(**{
+                            "hostname": self._input_dict["hostname"]}).get("cipher-tls1_2_x6b", False):
+                    reason += "Server does not support cipher `TLS_DHE_RSA_WITH_AES_256_CBC_SHA256`, the test cannot be performed."
+                elif script == "test-tls13-pkcs-signature" and "Alert(fatal, handshake_failure)" in results[script] and \
+                        not self._testssl.output(**{
+                            "hostname": self._input_dict["hostname"]}).get("TLS1_3", {}).get("finding", "").startswith("not"):
+                    reason += "Server does not support TLS 1.3, the test cannot be performed."
                 else:
                     self.__logging.warning(
                         f"Results won't make sense for script {script}, sanity check failed."
                     )
                 if reason != "Reason: ":
-                    self.__logging.info(f"Ignoring {script} analysis.\n" + reason)
+                    self.__logging.info(
+                        f"Ignoring {script} analysis.\n" + reason)
         return out
 
     def _worker(self, results):
@@ -170,11 +175,12 @@ class Tlsfuzzer_base:
             [(self._input_dict["hostname"], str), (self._input_dict["port"], str)]
         )
         self._input_dict["hostname"] = url_domain(self._input_dict["hostname"])
-        testssl_args = {"hostname": self._input_dict["hostname"],
-                        "args": ["-e"],
-                        "port": self._input_dict["port"]}
-        if not self._testssl.output(**testssl_args):
-            self._testssl.run(**testssl_args)
+        # testssl.sh does not have a port argument, the port is part of the hostname
+        testssl_args = {"hostname": self._input_dict["hostname"]+":"+self._input_dict["port"],
+                        "args": ["-e", "-p"],
+                        }
+        hostname_cache = cache_name(self._input_dict["hostname"], self._input_dict["port"])
+        self._testssl.run(**testssl_args, force=True)
         logging.debug(
             f"Executing analysis in {self._input_dict['hostname']} in port {self._input_dict['port']} with scripts "
             f"{', '.join([s[0] for s in self._arguments])}"
