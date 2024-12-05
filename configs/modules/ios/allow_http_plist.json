@@ -1,0 +1,20 @@
+{
+    "input":[
+       {
+          "name":"path",
+          "type":"str",
+          "description":"Path of the IPA to analyze",
+          "required":"True"
+       }
+    ],
+    "description":"This modules checks if the app allows the use of the HTTP protocol",
+    "path":"modules/ios/allow_http_plist.py",
+    "class_name":"AllowHttpPlist",
+    "output":[
+       {
+          "name":"results",
+          "type":"dict",
+          "description":"results of the scan"
+       }
+    ]
+ }

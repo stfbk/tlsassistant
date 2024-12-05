@@ -15,20 +15,20 @@ ENV LANGUAGE en_US:en
 
 ENV LC_ALL en_US.UTF-8    
 
-RUN apt-get update && apt-get install -y git python3-dev python3-pip sudo bsdmainutils locales dnsutils
+ENV TZ Europe/Rome
+
+RUN apt-get update && apt-get install -y git python3-dev python3-pip sudo bsdmainutils locales dnsutils tzdata keyboard-configuration pipx
 
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
     locale-gen
 
-RUN apt-get -y install tzdata keyboard-configuration pipx
-
-COPY . /tlsassistant
-
-WORKDIR "/tlsassistant"
-
 RUN pipx install poetry
 
 RUN pipx ensurepath
+    
+COPY . /tlsassistant
+
+WORKDIR "/tlsassistant"
 
 RUN poetry install
 

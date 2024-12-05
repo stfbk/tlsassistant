@@ -1,0 +1,11 @@
+{
+    "Entry": {
+      "Name": "Invalid Server Certificate",
+      "ExtendedName": "Invalid Server Certificate",
+      "Description": "This app does not check the validation of X.509 certificates. This represents a critical vulnerability, enabling attackers to carry out Man-in-the-Middle (MitM) attacks undetected.",
+      "Mitigation": {
+        "Textual": "Avoid attempting to override checkClientTrusted, checkServerTrusted, and getAcceptedIssuers methods with empty implementations. <br/> It's recommended to stick with the <a href='https://developer.android.com/reference/javax/net/ssl/X509TrustManager'>existing API</a> instead of coming up with your own X509Certificate class. You can find further information <a href='https://www.ibm.com/docs/en/sdk-java-technology/8?topic=interface-creating-x509trustmanager'>here</a>."
+      }
+    },
+    "#omit-xml-declaration": "yes"
+  }

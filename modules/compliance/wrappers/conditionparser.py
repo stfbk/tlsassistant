@@ -8,6 +8,9 @@ from utils.loader import load_configuration
 from utils.logger import Logger
 from utils.validation import Validator
 
+# Configs from the tls-compliance-dataset repository
+from configs import sheets_mapping
+
 
 class ConditionParser:
     _instructions = load_configuration("condition_instructions", "configs/compliance/")
@@ -23,7 +26,7 @@ class ConditionParser:
     _splitting_regex = "|".join(regex_separators)
     # same as above but also captures the separators
     splitting_capturing_regex = "(" + ")|(".join(regex_separators) + ")"
-    _sheet_mapping = load_configuration("sheet_mapping", "configs/compliance/")
+    _sheet_mapping = sheets_mapping
     __logging = Logger("Condition parser")
     __logging.debug(_splitting_regex)
 

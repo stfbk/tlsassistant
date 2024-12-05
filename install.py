@@ -44,29 +44,37 @@ class Install:
         logger.info("Loading dependencies...")
         for dependency in dependencies:  # for each dependency
             if dependency["type"] == "git":  # if it's git
-                gits.append(dependency["url"])  # append it's url to the git array
+                # append it's url to the git array
+                gits.append(dependency["url"])
                 logger.debug(f"Added dependency git {dependency['url']}")
             elif dependency["type"] == "pkg":  # if it's pkg
-                pkgs.append(dependency["url"])  # append it's url to the pkg array
+                # append it's url to the pkg array
+                pkgs.append(dependency["url"])
                 logger.debug(f"Added dependency pkg {dependency['url']}")
             elif dependency["type"] == "apt":  # if it's zip
-                apts.append(dependency["url"])  # append it's url to the zip array
+                # append it's url to the zip array
+                apts.append(dependency["url"])
                 logger.debug(f"Added dependency apt {dependency['url']}")
             elif dependency["type"] == "zip":  # if it's zip
-                zips.append(dependency["url"])  # append it's url to the zip array
+                # append it's url to the zip array
+                zips.append(dependency["url"])
                 logger.debug(f"Added dependency zip {dependency['url']}")
             elif dependency["type"] == "cfg":  # if it's cfg
-                cfgs.append(dependency["url"])  # append it's url to the cfg array
+                # append it's url to the cfg array
+                cfgs.append(dependency["url"])
                 logger.debug(f"Added dependency cfg {dependency['url']}")
             elif dependency["type"] == "pip":  # if it's pip
-                pips.append(dependency["url"])  # append it's url to the pip array
+                # append it's url to the pip array
+                pips.append(dependency["url"])
                 logger.debug(f"Added dependency pip {dependency['url']}")
             elif dependency["type"] == "compile_maven":  # if it's maven project
-                maven_paths.append(dependency["path"])  # append it's path to the maven array
+                # append it's path to the maven array
+                maven_paths.append(dependency["path"])
                 logger.debug(f"Added dependency compile {dependency['path']}")
             elif dependency["type"] == "git-submodule":  # if it's reporitory submodule
                 git_submodules[dependency["path"]] = dependency["cmd"]
-                logger.debug(f"Added git submodule of {dependency['path']} with command git submodule {dependency['cmd']}")
+                logger.debug(
+                    f"Added git submodule of {dependency['path']} with command git submodule {dependency['cmd']}")
             elif dependency["type"] == "python3":
                 python3_scripts.append(dependency["path"])
                 logger.debug(f"Added dependency python3 {dependency['path']}")
@@ -102,7 +110,8 @@ class Install:
         results_pips = pips
 
         for path in git_submodules:  # for each git submodule,
-            self.git_submodules_init(path,git_submodules[path])  # initialize submodules
+            # initialize submodules
+            self.git_submodules_init(path, git_submodules[path])
             logger.info(f"Submodules of {path} done.")
 
         logger.debug(files)
@@ -114,12 +123,15 @@ class Install:
             "This may take a while... Rerun the tool with -v to see the detailed installation."
         )
         self.apt_update()
-        self.install_dependencies("pkgs", results_pkgs)  # install the dependencies pkg
-        self.install_dependencies("apts", results_apts)  # install the dependencies pkg
+        # install the dependencies pkg
+        self.install_dependencies("pkgs", results_pkgs)
+        # install the dependencies pkg
+        self.install_dependencies("apts", results_apts)
         logger.info("Unzipping dependencies...")
         self.install_dependencies("python3", python3_scripts)
         self.install_dependencies("zips", results_zips)  # unzips the zips
-        self.install_dependencies("pip", results_pips) # install the dependencies with pip
+        # install the dependencies with pip
+        self.install_dependencies("pip", results_pips)
         logger.info("Compiling maven dependencies...")
         self.compile_maven_dependencies(maven_paths)  # unzips the zips
         logger.info("Generating Certificates...")
@@ -231,12 +243,16 @@ class Install:
             elif type == "pip":
                 logger.debug(f"Installing dependencies{sep}{file}")
                 with open(devnull, "w") as null:
+                    params = [
+                        "pip3",
+                        "install",
+                        file
+                    ]
+                    if " " in file:
+                        params = params[:-1]
+                        params.extend(file.split(" "))
                     subprocess.check_call(
-                        [
-                            "pip3",
-                            "install",
-                            file
-                        ],
+                        params,
                         stderr=sys.stderr,
                         stdout=(
                             sys.stdout
@@ -297,7 +313,6 @@ class Install:
                 cwd="dependencies/"+path
             )
 
-
     def git_clone(self, url, path=None):
         file_name = self.get_filename(url)
         with open(devnull, "w") as null:
@@ -350,7 +365,8 @@ def main():  # exec main
     if not path.exists("dependencies"):  # if can't find dependency folder
         logger.debug("Folder dependencies does not exist. Creating a new one.")
     else:
-        logger.debug("Folder dependencies exist. Removing and creating a new one.")
+        logger.debug(
+            "Folder dependencies exist. Removing and creating a new one.")
         rm_rf("dependencies")  # delete the folder
     mkdir("dependencies")  # create the folder
     if path.exists("dependencies.json"):  # if  find the dependency file

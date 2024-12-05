@@ -1,0 +1,11 @@
+{
+    "Entry": {
+      "Name": "Insecure Connection",
+      "ExtendedName": "Insecure Connection",
+      "Description": "By using the HTTP schema, a malicious user may force the app to fetch unsecure content. This can lead to wrong information being displayed (e.g., phishing attacks).",
+      "Mitigation": {
+        "Code Snippet": "1. Open an IDE (e.g., Android Studio);<br/>2. Find and replace all the 'http://' occurrencies with 'https://'."
+      }
+    },
+    "#omit-xml-declaration": "yes"
+  }

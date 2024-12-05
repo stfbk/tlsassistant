@@ -1,4 +1,5 @@
 from modules.compliance.compliance_base import Compliance
+from utils.globals import DEFAULT_COLUMNS
 
 
 class CompareMany(Compliance):
@@ -12,7 +13,7 @@ class CompareMany(Compliance):
         """
         if not self._user_configuration:
             raise ValueError("No configuration provided")
-        columns = ["name", "level", "condition", "guidelineName"]
+        columns = DEFAULT_COLUMNS
         # fill the entries field with the data from the sheets
         entries = self._retrieve_entries(sheets_to_check, columns)
         evaluated_entries = self._evaluate_entries(sheets_to_check, columns, entries)
@@ -20,7 +21,7 @@ class CompareMany(Compliance):
             for entry_dict in evaluated_entries[sheet].values():
                 original_sheet = sheet
                 entry = entry_dict["entry"]
-                columns = ["name", "level", "condition", "guidelineName"]
+                columns = DEFAULT_COLUMNS
                 # If the sheet isn't in the dictionary then I can use the default value
                 columns = self.sheet_columns.get(sheet, {"columns": columns})["columns"]
                 name_index = columns.index("name")

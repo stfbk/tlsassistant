@@ -3,12 +3,18 @@
   "description": "Default android analysis configuration",
   "modules": [
     "accepting_all_certificates",
+    "allow_all_hostname",
     "certificate_keystore_disclosure",
-    "hostnameverifier",
+    "crypto_ecb_cipher",
+    "debuggable_application",
+    "default_scheme_http",
+    "insecure_connection",
+    "insecure_hostname_verifier",
+    "insecure_socket",
+    "insecure_socket_factory",
+    "invalid_server_certificate",
     "obfuscated_code",
-    "ssl_error",
     "ssl_getinsecure_method",
-    "trustmanager",
     "weak_algorithms",
     "webview_ssl_errors"
   ]

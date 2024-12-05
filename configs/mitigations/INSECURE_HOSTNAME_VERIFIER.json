@@ -1,0 +1,11 @@
+{
+    "Entry": {
+      "Name": "Insecure Hostname Verifier",
+      "ExtendedName": "Insecure Hostname Verifier - javax",
+      "Description": "This app does not validate the CN (Common Name) field in the X.509 certificate. These implementations may allow a malicious actor to perform MiTM (Man-in-The-Middle) attacks and read the encrypted network traffic.",
+      "Mitigation": {
+        "Textual": "To strengthen security, any code that bypasses the CN validation should be removed.<br/> It's important to avoid the use of <a href='https://developer.android.com/reference/javax/net/ssl/HttpsURLConnection#setDefaultHostnameVerifier(javax.net.ssl.HostnameVerifier)'>'setDefaultHostnameVerifier'</a> method and not override the 'verify' method of 'HostnameVerifier' interface.<br/>The recommended mitigation is to use the default HostnameVerifier, via the 'getHostnameVerifier' method."
+      }
+    },
+    "#omit-xml-declaration": "yes"
+  }

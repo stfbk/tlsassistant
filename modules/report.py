@@ -2,14 +2,14 @@ import json
 import os.path
 import re
 from datetime import datetime
-from distutils.dir_util import copy_tree as cp
+from shutil import copytree as cp
 from enum import Enum
 from os import mkdir
 from os.path import sep
 from pathlib import Path
 from pprint import pformat
 
-import requests as requests
+import requests
 from jinja2 import Environment, FileSystemLoader
 from requests.structures import CaseInsensitiveDict
 from z3c.rml import rml2pdf
@@ -36,6 +36,9 @@ class Report:
 
         HOSTS = 0
         MODULES = 1
+        APK = 2 
+        IPA = 3
+        DOMAINS = 4
 
     def __init__(self):
         self.__input_dict = {}
@@ -143,6 +146,11 @@ class Report:
                 out[hostname]["errors"] = results[hostname]["errors"][hostname]
             for module in results[hostname]:
                 raw_results = {}
+                if "errors" in results[hostname][module]:
+                    if out[hostname].get("errors") is None:
+                        out[hostname]["errors"] = {}
+                    for i, error in enumerate(results[hostname][module]["errors"]):
+                        out[hostname]["errors"][f"{module} error_{i}"] = error
                 if "raw" in results[hostname][module]:
                     raw_results = results[hostname][module]["raw"].copy()
                 if "Entry" in results[hostname][module]:
@@ -172,22 +180,35 @@ class Report:
         :param rml: Whether to apply jinja2 to rml files or not.
         :type rml: bool
         """
-        self.__logging.debug(f"Generating report in jinja2..")
+        self.__logging.debug("Generating report in jinja2..")
         fsl = FileSystemLoader(searchpath=self.__template_dir)
         env = Environment(loader=fsl)
         file_extension = "xml" if rml else "html"
         to_process = {"version": version, "date": date, "modules": modules, "hosts": list(results.keys())}
+
         if mode == self.Mode.MODULES:
-            self.__logging.info(f"Generating modules report..")
+            self.__logging.info("Generating modules report..")
             template = env.get_template(f"modules_report.{file_extension}")
             to_process["results"] = self.__modules_report_formatter(results, modules)
-        elif mode == self.Mode.HOSTS:
-            self.__logging.info(f"Generating hosts report..")
+        elif mode == self.Mode.HOSTS or mode == self.Mode.DOMAINS:
+            self.__logging.info("Generating hosts report..")
             template = env.get_template(f"hosts_report.{file_extension}")
+            to_process["type"] = "HOSTS"
+            to_process["results"] = self.__hosts_report_formatter(results)
+        # TODO group by module for APK and IPA
+        elif mode == self.Mode.APK:
+            self.__logging.info("Generating APK report..")
+            template = env.get_template(f"hosts_report.{file_extension}")
+            to_process["type"] = "APK"
+            to_process["results"] = self.__hosts_report_formatter(results)
+        elif mode == self.Mode.IPA:
+            self.__logging.info("Generating IPA report..")
+            template = env.get_template(f"hosts_report.{file_extension}")
+            to_process["type"] = "IPA"
             to_process["results"] = self.__hosts_report_formatter(results)
         else:
             raise ValueError(f"Unknown mode: {mode}")
-        to_process = {**to_process, **self._replacements}
+        to_process = {**to_process, **self._replacements, **{"pruner": pruner}}
         return template.render(**to_process)
 
     def __extract_results(self, res: dict) -> tuple:
@@ -232,7 +253,7 @@ class Report:
         """
         if other_params is None:
             other_params = {}
-        self.__logging.debug(f"Sending results to webhook..")
+        self.__logging.debug("Sending results to webhook..")
         try:
             json_data = {
                 result_param: pformat(results, indent=2),
@@ -369,7 +390,8 @@ class Report:
             self.__logging.debug("Using jinja2 to generate RML...")
             use_rml = True
             output_path = f"{output_file.absolute().parent}{sep}{output_file.stem}.rml"
-
+        if len(results) == 0:
+            results = {list(self.__input_dict['results'].keys())[i]: '' for i in range(len(self.__input_dict['results']))} # I use that to have the name of the hosts/apk/ipa in the pdf output in case of no vunlerabilities detected
         with open(output_path, "w") as f:
             f.write(
                 self.__jinja2__report(
@@ -387,7 +409,7 @@ class Report:
             try:
                 xml_path = output_path
                 output_path = output_path[:-4] + ".pdf"
-                rml2pdf.go(xml_path, output_path[:-4] + ".pdf")
+                rml2pdf.go(xml_path, output_path)
             except Exception as e:
                 self.__logging.error(f"Error converting to PDF: {e}")
                 self.__logging.debug("Dumping results used by jinja to file")
@@ -425,8 +447,6 @@ class Report:
             output_path_prometheus = f"{output_file.absolute().parent}{sep}{output_file.stem}_prometheus.log" if not \
                 self.__input_dict['prometheus'] else self.__input_dict['prometheus']
             Prometheus(results=results, modules=modules).run(output_path_prometheus)
-
-    # todo: add PDF library
 
 
 class Prometheus:

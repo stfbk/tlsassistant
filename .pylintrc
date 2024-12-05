@@ -1,0 +1,2 @@
+[MASTER]
+init-hook='import sys; sys.path.append("dependencies"); sys.path.append(os.path.abspath("dependencies/SEBASTiAn/src")); sys.path.append(os.path.abspath("dependencies/tls-compliance-dataset/utils"));'

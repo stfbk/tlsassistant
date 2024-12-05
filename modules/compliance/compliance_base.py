@@ -16,11 +16,15 @@ from modules.configuration.configuration_base import OpenSSL
 from modules.server.wrappers.testssl import Testssl
 from utils.ciphersuites import get_1_3_ciphers
 from utils.database import get_standardized_level
+from utils.globals import DEFAULT_COLUMNS
 from utils.loader import load_configuration
 from utils.logger import Logger
 from utils.mitigations import MitigationLoader
 from utils.prune import pruner
 from utils.validation import Validator
+
+# Configs from the tls-compliance-dataset repository
+from configs import sheets_mapping, different_names_pos
 
 
 def convert_signature_algorithm(sig_alg: str) -> str:
@@ -40,8 +44,10 @@ def convert_signature_algorithm(sig_alg: str) -> str:
 
 
 class Compliance:
-    report_config = load_configuration("special_configs", "configs/compliance/")
-    evaluations_mapping = load_configuration("evaluations_mapping", "configs/compliance/")
+    report_config = load_configuration(
+        "special_configs", "configs/compliance/")
+    evaluations_mapping = load_configuration(
+        "evaluations_mapping", "configs/compliance/")
 
     def __init__(self):
         self.hostname = ""
@@ -57,22 +63,28 @@ class Compliance:
         self._output_dict = {}
         self._user_configuration = {}
         self._certificate_index = "1"
-        self.sheet_columns = load_configuration("sheet_columns", "configs/compliance/")
-        self.misc_fields = load_configuration("misc_fields", "configs/compliance/")
+        self.sheet_columns = self.prepare_sheet_columns()
+
+        self.misc_fields = load_configuration(
+            "misc_fields", "configs/compliance/")
         self._validator = Validator()
         self._condition_parser = ConditionParser(self._user_configuration)
         self.test_ssl = Testssl()
         self._config_class = None
         self._database_instance.input(["Guideline"])
-        self._guidelines = [name[0].upper() for name in self._database_instance.output()]
+        self._guidelines = [name[0].upper()
+                            for name in self._database_instance.output()]
         self._alias_parser = AliasParser()
         self._certificate_parser = CertificateParser()
         self._cert_sig_algs = [el[0] for el in self._database_instance.run(tables=["CertificateSignature"],
                                                                            columns=["name"])]
-        self._configuration_maker = ConfigurationMaker("apache", self._openssl_version)
+        self._configuration_maker = ConfigurationMaker(
+            "apache", self._openssl_version)
         self._openssl = OpenSSL()
-        self._ciphers_converter = load_configuration("openssl_to_iana", "configs/compliance/")
-        self._user_configuration_types = load_configuration("user_conf_types", "configs/compliance/generate/")
+        self._ciphers_converter = load_configuration(
+            "openssl_to_iana", "configs/compliance/")
+        self._user_configuration_types = load_configuration(
+            "user_conf_types", "configs/compliance/generate/")
         self._type_converter = {
             "dict": dict,
             "list": list,
@@ -83,11 +95,26 @@ class Compliance:
             "must": "must not",
             "recommended": "not recommended"
         }
-        self._cert_key_filters = load_configuration("cert_key_filters", "configs/compliance/")
+        self._cert_key_filters = load_configuration(
+            "cert_key_filters", "configs/compliance/")
         self.valid_keysize = False
         self.tls1_3_ciphers = get_1_3_ciphers()
         self._no_psk = None
         self._guidelines_string = ""
+
+    def prepare_sheet_columns(self):
+        resulting_dict = {}
+        columns_base = DEFAULT_COLUMNS
+        for guideline in different_names_pos:
+            columns_nums = different_names_pos[guideline]
+            guideline = sheets_mapping[guideline]
+            resulting_dict[guideline] = {}
+            resulting_dict[guideline]["name_columns"] = [i for i in range(columns_nums[1])]
+            guideline_columns = self._database_instance.run(tables= [], raw=f"PRAGMA table_info({guideline});")
+            column_names = [column[1] for column in guideline_columns]
+            column_names = column_names[column_names.index("name"):]
+            resulting_dict[guideline]["columns"] = column_names + columns_base[1:]
+        return resulting_dict
 
     @staticmethod
     def level_to_use(levels, security):
@@ -103,10 +130,12 @@ class Compliance:
         security_mapping = "security" if security else "legacy"
         if not levels:
             raise IndexError("Levels list is empty")
-        first_value = Compliance.evaluations_mapping.get(security_mapping, {}).get(get_standardized_level(levels[0]), 4)
+        first_value = Compliance.evaluations_mapping.get(
+            security_mapping, {}).get(get_standardized_level(levels[0]), 4)
         best = 0
         for i, el in enumerate(levels[1:]):
-            evaluation_value = Compliance.evaluations_mapping.get(security_mapping, {}).get(get_standardized_level(el), 4)
+            evaluation_value = Compliance.evaluations_mapping.get(
+                security_mapping, {}).get(get_standardized_level(el), 4)
             if first_value > evaluation_value:
                 # +1 is needed because the first element is ignored
                 best = i + 1
@@ -141,7 +170,8 @@ class Compliance:
         self._validator.string(custom_guidelines)
         if custom_guidelines:
             if not os.path.isfile(custom_guidelines):
-                raise FileNotFoundError(f"Custom guidelines file {self._custom_guidelines} not found")
+                raise FileNotFoundError(
+                    f"Custom guidelines file {self._custom_guidelines} not found")
             with open(custom_guidelines, "r") as f:
                 self._custom_guidelines = json.load(f)
 
@@ -160,14 +190,17 @@ class Compliance:
         elif openssl_version:
             self._openssl_version = openssl_version[0]
         if self._openssl_version not in self._configuration_maker.signature_algorithms:
-            self._logging.warning(f"OpenSSL version {openssl_version[0]} is not supported, using 3.0.12")
+            self._logging.warning(
+                f"OpenSSL version {openssl_version[0]} is not supported, using 3.0.12")
             self._openssl_version = "3.0.12"
         self._configuration_maker.set_openssl_version(self._openssl_version)
 
         # guidelines evaluation
         self._validator.string(guidelines_string)
-        guidelines_list = guidelines_string.split(",") if "," in guidelines_string else [guidelines_string]
-        sheets_to_check = self._alias_parser.get_sheets_to_check(guidelines_list, self._custom_guidelines)
+        guidelines_list = guidelines_string.split(",") if "," in guidelines_string \
+            else [guidelines_string]
+        sheets_to_check = self._alias_parser.get_sheets_to_check(
+            guidelines_list, self._custom_guidelines)
         self._validator.dict(sheets_to_check)
         if actual_configuration and self._validator.string(actual_configuration):
             try:
@@ -204,7 +237,8 @@ class Compliance:
                 with open(file_path, "r") as f:
                     test_ssl_output = json.load(f)
             if not test_ssl_output:
-                test_ssl_output = self.test_ssl.run(**{"hostname": self.hostname + port, "one": True})
+                test_ssl_output = self.test_ssl.run(
+                    **{"hostname": self.hostname + port, "one": True})
                 if use_cache:
                     if not os.path.isdir(dump_folder):
                         os.mkdir(dump_folder)
@@ -215,9 +249,11 @@ class Compliance:
                 if test_ssl_output[key].get("scanProblem") and test_ssl_output[key]["scanProblem"].get(
                         "severity") == "FATAL":
                     failed += 1
-                    self._logging.warning(f"Testssl failed to perform the analysis on {key}")
+                    self._logging.warning(
+                        f"Testssl failed to perform the analysis on {key}")
             if failed == len(test_ssl_output):
-                self._output_dict = {"error": "Testssl failed to perform the analysis"}
+                self._output_dict = {
+                    "error": "Testssl failed to perform the analysis"}
                 self.output()
             self.prepare_testssl_output(test_ssl_output)
         if output_file and self._validator.string(output_file):
@@ -252,7 +288,8 @@ class Compliance:
             with open(f"testssl_dumps/report_{self.hostname}_{self._guidelines_string}.json", "w") as f:
                 for category in self._output_dict:
                     if self._output_dict[category].get("guidelines"):
-                        self._output_dict[category]["guidelines"] = list(self._output_dict[category]["guidelines"])
+                        self._output_dict[category]["guidelines"] = list(
+                            self._output_dict[category]["guidelines"])
                 json.dump(self._output_dict, f, indent=4)
         if not self._output_dict.get("error"):
             self.prune_output()
@@ -285,11 +322,13 @@ class Compliance:
                                                                                     add_list,
                                                                                     to_append)
                 # this is necessary to avoid having an extra empty line
-                textual = textual.format(add="".join(add_list), remove="{remove}", notes="{notes}")
+                textual = textual.format(add="".join(
+                    add_list), remove="{remove}", notes="{notes}")
             else:
                 # remove the line that contains {add}
                 lines = textual.split("<br/>")
-                textual = "<br/>".join([line for line in lines if "{add}" not in line])
+                textual = "<br/>".join(
+                    [line for line in lines if "{add}" not in line])
             # if self._output_dict[sheet].get("only_total_string_add"):
             #     # remove the first line from Textual
             #     textual = "<br/>".join(lines[1:])
@@ -303,12 +342,15 @@ class Compliance:
                                                                                     "entries_remove",
                                                                                     remove_list,
                                                                                     to_append)
-                textual = textual.replace("{add}<br/>{remove}", "{add}{remove}")
-                textual = textual.format(remove="".join(remove_list), notes="{notes}")
+                textual = textual.replace(
+                    "{add}<br/>{remove}", "{add}{remove}")
+                textual = textual.format(
+                    remove="".join(remove_list), notes="{notes}")
             else:
                 # remove the line that contains {remove}
                 lines = textual.split("<br/>")
-                textual = "<br/>".join([line for line in lines if "{remove}" not in line])
+                textual = "<br/>".join(
+                    [line for line in lines if "{remove}" not in line])
             if self._output_dict[sheet]["notes"]:
                 notes_string = "<br/>{name}"
                 notes_list = []
@@ -323,21 +365,24 @@ class Compliance:
             else:
                 # remove the line that contains {notes}
                 lines = textual.split("<br/>")
-                textual = "<br/>".join([line for line in lines if "{notes}" not in line])
+                textual = "<br/>".join(
+                    [line for line in lines if "{notes}" not in line])
             textual = textual.replace(":<br/><br/>", ":<br/>", 1)
             mitigation["Entry"]["Mitigation"]["Textual"] = textual
             if total_string_apache != "<code>":
                 if conf_instructions["mode"].startswith("standard"):
                     total_string_apache += ";</code>"
                 else:
-                    total_string_apache = total_string_apache.replace("<code>", "", 1)
+                    total_string_apache = total_string_apache.replace(
+                        "<code>", "", 1)
                 mitigation["Entry"]["Mitigation"]["Apache"] = mitigation["Entry"]["Mitigation"]["Apache"].format(
                     total_string=total_string_apache)
             if total_string_nginx != "<code>":
                 if conf_instructions["mode"].startswith("standard"):
                     total_string_nginx += ";</code>"
                 else:
-                    total_string_nginx = total_string_nginx.replace("<code>", "", 1)
+                    total_string_nginx = total_string_nginx.replace(
+                        "<code>", "", 1)
                 mitigation["Entry"]["Mitigation"]["Nginx"] = mitigation["Entry"]["Mitigation"]["Nginx"].format(
                     total_string=total_string_nginx)
             # TODO clean the dictionary before adding mitigation
@@ -359,8 +404,10 @@ class Compliance:
                             version].get("Apache", "")
                         mitigation["Entry"]["Mitigation"]["Nginx"] += conf_instructions["openssl_dependency"][
                             version].get("Nginx", "")
-            mitigation["Entry"]["Mitigation"]["Apache"] += to_append.get("Apache")
-            mitigation["Entry"]["Mitigation"]["Nginx"] += to_append.get("Nginx")
+            mitigation["Entry"]["Mitigation"]["Apache"] += to_append.get(
+                "Apache")
+            mitigation["Entry"]["Mitigation"]["Nginx"] += to_append.get(
+                "Nginx")
             self.remove_duplicates_from_mitigation(mitigation, "<br/>")
             self._output_dict[sheet]["mitigation"] = mitigation
 
@@ -397,7 +444,8 @@ class Compliance:
         source = ""
         for entry in self._output_dict[sheet][entries_key]:
             source = self._output_dict[sheet][entry]["source"]
-            entry_name, _ = self._configuration_maker.perform_post_actions(conf_instructions, entry, source)
+            entry_name, _ = self._configuration_maker.perform_post_actions(
+                conf_instructions, entry, source)
             level = self._output_dict[sheet][entry]["level"].lower()
             # Standard mode, take all the entries and add them to the total_string
             if conf_instructions["mode"].startswith("standard"):
@@ -416,8 +464,10 @@ class Compliance:
                 if conf_instructions["mode"] == "specific_mitigation":
                     string = conf_instructions.get(entry, "")
                     if conf_instructions.get(entry + "_config"):
-                        total_string_apache += "<br/>" + conf_instructions[entry + "_config"]["Apache"]
-                        total_string_nginx += "<br/>" + conf_instructions[entry + "_config"]["Nginx"]
+                        total_string_apache += "<br/>" + \
+                            conf_instructions[entry + "_config"]["Apache"]
+                        total_string_nginx += "<br/>" + \
+                            conf_instructions[entry + "_config"]["Nginx"]
                 # This case is needed because the notes don't have the action and source fields
                 if entries_key == "notes":
                     if "{action}" in string:
@@ -428,11 +478,14 @@ class Compliance:
                                                action=self._output_dict[sheet][entry]["action"],
                                                source=self._output_dict[sheet][entry]["source"])
                 if self._output_dict[sheet][entry].get("notes"):
-                    tmp_string += "<br/>&nbsp;&nbsp;" + self._output_dict[sheet][entry]["notes"]
-                tmp_string, _ = self._configuration_maker.perform_post_actions(conf_instructions, tmp_string, source)
+                    tmp_string += "<br/>&nbsp;&nbsp;" + \
+                        self._output_dict[sheet][entry]["notes"]
+                tmp_string, _ = self._configuration_maker.perform_post_actions(
+                    conf_instructions, tmp_string, source)
                 if sheet == "Groups":
                     if "/" in entry_name:
-                        tmp_string = re.sub("/ (.*?) ", "(also appearing as \\1) ", tmp_string)
+                        tmp_string = re.sub(
+                            "/ (.*?) ", "(also appearing as \\1) ", tmp_string)
                 strings_list.append(tmp_string)
         total_string_apache, _ = self._configuration_maker.perform_post_actions(conf_instructions, total_string_apache,
                                                                                 source,
@@ -446,9 +499,11 @@ class Compliance:
             connector_length = len(connector)
             # the 6 is added because total_string starts with <code>
             if total_string_apache[6:connector_length + 6] == conf_instructions["connector"]:
-                total_string_apache = total_string_apache.replace(conf_instructions["connector"], "", 1)
+                total_string_apache = total_string_apache.replace(
+                    conf_instructions["connector"], "", 1)
             if total_string_nginx[6:connector_length + 6] == conf_instructions["connector"]:
-                total_string_nginx = total_string_nginx.replace(conf_instructions["connector"], "", 1)
+                total_string_nginx = total_string_nginx.replace(
+                    conf_instructions["connector"], "", 1)
         return total_string_apache, total_string_nginx
 
     def prune_output(self):
@@ -484,7 +539,7 @@ class Compliance:
                 self._output_dict[sheet]["notes"].remove(entry)
             to_remove = set()
             no_add = self._output_dict[sheet]["entries_add"].__len__() == 0 or \
-                     self._output_dict[sheet].get("only_total_string_add")
+                self._output_dict[sheet].get("only_total_string_add")
             if no_add and not \
                     self._output_dict[sheet]["entries_remove"] and not \
                     self._output_dict[sheet]["notes"]:
@@ -506,9 +561,11 @@ class Compliance:
             alg = [alg]
         for sig_alg in alg:
             if sig_alg.lower() not in self._cert_sig_algs:
-                self._logging.warning(f"Signature algorithm {sig_alg} not found in the database")
+                self._logging.warning(
+                    f"Signature algorithm {sig_alg} not found in the database")
             to_return.append(sig_alg)
-            self._user_configuration["CertificateSignature"].add(sig_alg.lower())
+            self._user_configuration["CertificateSignature"].add(
+                sig_alg.lower())
         return to_return
 
     @staticmethod
@@ -527,7 +584,8 @@ class Compliance:
             data_structure = self._user_configuration_types.get(field)
             # this final step is needed to convert from string to data_structure
             # by using a dict is possible avoid using eval
-            self._user_configuration[field] = self._type_converter.get(data_structure, dict)()
+            self._user_configuration[field] = self._type_converter.get(
+                data_structure, dict)()
 
         for site in test_ssl_output:
             for field in test_ssl_output[site]:
@@ -535,7 +593,8 @@ class Compliance:
                 # Each protocol has its own field
                 if (field.startswith("SSL") or field.startswith("TLS")) and field[3] != "_":
                     # Standardization to have it compliant with the database
-                    new_version_name = field.replace("_", ".").replace("v", " ").replace("TLS1", "TLS 1")
+                    new_version_name = field.replace("_", ".").replace(
+                        "v", " ").replace("TLS1", "TLS 1")
                     if new_version_name[-2] != '.':
                         new_version_name += ".0"
                     # The protocols may appear both as supported and not supported, so they are saved in a dictionary
@@ -556,7 +615,8 @@ class Compliance:
                     if " " in value:
                         for cipher in value.split(" "):
                             # Only the last part of the line is the actual cipher
-                            cipher = self._ciphers_converter.get(cipher, cipher)
+                            cipher = self._ciphers_converter.get(
+                                cipher, cipher)
                             self._user_configuration["CipherSuite"].add(cipher)
                     else:
                         cipher = self._ciphers_converter.get(value, value)
@@ -570,7 +630,9 @@ class Compliance:
                     for ex in extensions:
                         # the [1] is the iana code
                         tokens = ex.split("/#")
-                        extensions_pairs[tokens[1]] = tokens[0].lower().replace(" ", "_")
+                        if len(tokens) > 1:
+                            extensions_pairs[tokens[1]
+                                            ] = tokens[0].lower().replace(" ", "_")
                     self._user_configuration["Extension"] = extensions_pairs
 
                 # From the certificate signature algorithm is possible to extract both CertificateSignature and Hash
@@ -582,11 +644,13 @@ class Compliance:
                         # sometimes the hashing algorithm comes first, so they must be switched
                         if sig_alg.startswith("SHA"):
                             sig_alg, hash_alg = hash_alg, sig_alg
-                        sig_alg = self._add_certificate_signature_algorithm(sig_alg)[0]
+                        sig_alg = self._add_certificate_signature_algorithm(sig_alg)[
+                            0]
                         self._user_configuration["Hash"].add(hash_alg.lower())
                         cert_index = self.find_cert_index(field)
                         if not self._user_configuration["Certificate"].get(cert_index):
-                            self._user_configuration["Certificate"][cert_index] = {}
+                            self._user_configuration["Certificate"][cert_index] = {
+                            }
                         self._user_configuration["Certificate"][cert_index]["SigAlg"] = sig_alg
 
                 elif field.startswith("cert_keySize"):
@@ -596,30 +660,37 @@ class Compliance:
                     # *ecdsa*|*ecPublicKey* -> EC in testssl.sh output
                     if element_to_add[0] == "EC":
                         element_to_add[0] = "ECDSA"
-                    self._user_configuration["KeyLengths"].add(tuple(element_to_add))
+                    self._user_configuration["KeyLengths"].add(
+                        tuple(element_to_add))
                     cert_index = self.find_cert_index(field)
                     if not self._user_configuration["Certificate"].get(cert_index):
-                        self._user_configuration["Certificate"][cert_index] = {}
+                        self._user_configuration["Certificate"][cert_index] = {
+                        }
                     self._user_configuration["Certificate"][cert_index]["KeyAlg"] = element_to_add[0]
                 elif field == "DH_groups":
                     finding = actual_dict["finding"]
-                    groups = finding.split(" ") if " " in finding else [finding]
+                    groups = finding.split(
+                        " ") if " " in finding else [finding]
                     for group in groups:
                         matches = re.match(r"[^\d]+(\d+)", group)
                         if matches:
                             length = matches.groups()[0]
-                            self._user_configuration["KeyLengths"].add(("DH", int(length)))
+                            self._user_configuration["KeyLengths"].add(
+                                ("DH", int(length)))
                             if "(" in finding:
                                 # This naming is needed to be compliant with the database entry
-                                self._user_configuration["Groups"].append(f"{length}-long DH")
+                                self._user_configuration["Groups"].append(
+                                    f"{length}-long DH")
                             else:
-                                self._user_configuration["Groups"].append(group)
+                                self._user_configuration["Groups"].append(
+                                    group)
 
                 # The field FS_TLS_12_sig_algs contains the signature algorithms that can be used for Forward secrecy.
                 # For more details https://github.com/drwetter/testssl.sh/issues/2440
                 elif field[-11:] == "12_sig_algs":
                     finding = actual_dict["finding"]
-                    elements = finding.split(" ") if " " in finding else [finding]
+                    elements = finding.split(
+                        " ") if " " in finding else [finding]
                     hashes = []
                     signatures = []
                     for el in elements:
@@ -638,8 +709,10 @@ class Compliance:
                 # So they are saved in a different field of the configuration dictionary.
                 elif field[-11:] == "13_sig_algs":
                     finding = actual_dict["finding"]
-                    values = finding.split(" ") if " " in finding else [finding]
-                    values = [convert_signature_algorithm(sig) for sig in values]
+                    values = finding.split(
+                        " ") if " " in finding else [finding]
+                    values = [convert_signature_algorithm(
+                        sig) for sig in values]
                     self._user_configuration["Signature"].update(values)
 
                 # The supported groups are available as a list in this field
@@ -647,13 +720,15 @@ class Compliance:
                     values = actual_dict["finding"].split(" ") if " " in actual_dict["finding"] \
                         else [actual_dict["finding"]]
                     # secp256r1 is the same as prime256v1, it also happens with the 192 version
-                    values = [re.sub(r"prime(\d+)v1", r"secp\1r1", val) for val in values]
+                    values = [re.sub(r"prime(\d+)v1", r"secp\1r1", val)
+                              for val in values]
                     for val in values:
                         bits = re.match(r".*?(\d+)", val).groups()[0]
                         # The curve X25519 has a keysize of 256bits
                         if bits == "25519":
                             bits = "256"
-                        self._user_configuration["KeyLengths"].add(("ECDH", int(bits)))
+                        self._user_configuration["KeyLengths"].add(
+                            ("ECDH", int(bits)))
                     self._user_configuration["Groups"] = values
 
                 # The transparency field describes how the transparency is handled in each certificate.
@@ -675,10 +750,13 @@ class Compliance:
                     if field.startswith("int"):
                         cert_index = "int_" + cert_index
                     if not self._user_configuration["Certificate"].get(cert_index):
-                        self._user_configuration["Certificate"][cert_index] = {}
+                        self._user_configuration["Certificate"][cert_index] = {
+                        }
                     if not self._user_configuration["CertificateExtensions"].get(cert_index):
-                        self._user_configuration["CertificateExtensions"][cert_index] = {}
-                    cert_data = self._certificate_parser.run(actual_dict["finding"])
+                        self._user_configuration["CertificateExtensions"][cert_index] = {
+                        }
+                    cert_data = self._certificate_parser.run(
+                        actual_dict["finding"])
                     for entry in cert_data:
                         if entry == "Extensions":
                             self._user_configuration["CertificateExtensions"][cert_index] = cert_data[entry]
@@ -686,14 +764,16 @@ class Compliance:
                             self._user_configuration["Certificate"][cert_index][entry] = cert_data[entry]
 
                 elif field in self.misc_fields:
-                    self._user_configuration["Misc"][self.misc_fields[field]] = "not" not in actual_dict["finding"]
+                    self._user_configuration["Misc"][self.misc_fields[field]
+                                                     ] = "not" not in actual_dict["finding"]
                 elif field == "fallback_SCSV":
                     self._user_configuration["fallback_SCSV"] = actual_dict["finding"]
 
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition, hostname):
         information_level = None
         action = None
-        entry_level = get_standardized_level(entry_level) if entry_level else None
+        entry_level = get_standardized_level(
+            entry_level) if entry_level else None
         total_string_only = False
         # print(f"{sheet} - {name} - {entry_level} - {enabled} - {source} - {valid_condition}")
         if entry_level == "must" and valid_condition and not enabled:
@@ -702,7 +782,8 @@ class Compliance:
         elif (entry_level in ["must", "recommended"] and enabled and valid_condition and
               sheet in self.report_config.get("has_total_string", [])):
             # these entries are not added to the output dict
-            total_string_only = sheet in Compliance.report_config.get("has_total_string", [])
+            total_string_only = sheet in Compliance.report_config.get(
+                "has_total_string", [])
             information_level = "MUST"
             action = "has to be enabled"
         elif entry_level == "must not" and valid_condition and enabled:
@@ -777,7 +858,8 @@ class Compliance:
         tables = []
         for sheet in sheets_to_check:
             columns_to_get = []
-            columns_to_use = self.sheet_columns.get(sheet, {"columns": columns})["columns"]
+            columns_to_use = self.sheet_columns.get(
+                sheet, {"columns": columns})["columns"]
             if not self._output_dict.get(sheet):
                 self._output_dict[sheet] = {}
             for guideline in sheets_to_check[sheet]:
@@ -794,7 +876,8 @@ class Compliance:
                 additional_filter = additional_filters[sheet]
                 if query_filter:
                     # Remove "WHERE" from the string
-                    additional_filter = additional_filter.replace("WHERE", " AND ")
+                    additional_filter = additional_filter.replace(
+                        "WHERE", " AND ")
                 if "level" in additional_filter and tables:
                     strip_first = 2 if query_filter else 1
                     parts = additional_filter.split(" ")
@@ -805,14 +888,17 @@ class Compliance:
                     for table in tables:
                         # First level is substituted with the table_name.lvl then it is brought back as level
                         # this is needed to avoid replacing the same "level" occurrence many times
-                        repeat_filter = repeat_filter.replace("level", table + ".lvl", 1)
+                        repeat_filter = repeat_filter.replace(
+                            "level", table + ".lvl", 1)
                     repeat_filter = repeat_filter.replace("lvl", "level")
                     additional_filter = filter_base + repeat_filter
                 query_filter += additional_filter
             if tables:
-                query_filter = query_filter.replace("name", tables[0] + ".name")
+                query_filter = query_filter.replace(
+                    "name", tables[0] + ".name")
 
-            join_condition = "ON {first_table}.id == {table}.id".format(first_table=tables[0], table="{table}")
+            join_condition = "ON {first_table}.id == {table}.id".format(
+                first_table=tables[0], table="{table}")
             data = self._database_instance.run(join_condition=join_condition, columns=columns_to_get, tables=tables,
                                                other_filter=query_filter)
             entries[sheet] = data
@@ -842,7 +928,8 @@ class Compliance:
         # "value_index * step * guideline_index" to retrieve data for a specific guideline
         evaluated_entries = {}
         for sheet in entries_to_check:
-            columns = self.sheet_columns.get(sheet, {"columns": original_columns})["columns"]
+            columns = self.sheet_columns.get(
+                sheet, {"columns": original_columns})["columns"]
             guideline_index = columns.index("guidelineName")
             # A more fitting name could be current_requirement_level
             level_index = columns.index("level")
@@ -856,7 +943,8 @@ class Compliance:
             entries = entries_to_check[sheet]
             if not evaluated_entries.get(sheet):
                 evaluated_entries[sheet] = {}
-            custom_guidelines_list = sheets_to_check[sheet].keys() - self._guidelines
+            custom_guidelines_list = sheets_to_check[sheet].keys(
+            ) - self._guidelines
             total = 0
             for entry in entries:
                 # These three are lists and not a single dictionary because the function level_to_use takes a list
@@ -902,19 +990,26 @@ class Compliance:
 
                         valid_condition = self._condition_parser.run(condition, enabled,
                                                                      cert_index=self._certificate_index)
-                        enabled = self._condition_parser.entry_updates.get("is_enabled", enabled)
+                        enabled = self._condition_parser.entry_updates.get(
+                            "is_enabled", enabled)
                         if self._condition_parser.entry_updates.get("disable_if"):
                             enabled = self.check_disable_if(self._condition_parser.entry_updates.get("disable_if"),
                                                             enabled, valid_condition)
-                        self._logging.debug(f"Condition: {condition} - enabled: {enabled} - valid: {valid_condition}")
+                        self._logging.debug(
+                            f"Condition: {condition} - enabled: {enabled} - valid: {valid_condition}")
                         if self._condition_parser.entry_updates.get("flip_level"):
                             level = self.level_flipper.get(level, level)
                         if self._condition_parser.entry_updates.get("levels"):
-                            potential_levels = self._condition_parser.entry_updates.get("levels")
-                            level = potential_levels[self.level_to_use(potential_levels, self._security)]
-                        has_alternative = self._condition_parser.entry_updates.get("has_alternative")
-                        additional_notes = self._condition_parser.entry_updates.get("notes", "")
-                        conditional_notes = self.add_conditional_notes(enabled, valid_condition)
+                            potential_levels = self._condition_parser.entry_updates.get(
+                                "levels")
+                            level = potential_levels[self.level_to_use(
+                                potential_levels, self._security)]
+                        has_alternative = self._condition_parser.entry_updates.get(
+                            "has_alternative")
+                        additional_notes = self._condition_parser.entry_updates.get(
+                            "notes", "")
+                        conditional_notes = self.add_conditional_notes(
+                            enabled, valid_condition)
                         notes[-1] += conditional_notes
                         if has_alternative and not enabled and isinstance(condition, str) and condition.count(" ") > 1:
                             parts = condition.split(" ")
@@ -939,7 +1034,8 @@ class Compliance:
                 source_guideline = entry[guideline_index + step * best_level]
 
                 for guideline in custom_guidelines_list:
-                    custom_entry = self._custom_guidelines[sheet].get(guideline, {}).get(name)
+                    custom_entry = self._custom_guidelines[sheet].get(
+                        guideline, {}).get(name)
                     if custom_entry:
                         levels = [resulting_level, custom_entry["level"]]
                         guidelines_to_check = list(sheets_to_check[sheet])
@@ -986,7 +1082,8 @@ class Compliance:
         for cert in self._user_configuration.get("Certificate", {}):
             # This list is used to check which cipher-suites are offered, intermediate certificates aren't necessary
             if not cert.startswith("int"):
-                sigalg = self._user_configuration["Certificate"][cert].get("KeyAlg")
+                sigalg = self._user_configuration["Certificate"][cert].get(
+                    "KeyAlg")
                 if sigalg:
                     key_types.append(sigalg)
         return key_types
@@ -997,10 +1094,14 @@ class Generator(Compliance):
 
     def __init__(self):
         super().__init__()
-        self._configuration_rules = load_configuration("configuration_rules", "configs/compliance/generate/")
-        self._configuration_mapping = load_configuration("configuration_mapping", "configs/compliance/generate/")
-        self._ciphers1_2_filter = "WHERE name NOT IN (\"" + "\" , \"".join(self.tls1_3_ciphers) + "\")"
-        self._ciphers1_3_filter = "WHERE name IN (\"" + "\" , \"".join(self.tls1_3_ciphers) + "\")"
+        self._configuration_rules = load_configuration(
+            "configuration_rules", "configs/compliance/generate/")
+        self._configuration_mapping = load_configuration(
+            "configuration_mapping", "configs/compliance/generate/")
+        self._ciphers1_2_filter = "WHERE name NOT IN (\"" + "\" , \"".join(
+            self.tls1_3_ciphers) + "\")"
+        self._ciphers1_3_filter = "WHERE name IN (\"" + \
+            "\" , \"".join(self.tls1_3_ciphers) + "\")"
 
     def _get_config_name(self, field):
         name = self._configuration_mapping.get(field, None)
@@ -1023,10 +1124,12 @@ class Generator(Compliance):
                     self._user_configuration[config_field] = save_in()
                 user_conf_field = self._user_configuration[config_field]
                 if isinstance(user_conf_field, list):
-                    values = [val for val in current_field if current_field[val]["added"]]
+                    values = [
+                        val for val in current_field if current_field[val]["added"]]
                     user_conf_field.extend(values)
                 elif isinstance(user_conf_field, set):
-                    values = [val for val in current_field if current_field[val]["added"]]
+                    values = [
+                        val for val in current_field if current_field[val]["added"]]
                     user_conf_field.update(values)
                 elif isinstance(user_conf_field, dict):
                     for val in current_field:
@@ -1036,8 +1139,10 @@ class Generator(Compliance):
                                 new_val += ".0"
                             user_conf_field[new_val] = current_field[val]["added"]
                         elif config_field == "Extension":
-                            self._database_instance.input(["Extension"], other_filter=f'WHERE name=="{val}"')
-                            iana_code = self._database_instance.output(["iana_code"])[0][0]
+                            self._database_instance.input(
+                                ["Extension"], other_filter=f'WHERE name=="{val}"')
+                            iana_code = self._database_instance.output(["iana_code"])[
+                                0][0]
                             user_conf_field[str(iana_code)] = val
 
     # To override
@@ -1067,17 +1172,21 @@ class Generator(Compliance):
             field = conditions_to_check[index]["field"]
             enabled = level in ["recommended", "must"]
             name = conditions_to_check[index]["name"]
-            valid_condition = self._condition_parser.run(expression, enabled, cert_index=self._certificate_index)
+            valid_condition = self._condition_parser.run(
+                expression, enabled, cert_index=self._certificate_index)
             field_rules = self._configuration_rules.get(field, {})
             if self._condition_parser.entry_updates.get("levels"):
-                potential_levels = self._condition_parser.entry_updates.get("levels")
-                level = potential_levels[self.level_to_use(potential_levels, self._security)]
+                potential_levels = self._condition_parser.entry_updates.get(
+                    "levels")
+                level = potential_levels[self.level_to_use(
+                    potential_levels, self._security)]
             if not valid_condition and enabled:
                 self._config_class.remove_field(field, name)
             elif level in ["not recommended", "must not"] and valid_condition:
                 self._config_class.remove_field(field, name)
             elif enabled and valid_condition:
-                self._config_class.add_configuration_for_field(field, field_rules, data, columns, guideline)
+                self._config_class.add_configuration_for_field(
+                    field, field_rules, data, columns, guideline)
 
     def output(self):
         self._fill_user_configuration()
@@ -1107,15 +1216,18 @@ class AliasParser:
     def __init__(self):
         self.__logging = Logger("Compliance module")
         self._database_instance = Database()
-        self._guidelines = [name[0].upper() for name in self._database_instance.run(["Guideline"])]
+        self._guidelines = [name[0].upper()
+                            for name in self._database_instance.run(["Guideline"])]
         # simple regex to find and capture all occurrences of the guidelines
         self._splitting_regex = "(" + ")|(".join(self._guidelines) + ")"
         self._sheets_versions_dict = {}
         self._fill_sheets_dict()
         self._guidelines_versions = {}
         self._fill_guidelines_versions()
-        self._aliases = load_configuration("alias_mapping", "configs/compliance/alias/")
-        self._default_versions = load_configuration("default_versions", "configs/compliance/alias/")
+        self._aliases = load_configuration(
+            "alias_mapping", "configs/compliance/alias/")
+        self._default_versions = load_configuration(
+            "default_versions", "configs/compliance/alias/")
 
     def list_aliases(self):
         print("Alias mapping:")
@@ -1127,17 +1239,21 @@ class AliasParser:
     def list_strings(self):
         print("Valid strings:")
         for guideline in self._guidelines_versions:
-            sets = [self._guidelines_versions[guideline][k] for k in self._guidelines_versions[guideline]]
+            sets = [self._guidelines_versions[guideline][k]
+                    for k in self._guidelines_versions[guideline]]
             # this first list comprehension is needed to later check if there are any versions.
-            combinations = [combination for combination in itertools.product(*sets)]
+            combinations = [
+                combination for combination in itertools.product(*sets)]
             if combinations and combinations[0]:
                 print("Strings for guideline: ", guideline)
                 # First I join the output from itertools.product using "-" then I prepend guideline_ to it and in the
                 # end I join all the versions using ","
-                result = ",".join([guideline + "-" + "-".join(combination) for combination in combinations])
+                result = ",".join([guideline + "-" + "-".join(combination)
+                                  for combination in combinations])
                 print(result)
             else:
-                print("Guideline ", guideline, " doesn't have any special version")
+                print("Guideline ", guideline,
+                      " doesn't have any special version")
             print("")
         print("NOTE: if a version is omitted the default one will be used.")
         import sys
@@ -1145,7 +1261,8 @@ class AliasParser:
 
     def _fill_sheets_dict(self):
         for table in self._database_instance.table_names:
-            tokens = re.split(self._splitting_regex, table, flags=re.IGNORECASE)
+            tokens = re.split(self._splitting_regex,
+                              table, flags=re.IGNORECASE)
             tokens = [t for t in tokens if t]
             # If the length is one or less the table is a general data table.
             if len(tokens) > 1:
@@ -1218,13 +1335,14 @@ class AliasParser:
                     if version is not None:
                         sheets_to_check[sheet][guideline] = version
                     else:
-                        self.__logging.info(f"Skipping {guideline} in {sheet} because no version is available.")
+                        self.__logging.info(
+                            f"Skipping {guideline} in {sheet} because no version is available.")
                 for token in tokens[1:]:
                     token = token.upper()
                     # If it is an abbreviation get the complete name.
                     token = self._aliases.get(token, token)
                     if sheet + guideline + token in self._database_instance.table_names and \
-                        not (token == "" and sheets_to_check[sheet].get(guideline)):
+                            not (token == "" and sheets_to_check[sheet].get(guideline)):
                         sheets_to_check[sheet][guideline] = token
             for sheet in custom_guidelines:
                 if sheets_to_check.get(sheet):

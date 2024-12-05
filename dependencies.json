@@ -1,9 +1,5 @@
 [
   {
-    "type": "git",
-    "url": "https://github.com/stfbk/mallodroid"
-  },
-  {
     "type": "cfg",
     "url": "https://chromium.googlesource.com/chromium/src/net/+/main/http/transport_security_state_static.json?format=TEXT"
   },
@@ -37,15 +33,11 @@
   },
   {
     "type": "git",
-    "url": "https://github.com/stfbk/TLS-Scanner"
+    "url": "https://github.com/IvanValentini/TLS-Scanner"
   },
   {
     "type": "apt",
-    "url": "openjdk-21-jre"
-  },
-  {
-    "type": "apt",
-    "url": "openjdk-21-jdk"
+    "url": "openjdk-8-jre"
   },
   {
     "type": "apt",
@@ -65,11 +57,23 @@
     "url": "https://github.com/stfbk/tls-table"
   },
   {
+    "type": "git",
+    "url": "https://github.com/stfbk/tls-compliance-dataset"
+  },
+  {
     "type": "file",
     "url": "https://github.com/stfbk/tls-compliance-dataset/releases/latest/download/requirements.db"
   },
   {
     "type": "python3",
     "path": "ciphersuites_converter.py"
+  },
+  {
+    "type": "git",
+    "url": "https://github.com/talos-security/SEBASTiAn"
+  },
+  {
+    "type": "pip",
+    "url": "-r dependencies/SEBASTiAn/src/requirements.txt"
   }
 ]

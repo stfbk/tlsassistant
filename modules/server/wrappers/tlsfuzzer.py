@@ -1,7 +1,7 @@
 import logging
 import subprocess
 
-from utils.urls import url_domain
+from utils.urls import url_domain, cache_name
 from utils.validation import Validator
 from pathlib import Path
 from os.path import sep
@@ -46,19 +46,23 @@ class Tlsfuzzer:
 
         :Keyword Arguments:
             * *hostname* (``str``) -- Hostname to analyze.
+            * *port* (``str``) -- Port to connect to.
             * *scripts* (``list``) -- Scripts to run.
 
         """
-        if "hostname" not in kwargs or kwargs["hostname"] not in self.__cache:
+        hostname_cache = cache_name(
+            kwargs["hostname"], kwargs["port"] if "port" in kwargs else "443"
+        )
+        if "hostname" not in kwargs or hostname_cache not in self.__cache:
             return {}
         elif "scripts" not in kwargs:
-            return self.__cache[kwargs["hostname"]]
+            return self.__cache[hostname_cache]
         else:
             Validator().list(kwargs["scripts"])
             output = {}
             for script in kwargs["scripts"]:
-                if script in self.__cache[kwargs["hostname"]]:
-                    output[script] = self.__cache[kwargs["hostname"]][script]
+                if script in self.__cache[hostname_cache]:
+                    output[script] = self.__cache[hostname_cache][script]
             logging.debug(output)
             return output
 
@@ -131,7 +135,7 @@ class Tlsfuzzer:
             force,
             port=self.__input_dict["port"],
         )
-        return self.output(hostname=self.__input_dict["hostname"], scripts=script_names)
+        return self.output(hostname=self.__input_dict["hostname"], scripts=script_names, port=self.__input_dict["port"])
 
     def __worker(self, hostname: str, scripts: list, force: bool, port="443"):
         """
@@ -146,6 +150,7 @@ class Tlsfuzzer:
         :param port: Port to connect to.
         :type port: str
         """
+        hostname_cache = cache_name(hostname, port)
         if force:
             for script in scripts:
 
@@ -171,29 +176,29 @@ class Tlsfuzzer:
                     script_name.exists()
                 ):  # workaround, remove temp file moved to the root of tlsfuzzer
                     remove(str(script_name.absolute()))
-                if hostname not in self.__cache:
-                    self.__cache[hostname] = {}
-                self.__cache[hostname][script_name.stem] = output
+                if hostname_cache not in self.__cache:
+                    self.__cache[hostname_cache] = {}
+                self.__cache[hostname_cache][script_name.stem] = output
         else:
             script_args = {}
             for script in scripts:  # prepare index dict
                 script_name, script_arguments = script
                 script_args[script_name.stem] = script
-            if hostname not in self.__cache:
-                self.__worker(hostname, scripts, force=True)
+            if hostname_cache not in self.__cache:
+                self.__worker(hostname, scripts, force=True, port=port)
             elif set(list(script_args.keys())) != set(
-                list(self.__cache[hostname].keys())
+                list(self.__cache[hostname_cache].keys())
             ):
                 difference_keys = list(
                     set(list(script_args.keys()))
-                    - set(list(self.__cache[hostname].keys()))
+                    - set(list(self.__cache[hostname_cache].keys()))
                 )  # remove what is already cached
                 difference = [script_args[key] for key in difference_keys]
                 logging.debug(
                     "[TLSFuzzer Caching System] I've found results. Here the scripts which are not in cache"
                 )
                 logging.debug(difference)
-                self.__worker(hostname, difference, force=True)
+                self.__worker(hostname, difference, force=True, port=port)
                 for key, value in script_args.items():
                     if value[
                         0
