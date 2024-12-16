@@ -696,8 +696,10 @@ class Core:
                 if not extraction.subdomain and hostname_or_path != "localhost" and \
                         not validate_ip(hostname_or_path):
                     hostname_or_path = f"www.{hostname_or_path}"
+                hostname_index = hostname_or_path.index(f".{extraction.suffix}")
+                actual_hostname = hostname_or_path[:hostname_index+len(extraction.suffix)+1]
                 try:
-                    _ = socket.gethostbyname(hostname_or_path)
+                    _ = socket.gethostbyname(actual_hostname)
                 except socket.error as e:
                     self.__logging.debug(e)
                     self.__logging.error(
