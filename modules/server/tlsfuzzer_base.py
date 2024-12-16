@@ -91,11 +91,12 @@ class Tlsfuzzer_base:
             if grep("sanity", results[script]) == 2:
                 # self.__logging.debug(results[script])
                 set_mitigations = False
+                actual_output = results[script].split("Test end", 1)[0] if "Test end" in results[script] else results[script]
                 for check, safe_value in list_of_checks.items():
                     if check != "MITIGATION":
                         out[check] = {}
                         string_to_grep = check
-                        occurrencies = grep(string_to_grep, results[script])
+                        occurrencies = grep(string_to_grep, actual_output)
                         if occurrencies > safe_value:
                             self.__logging.debug(
                                 f"Found {occurrencies} occurrencies of {check}"
