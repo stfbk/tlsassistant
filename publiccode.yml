@@ -19,7 +19,7 @@ description:
     longDescription: |
       TLSAssistant è un tool di ricerca sviluppato per facilitare il lavoro
 
-      degli amministratori di sistema e sviluppatori Android alle prese con
+      degli amministratori di sistema e sviluppatori iOS/Android alle prese con
 
       implementazioni TLS.
 
@@ -27,7 +27,7 @@ description:
 
       Il suo utilizzo permette di analizzare i webserver (in locale o da remoto)
 
-      e le app Android per valutarne lo stato di sicurezza e la totalità delle
+      e le app iOS/Android per valutarne lo stato di sicurezza e la totalità delle
 
       vulnerabilità TLS che potrebbero essere sfruttate per mettere in pericolo
 
@@ -108,7 +108,7 @@ maintenance:
 name: TLSAssistant
 platforms:
   - linux
-releaseDate: '2024-02-09'
+releaseDate: '2024-12-20'
 softwareType: standalone/desktop
 softwareVersion: 3.1.0
 url: 'https://github.com/stfbk/tlsassistant'
