@@ -5,6 +5,8 @@ import os.path
 import re
 from pathlib import Path
 
+import tldextract
+
 import utils.remove_duplicates
 from modules.compliance.configuration.apache_configuration import ApacheConfiguration
 from modules.compliance.configuration.configuration_base import ConfigurationMaker
@@ -109,11 +111,14 @@ class Compliance:
             columns_nums = different_names_pos[guideline]
             guideline = sheets_mapping[guideline]
             resulting_dict[guideline] = {}
-            resulting_dict[guideline]["name_columns"] = [i for i in range(columns_nums[1])]
-            guideline_columns = self._database_instance.run(tables= [], raw=f"PRAGMA table_info({guideline});")
+            resulting_dict[guideline]["name_columns"] = [
+                i for i in range(columns_nums[1])]
+            guideline_columns = self._database_instance.run(
+                tables=[], raw=f"PRAGMA table_info({guideline});")
             column_names = [column[1] for column in guideline_columns]
             column_names = column_names[column_names.index("name"):]
-            resulting_dict[guideline]["columns"] = column_names + columns_base[1:]
+            resulting_dict[guideline]["columns"] = column_names + \
+                columns_base[1:]
         return resulting_dict
 
     @staticmethod
@@ -230,15 +235,23 @@ class Compliance:
         elif self.hostname and self._validator.string(self.hostname) and self.hostname != "placeholder":
             test_ssl_output = {}
             dump_folder = "testssl_dumps"
-            file_path = f"{dump_folder}/testssl_output-{self.hostname}.json"
+            file_hostname = self.hostname.replace(":", "_").replace("/", "_")
+            file_path = f"{dump_folder}/testssl_output-{file_hostname}.json"
             if clean and os.path.isfile(file_path):
                 os.remove(file_path)
             if use_cache and os.path.isfile(file_path):
                 with open(file_path, "r") as f:
                     test_ssl_output = json.load(f)
             if not test_ssl_output:
+                extraction = tldextract.extract(self.hostname)
+                if extraction.suffix:
+                    actual_hostname = extraction.domain + "." + extraction.suffix
+                    if extraction.subdomain:
+                        actual_hostname = extraction.subdomain + "." + actual_hostname
+                else:
+                    actual_hostname = self.hostname
                 test_ssl_output = self.test_ssl.run(
-                    **{"hostname": self.hostname + port, "one": True})
+                    **{"hostname": actual_hostname + port, "one": True})
                 if use_cache:
                     if not os.path.isdir(dump_folder):
                         os.mkdir(dump_folder)
@@ -285,7 +298,8 @@ class Compliance:
 
     def output(self):
         if logging.getLogger().level == logging.DEBUG:
-            with open(f"testssl_dumps/report_{self.hostname}_{self._guidelines_string}.json", "w") as f:
+            file_hostname = self.hostname.replace(":", "_").replace("/", "_")
+            with open(f"testssl_dumps/report_{file_hostname}_{self._guidelines_string}.json", "w") as f:
                 for category in self._output_dict:
                     if self._output_dict[category].get("guidelines"):
                         self._output_dict[category]["guidelines"] = list(
@@ -632,7 +646,7 @@ class Compliance:
                         tokens = ex.split("/#")
                         if len(tokens) > 1:
                             extensions_pairs[tokens[1]
-                                            ] = tokens[0].lower().replace(" ", "_")
+                                             ] = tokens[0].lower().replace(" ", "_")
                     self._user_configuration["Extension"] = extensions_pairs
 
                 # From the certificate signature algorithm is possible to extract both CertificateSignature and Hash
