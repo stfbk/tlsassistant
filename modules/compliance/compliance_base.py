@@ -221,7 +221,7 @@ class Compliance:
             self._config_class.get_conf_data(self._user_configuration)
             # Without the certificate it is only possible to check a subset of the guidelines
             check_only = ["Protocol", "CipherSuite", "Extension", "Groups"]
-            self._logging.warning(
+            self._logging.info(
                 "Using a configuration file to check the guidelines, only the following sheets will be checked: "
                 f"{', '.join(check_only)}"
             )

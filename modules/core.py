@@ -549,6 +549,7 @@ class Core:
                 if "group_by" in self.__input_dict
                 and self.__input_dict["group_by"] == "module"
                 else Report_module.Mode.HOSTS if type_of_analysis == self.Analysis.HOST
+                else Report_module.Mode.MODULES if type_of_analysis == self.Analysis.CONFIGURATION
                 else Report_module.Mode.DOMAINS if type_of_analysis == self.Analysis.DOMAINS
                 else Report_module.Mode.IPA if type_of_analysis == self.Analysis.IPA
                 else Report_module.Mode.APK,
