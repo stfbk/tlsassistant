@@ -108,7 +108,7 @@ maintenance:
 name: TLSAssistant
 platforms:
   - linux
-releaseDate: '2024-12-20'
+releaseDate: '2024-12-18'
 softwareType: standalone/desktop
 softwareVersion: 3.1.0
 url: 'https://github.com/stfbk/tlsassistant'
