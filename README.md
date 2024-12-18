@@ -2,14 +2,16 @@
 
 # TLSAssistant v3
 
-**TLSAssistant v3** is the latest version of TLSAssistant, a modular state-of-the-art TLS analyzer, extensible with new features and thus capable of streamlining the mitigation process of known and newly discovered TLS attacks even for non-expert users. The companion page, containing additional details can be found [here](https://st.fbk.eu/tools/TLSAssistant/).
+**TLSAssistant v3.1** is the latest version of TLSAssistant, a modular state-of-the-art TLS analyzer, extensible with new features and thus capable of streamlining the mitigation process of known and newly discovered TLS attacks even for non-expert users. The companion page, containing additional details can be found [here](https://st.fbk.eu/tools/TLSAssistant/).
 
-The latest release introduces a redesigned PDF report and a novel module able to perform compliance analyses against five agency-issued technical guidelines:
+The latest release introduces a redesigned PDF report, a novel module able to perform compliance analyses against five agency-issued technical guidelines:
 - **AgID** [ver.2020-01](https://cert-agid.gov.it/wp-content/uploads/2020/11/AgID-RACCSECTLS-01.pdf)
 - **ANSSI** [v1.2](https://cyber.gouv.fr/sites/default/files/2017/07/anssi-guide-recommandations_de_securite_relatives_a_tls-v1.2.pdf)
 - **BSI** [TR-02102-2](https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TG02102/BSI-TR-02102-2.html) and [TR-03116-4](https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR03116/BSI-TR-03116-4.html)
 - **Mozilla** [v5.7](https://wiki.mozilla.org/Security/Server_Side_TLS)
 - **NIST** [SP 800-52 Rev. 2](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r2.pdf) (and related)
+
+and the integration of a new state-of-the-art static and extensible app security testing tool called [SEBASTiAn](https://github.com/talos-security/SEBASTiAn). Its presence enhanced existing Android analyses and introduces the possiblity to analyze iOS applications.
 
 
 ## Features
@@ -23,16 +25,28 @@ The latest release introduces a redesigned PDF report and a novel module able to
 TLSAssistant is capable of identifying a wide range of TLS vulnerabilities and generating actionable reports that can assist the system administrators in correctly and easily fixing their configurations.
 
 The list of detectable issues is:
-- Android applications
-  - Accepting all SSL Certificates
-  - Certificate or KeyStore Disclosure
-  - Weak HostnameVerifier
+- Android applications (.apk)
+  - Accepting all SSL certificates
+  - Allow all hostname
+  - Certificate or keyStore disclosure
+  - Crypto ECB ciphers
+  - Debuggable application
+  - Default HTTP scheme
+  - Insecure connection
+  - Insecure HostnameVerifier
+  - Insecure SocketFactory
+  - Insecure Socket
+  - Invalid server certificate
   - Obfuscated Code
   - SSL GetInsecure Method
-  - SSL Error
-  - Weak TrustManager
   - Weak Algorithms
-  - WebView has SSL Errors
+  - WebView SSL Errors
+- iOS applications (.ipa)
+  - Allow HTTP Plist
+  - Insecure connection Plist
+  - Insecure TLS version Plist
+  - No forward secrecy Plist
+  - Weak crypto
 - Webservers
   - 3SHAKE
   - ALPACA
@@ -51,8 +65,8 @@ The list of detectable issues is:
   - LUCKY13
   - BAR MITZVAH
   - RC4 NOMORE
+  - Padding oracle (SSL and TLS POODLE)
   - Perfect Forward Secrecy
-  - POODLE
   - RACCOON
   - SSL RENEGOTIATION
   - ROBOT
@@ -85,6 +99,17 @@ It supports the following use-cases:
 
 ## Download
 
+> [!TIP]
+> We suggest to download the pre-built Docker provided by GitHub by fetching it with.
+> ```bash
+> docker pull ghcr.io/stfbk/tlsassistant:v3.1
+> ```
+> and running it with
+> ```bash
+> docker run --rm -v ${PWD}/results:/tlsassistant/results -t ghcr.io/stfbk/tlsassistant:v3.1 -s www.fbk.eu
+> ```
+
+However, if you want to install the dependencies on the system, you can use the following building methods:
 ### One Liner
 To install the tool (in a virtual environment), execute the following command:
 ```bash
@@ -201,7 +226,7 @@ optional arguments:
                         List all modules or print an help of a module.
                         For Example
                         -l freak
-  -a APK, --apk APK     The apk path, target of the analysis.
+  -a APP, --app APP     The apk/ipa path, target of the analysis.
   --apply-fix [APPLY_FIX]
                         Apply fix in the current configuration.
                          Give a path if using -s.
@@ -305,10 +330,10 @@ python3 run.py -l
 python3 run.py -s *.fbk.eu
 ```
 
-- Perform an analysis on an **apk file**
+- Perform an analysis on a **.apk/.ipa file**
 
 ```bash
-python3 run.py -a my_apk.apk
+python3 run.py -a my_app[.apk/.ipa]
 ```
 
 <sub>If no configuration or module list provided, `default_android.json` is loaded.</sub>
@@ -357,12 +382,18 @@ Results:
 Here's a list of all the modules available:
 Android:
         accepting_all_certificates
+        allow_all_hostname
         certificate_keystore_disclosure
-        hostnameverifier
+        crypto_ecb_cipher
+        debuggable_application
+        default_scheme_http
+        insecure_connection
+        insecure_hostname_verifier
+        insecure_socket_factory
+        insecure_socket
+        invalid_server_certificate
         obfuscated_code
-        ssl_error
         ssl_getinsecure_method
-        trustmanager
         weak_algorithms
         webview_ssl_errors
 Compliance:
@@ -370,6 +401,12 @@ Compliance:
         compare_many
         generate_one
         generate_many
+iOS:
+        allow_http_plist
+        allow_connection_plist
+        allow_tls_version_plist
+        no_forward_secrecy_plist
+        weak_crypto
 Server:
         3shake
         alpaca
