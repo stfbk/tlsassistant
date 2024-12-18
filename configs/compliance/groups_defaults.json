@@ -925,6 +925,36 @@
         "ffdhe6144",
         "ffdhe8192"
     ],
+    "3.0.13": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.14": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.0.15": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
     "3.0.2": [
         "secp256r1",
         "secp521r1",
@@ -1065,6 +1095,36 @@
         "ffdhe6144",
         "ffdhe8192"
     ],
+    "3.1.5": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.1.6": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.1.7": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
     "3.2.0": [
         "secp256r1",
         "secp521r1",
@@ -1096,6 +1156,106 @@
         "ffdhe8192"
     ],
     "3.2.0-beta1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.2.1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.2.2": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.2.3": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.3.0": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.3.0-alpha1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.3.0-beta1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.3.1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.3.2": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.4.0": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.4.0-alpha1": [
         "secp256r1",
         "secp521r1",
         "secp384r1",

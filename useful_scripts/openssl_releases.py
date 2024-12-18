@@ -164,6 +164,7 @@ def extract_sigalgs(releases_data):
     sigalgs_dict = {}
     sigalgs_table = {}
     for release in releases_data:
+        print(release)
         lines = releases_data[release].get("sigalgs", [])
         sigalgs = []
         for l in lines:
@@ -176,16 +177,28 @@ def extract_sigalgs(releases_data):
                 if name not in sigalgs_table and name != "NULL":
                     with open(f"tmp/{release}/ssl_local.h", "r") as f:
                         line = "a"
+                        i = 0
                         while line:
+                            i += 1
                             line = f.readline()
                             if tlsext in line:
                                 line = line.strip()
-                                sigalgs_table[name] = "0x" + line.split("0x")[1]
+                                if "0x" in line:
+                                    try:
+                                        sigalgs_table[name] = "0x" + line.split("0x")[1]
+                                    except IndexError:
+                                        print("Error: ", line, release, name, tlsext, i)
+                                        input()
+                                elif "_name" in line:
+                                    sigalgs_table[name] = line.split(" ")[-1].strip("\"")
 
         release = release.lower().replace("openssl", "")[1:]
         sigalgs_dict[release] = sigalgs
     # switch the keys and the values in sigalgs_table
-    sigalgs_table = {v: k for k, v in sigalgs_table.items()}
+    sigalgs_table = {v: k for k, v in [(x,y) for x,y in sigalgs_table.items() if "0x" in y]}
+    sigalgs_name_mapping = {v: k for k, v in [(x,y) for x,y in sigalgs_table.items() if "0x" not in y]}
+    for sigalg in sigalgs_table:
+        pass
     if not os.path.exists("tmp/iana_sigalgs.csv"):
         r = requests.get("https://www.iana.org/assignments/tls-parameters/tls-signaturescheme.csv")
         with open("tmp/iana_sigalgs.csv", "w") as f:
@@ -206,6 +219,7 @@ def extract_sigalgs(releases_data):
     iana_to_ietf = {}
     for sigalg in sigalgs_table:
         iana_to_ietf[sigalgs_table[sigalg]["iana"]] = sigalgs_table[sigalg]["ietf"]
+    iana_to_ietf.pop("NULL", None)
     with open("../configs/compliance/sigalgs.json", "w") as f:
         json.dump(sigalgs_dict, f, indent=4, sort_keys=True)
     with open("../configs/compliance/sigalgs_table.json", "w") as f:
