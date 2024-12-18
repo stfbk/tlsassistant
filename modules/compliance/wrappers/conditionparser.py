@@ -77,7 +77,7 @@ class ConditionParser:
         :type certificate_index: str
         :return:
         """
-        field_value = user_configuration.get(config_field, None)
+        field_value = user_configuration.get(config_field, {})
         check_first = None
         if condition:
             check_first = ConditionParser.get_check_first(condition)
