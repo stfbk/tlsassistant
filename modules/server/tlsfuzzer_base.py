@@ -180,7 +180,6 @@ class Tlsfuzzer_base:
         testssl_args = {"hostname": self._input_dict["hostname"]+":"+self._input_dict["port"],
                         "args": ["-e", "-p"],
                         }
-        hostname_cache = cache_name(self._input_dict["hostname"], self._input_dict["port"])
         self._testssl.run(**testssl_args, force=True)
         logging.debug(
             f"Executing analysis in {self._input_dict['hostname']} in port {self._input_dict['port']} with scripts "

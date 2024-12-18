@@ -156,7 +156,7 @@ class Testssl:
             else:
                 for ip in cache[site]:
                     self.__cache[site][ip] = self.__merge(
-                        self.__cache[site][ip], cache[site][ip]
+                        self.__cache[site].get(ip, {}), cache[site][ip]
                     )  # if present, merge
         self.__ip_cache.update(ip_cache)
 
