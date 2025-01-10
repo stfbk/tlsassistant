@@ -123,6 +123,8 @@ class ConditionParser:
                 enabled = ConditionParser._partial_match_checker(field_value, name)
             if not enabled and check_first:
                 enabled = name[:check_first] in field_value
+        elif isinstance(field_value, bool):
+            enabled = field_value
         else:
             ConditionParser.__logging.warning(f"Invalid field: {config_field} for name: {name}")
         return enabled
@@ -612,6 +614,19 @@ class CustomFunctions:
                         return False
         return True
 
+    def check_client_auth(self, **kwargs):
+        enabled = ConditionParser.is_enabled(self._user_configuration, "clientAuth", "clientAuth", (None, None))
+        if not enabled:
+            # this is needed to not show the missing clientAuth as a note
+            self.entry_updates["force_level"] = "optional"
+        self.entry_updates["is_enabled"] = enabled
+        return True
+
+    def check_client_only(self, **kwargs):
+        # Since we can not verify this condition we set the level to optional and return trues
+        self.entry_updates["force_level"] = "optional"
+        return True
+
     @staticmethod
     def always_true(**kwargs):
         return True
@@ -621,4 +636,4 @@ class CustomFunctions:
         return self._entry_updates
 
     def reset(self):
-        self._entry_updates = {"levels": [], "notes": [], "note_false": [], "note_always": [], "note_true": []}
+        self._entry_updates = {"levels": [], "notes": [], "note_false": [], "note_always": [], "note_true": [], "force_level": ""}
