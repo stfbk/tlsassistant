@@ -9,10 +9,12 @@ This file lists the main contributions. For the full list of contributions, plea
   - extension of the Android analysis modules
   - modular system redesign
   - HTML report design
+  - primary contributor for v2.x
 
-* Riccardo Germenia (main contributor)
+* Riccardo Germenia (maintainer and main contributor)
   - compliance module design and integration
   - PDF report redesign
+  - primary contributor for v3.x
 
 ##### Further credits (in chronological order)
 
