@@ -6,5 +6,6 @@
     "Stapling": "ssl_stapling",
     "EarlyData": "ssl_early_data",
     "DHParams": "ssl_dhparam",
-    "Groups": "ssl_ecdh_curve"
+    "Groups": "ssl_ecdh_curve",
+    "SignatureAlgorithms": "ssl_conf_command signature_algorithms"
 }
