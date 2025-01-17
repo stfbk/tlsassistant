@@ -59,5 +59,11 @@
     "post_actions": {
       "convert_groups": ""
     }
+  },
+  "SignatureAlgorithms": {
+    "enable": "name",
+    "disable": "",
+    "separator": ":",
+    "added_negatives": false
   }
 }
