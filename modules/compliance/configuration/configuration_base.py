@@ -547,6 +547,7 @@ class Actions:
                 if self._condition_parser.entry_updates.get("levels"):
                     potential_levels = self._condition_parser.entry_updates.get("levels")
                     level = compliance_base.Compliance.level_to_use(potential_levels, self.security)
+                level = self._condition_parser.entry_updates.get("force_level", level)
                 if valid_condition and enabled:
                     length = entry[columns_orig.index("length")]
                     if valid_sizes.get(length) is None:

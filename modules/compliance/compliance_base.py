@@ -646,7 +646,7 @@ class Compliance:
                         tokens = ex.split("/#")
                         if len(tokens) > 1:
                             extensions_pairs[tokens[1]
-                                             ] = tokens[0].lower().replace(" ", "_")
+                                             ] = tokens[0].lower().replace(" ", "_").replace("-", "_")
                     self._user_configuration["Extension"] = extensions_pairs
 
                 # From the certificate signature algorithm is possible to extract both CertificateSignature and Hash
@@ -782,6 +782,9 @@ class Compliance:
                                                      ] = "not" not in actual_dict["finding"]
                 elif field == "fallback_SCSV":
                     self._user_configuration["fallback_SCSV"] = actual_dict["finding"]
+                
+                elif field == "clientAuth":
+                    self._user_configuration["clientAuth"] = actual_dict["finding"] != "none"
 
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition, hostname):
         information_level = None
@@ -1018,6 +1021,7 @@ class Compliance:
                                 "levels")
                             level = potential_levels[self.level_to_use(
                                 potential_levels, self._security)]
+                        level = self._condition_parser.entry_updates.get("force_level", level)
                         has_alternative = self._condition_parser.entry_updates.get(
                             "has_alternative")
                         additional_notes = self._condition_parser.entry_updates.get(
@@ -1194,6 +1198,7 @@ class Generator(Compliance):
                     "levels")
                 level = potential_levels[self.level_to_use(
                     potential_levels, self._security)]
+            level = self._condition_parser.entry_updates.get("force_level", level)
             if not valid_condition and enabled:
                 self._config_class.remove_field(field, name)
             elif level in ["not recommended", "must not"] and valid_condition:
