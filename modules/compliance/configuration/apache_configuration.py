@@ -123,4 +123,3 @@ class ApacheConfiguration(ConfigurationMaker):
                 dictionary[directive] = user_configuration[directive].split(":") if ":" in user_configuration[directive] \
                     else user_configuration[directive]
         dictionary["CipherSuite"] = set(dictionary["CipherSuite"])
-        print(user_configuration)
