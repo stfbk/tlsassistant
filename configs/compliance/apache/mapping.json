@@ -7,5 +7,5 @@
     "StaplingCache": "SSLStaplingCache",
     "DHParams": "",
     "Groups": "SSLOpenSSLConfCmd groups",
-    "SignatureAlgorithms": "SSLOpenSSLConfCmd signature_algorithms"
+    "SignatureAlgorithms": "SSLOpenSSLConfCmd SignatureAlgorithms"
 }

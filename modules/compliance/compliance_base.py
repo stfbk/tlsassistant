@@ -41,7 +41,7 @@ def convert_signature_algorithm(sig_alg: str) -> str:
         sig_alg = sig_alg.replace("brainpool", f"brainpoolP{hash_len}r1tls13")
     elif "ecdsa" in sig_alg:
         hash_len = sig_alg[-3:]
-        sig_alg = sig_alg.replace("ecdsa", f"ecdsa_secp{hash_len}r1")
+        sig_alg = sig_alg.replace("ecdsa", f"ecdsa_secp{hash_len}r1").replace("512", "521", 1)
     return sig_alg
 
 
@@ -209,15 +209,15 @@ class Compliance:
         self._validator.dict(sheets_to_check)
         if actual_configuration and self._validator.string(actual_configuration):
             try:
-                self._config_class = ApacheConfiguration(actual_configuration)
+                self._config_class = ApacheConfiguration(actual_configuration, self._openssl_version)
             except Exception as e:
                 self._logging.debug(
                     f"Couldn't parse config as apache: {e}\ntrying with nginx..."
                 )
-                self._config_class = NginxConfiguration(actual_configuration)
+                self._config_class = NginxConfiguration(actual_configuration, openssl_version=self._openssl_version)
             if (isinstance(self._config_class, ApacheConfiguration) and
                     "VirtualHost" not in self._config_class.configuration.keys()):
-                self._config_class = NginxConfiguration(actual_configuration)
+                self._config_class = NginxConfiguration(actual_configuration, openssl_version=self._openssl_version)
             self._config_class.get_conf_data(self._user_configuration)
             # Without the certificate it is only possible to check a subset of the guidelines
             check_only = ["Protocol", "CipherSuite", "Extension", "Groups"]
@@ -271,9 +271,9 @@ class Compliance:
             self.prepare_testssl_output(test_ssl_output)
         if output_file and self._validator.string(output_file):
             if self._apache:
-                self._config_class = ApacheConfiguration()
+                self._config_class = ApacheConfiguration(openssl_version=self._openssl_version)
             else:
-                self._config_class = NginxConfiguration()
+                self._config_class = NginxConfiguration(openssl_version=self._openssl_version)
             self._config_class.set_out_file(Path(output_file))
         self._input_dict = kwargs
         self._input_dict["sheets_to_check"] = sheets_to_check

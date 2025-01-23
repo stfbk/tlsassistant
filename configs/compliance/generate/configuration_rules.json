@@ -64,6 +64,12 @@
     "enable": "name",
     "disable": "",
     "separator": ":",
-    "added_negatives": false
+    "added_negatives": false,
+    "replacements": {
+        "tls13": ""
+    },
+    "post_actions": {
+      "convert_sigalgs": ""
+    }
   }
 }
