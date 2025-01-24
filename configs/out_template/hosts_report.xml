@@ -13,7 +13,7 @@
         <paraStyle name = "recap" fontName = "Roboto Bold" fontSize = "25" alignment="centre" spaceAfter="25"/>
         <paraStyle name = "detected_vulnerabilities" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30"/>
         <paraStyle name = "detected_errors" fontName = "Roboto Bold" fontSize = "28" alignment="left" spaceAfter="30" textColor="red"/>
-        <paraStyle name = "no_vulnerabilities_detected" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30" textColor="green" spaceBefore="20"/>
+        <paraStyle name = "no_vulnerabilities_detected" fontName = "Roboto Bold" fontSize = "30" leading="30" alignment="centre" spaceAfter="30" textColor="green" spaceBefore="20"/>
         <paraStyle name = "module_list" fontName = "Roboto" fontSize="10" alignment="left" textColor="grey" spaceAfter="5"/>
         <paraStyle name = "module" fontName = "Roboto Bold" fontSize="20" alignment="left" spaceAfter="15" spaceBefore="10"/>
         <paraStyle name = "host" fontName = "Roboto Bold" fontSize = "25" leading = "25" alignment="centre" spaceAfter="25" spaceBefore="20" textColor="#4d4d4d"/>
@@ -184,9 +184,15 @@
                 </tr>
             {% endfor %}
         </blockTable>
+        {%set i_ns = namespace(i=0)%}
+        {% set i_ns.compliance=False%}
+        {% for module in modules %}
+            {% if module.startswith("compare_")%}
+                {% set i_ns.compliance=True %}
+            {% endif %}
+        {% endfor %}
         {% if pruner(results) %}
             <nextFrame/>
-            {%set i_ns = namespace(i=0)%}
             {% for host in results%}
                 {% if results[host].get("errors", None) %}
                     {% set i_ns.i = i_ns.i + 1%}
@@ -195,12 +201,6 @@
             {% if i_ns.i != results.keys().__len__() %}
                 <!--Insert here text to show if all the hosts had an error-->
             {% endif %}
-            {% set i_ns.compliance=False%}
-            {% for module in modules %}
-                {% if module.startswith("compare_")%}
-                    {% set i_ns.compliance=True %}
-                {% endif %}
-            {% endfor %}
             {% if i_ns.compliance %}
                 <h1 style="detected_vulnerabilities">Non Compliant Elements</h1>
             {% else %}
@@ -251,7 +251,11 @@
                 {%endfor%}
             {%endfor%}
         {% else %}
-            <para style="no_vulnerabilities_detected">No vulnerabilities detected</para>
+            {% if i_ns.compliance %} 
+                <para style="no_vulnerabilities_detected">The webserver is fully compliant with the requested guidelines</para>
+            {% else %}
+                <para style="no_vulnerabilities_detected">No vulnerabilities detected</para>
+            {% endif %}
         {% endif %}
         <namedString id="lastPage"><pageNumber/></namedString>
     </story>
