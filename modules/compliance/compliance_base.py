@@ -87,6 +87,8 @@ class Compliance:
             "openssl_to_iana", "configs/compliance/")
         self._user_configuration_types = load_configuration(
             "user_conf_types", "configs/compliance/generate/")
+        self.oakley_mapping = load_configuration(
+            "oakley_mapping", "configs/compliance/")
         self._type_converter = {
             "dict": dict,
             "list": list,
@@ -446,7 +448,7 @@ class Compliance:
                     filters.add(filters_dict[key_type])
             elif key_type == "PSK" and not self._no_psk:
                 pass
-            elif key_type not in cert_keys:
+            elif key_type not in cert_keys and not isinstance(self, Generator):
                 filters.add(filters_dict[key_type])
         # While generating there are no Certificate information so the filters are not needed
         if not filters or (len(filters) == len(filters_dict) and generating):
@@ -684,10 +686,17 @@ class Compliance:
                 elif field == "DH_groups":
                     finding = actual_dict["finding"]
                     groups = finding.split(
-                        " ") if " " in finding else [finding]
+                        " ") if " " in finding and not "Oakley" in finding else [finding]
                     for group in groups:
                         matches = re.match(r"[^\d]+(\d+)", group)
-                        if matches:
+                        if "Oakley" in group:
+                            group_id = group.split(" ")[-1]
+                            bits = self.oakley_mapping.get(group_id)
+                            if bits:
+                                self._user_configuration["KeyLengths"].add(
+                                    ("DH", bits))
+                                self._user_configuration["Groups"].append(group)
+                        elif matches:
                             length = matches.groups()[0]
                             self._user_configuration["KeyLengths"].add(
                                 ("DH", int(length)))
@@ -870,7 +879,7 @@ class Compliance:
         Given the input dictionary and the list of columns updates the entries field with a dictionary in the form
         sheet: data. The data is ordered by name
         """
-        self._logging.info("Retrieving entries from database")
+        self._logging.debug("Retrieving entries from database")
         entries = {}
         tables = []
         for sheet in sheets_to_check:
@@ -1021,7 +1030,9 @@ class Compliance:
                                 "levels")
                             level = potential_levels[self.level_to_use(
                                 potential_levels, self._security)]
-                        level = self._condition_parser.entry_updates.get("force_level", level)
+                        new_level = self._condition_parser.entry_updates.get("force_level", level)
+                        if new_level:
+                            level = new_level
                         has_alternative = self._condition_parser.entry_updates.get(
                             "has_alternative")
                         additional_notes = self._condition_parser.entry_updates.get(
