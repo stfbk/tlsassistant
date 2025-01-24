@@ -75,5 +75,9 @@
   {
     "type": "pip",
     "url": "-r dependencies/SEBASTiAn/src/requirements.txt"
+  },
+  {
+    "type": "git",
+    "url": "https://github.com/internetstandards/dhe_groups"
   }
 ]
