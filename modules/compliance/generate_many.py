@@ -1,5 +1,5 @@
 from modules.compliance.compliance_base import Generator
-from utils import DEFAULT_COLUMNS
+from utils.globals import DEFAULT_COLUMNS
 
 
 class GenerateMany(Generator):
