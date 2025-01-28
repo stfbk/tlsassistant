@@ -1,11 +1,17 @@
 {
   "CipherSuite": {
     "RSA": "name NOT LIKE '%_RSA_%'",
-    "EC": "name NOT LIKE '_ECDH%' and name NOT LIKE '%_ECDSA_%'",
+    "ECDSA": "name NOT LIKE '_ECDH%' and name NOT LIKE '%_ECDSA_%'",
     "DSA": "name NOT LIKE '%_DSS_%'",
     "PSK": "name NOT LIKE '%_PSK_%'"
   },
   "KeyLengths": {
     "RSA,DSA": "name NOT LIKE 'DH%'"
+  },
+  "Signature":
+  {
+    "RSA": "name NOT LIKE 'RSA_PSS_RSAE%'",
+    "ECDSA": "name NOT LIKE 'ECDSA_%'",
+    "RSASSA-PSS": "name NOT LIKE 'RSA_PSS_PSS%'"
   }
 }
