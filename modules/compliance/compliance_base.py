@@ -80,6 +80,7 @@ class Compliance:
         self._certificate_parser = CertificateParser()
         self._cert_sig_algs = [el[0] for el in self._database_instance.run(tables=["CertificateSignature"],
                                                                            columns=["name"])]
+        self._cert_sig_algs.append("rsassa-pss")
         self._configuration_maker = ConfigurationMaker(
             "apache", self._openssl_version)
         self._openssl = OpenSSL()
@@ -197,8 +198,12 @@ class Compliance:
         elif openssl_version:
             self._openssl_version = openssl_version[0]
         if self._openssl_version not in self._configuration_maker.signature_algorithms:
-            self._logging.warning(
-                f"OpenSSL version {openssl_version[0]} is not supported, using 3.0.12")
+            if openssl_version is None:
+                self._logging.warning(
+                    f"OpenSSL version not provided, using 3.0.12")
+            else:
+                self._logging.warning(
+                    f"OpenSSL version {openssl_version[0]} is not supported, using 3.0.12")
             self._openssl_version = "3.0.12"
         self._configuration_maker.set_openssl_version(self._openssl_version)
 
@@ -448,7 +453,7 @@ class Compliance:
                     filters.add(filters_dict[key_type])
             elif key_type == "PSK" and not self._no_psk:
                 pass
-            elif key_type not in cert_keys and not isinstance(self, Generator):
+            elif key_type not in cert_keys and not generating:
                 filters.add(filters_dict[key_type])
         # While generating there are no Certificate information so the filters are not needed
         if not filters or (len(filters) == len(filters_dict) and generating):
@@ -785,6 +790,15 @@ class Compliance:
                             self._user_configuration["CertificateExtensions"][cert_index] = cert_data[entry]
                         else:
                             self._user_configuration["Certificate"][cert_index][entry] = cert_data[entry]
+                    # this should happen only with RSAPSS
+                    if not self._user_configuration["Certificate"][cert_index].get("KeyAlg"):
+                        self._user_configuration["Certificate"][cert_index]["KeyAlg"] = cert_data["SigAlgName"]
+                        print(cert_data["SigAlgName"])
+                        if cert_data["SigAlgName"] == "RSASSA-PSS":
+                            self._user_configuration["CertificateSignature"].add(
+                                "rsa")
+                            self._user_configuration["KeyLengths"].add(
+                                ("RSA", cert_data["KeySize"]))
 
                 elif field in self.misc_fields:
                     self._user_configuration["Misc"][self.misc_fields[field]
