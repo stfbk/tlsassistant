@@ -22,7 +22,7 @@ class CertificateParser:
         if not isinstance(self.certificate, x509.Certificate):
             return {}
         for ext in self.certificate.extensions:
-            ext_name = ext.oid._name
+            ext_name = ext.oid._name.replace("cRLDistributionPoints", "crlDistributionPoints")
             content = ext.value.public_bytes()
             self._output_dict[cert_sha]["Extensions"][ext_name] = content
         self._output_dict[cert_sha]["X.509 version"] = self.certificate.version.value
