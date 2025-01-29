@@ -1,8 +1,8 @@
 {
-  "TLS Web Server Authentication": "Digital Signature or (Key Encipherment xor Key Agreement) ",
-  "TLS Web Client Authentication": "Digital Signature or Key Agreement",
-  "Code Signing": "Digital Signature",
-  "E-mail Protection": "Digital Signature or Non Repudiation or (Key Encipherment xor Key Agreement)",
-  "Time Stamping": "Digital Signature or Non Repudiation",
-  "OCSP Signing": "Digital Signature or Non Repudiation"
+  "serverAuth": "digital_signature or (key_encipherment xor key_agreement) ",
+  "clientAuth": "digital_signature or key_agreement",
+  "codeSigning": "digital_signature",
+  "emailProtection": "digital_signature or content_commitment or (key_encipherment xor key_agreement)",
+  "timeStamping": "digital_signature or content_commitment",
+  "ocspSigning": "digital_signature or content_commitment"
 }

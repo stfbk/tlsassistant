@@ -793,7 +793,6 @@ class Compliance:
                     # this should happen only with RSAPSS
                     if not self._user_configuration["Certificate"][cert_index].get("KeyAlg"):
                         self._user_configuration["Certificate"][cert_index]["KeyAlg"] = cert_data["SigAlgName"]
-                        print(cert_data["SigAlgName"])
                         if cert_data["SigAlgName"] == "RSASSA-PSS":
                             self._user_configuration["CertificateSignature"].add(
                                 "rsa")
