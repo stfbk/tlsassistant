@@ -4,6 +4,8 @@ import re
 from pyasn1.type.char import PrintableString
 from pyasn1.type.univ import SequenceOf
 
+from cryptography import x509
+
 from utils.loader import load_configuration
 from utils.logger import Logger
 from utils.validation import Validator
@@ -525,11 +527,11 @@ class CustomFunctions:
             self._logger.warning("No certificate information found, returning False for condition check_aki")
             self.entry_updates["is_enabled"] = False
             return True
-        aki = cert_data.get("authorityKeyIdentifier", "")
+        aki: x509.AuthorityKeyIdentifier = cert_data.get("authorityKeyIdentifier", "")
         if not aki:
             self._entry_updates["notes"].append(f"No AKI found for certificate {cert}")
             failed = True
-        if "issuer" in aki.lower() or "serial" in aki.lower() or "dirname" in aki.lower():
+        if aki.authority_cert_issuer or aki.authority_cert_serial_number:
             self._entry_updates["notes"].append(
                 f"Certificate {cert} contains Issuer DN or Serial Number in the AKI field")
             self._entry_updates["levels"].append("must not")
@@ -559,13 +561,13 @@ class CustomFunctions:
             self._logger.debug("No certificate information found, returning False for condition check_same_key_usage")
             self.entry_updates["is_enabled"] = False
 
-        key_usage = cert_data.get("keyUsage", "")
-        extended_key_usages = cert_data.get("extendedKeyUsage", "")
+        key_usage: x509.KeyUsage = cert_data.get("keyUsage", "")
+        extended_key_usages: x509.ExtendedKeyUsage = cert_data.get("extendedKeyUsage", "")
         if not key_usage or not extended_key_usages:
             self._entry_updates["notes"].append(f"No key usage or extended key usage found for certificate {cert}")
             return False
-        key_usage = key_usage.split(", ")
-        extended_key_usages = extended_key_usages.split(", ")
+        key_usage = [key_usage[1:] for key_usage, valid in key_usage.__dict__.items() if valid]
+        extended_key_usages = [ext_key_usage._name for ext_key_usage in extended_key_usages]
         results = []
         findings = []
         for ext_key_usage in extended_key_usages:

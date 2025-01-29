@@ -1,6 +1,5 @@
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes
-import OpenSSL.crypto as crypto
 from dateutil import parser
 from pyasn1.codec.der.decoder import decode as der_decoder
 
@@ -23,7 +22,7 @@ class CertificateParser:
             return {}
         for ext in self.certificate.extensions:
             ext_name = ext.oid._name.replace("cRLDistributionPoints", "crlDistributionPoints")
-            content = ext.value.public_bytes()
+            content = ext.value
             self._output_dict[cert_sha]["Extensions"][ext_name] = content
         self._output_dict[cert_sha]["X.509 version"] = self.certificate.version.value
         self._output_dict[cert_sha]["SigAlgName"] = self.certificate.signature_algorithm_oid._name
