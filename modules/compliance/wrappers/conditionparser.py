@@ -615,8 +615,11 @@ class CustomFunctions:
             cert_data = certificates[cert]
             san_field = cert_data.get("subjectAltName", "")
             names = [name for name in san_field]
-            enabled = any([isinstance(name, ConditionParser.general_name_dictionary.get(
-                tokens[0], x509.GeneralName)) for name in names])
+            instance = ConditionParser.general_name_dictionary.get(tokens[0], None)
+            if instance:
+                enabled = any([isinstance(name, instance) for name in names])
+            else:
+                enabled = any([tokens[0] in name.value for name in names])
             reason = f"{tokens[0]} is"
             if not enabled:
                 reason += " not"
