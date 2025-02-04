@@ -15,7 +15,8 @@ from configs import sheets_mapping
 
 
 class ConditionParser:
-    _instructions = load_configuration("condition_instructions", "configs/compliance/")
+    _instructions = load_configuration(
+        "condition_instructions", "configs/compliance/")
     _instructions_keys = '|'.join(_instructions.keys())
     _no_match = "calculated"
     _logical_separators = [" and ", " or ", " xor "]
@@ -31,6 +32,15 @@ class ConditionParser:
     _sheet_mapping = sheets_mapping
     __logging = Logger("Condition parser")
     __logging.debug(_splitting_regex)
+
+    general_name_dictionary = {
+        "IP": x509.IPAddress,
+        "DNS": x509.DNSName,
+        "DIRECTORY": x509.DirectoryName,
+        "URI": x509.UniformResourceIdentifier,
+        "ID": x509.RegisteredID,
+        "OTHER": x509.OtherName
+    }
 
     # mapping from field indicator used in the conditions to the field of the configuration dictionary
 
@@ -106,7 +116,8 @@ class ConditionParser:
             else:
                 enabled = name in field_value.values()
             if not enabled and partial_match:
-                enabled = ConditionParser._partial_match_checker(field_value.values(), name)
+                enabled = ConditionParser._partial_match_checker(
+                    field_value.values(), name)
 
         elif field_value and isinstance(field_value, set) and isinstance(list(field_value)[0], tuple):
             # KeyLengths case
@@ -122,13 +133,15 @@ class ConditionParser:
                 name = name.split("/")[0].strip()
             enabled = name in field_value
             if not enabled and partial_match:
-                enabled = ConditionParser._partial_match_checker(field_value, name)
+                enabled = ConditionParser._partial_match_checker(
+                    field_value, name)
             if not enabled and check_first:
                 enabled = name[:check_first] in field_value
         elif isinstance(field_value, bool):
             enabled = field_value
         else:
-            ConditionParser.__logging.warning(f"Invalid field: {config_field} for name: {name}")
+            ConditionParser.__logging.warning(
+                f"Invalid field: {config_field} for name: {name}")
         return enabled
 
     @staticmethod
@@ -148,7 +161,8 @@ class ConditionParser:
     @staticmethod
     def get_check_first(condition: str):
         check_first = None
-        conditions = re.split(ConditionParser._splitting_regex, condition, flags=re.IGNORECASE)
+        conditions = re.split(ConditionParser._splitting_regex,
+                              condition, flags=re.IGNORECASE)
         for condition in conditions:
             condition = condition.strip()
             if condition.startswith("CHECK_ONLY_FIRST") and " " in condition:
@@ -185,8 +199,10 @@ class ConditionParser:
         tokens = [token.strip() for token in tokens]
         for i, token in enumerate(tokens):
             next_token = tokens[i + 1] if i < len(tokens) - 1 else None
-            to_solve = to_solve.replace(token, str(self._evaluate_condition(token, next_token)))
-        tokens = re.split(self.splitting_capturing_regex, to_solve, flags=re.IGNORECASE)
+            to_solve = to_solve.replace(token, str(
+                self._evaluate_condition(token, next_token)))
+        tokens = re.split(self.splitting_capturing_regex,
+                          to_solve, flags=re.IGNORECASE)
         tokens = [token for token in tokens if token]
         while len(tokens) >= 3:
             first_instruction = tokens.pop(0).strip() == "True"
@@ -215,7 +231,8 @@ class ConditionParser:
             return condition
         if condition not in self._instructions and \
                 (" " not in condition and condition.split(" ")[0] not in self._instructions):
-            self.__logging.warning(f"Invalid condition: {condition} in expression: {self.expression}. Returning False")
+            self.__logging.warning(
+                f"Invalid condition: {condition} in expression: {self.expression}. Returning False")
             return "False"
         tokens = condition.split(" ")
         field = tokens[0]
@@ -231,9 +248,11 @@ class ConditionParser:
                 "original_text": field.upper(),
                 "certificate_index": self._certificate_index
             }
-            result = self._custom_functions.__getattribute__(config_field.split(" ")[1])(**args)
+            result = self._custom_functions.__getattribute__(
+                config_field.split(" ")[1])(**args)
         elif config_field is None:
-            self.__logging.warning(f"Invalid field: {field} in expression: {self.expression}. Returning False")
+            self.__logging.warning(
+                f"Invalid field: {field} in expression: {self.expression}. Returning False")
             self.__logging.debug(f"Tokens: {tokens}")
             result = False
         else:
@@ -278,7 +297,7 @@ class CustomFunctions:
             "in": lambda op1, op2: op1 in op2,
             "not in": lambda op1, op2: op1 not in op2,
         }
-        self._operators_regex = "(" + ")|(".join(self._operators.keys()) + ")"
+        self._operators_regex = "(" + ")|( ".join(self._operators.keys()) + ")"
         self._extended_key_usage_consistency = load_configuration("extended_key_usage_consistency",
                                                                   "configs/compliance/")
         self._consistency_regex = r" x{0,1}or |[()]"
@@ -315,7 +334,8 @@ class CustomFunctions:
         status = kwargs.get("data", "").lower() == "true"
         result = False
         for version in range(3):
-            enabled = ConditionParser.is_enabled(self._user_configuration, "Protocol", f"TLS 1.{version}", (None, None))
+            enabled = ConditionParser.is_enabled(
+                self._user_configuration, "Protocol", f"TLS 1.{version}", (None, None))
             if enabled and not status:
                 result = True
                 self._entry_updates["levels"].append("must not")
@@ -336,7 +356,8 @@ class CustomFunctions:
                 self._validator.int(num)
                 return self._operators[op](count, num)
             elif tokens[0] == "publicly":
-                certs_trust_dict = self._user_configuration.get("TrustedCerts", {})
+                certs_trust_dict = self._user_configuration.get(
+                    "TrustedCerts", {})
                 trusted = True
                 if not certs_trust_dict:
                     trusted = False
@@ -447,10 +468,11 @@ class CustomFunctions:
         if not levels:
             levels = [name]
         field = self._user_configuration.get(config_field, {})
-        last_level = [levels[-1]] if "," not in levels[-1] else levels[-1].split(",")
+        last_level = [
+            levels[-1]] if "," not in levels[-1] else levels[-1].split(",")
         last_level = map(str.strip, last_level)
         # used the in because in this way is easier to edit if needed
-        if config_field in ["Certificate", "CertificateExtensions"]:
+        if config_field == "Certificate":
             result = True
             for cert in field:
                 if cert.startswith("int"):
@@ -458,32 +480,249 @@ class CustomFunctions:
                 for level in last_level:
                     levels[-1] = level
                     # I pass to the function that gets the value the certificate dictionary as field
-                    configuration_value = self._get_configuration_field(field.get(cert, {}), levels)
+                    configuration_value = self._get_configuration_field(
+                        field.get(cert, {}), levels)
                     reason = f"field {level} is missing" if not configuration_value else f"{value} {operator} {name}"
-                    partial_result = self._operators[operator](value, str(configuration_value))
+                    partial_result = self._operators[operator](
+                        value, str(configuration_value))
                     for key in self.entry_updates.keys():
                         if key.startswith("note"):
                             for i, entry in enumerate(self.entry_updates[key]):
-                                self._entry_updates[key][i] = entry.replace("{cert}", cert).replace("{reason}", reason)
+                                self._entry_updates[key][i] = entry.replace(
+                                    "{cert}", cert).replace("{reason}", reason)
                     result = result and partial_result
+        elif config_field == "CertificateExtensions":
+            self._logger.error(
+                "CertificateExtensions is not a valid field for the check_value function, use custom functions instead")
+            self._logger.debug(f"Tokens: {tokens}")
+            result = True
         else:
             result = True
             for level in last_level:
                 levels[-1] = level
-                configuration_value = self._get_configuration_field(field, levels)
-                partial_result = self._operators[operator](value, str(configuration_value))
+                configuration_value = self._get_configuration_field(
+                    field, levels)
+                partial_result = self._operators[operator](
+                    value, str(configuration_value))
                 reason = f"Failed check {name} {operator} {value} for {config_field}"
                 for key in self.entry_updates.keys():
                     if key.startswith("note"):
                         for i, entry in enumerate(self.entry_updates[key]):
-                            self._entry_updates[key][i] = entry.replace("{reason}", reason)
+                            self._entry_updates[key][i] = entry.replace(
+                                "{reason}", reason)
                 result = result and partial_result
         return result
 
-    @staticmethod
+    def check_keyusage(self, **kwargs):
+        """
+        :param kwargs: Dictionary of arguments
+        :type kwargs: dict
+        :return: True if the key usage is enabled
+        :rtype: bool
+        :Keyword Arguments:
+            * *data* (``str``) -- The key usage to check
+        """
+        enabled = True
+        tokens = kwargs.get("tokens", [])
+        tokens_string = " ".join(tokens)
+        tokens = re.split(ConditionParser._splitting_regex,
+                          tokens_string, flags=re.IGNORECASE)
+        tokens = [t.strip() for t in tokens if t]
+        if not tokens:
+            raise ValueError("No key usage provided")
+        self._validator.string(tokens[0])
+        certificates = self._user_configuration.get(
+            "CertificateExtensions", {})
+        for cert in certificates:
+            if cert.startswith("int"):
+                continue
+            cert_data = certificates[cert]
+            key_usage_field = cert_data.get("keyUsage", "")
+            enabled = key_usage_field.__getattribute__(tokens[0])
+            reason = f"{tokens[0]} is"
+            if not enabled:
+                reason += " not"
+            reason += " enabled in the Key Usage field"
+            for key in self.entry_updates.keys():
+                if key.startswith("note"):
+                    for i, entry in enumerate(self.entry_updates[key]):
+                        self._entry_updates[key][i] = entry.replace(
+                            "{cert}", cert).replace("{reason}", reason)
+        return enabled
+
+    def check_extended_keyusage(self, **kwargs):
+        """
+        :param kwargs: Dictionary of arguments
+        :type kwargs: dict
+        :return: True if the extended key usage is enabled
+        :rtype: bool
+        :Keyword Arguments:
+            * *data* (``str``) -- The extended key usage to check
+        """
+        enabled = True
+        tokens = kwargs.get("tokens", [])
+        tokens_string = " ".join(tokens)
+        tokens = re.split(ConditionParser._splitting_regex,
+                          tokens_string, flags=re.IGNORECASE)
+        tokens = [t.strip() for t in tokens if t]
+        if not tokens:
+            raise ValueError("No extended key usage provided")
+        self._validator.string(tokens[0])
+        certificates = self._user_configuration.get(
+            "CertificateExtensions", {})
+        for cert in certificates:
+            if cert.startswith("int"):
+                continue
+            cert_data = certificates[cert]
+            extended_key_usage_field = cert_data.get("extendedKeyUsage", "")
+            extended_key_usages = [
+                ext_key_usage._name for ext_key_usage in extended_key_usage_field]
+            enabled = tokens[0] in extended_key_usages
+            reason = f"{tokens[0]} is"
+            if not enabled:
+                reason += " not"
+            reason += " enabled in the Extended Key Usage field"
+            for key in self.entry_updates.keys():
+                if key.startswith("note"):
+                    for i, entry in enumerate(self.entry_updates[key]):
+                        self._entry_updates[key][i] = entry.replace(
+                            "{cert}", cert).replace("{reason}", reason)
+        return enabled
+
+    def check_san(self, **kwargs):
+        """
+        :param kwargs: Dictionary of arguments
+        :type kwargs: dict
+        :return: True if the SAN field is enabled
+        :rtype: bool
+        :Keyword Arguments:
+            * *data* (``str``) -- The SAN to check
+        """
+        enabled = True
+        tokens = kwargs.get("tokens", [])
+        tokens_string = " ".join(tokens)
+        tokens = re.split(ConditionParser._splitting_regex,
+                          tokens_string, flags=re.IGNORECASE)
+        tokens = [t.strip() for t in tokens if t]
+        if not tokens:
+            raise ValueError("No SAN provided")
+        self._validator.string(tokens[0])
+        certificates = self._user_configuration.get(
+            "CertificateExtensions", {})
+        for cert in certificates:
+            if cert.startswith("int"):
+                continue
+            cert_data = certificates[cert]
+            san_field = cert_data.get("subjectAltName", "")
+            names = [name for name in san_field]
+            enabled = any([isinstance(name, ConditionParser.general_name_dictionary.get(
+                tokens[0], x509.GeneralName)) for name in names])
+            reason = f"{tokens[0]} is"
+            if not enabled:
+                reason += " not"
+            reason += " enabled in the Subject Alternative Name field"
+            for key in self.entry_updates.keys():
+                if key.startswith("note"):
+                    for i, entry in enumerate(self.entry_updates[key]):
+                        self._entry_updates[key][i] = entry.replace(
+                            "{cert}", cert).replace("{reason}", reason)
+        return enabled
+
+    def check_aia(self, **kwargs):
+        enabled = False
+        tokens = kwargs.get("tokens", [])
+        tokens_string = " ".join(tokens)
+        tokens = re.split(ConditionParser._splitting_regex,
+                          tokens_string, flags=re.IGNORECASE)
+        tokens = [t.strip() for t in tokens if t]
+        if not tokens:
+            self._logger.warning(
+                "No fields to check provided for AIA, returning True")
+            return True
+        self._validator.string(tokens[0])
+        certificates = self._user_configuration.get(
+            "CertificateExtensions", {})
+        fields_to_check = [t.strip() for t in tokens[0].split(
+            "-")] if "-" in tokens[0] else [tokens[0].strip()]
+        method = fields_to_check[0]
+        if len(fields_to_check) > 1:
+            location = fields_to_check[1]
+            valid_location = False
+        for cert in certificates:
+            if cert.startswith("int") or not fields_to_check:
+                continue
+            cert_data = certificates[cert]
+            aia_field: x509.extensions.AuthorityInformationAccess = cert_data.get(
+                "authorityInfoAccess", "")
+            results = []
+            valid_method = False
+            for field in aia_field:
+                valid_method = field.access_method._name == method
+                if len(fields_to_check) > 1:
+                    location_type = ConditionParser.general_name_dictionary.get(
+                        location, None)
+                    valid_location = type(
+                        field.access_location) == location_type
+                # if there are multiple fields only one has to be fine
+                enabled = enabled or (valid_method and valid_location)
+
+            if len(fields_to_check) > 1:
+                reason = f"{method} with {location} is"
+            else:
+                reason = f"{tokens[0]} is"
+            if not enabled:
+                reason += " not"
+            reason += " found in the Authority Info Access field"
+            for key in self.entry_updates.keys():
+                if key.startswith("note"):
+                    for i, entry in enumerate(self.entry_updates[key]):
+                        self._entry_updates[key][i] = entry.replace(
+                            "{cert}", cert).replace("{reason}", reason)
+        return enabled
+
+    def check_crl_distribution_points(self, **kwargs):
+        enabled = False
+        tokens = kwargs.get("tokens", [])
+        tokens_string = " ".join(tokens)
+        tokens = re.split(ConditionParser._splitting_regex,
+                          tokens_string, flags=re.IGNORECASE)
+        tokens = [t.strip() for t in tokens if t]
+        if not tokens:
+            self._logger.warning(
+                "No fields to check provided for crlDistributionPoints, returning True")
+            return True
+        fields_to_check = [t.strip() for t in tokens[0].split(
+            "-")] if "-" in tokens[0] else [tokens[0].strip()]
+        certificates = self._user_configuration.get(
+            "CertificateExtensions", {})
+        for cert in certificates:
+            if cert.startswith("int"):
+                continue
+            cert_data = certificates[cert]
+            crl_dist_points: x509.crlDistributionPoints = cert_data.get(
+                "crlDistributionPoints", "")
+            for point in crl_dist_points:
+                enabled = enabled and point.__getattribute__(
+                    tokens[0]) == tokens[0]
+                if enabled and len(fields_to_check) > 1:
+                    enabled = isinstance(point.__getattribute__(), ConditionParser.general_name_dictionary.get(
+                        fields_to_check[1], x509.GeneralName))
+
+            reason= f"{tokens[0]} is"
+            if not enabled:
+                reason += " not"
+            reason += " found in the CRL Distribution Points field"
+            for key in self.entry_updates.keys():
+                if key.startswith("note"):
+                    for i, entry in enumerate(self.entry_updates[key]):
+                        self._entry_updates[key][i]= entry.replace(
+                            "{cert}", cert).replace("{reason}", reason)
+        return enabled
+
+    @ staticmethod
     def _get_configuration_field(field, levels):
         for level in levels:
-            field = field.get(level, {})
+            field= field.get(level, {})
         return field
 
     def check_dict_value(self, **kwargs):
@@ -493,23 +732,23 @@ class CustomFunctions:
         for cert in self._user_configuration.get("Certificate", {}):
             if cert.startswith("int"):
                 continue
-            cert_data = self._user_configuration["Certificate"][cert]
-            validity = cert_data["validity"]
-            data = kwargs.get("data", None)
+            cert_data= self._user_configuration["Certificate"][cert]
+            validity= cert_data["validity"]
+            data= kwargs.get("data", None)
             if not data:
                 raise ValueError("No amount of years provided")
             if not data.isnumeric():
                 raise ValueError("Amount of years must be a number")
-            years = int(data)
-            days = years * 365
+            years= int(data)
+            days= years * 365
             return validity.days < days
         self._logger.debug("No certificate information found, returning True")
         return True
 
     def verify_scsv(self, **kwargs):
-        scsv_finding = self._user_configuration.get("fallback_SCSV", "")
-        enabled = "offered" in scsv_finding and "not" not in scsv_finding
-        self._entry_updates["is_enabled"] = enabled
+        scsv_finding= self._user_configuration.get("fallback_SCSV", "")
+        enabled= "offered" in scsv_finding and "not" not in scsv_finding
+        self._entry_updates["is_enabled"]= enabled
         return True
 
     def check_aki(self, **kwargs):
@@ -519,83 +758,100 @@ class CustomFunctions:
         :param kwargs:
         :return:
         """
-        self.entry_updates["is_enabled"] = False
-        cert = kwargs.get("certificate_index", "1")
-        failed = False
-        cert_data = self._user_configuration["CertificateExtensions"].get(cert)
+        self.entry_updates["is_enabled"]= False
+        cert= kwargs.get("certificate_index", "1")
+        failed= False
+        cert_data= self._user_configuration["CertificateExtensions"].get(cert)
         if not cert_data:
-            self._logger.warning("No certificate information found, returning False for condition check_aki")
-            self.entry_updates["is_enabled"] = False
+            self._logger.warning(
+                "No certificate information found, returning False for condition check_aki")
+            self.entry_updates["is_enabled"]= False
             return True
-        aki: x509.AuthorityKeyIdentifier = cert_data.get("authorityKeyIdentifier", "")
+        aki: x509.AuthorityKeyIdentifier= cert_data.get(
+            "authorityKeyIdentifier", "")
         if not aki:
-            self._entry_updates["notes"].append(f"No AKI found for certificate {cert}")
-            failed = True
+            self._entry_updates["notes"].append(
+                f"No AKI found for certificate {cert}")
+            failed= True
         if aki.authority_cert_issuer or aki.authority_cert_serial_number:
             self._entry_updates["notes"].append(
                 f"Certificate {cert} contains Issuer DN or Serial Number in the AKI field")
             self._entry_updates["levels"].append("must not")
-            self.entry_updates["is_enabled"] = True
-            failed = True
-        intermediate_certificate = self._user_configuration["CertificateExtensions"].get("int_" + cert, {})
+            self.entry_updates["is_enabled"]= True
+            failed= True
+        intermediate_certificate= self._user_configuration["CertificateExtensions"].get(
+            "int_" + cert, {})
         if not intermediate_certificate:
-            intermediate_certificate = self._user_configuration["CertificateExtensions"].get("int_1_" + cert, {})
+            intermediate_certificate= self._user_configuration["CertificateExtensions"].get(
+                "int_1_" + cert, {})
         if not intermediate_certificate:
-            self._entry_updates["notes"].append(f"No intermediate certificate found for certificate {cert}")
-            failed = True
-        ski = intermediate_certificate.get("subjectKeyIdentifier", "")
+            self._entry_updates["notes"].append(
+                f"No intermediate certificate found for certificate {cert}")
+            failed= True
+        ski= intermediate_certificate.get("subjectKeyIdentifier", "")
         if not ski:
-            self._entry_updates["notes"].append(f"No SKI found for intermediate certificate {cert}")
-            failed = True
+            self._entry_updates["notes"].append(
+                f"No SKI found for intermediate certificate {cert}")
+            failed= True
         if failed:
             # The condition must be True so that the note is shown
             return True
-        result = ski == aki
-        self.entry_updates["is_enabled"] = result
+        result= ski == aki
+        self.entry_updates["is_enabled"]= result
         return result
 
     def check_same_key_usage(self, **kwargs):
-        cert = kwargs.get("certificate_index", "1")
-        cert_data = self._user_configuration["CertificateExtensions"].get(cert, {})
+        cert= kwargs.get("certificate_index", "1")
+        cert_data= self._user_configuration["CertificateExtensions"].get(cert, {
+        })
         if not cert_data:
-            self._logger.debug("No certificate information found, returning False for condition check_same_key_usage")
-            self.entry_updates["is_enabled"] = False
+            self._logger.debug(
+                "No certificate information found, returning False for condition check_same_key_usage")
+            self.entry_updates["is_enabled"]= False
 
-        key_usage: x509.KeyUsage = cert_data.get("keyUsage", "")
-        extended_key_usages: x509.ExtendedKeyUsage = cert_data.get("extendedKeyUsage", "")
+        key_usage: x509.KeyUsage= cert_data.get("keyUsage", "")
+        extended_key_usages: x509.ExtendedKeyUsage= cert_data.get(
+            "extendedKeyUsage", "")
         if not key_usage or not extended_key_usages:
-            self._entry_updates["notes"].append(f"No key usage or extended key usage found for certificate {cert}")
+            self._entry_updates["notes"].append(
+                f"No key usage or extended key usage found for certificate {cert}")
             return False
-        key_usage = [key_usage[1:] for key_usage, valid in key_usage.__dict__.items() if valid]
-        extended_key_usages = [ext_key_usage._name for ext_key_usage in extended_key_usages]
-        results = []
-        findings = []
+        key_usage= [key_usage[1:]
+                     for key_usage, valid in key_usage.__dict__.items() if valid]
+        extended_key_usages= [
+            ext_key_usage._name for ext_key_usage in extended_key_usages]
+        results= []
+        findings= []
         for ext_key_usage in extended_key_usages:
-            condition = self._extended_key_usage_consistency.get(ext_key_usage, "")
-            checks = re.split(self._consistency_regex, condition)
-            checks = [check.strip() for check in checks if check.strip()]
+            condition= self._extended_key_usage_consistency.get(
+                ext_key_usage, "")
+            checks= re.split(self._consistency_regex, condition)
+            checks= [check.strip() for check in checks if check.strip()]
             for check in checks:
-                condition = condition.replace(check, str(check in key_usage))
-            result = ConditionParser(self._user_configuration).run(condition, True)
+                condition= condition.replace(check, str(check in key_usage))
+            result= ConditionParser(
+                self._user_configuration).run(condition, True)
             results.append(result)
             if not result:
                 findings.append(ext_key_usage)
-        self.entry_updates["note_true"] = [
-            f"The certificate {cert} contains extended key usages that aren't in the key usage field. "
-            f"The invalid usages are: {', '.join(findings)}"]
+        if findings:
+            self.entry_updates["note_true"]= [
+                f"The certificate {cert} contains extended key usages that aren't in the key usage field. "
+                f"The invalid usages are: {', '.join(findings)}"]
         return not all(results)
 
     def disable_if(self, **kwargs):
-        self._entry_updates["disable_if"] = kwargs.get("tokens", [""])[0]
+        self._entry_updates["disable_if"]= kwargs.get("tokens", [""])[0]
         return True
 
     def check_dn(self, **kwargs):
-        token = " ".join(kwargs.get("tokens", []))
+        token= " ".join(kwargs.get("tokens", []))
         for cert in self._user_configuration["Certificate"]:
-            cert_data = self._user_configuration["Certificate"][cert]
-            dn_data = cert_data.get(token, {})
+            cert_data= self._user_configuration["Certificate"][cert]
+            dn_data= cert_data.get(token, {})
             if not dn_data:
-                self._entry_updates["note_false"].append(f"No DN data found for certificate {cert}")
+                self._entry_updates["note_false"].append(
+                    f"No DN data found for certificate {cert}")
                 return False
             if not isinstance(dn_data, SequenceOf):
                 self._entry_updates["note_false"].append(
@@ -607,8 +863,8 @@ class CustomFunctions:
                         f"Certificate {cert} has more then one value encoded in its Relative Distinguished Name")
                     return False
                 for rdn in dn.components:
-                    component_type = rdn.components[0]
-                    component_value = rdn.components[1]
+                    component_type= rdn.components[0]
+                    component_value= rdn.components[1]
                     if not isinstance(component_value, PrintableString):
                         self._entry_updates["note_false"].append(
                             f"Certificate {cert} has an attribute value that isn't a PrintableString,"
@@ -617,25 +873,27 @@ class CustomFunctions:
         return True
 
     def check_client_auth(self, **kwargs):
-        enabled = ConditionParser.is_enabled(self._user_configuration, "clientAuth", "clientAuth", (None, None))
+        enabled= ConditionParser.is_enabled(
+            self._user_configuration, "clientAuth", "clientAuth", (None, None))
         if not enabled:
             # this is needed to not show the missing clientAuth as a note
-            self.entry_updates["force_level"] = "optional"
-        self.entry_updates["is_enabled"] = enabled
+            self.entry_updates["force_level"]= "optional"
+        self.entry_updates["is_enabled"]= enabled
         return True
 
     def check_client_only(self, **kwargs):
         # Since we can not verify this condition we set the level to optional and return trues
-        self.entry_updates["force_level"] = "optional"
+        self.entry_updates["force_level"]= "optional"
         return True
 
-    @staticmethod
+    @ staticmethod
     def always_true(**kwargs):
         return True
 
-    @property
+    @ property
     def entry_updates(self):
         return self._entry_updates
 
     def reset(self):
-        self._entry_updates = {"levels": [], "notes": [], "note_false": [], "note_always": [], "note_true": [], "force_level": ""}
+        self._entry_updates= {"levels": [], "notes": [], "note_false": [
+        ], "note_always": [], "note_true": [], "force_level": ""}

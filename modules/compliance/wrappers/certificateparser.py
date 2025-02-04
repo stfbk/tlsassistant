@@ -32,8 +32,10 @@ class CertificateParser:
         if self.certificate.issuer:
             issuer_der = der_decoder(self.certificate.issuer.public_bytes())[0]
             issuer_string = self.certificate.issuer.rfc4514_string()
+            issuer_string = issuer_string.replace("\,", "COMMA")
             components = issuer_string.split(",") if "," in issuer_string else [issuer_string]
             entries = [entry.split("=") for entry in components]
+            entries = [(entry[0], entry[1].replace("COMMA", ",")) for entry in entries]
         self._output_dict[cert_sha]["Issuer Distinguished Name - der"] = issuer_der
         self._output_dict[cert_sha]["Issuer Distinguished Name"] = dict(entries)
         if self.certificate.subject:
