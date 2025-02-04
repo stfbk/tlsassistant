@@ -62,7 +62,7 @@ class Alpaca(TLS_Scanner_base):
                     [...]<br/>
                 }<br/>
                 </code><br/>
-                2. If you are using nginx<1.19.4 follow <a href="https://blog.sion.moe/methods-to-prevent-leaking-websites-origin-server-ip-behind-cdn/">this guide</a><br/>
+                2. If you are using nginx&lt;1.19.4 follow <a href="https://blog.sion.moe/methods-to-prevent-leaking-websites-origin-server-ip-behind-cdn/">this guide</a><br/>
                 """
                 result['mitigation']['Entry']['Mitigation']['Apache'] += """
                 To enable Strict SNI in Apache: <br/> 
