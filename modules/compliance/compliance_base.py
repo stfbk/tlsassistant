@@ -429,6 +429,10 @@ class Compliance:
                 "Apache")
             mitigation["Entry"]["Mitigation"]["Nginx"] += to_append.get(
                 "Nginx")
+            if not len(self._output_dict[sheet]["entries_add"]) and \
+                not len(self._output_dict[sheet]["entries_remove"]) and \
+                    mitigation["Entry"]["Mitigation"]["Textual"].count("<br/>") > 1:
+                mitigation["Entry"]["Mitigation"]["Textual"] = "<br/>".join(mitigation["Entry"]["Mitigation"]["Textual"].split("<br/>")[1:])
             self.remove_duplicates_from_mitigation(mitigation, "<br/>")
             self._output_dict[sheet]["mitigation"] = mitigation
 
