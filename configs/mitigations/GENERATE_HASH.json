@@ -1,0 +1,16 @@
+{
+  "Entry": {
+    "Name": "Hash Algorithms compliance",
+    "Extended Name": "Compliance report for Hash Algorithms",
+    "Description": "Compliance report for {sheet} against {guidelines} guidelines",
+    "Mitigation": {
+      "Textual": "Enable the following hash algorithms:{add}<br/>Remove the following hash algorithms:{remove}<br/>NOTE: By complying with the Signature Algorithms requirements, the Hash Algorithms compliance will also be addressed.",
+      "Apache": "No snippet available",
+      "Nginx": "No snippet available"
+    }
+  },
+  "#ConfigurationInstructions": {
+    "mode": "no_config"
+  },
+  "#omit-xml-declaration": "yes"
+}

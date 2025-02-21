@@ -347,8 +347,9 @@ class Report:
         # get webserver types
         webserver_types = WebserverType().output()
         # this block is needed to prepare the output of the compliance modules
-        if any([module in modules for module in ["compare_one", "compare_many"]]):
-            module = "compare_one" if "compare_one" in modules else "compare_many"
+        compliance_modules = [module for module in modules if module.startswith("compare") or module.startswith("generate")]
+        if compliance_modules:
+            module = compliance_modules[0]
             for hostname in results:
                 if results[hostname].get(module):
                     for sheet in results[hostname][module]:

@@ -19,8 +19,7 @@
     "actions_on_final_string": {
       "replace": {
         "<code>:": "<code>"
-      },
-      "convert_groups": ""
+      }
     },
     "openssl_dependency": {
       "< 1.0.2": {
