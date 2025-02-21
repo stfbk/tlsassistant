@@ -1,0 +1,27 @@
+{
+  "Entry": {
+    "Name": "Cipher Suites TLS 1.3 compliance",
+    "Extended Name": "Compliance report for Cipher Suites supported by TLS 1.3",
+    "Description": "Compliance report for {sheet} against {guidelines} guidelines",
+    "Mitigation": {
+      "Textual": "Add the following cipher suites to the server configuration:{add}<br/>Remove the following cipher suites from the server configuration:{remove}<br/>",
+      "Apache": "<p>- <b>Quick solution</b>: replace the instruction of the directive <code>SSLOpenSSLConfCmd Ciphersuites</code> with the following string:<br/> {total_string}<br/>- <b>Advanced solution</b>: check the directive <code>SSLOpenSSLConfCmd Ciphersuites</code> and for each element in the <b>Textual</b> section above, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element you can add either <code>-</code> (remove once) or <code>!</code> (kill) in front of it.</p>",
+      "Nginx": "<p>- <b>Quick solution</b>: replace the instruction of the directive <code>ssl_conf_command Ciphersuites</code> with the following string:<br/> {total_string}<br/>- <b>Advanced solution</b>: check the directive <code>ssl_conf_command Ciphersuites</code> and for each element in the <b>Textual</b> section above, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element you can add either <code>-</code> (remove once) or <code>!</code> (kill) in front of it.</p>"
+    }
+  },
+  "#ConfigurationInstructions": {
+    "must not": "!name",
+    "not recommended": "-name",
+    "recommended": "name",
+    "must": "name",
+    "connector": ":",
+    "mode": "standard",
+    "actions_on_final_string": {
+      "convert_ciphers": "",
+      "replace": {
+        ":;": ";"
+      }
+    }
+  },
+  "#omit-xml-declaration": "yes"
+}

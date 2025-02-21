@@ -1,0 +1,16 @@
+{
+  "Entry": {
+    "Name": "Certificate Signature Algorithms compliance",
+    "Extended Name": "Compliance report for Certificate Signature Algorithms",
+    "Description": "Compliance report for {sheet} against {guidelines} guidelines",
+    "Mitigation": {
+      "Textual": "Re-issue the certificate using the following signature algorithms:{add}<br/>You can not use the following signature algorithms: {remove}.<br/>Additional notes: {notes}",
+      "Apache": "No snippet available",
+      "Nginx": "No snippet available"
+    }
+  },
+  "#ConfigurationInstructions": {
+    "mode": "no_config"
+  },
+  "#omit-xml-declaration": "yes"
+}

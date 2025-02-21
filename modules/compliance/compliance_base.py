@@ -41,7 +41,8 @@ def convert_signature_algorithm(sig_alg: str) -> str:
         sig_alg = sig_alg.replace("brainpool", f"brainpoolP{hash_len}r1tls13")
     elif "ecdsa" in sig_alg:
         hash_len = sig_alg[-3:]
-        sig_alg = sig_alg.replace("ecdsa", f"ecdsa_secp{hash_len}r1").replace("512", "521", 1)
+        sig_alg = sig_alg.replace(
+            "ecdsa", f"ecdsa_secp{hash_len}r1").replace("512", "521", 1)
     return sig_alg
 
 
@@ -216,15 +217,18 @@ class Compliance:
         self._validator.dict(sheets_to_check)
         if actual_configuration and self._validator.string(actual_configuration):
             try:
-                self._config_class = ApacheConfiguration(actual_configuration, self._openssl_version)
+                self._config_class = ApacheConfiguration(
+                    actual_configuration, self._openssl_version)
             except Exception as e:
                 self._logging.debug(
                     f"Couldn't parse config as apache: {e}\ntrying with nginx..."
                 )
-                self._config_class = NginxConfiguration(actual_configuration, openssl_version=self._openssl_version)
+                self._config_class = NginxConfiguration(
+                    actual_configuration, openssl_version=self._openssl_version)
             if (isinstance(self._config_class, ApacheConfiguration) and
                     "VirtualHost" not in self._config_class.configuration.keys()):
-                self._config_class = NginxConfiguration(actual_configuration, openssl_version=self._openssl_version)
+                self._config_class = NginxConfiguration(
+                    actual_configuration, openssl_version=self._openssl_version)
             self._config_class.get_conf_data(self._user_configuration)
             # Without the certificate it is only possible to check a subset of the guidelines
             check_only = ["Protocol", "CipherSuite", "Extension", "Groups"]
@@ -278,9 +282,11 @@ class Compliance:
             self.prepare_testssl_output(test_ssl_output)
         if output_file and self._validator.string(output_file):
             if self._apache:
-                self._config_class = ApacheConfiguration(openssl_version=self._openssl_version)
+                self._config_class = ApacheConfiguration(
+                    openssl_version=self._openssl_version)
             else:
-                self._config_class = NginxConfiguration(openssl_version=self._openssl_version)
+                self._config_class = NginxConfiguration(
+                    openssl_version=self._openssl_version)
             self._config_class.set_out_file(Path(output_file))
         self._input_dict = kwargs
         self._input_dict["sheets_to_check"] = sheets_to_check
@@ -408,23 +414,8 @@ class Compliance:
                     total_string=total_string_nginx)
             # TODO clean the dictionary before adding mitigation
             if conf_instructions.get("openssl_dependency"):
-                for version in conf_instructions["openssl_dependency"]:
-                    operator, check_version = version.split(" ")
-                    add_openssl_text = False
-                    if "=" in operator and self._openssl_version == check_version:
-                        add_openssl_text = True
-                    operator = operator.replace("=", "")
-                    if operator == "<" and self._openssl.less_than(self._openssl_version, check_version):
-                        add_openssl_text = True
-                    elif operator == ">" and self._openssl.greater_than(self._openssl_version, check_version):
-                        add_openssl_text = True
-                    if add_openssl_text:
-                        mitigation["Entry"]["Mitigation"]["Textual"] += conf_instructions["openssl_dependency"][
-                            version].get("Textual", "")
-                        mitigation["Entry"]["Mitigation"]["Apache"] += conf_instructions["openssl_dependency"][
-                            version].get("Apache", "")
-                        mitigation["Entry"]["Mitigation"]["Nginx"] += conf_instructions["openssl_dependency"][
-                            version].get("Nginx", "")
+                mitigation = self._handle_openssl_dependency(
+                    conf_instructions, mitigation)
             mitigation["Entry"]["Mitigation"]["Apache"] += to_append.get(
                 "Apache")
             mitigation["Entry"]["Mitigation"]["Nginx"] += to_append.get(
@@ -432,9 +423,30 @@ class Compliance:
             if not len(self._output_dict[sheet]["entries_add"]) and \
                 not len(self._output_dict[sheet]["entries_remove"]) and \
                     mitigation["Entry"]["Mitigation"]["Textual"].count("<br/>") > 1:
-                mitigation["Entry"]["Mitigation"]["Textual"] = "<br/>".join(mitigation["Entry"]["Mitigation"]["Textual"].split("<br/>")[1:])
+                mitigation["Entry"]["Mitigation"]["Textual"] = "<br/>".join(
+                    mitigation["Entry"]["Mitigation"]["Textual"].split("<br/>")[1:])
             self.remove_duplicates_from_mitigation(mitigation, "<br/>")
             self._output_dict[sheet]["mitigation"] = mitigation
+
+    def _handle_openssl_dependency(self, conf_instructions, mitigation):
+        for version in conf_instructions["openssl_dependency"]:
+            operator, check_version = version.split(" ")
+            add_openssl_text = False
+            if "=" in operator and self._openssl_version == check_version:
+                add_openssl_text = True
+            operator = operator.replace("=", "")
+            if operator == "<" and self._openssl.less_than(self._openssl_version, check_version):
+                add_openssl_text = True
+            elif operator == ">" and self._openssl.greater_than(self._openssl_version, check_version):
+                add_openssl_text = True
+            if add_openssl_text:
+                mitigation["Entry"]["Mitigation"]["Textual"] += conf_instructions["openssl_dependency"][
+                    version].get("Textual", "")
+                mitigation["Entry"]["Mitigation"]["Apache"] += conf_instructions["openssl_dependency"][
+                    version].get("Apache", "")
+                mitigation["Entry"]["Mitigation"]["Nginx"] += conf_instructions["openssl_dependency"][
+                    version].get("Nginx", "")
+        return mitigation
 
     def remove_duplicates_from_mitigation(self, mitigation, line_sep):
         for key in mitigation["Entry"]["Mitigation"]:
@@ -704,7 +716,8 @@ class Compliance:
                             if bits:
                                 self._user_configuration["KeyLengths"].add(
                                     ("DH", bits))
-                                self._user_configuration["Groups"].append(group)
+                                self._user_configuration["Groups"].append(
+                                    group)
                         elif matches:
                             length = matches.groups()[0]
                             self._user_configuration["KeyLengths"].add(
@@ -808,7 +821,7 @@ class Compliance:
                                                      ] = "not" not in actual_dict["finding"]
                 elif field == "fallback_SCSV":
                     self._user_configuration["fallback_SCSV"] = actual_dict["finding"]
-                
+
                 elif field == "clientAuth":
                     self._user_configuration["clientAuth"] = actual_dict["finding"] != "none"
 
@@ -1047,7 +1060,8 @@ class Compliance:
                                 "levels")
                             level = potential_levels[self.level_to_use(
                                 potential_levels, self._security)]
-                        new_level = self._condition_parser.entry_updates.get("force_level", level)
+                        new_level = self._condition_parser.entry_updates.get(
+                            "force_level", level)
                         if new_level:
                             level = new_level
                         has_alternative = self._condition_parser.entry_updates.get(
@@ -1226,7 +1240,8 @@ class Generator(Compliance):
                     "levels")
                 level = potential_levels[self.level_to_use(
                     potential_levels, self._security)]
-            level = self._condition_parser.entry_updates.get("force_level", level)
+            level = self._condition_parser.entry_updates.get(
+                "force_level", level)
             if not valid_condition and enabled:
                 self._config_class.remove_field(field, name)
             elif level in ["not recommended", "must not"] and valid_condition:
@@ -1239,9 +1254,128 @@ class Generator(Compliance):
         self._fill_user_configuration()
         self._condition_parser = ConditionParser(self._user_configuration)
         self._check_conditions()
-        output_dict = self._config_class.configuration_output()
-        output_dict = pruner(output_dict)
-        return output_dict
+        self._output_dict = self._config_class.configuration_output()
+        self._prepare_generate_output()
+        return self._output_dict.copy()
+
+    def _sheet_to_name(self, sheet):
+        sheet_name = self._configuration_mapping.get(sheet, None)
+        if isinstance(sheet_name, dict):
+            for sheet_name, value in sheet_name.items():
+                if "ciphers1_3" in value:
+                    sheet_name = sheet_name + "TLS1.3"
+        return sheet_name
+
+    def _prepare_generate_output(self):
+        new_dict = {}
+        for sheet in self._output_dict:
+            if not sheet or not sheet[0].isupper():
+                continue
+            # compact sheets with the same name
+            sheet_name = self._sheet_to_name(sheet)
+            if sheet_name is None:
+                continue
+            if not new_dict.get(sheet_name):
+                new_dict[sheet_name] = {}
+            new_dict[sheet_name].update(self._output_dict[sheet])
+        self._output_dict = new_dict
+
+        for sheet in self._output_dict:
+            if not sheet[0].isupper():
+                continue
+            to_append = {
+                "Apache": "",
+                "Nginx": ""
+            }
+            guidelines = []
+            self._output_dict[sheet]["entries_add"] = []
+            self._output_dict[sheet]["entries_remove"] = []
+            self._output_dict[sheet]["notes"] = []
+            for k, el in self._output_dict[sheet].items():
+                if isinstance(el, dict):
+                    guideline = el.get("source")
+                    if guideline:
+                        guidelines.append(guideline)
+                    if el.get("added"):
+                        self._output_dict[sheet]["entries_add"].append(k)
+            guidelines = ", ".join(list(dict.fromkeys(guidelines)))
+            mitigation = MitigationLoader().load_mitigation("Generate_" + sheet)
+            mitigation["Entry"]["Description"] = mitigation["Entry"]["Description"].format(sheet=sheet,
+                                                                                           guidelines=guidelines)
+            textual = mitigation["Entry"]["Mitigation"]["Textual"]
+            conf_instructions = mitigation.get("#ConfigurationInstructions")
+            total_string_apache = total_string_nginx = "<code>"
+            if self._output_dict[sheet]["entries_add"]:
+                add_string = "<br/>- {name} {action} according to {source}"
+                add_list = []
+                total_string_apache, total_string_nginx = self.format_output_string(add_string, sheet,
+                                                                                    conf_instructions,
+                                                                                    total_string_apache,
+                                                                                    total_string_nginx,
+                                                                                    "entries_add",
+                                                                                    add_list,
+                                                                                    to_append)
+                # this is necessary to avoid having an extra empty line
+                textual = textual.format(add="".join(
+                    add_list), remove="{remove}", notes="{notes}")
+            else:
+                # remove the line that contains {add}
+                lines = textual.split("<br/>")
+                textual = "<br/>".join(
+                    [line for line in lines if "{add}" not in line])
+            # if self._output_dict[sheet].get("only_total_string_add"):
+            #     # remove the first line from Textual
+            #     textual = "<br/>".join(lines[1:])
+            if self._output_dict[sheet]["entries_remove"]:
+                remove_string = "<br/>- {name} {action} according to {source}"
+                remove_list = []
+                total_string_apache, total_string_nginx = self.format_output_string(remove_string, sheet,
+                                                                                    conf_instructions,
+                                                                                    total_string_apache,
+                                                                                    total_string_nginx,
+                                                                                    "entries_remove",
+                                                                                    remove_list,
+                                                                                    to_append)
+                textual = textual.replace(
+                    "{add}<br/>{remove}", "{add}{remove}")
+                textual = textual.format(
+                    remove="".join(remove_list), notes="{notes}")
+            else:
+                # remove the line that contains {remove}
+                lines = textual.split("<br/>")
+                textual = "<br/>".join(
+                    [line for line in lines if "{remove}" not in line])
+            if self._output_dict[sheet]["notes"]:
+                notes_string = "<br/>{name}"
+                notes_list = []
+                total_string_apache, total_string_nginx = self.format_output_string(notes_string, sheet,
+                                                                                    conf_instructions,
+                                                                                    total_string_apache,
+                                                                                    total_string_nginx,
+                                                                                    "notes",
+                                                                                    notes_list,
+                                                                                    to_append)
+                textual = textual.format(notes="".join(notes_list))
+            else:
+                # remove the line that contains {notes}
+                lines = textual.split("<br/>")
+                textual = "<br/>".join(
+                    [line for line in lines if "{notes}" not in line])
+            mitigation["Entry"]["Mitigation"]["Textual"] = textual
+            if conf_instructions.get("openssl_dependency"):
+                mitigation = self._handle_openssl_dependency(
+                    conf_instructions, mitigation)
+            mitigation["Entry"]["Mitigation"]["Apache"] += to_append.get(
+                "Apache")
+            mitigation["Entry"]["Mitigation"]["Nginx"] += to_append.get(
+                "Nginx")
+            if not len(self._output_dict[sheet]["entries_add"]) and \
+                not len(self._output_dict[sheet]["entries_remove"]) and \
+                    mitigation["Entry"]["Mitigation"]["Textual"].count("<br/>") > 1:
+                mitigation["Entry"]["Mitigation"]["Textual"] = "<br/>".join(
+                    mitigation["Entry"]["Mitigation"]["Textual"].split("<br/>")[1:])
+            self.remove_duplicates_from_mitigation(mitigation, "<br/>")
+            self._output_dict[sheet]["mitigation"] = mitigation
 
     def get_sheet_filter(self, sheet):
         # Dictionaries are used for specific things like a directive that enables an extension for this reason it is
