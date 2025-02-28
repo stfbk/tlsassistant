@@ -179,7 +179,7 @@ class Tlsa:
                     f"or insert an openssl version with\n\t{Color.CBEIGE}--openssl [VERSION]{Color.ENDC}"
                 )
 
-        if args.server:
+        if args.server and args.server != "placeholder":
             Core(
                 hostname_or_path=args.server,
                 configuration=config_or_modules,

@@ -1,8 +1,8 @@
 {
   "Entry": {
     "Name": "TLS Extensions compliance",
-    "Extended Name": "Compliance report for TLS Extensions",
-    "Description": "Compliance report for {sheet} against {guidelines} guidelines",
+    "Extended Name": "Generate report for TLS Extensions",
+    "Description": "Generate report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
       "Textual": "Add the following extensions to make the configuration compliant:{add}<br/>Remove the following extensions to make the configuration compliant:{remove}",
       "Apache": "{total_string}",

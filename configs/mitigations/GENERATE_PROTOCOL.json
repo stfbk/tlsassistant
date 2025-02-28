@@ -1,7 +1,7 @@
 {
   "Entry": {
     "Name": "Protocols compliance",
-    "Extended Name": "Compliance report for Protocols",
+    "Extended Name": "Generate report for Protocols",
     "Description": "Report of elements for {sheet} to achieve compliance against {guidelines} guidelines",
     "Mitigation": {
       "Textual": "Add the following protocols to the server configuration:{add}<br/>Remove the following protocols from the server configuration:{remove}",

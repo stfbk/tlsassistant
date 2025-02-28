@@ -1,8 +1,8 @@
 {
   "Entry": {
     "Name": "Key Lengths compliance",
-    "Extended Name": "Compliance report for Key Lengths",
-    "Description": "Compliance report for {sheet} against {guidelines} guidelines",
+    "Extended Name": "Generate report for Key Lengths",
+    "Description": "Generate report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
       "Textual": "<br/>Enable the following key lengths:{add}<br/>Do not use the following signature algorithms and key lengths:{remove}<br/>NOTE: to enable/disable ECDSA, RSA or DSA keys, you have to re-issue the certificate with a valid key length.",
       "Apache": "{total_string}",
