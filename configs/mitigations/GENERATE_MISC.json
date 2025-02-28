@@ -1,8 +1,8 @@
 {
   "Entry": {
     "Name": "Misc compliance",
-    "Extended Name": "Compliance report for Misc",
-    "Description": "Compliance report for {sheet} against {guidelines} guidelines",
+    "Extended Name": "Generate report for Misc",
+    "Description": "Generate report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
       "Textual": "The following configurable elements are not compliant:<br/>{add}<br/>{remove}<br/>{notes}",
       "Apache": "<p></p>",

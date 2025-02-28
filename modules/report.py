@@ -39,6 +39,7 @@ class Report:
         APK = 2 
         IPA = 3
         DOMAINS = 4
+        GENERATE = 5
 
     def __init__(self):
         self.__input_dict = {}
@@ -206,6 +207,10 @@ class Report:
             template = env.get_template(f"hosts_report.{file_extension}")
             to_process["type"] = "IPA"
             to_process["results"] = self.__hosts_report_formatter(results)
+        elif mode == self.Mode.GENERATE:
+            self.__logging.info("Generating generator report..")
+            template = env.get_template(f"generator_report.{file_extension}")
+            to_process["results"] = self.__modules_report_formatter(results, modules)
         else:
             raise ValueError(f"Unknown mode: {mode}")
         to_process = {**to_process, **self._replacements, **{"pruner": pruner}}
@@ -393,6 +398,8 @@ class Report:
             output_path = f"{output_file.absolute().parent}{sep}{output_file.stem}.rml"
         if len(results) == 0:
             results = {list(self.__input_dict['results'].keys())[i]: '' for i in range(len(self.__input_dict['results']))} # I use that to have the name of the hosts/apk/ipa in the pdf output in case of no vunlerabilities detected
+        if any("generate" in module for module in modules):
+            self.__input_dict["mode"] = self.Mode.GENERATE
         with open(output_path, "w") as f:
             f.write(
                 self.__jinja2__report(

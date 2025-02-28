@@ -1,8 +1,8 @@
 {
   "Entry": {
     "Name": "Certificate Extensions compliance",
-    "Extended Name": "Compliance report for Certificate Extensions",
-    "Description": "Compliance report for {sheet} against {guidelines} guidelines",
+    "Extended Name": "Generate report for Certificate Extensions",
+    "Description": "Generate report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
       "Textual": "Your certificate has the following issues in its extensions:<br/>{add}<br/>{remove}<br/>You should re-issue it following the constraints in the notes for each field.<br/>Additional notes: {notes}",
       "Apache": "No snippet available",

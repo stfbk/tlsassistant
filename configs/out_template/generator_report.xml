@@ -29,6 +29,7 @@
         <paraStyle name = "vulnerable_websites_list" fontName = "Roboto Italic" fontSize = "12" alignment="left" spaceAfter="5"/>
         <paraStyle name = "not_vulnerable" fontName="Roboto"/>
         <paraStyle name = "potentially_vulnerable" fontName="Roboto Bold" textColor="red"/>
+        <paraStyle name="generated_fine" fontName="Roboto Bold" textColor="green" />
         <blockTableStyle id="report">
             <lineStyle start="0,0" stop="-1,-1" kind="grid" thickness="0.25" colorName="black" cap="default"/>
             <blockFont start="0,0" stop="1,0" name="Roboto Bold" size="12"/>
@@ -144,7 +145,7 @@
         <blockTable style="report">
             <tr>
                 <td>Modules</td>
-                <td>Potentially Vulnerable</td>
+                <td>Generated</td>
             </tr>
             {%set i_ns = namespace(i=0)%}
             {% for host in hosts%}
@@ -156,7 +157,7 @@
                 <tr>
                     <td>{{name_mapping.get(module, module)}}</td>
                     {% if i_ns.i == results.keys().__len__() %}
-                        <td><para style="potentially_vulnerable"> All the hosts encountered an error</para></td>
+                        <td><para style="potentially_vulnerable"> The generation encountered an error</para></td>
                     {% elif module in results %}
                         {%set hosts_count = results[module]["hosts"].__len__()%}
                         {% if hosts_count > 0 %}
@@ -165,18 +166,12 @@
                             {% else %}
                                 {%set hosts_connector = "hosts are"%}
                             {% endif %}
-                            {% if module.startswith("compare_") %}
-                                <td><para style="potentially_vulnerable">{{hosts_count}} {{hosts_connector}} not compliant</para></td>
-                            {% else %}
-                                <td><para style="potentially_vulnerable">{{hosts_count}} {{hosts_connector}} potentially vulnerable</para></td>
+                            {% if module.startswith("generate_") %}
+                                <td><para style="generated_fine">Compliant configuration</para></td>
                             {% endif %}
                         {% endif %}
                     {% else %}
-                        {% if module.startswith("compare_") %}
-                            <td><para style="not_vulnerable">All hosts are compliant</para></td>
-                        {% else %}
-                            <td><para style="not_vulnerable">No vulnerable hosts found</para></td>
-                        {% endif %}
+                        <td><para style="not_vulnerable">The generation did not provide any information for the report</para></td>
                     {%endif%}
                 </tr>
             {% endfor %}
@@ -185,15 +180,11 @@
             <nextFrame/>
             {% set i_ns.compliance=False%}
             {% for module in modules %}
-                {% if module.startswith("compare_")%}
+                {% if module.startswith("generate_")%}
                     {% set i_ns.compliance=True %}
                 {% endif %}
             {% endfor %}
-            {% if i_ns.compliance %}
-                <h1 style="detected_vulnerabilities">Non Compliant Elements</h1>
-            {% else %}
-                <h1 style="detected_vulnerabilities">Detected vulnerabilities</h1>
-            {% endif %}
+            <h1 style="detected_vulnerabilities">Detailed report</h1>
             {% if results.get("errors", None) %}
                 <h1 style="detected_errors">Errors for host: {{host}}</h1>
                 {% for host in hosts %}
@@ -227,7 +218,7 @@
                     {% endif %}
                     <para style="description">{{results[module]['Description']}}</para>
                     {% if 'Mitigation' in results[module] %}
-                        <h4 style = "mitigation">Mitigation</h4>
+                        <h4 style = "mitigation">List of elements</h4>
                         {% for key,mitigation in results[module]['Mitigation'].items() %}
                             <h5 style = "mitigation_type">{{key}}</h5>
                             {% set mit_ns = namespace(new_mitigation=mitigation)%}
@@ -241,18 +232,6 @@
                         <h4>Raw Output</h4>
                         <para fontName="Roboto">{{results[module]['raw']|e}}</para>
                     {% endif %} #}
-                    {% if 'hosts' in results[module] and results[module]['hosts']%}
-                        {% if module.startswith("compare_") %}
-                            <h4 style = "vulnerable_websites">Non compliant websites</h4>
-                        {% else %}
-                            <h4 style = "vulnerable_websites">Vulnerable websites</h4>
-                        {% endif %}
-                        <para style = "vulnerable_websites_list">
-                        {%for host in results[module]['hosts']%}
-                            {{host}}
-                        {%endfor%}
-                        </para>
-                    {%endif%}
                     {# {% if 'references' in results[module] %}
                         <h4>References</h4>
                         <para fontName="Roboto">
