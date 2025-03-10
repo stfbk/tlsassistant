@@ -18,9 +18,12 @@
     "separator": "",
     "enable_one_time": true,
     "post_actions": {
-      "comment": "To use the directive below you have to run {} >> /path/to/dhparam`",
+      "comment": "To set the DHParams you have to run {} >> /path/to/dhparam`",
       "comment_format": {
-        "0": "dhparam"
+        "0": "dhparam",
+        "sheet": "KeyLengths",
+        "user_action": true,
+        "add_text_in_report": ". You can change the path of the dhparams file in the configuration."
       }
     }
   }

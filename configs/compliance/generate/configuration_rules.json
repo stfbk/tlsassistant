@@ -16,7 +16,7 @@
     "added_negatives": false,
     "enable_optional": true,
     "post_actions": {
-      "convert_ciphers": "",
+      "convert_ciphers": "CipherSuite",
       "prepend": "-ALL:"
     }
   },
@@ -26,7 +26,7 @@
     "separator": ":",
     "added_negatives": true,
     "post_actions": {
-      "convert_ciphers": ""
+      "convert_ciphers": "CipherSuitesTLS1.3"
     }
   },
   "SessionTickets": {
@@ -66,10 +66,10 @@
     "separator": ":",
     "added_negatives": false,
     "replacements": {
-        "tls13": ""
+      "tls13": ""
     },
     "post_actions": {
-      "convert_sigalgs": ""
+      "convert_sigalgs": "Signature"
     }
   }
 }

@@ -4,18 +4,18 @@
     "Extended Name": "Generate report for TLS Extensions",
     "Description": "Generate report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
-      "Textual": "Add the following extensions to make the configuration compliant:{add}<br/>Remove the following extensions to make the configuration compliant:{remove}",
+      "Textual": "The following extensions were added to the server configuration:{add}",
       "Apache": "{total_string}",
       "Nginx": "{total_string}"
     }
   },
   "#ConfigurationInstructions": {
-    "mode": "standard",
+    "mode": "specific_mitigation",
     "must not": "!name",
     "not recommended": "-name",
     "recommended": "name",
     "must": "name",
-    "connector": ":",
+    "info": "",
     "server_name": "<br/>- the server_name extension {action}",
     "server_name_config": {
       "Apache": "<p>Server Name: add the directive <code>SSLServerName your_server_name</code> to your virtualhosts;</p>",
@@ -25,7 +25,11 @@
     "client_certificate_url": "<br/>- the client_certificate_url extension {action}",
     "trusted_ca_keys": "<br/>- the trusted_ca_keys extension {action}",
     "truncated_hmac": "<br/>- the truncated_hmac extension {action}",
-    "status_request": "<br/>- the status_request extension {action}",
+    "status_request": "<br/>- the status_request extension {action} with level {level} according to guideline {guideline}",
+    "status_request_config": {
+      "Apache": "<p>StatusRequest: the directive that handles this elements inside the configuration is <code>SSLStapling</code>;</p>",
+      "Nginx": "<p>StatusRequest: the directive that handles this elements inside the configuration is <code>ssl_stapling</code>;</p>"
+    },
     "user_mapping": "<br/>- the user_mapping extension {action}",
     "client_authz": "<br/>- the client_authz extension {action}",
     "server_authz": "<br/>- the server_authz extension {action}",
@@ -45,6 +49,10 @@
     "extended_master_secret": "<br/>- the extended_master_secret extension {action}",
     "record_size_limit": "<br/>- the record_size_limit extension {action}",
     "session_ticket": "<br/>- the session_ticket extension {action}",
+    "session_ticket_config": {
+      "Apache": "<p>SessionTickets: the directive that handles this elements inside the configuration is <code>SSLSessionTickets</code>;</p>",
+      "Nginx": "<p>SessionTickets: the directive that handles this elements inside the configuration is <code>ssl_session_tickets</code>;</p>"
+    },
     "pre_shared_key": "<br/>- the pre_shared_key extension {action}",
     "early_data": "<br/>- the early_data extension {action}",
     "supported_versions": "<br/>- the supported_versions extension {action}",

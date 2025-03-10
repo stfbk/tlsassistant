@@ -505,6 +505,12 @@ class Compliance:
                             conf_instructions[entry + "_config"]["Apache"]
                         total_string_nginx += "<br/>" + \
                             conf_instructions[entry + "_config"]["Nginx"]
+                        total_string_apache = total_string_apache.format(
+                            level=self._output_dict[sheet][entry]["level"],
+                            guideline=self._output_dict[sheet][entry]["source"])
+                        total_string_nginx = total_string_nginx.format(
+                            level=self._output_dict[sheet][entry]["level"],
+                            guideline=self._output_dict[sheet][entry]["source"])
                 # This case is needed because the notes don't have the action and source fields
                 if entries_key == "notes":
                     if "{action}" in string:
@@ -513,7 +519,9 @@ class Compliance:
                 else:
                     tmp_string = string.format(name=entry_name,
                                                action=self._output_dict[sheet][entry]["action"],
-                                               source=self._output_dict[sheet][entry]["source"])
+                                               source=self._output_dict[sheet][entry]["source"],
+                                               level=self._output_dict[sheet][entry]["level"],
+                                               guideline=self._output_dict[sheet][entry]["source"])
                 if self._output_dict[sheet][entry].get("notes"):
                     tmp_string += "<br/>&nbsp;&nbsp;" + \
                         self._output_dict[sheet][entry]["notes"]
@@ -1162,6 +1170,8 @@ class Generator(Compliance):
             self.tls1_3_ciphers) + "\")"
         self._ciphers1_3_filter = "WHERE name IN (\"" + \
             "\" , \"".join(self.tls1_3_ciphers) + "\")"
+        self._reverse_mapping = dict(
+            [(v, k) for k, v in sheets_mapping.items()])
 
     def _get_config_name(self, field):
         name = self._configuration_mapping.get(field, None)
@@ -1255,7 +1265,10 @@ class Generator(Compliance):
         self._condition_parser = ConditionParser(self._user_configuration)
         self._check_conditions()
         self._output_dict = self._config_class.configuration_output()
+        self._output_dict = pruner(self._output_dict)
         self._prepare_generate_output()
+        with open("tmp_output_dict.json", "w") as f:
+            json.dump(self._output_dict, f, indent=4)
         return self._output_dict.copy()
 
     def _sheet_to_name(self, sheet):
@@ -1268,6 +1281,7 @@ class Generator(Compliance):
 
     def _prepare_generate_output(self):
         new_dict = {}
+        configuration = self._output_dict["configuration"].title()
         for sheet in self._output_dict:
             if not sheet or not sheet[0].isupper():
                 continue
@@ -1278,8 +1292,17 @@ class Generator(Compliance):
             if not new_dict.get(sheet_name):
                 new_dict[sheet_name] = {}
             new_dict[sheet_name].update(self._output_dict[sheet])
-        self._output_dict = new_dict
+        # move the post_actions_output to the respective sheet
+        for sheet in self._output_dict.get("post_actions_output", {}):
+            for entry, values in self._output_dict["post_actions_output"][sheet].items():
+                for value, content in values.items():
+                    if new_dict[sheet].get(value):
+                        new_dict[sheet][value]["status"] = content
+                    else:
+                        new_dict[sheet][value] = content
 
+        self._output_dict = new_dict
+        sheets_to_remove = []
         for sheet in self._output_dict:
             if not sheet[0].isupper():
                 continue
@@ -1291,6 +1314,7 @@ class Generator(Compliance):
             self._output_dict[sheet]["entries_add"] = []
             self._output_dict[sheet]["entries_remove"] = []
             self._output_dict[sheet]["notes"] = []
+            valid_count = 0
             for k, el in self._output_dict[sheet].items():
                 if isinstance(el, dict):
                     guideline = el.get("source")
@@ -1298,6 +1322,10 @@ class Generator(Compliance):
                         guidelines.append(guideline)
                     if el.get("added"):
                         self._output_dict[sheet]["entries_add"].append(k)
+                    if el.get("level", "<Not mentioned>") != "<Not mentioned>":
+                        valid_count += 1
+            if not valid_count:
+                sheets_to_remove.append(sheet)
             guidelines = ", ".join(list(dict.fromkeys(guidelines)))
             mitigation = MitigationLoader().load_mitigation("Generate_" + sheet)
             mitigation["Entry"]["Description"] = mitigation["Entry"]["Description"].format(sheet=sheet,
@@ -1365,17 +1393,66 @@ class Generator(Compliance):
             if conf_instructions.get("openssl_dependency"):
                 mitigation = self._handle_openssl_dependency(
                     conf_instructions, mitigation)
-            mitigation["Entry"]["Mitigation"]["Apache"] += to_append.get(
-                "Apache")
-            mitigation["Entry"]["Mitigation"]["Nginx"] += to_append.get(
-                "Nginx")
+            if configuration == "Nginx" and total_string_nginx != "<code>":
+                if conf_instructions["mode"].startswith("standard"):
+                    total_string_nginx += ";</code>"
+                else:
+                    total_string_nginx = total_string_nginx.replace(
+                        "<code>", "", 1)
+                    if total_string_nginx.startswith("<br/>"):
+                        total_string_nginx = total_string_nginx[5:]
+                mitigation["Entry"]["Mitigation"]["Nginx"] = mitigation["Entry"]["Mitigation"]["Nginx"].format(
+                    total_string=total_string_nginx)
+            if configuration == "Apache" and total_string_apache != "<code>":
+                if conf_instructions["mode"].startswith("standard"):
+                    total_string_apache += ";</code>"
+                else:
+                    total_string_apache = total_string_apache.replace(
+                        "<code>", "", 1)
+                    if total_string_apache.startswith("<br/>"):
+                        total_string_apache = total_string_apache[5:]
+                mitigation["Entry"]["Mitigation"]["Apache"] = mitigation["Entry"]["Mitigation"]["Apache"].format(
+                    total_string=total_string_apache)
+            mitigation["Entry"]["Mitigation"][configuration] += to_append.get(
+                configuration, "")
             if not len(self._output_dict[sheet]["entries_add"]) and \
                 not len(self._output_dict[sheet]["entries_remove"]) and \
                     mitigation["Entry"]["Mitigation"]["Textual"].count("<br/>") > 1:
                 mitigation["Entry"]["Mitigation"]["Textual"] = "<br/>".join(
                     mitigation["Entry"]["Mitigation"]["Textual"].split("<br/>")[1:])
             self.remove_duplicates_from_mitigation(mitigation, "<br/>")
+            missing_elements = []
+            for el in self._output_dict[sheet]:
+                if isinstance(self._output_dict[sheet][el], dict):
+                    if self._output_dict[sheet][el].get("status"):
+                        missing_elements.append(el)
+            if not missing_elements:
+                mitigation["Entry"]["Mitigation"].pop("Missing", None)
+            else:
+                format_string = "<br/>- {name} can NOT be added with level {level} according to {source}"
+                total_dict = {}
+                statuses_mapping = {}
+                for el in missing_elements:
+                    tmp_el_dict = self._output_dict[sheet][el]
+                    tmp_el_dict["level"] = tmp_el_dict["level"].upper()
+                    new_status = statuses_mapping.get(tmp_el_dict["status"], None)
+                    if new_status is None:
+                        new_status = "(" + chr(len(statuses_mapping.keys())+97) + ")"
+                        statuses_mapping[tmp_el_dict["status"]] = new_status
+                    tmp_el_dict["status"] = new_status
+                    total_dict[el] = tmp_el_dict
+                
+                reverse_statuses_mapping = {v: k for k, v in statuses_mapping.items()}        
+                total_dict["mapping"] = reverse_statuses_mapping
+                mitigation["Entry"]["Mitigation"]["Missing"] = total_dict
+            for conf in to_append:
+                if conf != configuration:
+                    mitigation["Entry"]["Mitigation"].pop(conf, None)
             self._output_dict[sheet]["mitigation"] = mitigation
+            
+
+        for sheet in sheets_to_remove:
+            self._output_dict.pop(sheet)
 
     def get_sheet_filter(self, sheet):
         # Dictionaries are used for specific things like a directive that enables an extension for this reason it is

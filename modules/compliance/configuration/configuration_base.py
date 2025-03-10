@@ -168,8 +168,11 @@ class ConfigurationMaker:
                     }
                 self._output_dict[field][name]["source"] = guideline
                 self._output_dict[field][name]["configuration_field"] = config_field
+                addition_string = "not added because of"
+                if level in ["must", "recommended", "optional"]:
+                    addition_string = "was added with required"
                 self._output_dict[field][name][
-                    "action"] = f"was added with required level {level.upper()}"
+                    "action"] = f"{addition_string} level {level.upper()}"
         return tmp_string
 
     def perform_post_actions(self, field_rules, actual_string, guideline, actions_from="post_actions"):
@@ -186,7 +189,7 @@ class ConfigurationMaker:
                                                                               "arguments": arguments})
         if self._actions._output_data:
             if self._output_dict.get("post_actions_output") is None:
-                self._output_dict["post_actions_output"] = {}
+                self._output_dict["post_actions_output"] = dict()
             self._output_dict["post_actions_output"].update(
                 self._actions._output_data)
             self._actions._output_data = {}
@@ -400,14 +403,18 @@ class Actions:
         :rtype: str
         """
         string = kwargs.get("value", None)
-        self._output_data["convert_ciphers"] = {}
+        dict_key = kwargs.get("arguments", "undefined_sheet")
+        if self._output_data.get(dict_key) is None:
+            self._output_data[dict_key] = {}
+        self._output_data[dict_key]["convert_ciphers"] = {}
         self.validator.string(string)
         for cipher in self._ciphers_converter:
             if not self._ciphers_converter[cipher]:
                 self._logger.debug(
-                    f"Skipping cipher: {cipher} because it is not available in openssl")
+                    f"Skipping cipher: {cipher} because it is not supported by the current openssl version")
                 if cipher in string:
-                    self._output_data["convert_ciphers"][cipher] = "Not available"
+                    self._output_data[dict_key]["convert_ciphers"][cipher] = "Not supported by this openssl version"
+                    self._output_data[dict_key]["convert_ciphers"]["missing_elements"] = True
             string = string.replace(cipher, self._ciphers_converter[cipher])
         while "::" in string:
             string = string.replace("::", ":")
@@ -450,7 +457,10 @@ class Actions:
         """
         string = kwargs.get("value", None)
         self.validator.string(string)
-        self._output_data["convert_sigalgs"] = {}
+        dict_key = kwargs.get("arguments", "undefined_sheet")
+        if self._output_data.get(dict_key) is None:
+            self._output_data[dict_key] = {}
+        self._output_data[dict_key]["convert_sigalgs"] = {}
         sigalgs = string.split(":") if ":" in string else [string]
         sigalgs = [sigalg for sigalg in sigalgs if sigalg.strip()]
         sigalgs = [sigalg.split(
@@ -468,11 +478,10 @@ class Actions:
                     self._logger.info(
                         f"Signature algorithm {sigalg} can not be enabled with the current openssl version")
                     string = string.replace(sigalg, "")
-                    self._output_data["convert_sigalgs"][sigalg] = "Not supported"
+                    self._output_data[dict_key]["convert_sigalgs"][sigalg] = "Not supported by this openssl version"
+                    self._output_data[dict_key]["convert_sigalgs"]["missing_elements"] = True
         else:
-            self._output_data["convert_sigalgs"] = {
-                "issue": "in order to configure signature algorithms, you need to upgrade to OpenSSL 1.1.1 or later."
-            }
+            self._output_data[dict_key]["convert_sigalgs"]["issue"] = "in order to configure signature algorithms, you need to upgrade to OpenSSL 1.1.1 or later."
         string = self.clean_final_string(string)
         return string.replace("<code>:", "<code>")
 
@@ -536,11 +545,20 @@ class Actions:
         self.validator.string(string)
         self.validator.dict(arguments)
         self.validator.string(guideline)
+        sheet = arguments.pop("sheet", "undefined_sheet")
+        if self._output_data.get(sheet) is None:
+            self._output_data[sheet] = {}
+            self._output_data[sheet]["comment_format"] = {}
+        user_action = arguments.pop("user_action", False)
+        additional_text = arguments.pop("add_text_in_report", "")
         format_values = ["" * len(arguments)]
         for position in arguments:
             format_values[int(position)] = self.__getattribute__(arguments[position])(**{"value": string,
                                                                                          "guideline": guideline})
-        return string.format(*format_values)
+        final_string = string.format(*format_values)
+        final_dict_string = "user_action" if user_action else "comment_format"
+        self._output_data[sheet]["comment_format"][final_dict_string] = final_string + additional_text
+        return string
 
     def dhparam(self, **kwargs):
         """

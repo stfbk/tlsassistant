@@ -4,9 +4,9 @@
     "Extended Name": "Generate report for Groups",
     "Description": "Generate report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
-      "Textual": "Add the following curves to the server configuration:{add}<br/>Remove the following curves from the server configuration:{remove}",
+      "Textual": "The following curves were added to the server configuration:{add}<br/>Remove the following curves from the server configuration:{remove}",
       "Apache": "The directive that handles this elements inside the configuration is <code>SSLOpenSSLConfCmd groups</code>. The separator for this directive is <code>:</code> and to disable an element it is necessary to remove it from the string.",
-      "Nginx": "The directive that handles this elements inside the configuration is <code>ssl_ecdh_curve</code>. The separator for this directive is <code>:</code> and to disable an element it is necessary to remove it from the string.<br/>NOTE: this directive is only supported by Nginx 1.19.4 or higher.</p>"
+      "Nginx": "The directive that handles this elements inside the configuration is <code>ssl_ecdh_curve</code>. The separator for this directive is <code>:</code> and to disable an element it is necessary to remove it from the string.<br/>NOTE: this directive is only supported by Nginx 1.19.4 or higher."
     }
   },
   "#ConfigurationInstructions": {
@@ -14,6 +14,7 @@
     "not recommended": "",
     "recommended": "name",
     "must": "name",
+    "info": "",
     "connector": ":",
     "mode": "standard_with_specific",
     "actions_on_final_string": {
@@ -27,8 +28,8 @@
       }
     },
     "1024-long DH": {
-      "Apache": "<p></code><br/>Run the following command to generate 1024 bits DH parameters: <code>openssl dhparam 1024 &gt;&gt; /path/to/cert</code>.<br/>To remove 1024 bits DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.</p>",
-      "Nginx": "<p></code><br/>Run the following command to generate 1024 bits DH parameters: <code>openssl dhparam 1024 %gt; /path/to/dhparams</code>.<br/> To remove 1024 bits DH keys disable the directive <code>ssl_dhparam</code>.</p>"
+      "Apache": "<p></code><br/>Run the following command to generate 1024 bits DH parameters: <code>openssl dhparam 1024 &gt;&gt; /path/to/cert</code>.<br/>To remove 1024 bits DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.",
+      "Nginx": "<p></code><br/>Run the following command to generate 1024 bits DH parameters: <code>openssl dhparam 1024 %gt; /path/to/dhparams</code>.<br/> To remove 1024 bits DH keys disable the directive <code>ssl_dhparam</code>."
     }
   },
   "#omit-xml-declaration": "yes"
