@@ -33,11 +33,15 @@
   },
   {
     "type": "git",
-    "url": "https://github.com/IvanValentini/TLS-Scanner"
+    "url": "https://github.com/stfbk/TLS-Scanner"
   },
   {
     "type": "apt",
-    "url": "openjdk-8-jre"
+    "url": "openjdk-11-jre"
+  },
+  {
+    "type": "apt",
+    "url": "openjdk-11-jdk"
   },
   {
     "type": "apt",
