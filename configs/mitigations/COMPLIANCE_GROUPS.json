@@ -14,6 +14,7 @@
     "not recommended": "",
     "recommended": "name",
     "must": "name",
+    "info": "",
     "connector": ":",
     "mode": "standard_with_specific",
     "actions_on_final_string": {

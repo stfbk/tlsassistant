@@ -31,7 +31,10 @@
     "post_actions": {
       "comment": "You should run {} >> /path/to/cert_chain`",
       "comment_format": {
-        "0": "dhparam"
+        "0": "dhparam",
+        "sheet": "KeyLengths",
+        "user_action": true,
+        "add_text_in_report": "You can change the path of the certificate chain file in the configuration."
       }
     }
   },

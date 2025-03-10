@@ -5,9 +5,9 @@
     "Description": "Generate report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
       "Textual": "Enable the following signature algorithms:{add}<br/>Disable the following signature algorithms:{remove}<br/>{notes}",
-      "Apache": "<p>- <b>Quick solution</b>: replace the instruction of the directive <code>SSLOpenSSLConfCmd SignatureAlgorithms</code> with the following string:<br/> {total_string}<br/>- <b>Advanced solution</b>: check the directive <code>SSLOpenSSLConfCmd SignatureAlgorithms</code> and for each element in the <b>Textual</b> section above, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element you have to remove it from the string.</p>",
-      "Nginx": "<p>- <b>Quick solution</b>: replace the instruction of the directive <code>ssl_conf_command SignatureAlgorithms</code> with the following string:<br/> {total_string}<br/>- <b>Advanced solution</b>: check the directive <code>ssl_conf_command SignatureAlgorithms</code> and for each element in the <b>Textual</b> section above, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element you have to remove it from the string.</p>",
-      "Missing": "<p> The following algorithms are not supported by </p>"
+      "Apache": "The directive that handles this elements inside the configuration is <code>SSLOpenSSLConfCmd SignatureAlgorithms</code>. The separator for this directive is <code>:</code> and to disable an element you have to remove it from the string.</p>",
+      "Nginx": "The directive that handles this elements inside the configuration is <code>ssl_conf_command SignatureAlgorithms</code>. The separator for this directive is <code>:</code> and to disable an element you have to remove it from the string.</p>",
+      "Missing": "<p> The following algorithms are not supported by the current openssl version: {missing_elements}</p>"
     }
   },
   "#ConfigurationInstructions": {
@@ -15,6 +15,7 @@
     "not recommended": "",
     "recommended": "name",
     "must": "name",
+    "info": "",
     "connector": ":",
     "mode": "standard",
     "openssl_dependency": {
