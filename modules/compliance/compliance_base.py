@@ -1296,6 +1296,8 @@ class Generator(Compliance):
         for sheet in self._output_dict.get("post_actions_output", {}):
             for entry, values in self._output_dict["post_actions_output"][sheet].items():
                 for value, content in values.items():
+                    if new_dict.get(sheet) is None:
+                        new_dict[sheet] = {}
                     if new_dict[sheet].get(value):
                         new_dict[sheet][value]["status"] = content
                     else:
@@ -1306,6 +1308,11 @@ class Generator(Compliance):
         for sheet in self._output_dict:
             if not sheet[0].isupper():
                 continue
+
+            if self._output_dict[sheet].get("user_action") and len(self._output_dict[sheet]) == 1:
+                self._output_dict[sheet]["placeholder"] = True
+                continue
+
             to_append = {
                 "Apache": "",
                 "Nginx": ""

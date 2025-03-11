@@ -31,13 +31,15 @@ class NginxConfiguration(ConfigurationMaker):
         level_index = columns.index("level")
         condition_index = columns.index("condition")
         self._output_dict[field] = {}
+        field_rules = self._specific_rules.get(field, field_rules)
 
         if not config_field:
+            if all([rule.startswith("comment") for rule in field_rules.get("post_actions", [])]):
+                self.perform_post_actions(field_rules, "", guideline)
             # This field isn't available with this configuration
             return
 
         tmp_string = ""
-        field_rules = self._specific_rules.get(field, field_rules)
         tmp_string = self._prepare_field_string(tmp_string, field, field_rules, name_index, level_index,
                                                 condition_index,
                                                 columns, data, config_field, guideline)

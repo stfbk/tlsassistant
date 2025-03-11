@@ -237,7 +237,7 @@
                                 {% endfor %}
                             {% endif %}
                             {% if key in ["Textual", "Missing"] %}
-                                <blockTable style="textual">
+                                <blockTable style="textual" alignment="left">
                                     <tr>
                                         <td>Name</td>
                                         <td>Level</td>
