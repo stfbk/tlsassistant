@@ -8,5 +8,6 @@
     "EarlyData": {"Extension": "WHERE name LIKE \"early_data\""},
     "DHParams": {"KeyLengths":  "WHERE name = \"DH\" AND level in (\"recommended\",\"must\")"},
     "Groups": "Groups",
-    "SignatureAlgorithms": "Signature"
+    "SignatureAlgorithms": "Signature",
+    "Certificate": "Certificate"
 }

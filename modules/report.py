@@ -380,7 +380,8 @@ class Report:
                             results[hostname][module + "_" +
                                               sheet] = results[hostname][module][sheet]
                         elif "placeholder" in results[hostname][module][sheet]:
-                            modules[module + "_" + sheet] = ""
+                            modules[module + "_" + sheet] =""
+                            results[hostname][module + "_" + sheet] = results[hostname][module][sheet]
                         else:
                             self.__logging.debug(
                                 f"Removing {sheet} from {hostname} because no mitigation was found")

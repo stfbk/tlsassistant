@@ -71,5 +71,18 @@
     "post_actions": {
       "convert_sigalgs": "Signature"
     }
+  },
+  "Certificate": {
+    "enable": "",
+    "disable": "",
+    "separator": "",
+    "enable_one_time": true,
+    "post_actions": {
+      "comment": "You have to set the certificate path in the configuration file to make the configuration work",
+      "comment_format": {
+        "sheet": "Certificate",
+        "user_action": true
+      }
+    }
   }
 }
