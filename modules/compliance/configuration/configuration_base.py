@@ -411,9 +411,9 @@ class Actions:
         for cipher in self._ciphers_converter:
             if not self._ciphers_converter[cipher]:
                 self._logger.debug(
-                    f"Skipping cipher: {cipher} because it is not supported by the current openssl version")
+                    f"Skipping cipher: {cipher} because it is not supported by the current OpenSSL version")
                 if cipher in string:
-                    self._output_data[dict_key]["convert_ciphers"][cipher] = "Not supported by this openssl version"
+                    self._output_data[dict_key]["convert_ciphers"][cipher] = "Not supported by this OpenSSL version"
                     self._output_data[dict_key]["convert_ciphers"]["missing_elements"] = True
             string = string.replace(cipher, self._ciphers_converter[cipher])
         while "::" in string:
@@ -476,9 +476,9 @@ class Actions:
             for sigalg in sigalgs:
                 if sigalg not in self.signature_algorithms[self.openssl_version]:
                     self._logger.info(
-                        f"Signature algorithm {sigalg} can not be enabled with the current openssl version")
+                        f"Signature algorithm {sigalg} can not be enabled with the current OpenSSL version")
                     string = string.replace(sigalg, "")
-                    self._output_data[dict_key]["convert_sigalgs"][sigalg] = "Not supported by this openssl version"
+                    self._output_data[dict_key]["convert_sigalgs"][sigalg] = "Not supported by this OpenSSL version"
                     self._output_data[dict_key]["convert_sigalgs"]["missing_elements"] = True
         else:
             self._output_data[dict_key]["convert_sigalgs"]["issue"] = "in order to configure signature algorithms, you need to upgrade to OpenSSL 1.1.1 or later."

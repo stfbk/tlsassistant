@@ -329,7 +329,7 @@ class Compliance:
                 continue
             to_append = {
                 "Apache": "",
-                "Nginx": ""
+                "nginx": ""
             }
             mitigation = MitigationLoader().load_mitigation("Compliance_" + sheet)
             guidelines = ", ".join(self._output_dict[sheet]["guidelines"])
@@ -410,7 +410,7 @@ class Compliance:
                 else:
                     total_string_nginx = total_string_nginx.replace(
                         "<code>", "", 1)
-                mitigation["Entry"]["Mitigation"]["Nginx"] = mitigation["Entry"]["Mitigation"]["Nginx"].format(
+                mitigation["Entry"]["Mitigation"]["nginx"] = mitigation["Entry"]["Mitigation"]["nginx"].format(
                     total_string=total_string_nginx)
             # TODO clean the dictionary before adding mitigation
             if conf_instructions.get("openssl_dependency"):
@@ -418,8 +418,8 @@ class Compliance:
                     conf_instructions, mitigation)
             mitigation["Entry"]["Mitigation"]["Apache"] += to_append.get(
                 "Apache")
-            mitigation["Entry"]["Mitigation"]["Nginx"] += to_append.get(
-                "Nginx")
+            mitigation["Entry"]["Mitigation"]["nginx"] += to_append.get(
+                "nginx")
             if not len(self._output_dict[sheet]["entries_add"]) and \
                 not len(self._output_dict[sheet]["entries_remove"]) and \
                     mitigation["Entry"]["Mitigation"]["Textual"].count("<br/>") > 1:
@@ -444,8 +444,8 @@ class Compliance:
                     version].get("Textual", "")
                 mitigation["Entry"]["Mitigation"]["Apache"] += conf_instructions["openssl_dependency"][
                     version].get("Apache", "")
-                mitigation["Entry"]["Mitigation"]["Nginx"] += conf_instructions["openssl_dependency"][
-                    version].get("Nginx", "")
+                mitigation["Entry"]["Mitigation"]["nginx"] += conf_instructions["openssl_dependency"][
+                    version].get("nginx", "")
         return mitigation
 
     def remove_duplicates_from_mitigation(self, mitigation, line_sep):
@@ -495,7 +495,7 @@ class Compliance:
             if conf_instructions["mode"] == "standard_with_specific":
                 if conf_instructions.get(entry):
                     to_append["Apache"] += conf_instructions[entry]["Apache"]
-                    to_append["Nginx"] += conf_instructions[entry]["Nginx"]
+                    to_append["nginx"] += conf_instructions[entry]["nginx"]
 
             if not self._output_dict[sheet][entry].get("total_string_only"):
                 if conf_instructions["mode"] == "specific_mitigation":
@@ -504,7 +504,7 @@ class Compliance:
                         total_string_apache += "<br/>" + \
                             conf_instructions[entry + "_config"]["Apache"]
                         total_string_nginx += "<br/>" + \
-                            conf_instructions[entry + "_config"]["Nginx"]
+                            conf_instructions[entry + "_config"]["nginx"]
                         total_string_apache = total_string_apache.format(
                             level=self._output_dict[sheet][entry]["level"],
                             guideline=self._output_dict[sheet][entry]["source"])
@@ -1315,7 +1315,7 @@ class Generator(Compliance):
 
             to_append = {
                 "Apache": "",
-                "Nginx": ""
+                "nginx": ""
             }
             guidelines = []
             self._output_dict[sheet]["entries_add"] = []
@@ -1400,7 +1400,7 @@ class Generator(Compliance):
             if conf_instructions.get("openssl_dependency"):
                 mitigation = self._handle_openssl_dependency(
                     conf_instructions, mitigation)
-            if configuration == "Nginx" and total_string_nginx != "<code>":
+            if configuration == "nginx" and total_string_nginx != "<code>":
                 if conf_instructions["mode"].startswith("standard"):
                     total_string_nginx += ";</code>"
                 else:
@@ -1408,7 +1408,7 @@ class Generator(Compliance):
                         "<code>", "", 1)
                     if total_string_nginx.startswith("<br/>"):
                         total_string_nginx = total_string_nginx[5:]
-                mitigation["Entry"]["Mitigation"]["Nginx"] = mitigation["Entry"]["Mitigation"]["Nginx"].format(
+                mitigation["Entry"]["Mitigation"]["nginx"] = mitigation["Entry"]["Mitigation"]["nginx"].format(
                     total_string=total_string_nginx)
             if configuration == "Apache" and total_string_apache != "<code>":
                 if conf_instructions["mode"].startswith("standard"):
@@ -1460,6 +1460,11 @@ class Generator(Compliance):
 
         for sheet in sheets_to_remove:
             self._output_dict.pop(sheet)
+        self._output_dict["additional_info"] = {
+            "name": configuration,
+            "openssl_version": self._openssl_version,
+            "placeholder": True
+        }
 
     def get_sheet_filter(self, sheet):
         # Dictionaries are used for specific things like a directive that enables an extension for this reason it is

@@ -5,9 +5,9 @@
     "Description": "Generate report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
       "Textual": "Enable the following signature algorithms:{add}<br/>Disable the following signature algorithms:{remove}<br/>{notes}",
-      "Apache": "The directive that handles this elements inside the configuration is <code>SSLOpenSSLConfCmd SignatureAlgorithms</code>. The separator for this directive is <code>:</code> and to disable an element you have to remove it from the string.</p>",
-      "Nginx": "The directive that handles this elements inside the configuration is <code>ssl_conf_command SignatureAlgorithms</code>. The separator for this directive is <code>:</code> and to disable an element you have to remove it from the string.</p>",
-      "Missing": "<p> The following algorithms are not supported by the current openssl version: {missing_elements}</p>"
+      "Apache": "The directive that handles these elements inside the configuration is <code>SSLOpenSSLConfCmd SignatureAlgorithms</code>. The separator for this directive is <code>:</code> and to disable an element you have to remove it from the string.</p>",
+      "nginx": "The directive that handles these elements inside the configuration is <code>ssl_conf_command SignatureAlgorithms</code>. The separator for this directive is <code>:</code> and to disable an element you have to remove it from the string.</p>",
+      "Missing": "<p> The following algorithms are not supported by the current OpenSSL version: {missing_elements}</p>"
     }
   },
   "#ConfigurationInstructions": {
@@ -21,11 +21,11 @@
     "openssl_dependency": {
       "< 1.1.1": {
         "Textual": "<br/>NOTE: in order to configure signature algorithms, you need to upgrade to OpenSSL 1.1.1 or later.",
-        "Nginx": "<p><br/>NOTE: this directive is only supported by Nginx 1.19.4 or higher.</p>"
+        "nginx": "<p><br/>NOTE: this directive is only supported by nginx 1.19.4 or higher.</p>"
       },
       "> 1.1.0": {
         "Textual": "<br/>NOTE: your OpenSSL version may not support all the signature algorithms listed in this section. The mitigations provided in this report only show the supported ones.",
-        "Nginx": "<p><br/>NOTE: this directive is only supported by Nginx 1.19.4 or higher.</p>"
+        "nginx": "<p><br/>NOTE: this directive is only supported by nginx 1.19.4 or higher.</p>"
       }
     },
     "actions_on_final_string": {

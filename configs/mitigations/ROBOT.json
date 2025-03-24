@@ -8,7 +8,7 @@
     "Mitigation": {
       "Textual": "Disable support to RSA key exchange.",
       "Apache": "1. open your Apache configuration file (default: <i>/etc/apache2/sites-available/default-ssl.conf</i>);<br/>2. find the line starting with: <strong>SSLCipherSuite</strong>;<br/>3. add the string <code>:!RSA</code> at the end.<br/><br/>N.B. restart the server by typing: <code>sudo service apache2 restart</code>.",
-      "Nginx": "1. In a default situation, you can edit your website configuration <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>);<br/>2. Inside <code>server {...}</code> brackets configuration, find <code>ssl_ciphers</code>;<br/>3. Remove <code>RSA</code> (if any) and add <code>:!RSA</code> at the end. <br/><br/><br/>N.B. restart the server by typing: <code>sudo service nginx restart</code>.<br/>"
+      "nginx": "1. In a default situation, you can edit your website configuration <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>);<br/>2. Inside <code>server {...}</code> brackets configuration, find <code>ssl_ciphers</code>;<br/>3. Remove <code>RSA</code> (if any) and add <code>:!RSA</code> at the end. <br/><br/><br/>N.B. restart the server by typing: <code>sudo service nginx restart</code>.<br/>"
     }
   },
   "#comment": " https://robotattack.org ",

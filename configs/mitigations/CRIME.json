@@ -9,7 +9,7 @@
     "Mitigation": {
       "Textual": "Disable the TLS compression mechanism.",
       "Apache": "1. open your Apache configuration file (default: <i>/etc/apache2/sites-available/default-ssl.conf</i>);<br/>2. search for the line starting with: <strong>SSLCompression</strong><br/>   - if found, change the value to <strong>off</strong>;<br/>   - if not, add the line <code>SSLCompression off</code> within the file.<br/><br/>N.B. restart the server by typing: <code>sudo service apache2 restart</code>.",
-      "Nginx": "SSL compression is turned off by default in nginx 1.1.6+/1.0.9+ (if OpenSSL 1.0.0+ used) and nginx 1.3.2+/1.2.2+ (if older versions of OpenSSL are used).<br/><br/>- If you are using al earlier version of nginx or OpenSSL and your distro has not backported this option then you need to <br/> 1. <strong>update to the last version</strong> or<br/> 2. recompile OpenSSL without ZLIB support."
+      "nginx": "SSL compression is turned off by default in nginx 1.1.6+/1.0.9+ (if OpenSSL 1.0.0+ used) and nginx 1.3.2+/1.2.2+ (if older versions of OpenSSL are used).<br/><br/>- If you are using al earlier version of nginx or OpenSSL and your distro has not backported this option then you need to <br/> 1. <strong>update to the last version</strong> or<br/> 2. recompile OpenSSL without ZLIB support."
 
     }
   },

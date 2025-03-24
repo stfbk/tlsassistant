@@ -6,7 +6,7 @@
     "Mitigation": {
       "Textual": "<br/>The following key lengths were added to the server configuration:{add}",
       "Apache": "{total_string}",
-      "Nginx": "{total_string}"
+      "nginx": "{total_string}"
     }
   },
   "#ConfigurationInstructions": {
@@ -23,17 +23,17 @@
     "DH_1024": "<br/>- DH 1024 bits: {action}",
     "DH_1024_config": {
       "Apache": "<p>Run the following command to generate 1024 bits DH parameters: <code>openssl dhparam 1024 >> /path/to/cert</code>.<br/>To remove DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.",
-      "Nginx": "<p>Run the following command to generate 1024 bits DH parameters: <code>openssl dhparam 1024 > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>."
+      "nginx": "<p>Run the following command to generate 1024 bits DH parameters: <code>openssl dhparam 1024 > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>."
     },
     "DH_2048": "<br/>- DH 2048 bits: {action}",
     "DH_2048_config": {
       "Apache": "<p>To add a 2048 bits DH key run the following command: <code>cat configs/compliance/ffdhe/ffdhe2048.txt >> /path/to/cert</code>.<br/>To remove DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.",
-      "Nginx": "<p>To add a 2048 bits DH key run the following command: <code>cat configs/compliance/ffdhe/ffdhe2048.txt > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>.<br/> NOTE: these DH parameters are defined in RFC 7919."
+      "nginx": "<p>To add a 2048 bits DH key run the following command: <code>cat configs/compliance/ffdhe/ffdhe2048.txt > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>.<br/> NOTE: these DH parameters are defined in RFC 7919."
     },
     "DH_3072": "<br/>- DH 3072 bits: {action}",
     "DH_3072_config": {
       "Apache": "<p>To add a 3072 bits DH key run the following command: <code>cat configs/compliance/ffdhe/ffdhe3072.txt >> /path/to/cert</code>.<br/>To remove DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.",
-      "Nginx": "<p>To add a 3072 bits DH key run the following command: <code>cat configs/compliance/ffdhe/ffdhe3072.txt > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>.<br/> NOTE: these DH parameters are defined in RFC 7919."
+      "nginx": "<p>To add a 3072 bits DH key run the following command: <code>cat configs/compliance/ffdhe/ffdhe3072.txt > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>.<br/> NOTE: these DH parameters are defined in RFC 7919."
     }
   },
   "#omit-xml-declaration": "yes"

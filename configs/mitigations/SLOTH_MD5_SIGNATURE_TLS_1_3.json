@@ -9,7 +9,7 @@
     "Mitigation": {
       "Textual": "Do not use Legacy Algorithms with TLS 1.3",
       "Apache": "No snippet available",
-      "Nginx": "No snippet available"
+      "nginx": "No snippet available"
 
     }
   },

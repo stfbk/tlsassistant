@@ -42,14 +42,14 @@ class Alpaca(TLS_Scanner_base):
             result['mitigation']['Entry']['Mitigation']['Textual'] = result['mitigation']['Entry']['Mitigation']['Textual'].format(extensions = ext)
 
             if "ALPN" or "SNI" in ext:
-                result['mitigation']['Entry']['Mitigation']['Nginx'] = ""
+                result['mitigation']['Entry']['Mitigation']['nginx'] = ""
             if "ALPN" in ext:
-                result['mitigation']['Entry']['Mitigation']['Nginx'] = "To enable Strict ALPN in Nginx upgrade to version >=1.21.4. <br/><br/>"
+                result['mitigation']['Entry']['Mitigation']['nginx'] = "To enable Strict ALPN in nginx upgrade to version >=1.21.4. <br/><br/>"
                 result['mitigation']['Entry']['Mitigation']['Apache'] = "Currenlty there is no snippet available to enable Strict ALPN. <br/><br/>"
             if "SNI" in ext:               
-                result['mitigation']['Entry']['Mitigation']['Nginx'] += """
-                To enable Strict SNI in Nginx: <br/> 
-                1. If you are using Nginx>=1.19.4 edit you configuration file usually located in <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>); to look like this:<br/>
+                result['mitigation']['Entry']['Mitigation']['nginx'] += """
+                To enable Strict SNI in nginx: <br/> 
+                1. If you are using nginx>=1.19.4 edit you configuration file usually located in <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>); to look like this:<br/>
                 <code>server {<br/>
                     listen               443 ssl default_server;<br/>
                     ssl_reject_handshake on;<br/>

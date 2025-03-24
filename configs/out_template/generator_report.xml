@@ -9,7 +9,7 @@
     <!--To edit the font of a string edit the corresponding style here-->
     <stylesheet>
         <paraStyle name = "title" fontSize="39" leading="39" alignment="centre" spaceAfter="20"/>
-        <paraStyle name = "subtitle" fontName = "Roboto" fontSize="17" alignment="centre" textColor="grey"/>
+        <paraStyle name = "subtitle" fontName = "Roboto" fontSize="17" alignment="centre" textColor="grey" leading="20"/>
         <paraStyle name = "recap" fontName = "Roboto Bold" fontSize = "25" alignment="centre" spaceAfter="25"/>
         <paraStyle name = "detected_vulnerabilities" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30"/>
         <paraStyle name = "detected_errors" fontName = "Roboto Bold" fontSize = "28" alignment="left" spaceAfter="30" textColor="red"/>
@@ -29,9 +29,9 @@
         <paraStyle name = "vulnerable_websites_list" fontName = "Roboto Italic" fontSize = "12" alignment="left" spaceAfter="5"/>
         <paraStyle name = "not_vulnerable" fontName="Roboto"/>
         <paraStyle name = "potentially_vulnerable" fontName="Roboto Bold" textColor="red"/>
-        <paraStyle name="generated_fine" fontName="Roboto Bold" textColor="green" />
+        <paraStyle name="generated_fine" fontName="Roboto" textColor="green" />
         <paraStyle name="generated_missing" fontName="Roboto Bold" textColor="red" />
-        <paraStyle name="generated_user_action" fontName="Roboto Bold" textColor="blue" />
+        <paraStyle name="generated_user_action" fontName="Roboto" />
         <blockTableStyle id="report">
             <lineStyle start="0,0" stop="-1,-1" kind="grid" thickness="0.25" colorName="black" cap="default"/>
             <blockFont start="0,0" stop="1,0" name="Roboto Bold" size="12"/>
@@ -119,15 +119,19 @@
 
     <story>
         <!--forse mettere il comando usato per generare il report-->
+        {% set additional_info_ns = namespace() %}
+        {% set additional_info_ns.conf_name = "generate_one_additional_info" if "generate_one_additional_info" in results else "generate_many_additional_info" %}
+        {% set additional_info_ns.hosts = list(results[additional_info_ns.conf_name]["raw"].keys())%}
+        {% set _ = modules.remove(additional_info_ns.conf_name) %}
         {% if hosts.__len__() == 1 %}
-            {%set host = hosts[0]%}
-            <para style="title"><b>Target: {{host}}</b></para>
+            {%set additional_info_ns.host = additional_info_ns.hosts[0]%}
+            <para style="title"><b>Target: {{results[additional_info_ns.conf_name]["raw"][additional_info_ns.host].get("name", "placeholder")}}</b></para>
         {% elif hosts.__len__() > 1 %}
             <para style="title"><b>Target: <i>multiple hosts</i></b></para>
         {% else %}
             <para style="title"><b>NO HOST LIST FOUND</b></para>
         {% endif %}
-        <para style="subtitle">Analysis performed on {{date}}</para>
+        <para style="subtitle">Generation performed on {{date}}<br/>Considered OpenSSL version: {{results[additional_info_ns.conf_name]["raw"][additional_info_ns.host].get("openssl_version", "Not defined")}}</para>
         <setNextTemplate name="disclaimer"/>
         <nextFrame/>
         <para fontName="Roboto Bold" fontSize="16" leading="20" spaceAfter="5">Confidentiality Disclaimer</para>
@@ -153,7 +157,7 @@
         <blockTable style="report">
             <tr>
                 <td>Categories</td>
-                <td>Generated</td>
+                <td>Status</td>
             </tr>
             {%set i_ns = namespace(i=0)%}
             {% for host in hosts%}
@@ -170,11 +174,11 @@
                         {% if module.startswith("generate_") %}
                             {% set host_name = list(results[module]["raw"].keys())[0] %}
                             {% if results[module]["raw"][host_name].get("missing_elements") %}
-                                <td><para style="generated_missing">Missing elements</para></td>
+                                <td><para style="generated_missing">Limited compliance</para></td>
                             {% elif results[module]["raw"][host_name].get("user_action") %}
-                                <td><para style="generated_user_action">User action required</para></td>
+                                <td><para style="generated_user_action">User interaction required</para></td>
                             {% else %}
-                                <td><para style="generated_fine">Compliant configuration</para></td>
+                                <td><para style="generated_fine">Compliant</para></td>
                             {% endif %}
                         {% endif %}
                     {% else %}
@@ -214,7 +218,7 @@
                 {% set user_action_ns.final_string = sub(replacement, Replacements[replacement], user_action_ns.final_string) %}
             {% endfor %}
             {% if user_action_ns.final_string %}
-                <h3 style = "module">Additional actions to be performed</h3>
+                <h3 style = "module">Required user interactions</h3>
                 <para style = "mitigation_text">{{user_action_ns.final_string}}</para>
             {% endif %}
             {% for module in modules %}
@@ -229,7 +233,7 @@
                     {% if 'Mitigation' in results[module] %}
                         <h4 style = "mitigation">List of elements</h4>
                         {% for key,mitigation in results[module]['Mitigation'].items() %}
-                            <h5 style = "mitigation_type">{{key}}</h5>
+                            <h5 style = "mitigation_type">{{key_replacements.get(key, key)}}</h5>
                             {% set mit_ns = namespace(new_mitigation=mitigation)%}
                             {% if isinstance(mit_ns.new_mitigation, str): %}
                                 {% for replacement in Replacements %}
@@ -242,9 +246,6 @@
                                         <td>Name</td>
                                         <td>Level</td>
                                         <td>Guideline</td>
-                                        {% if key == "Missing": %}
-                                            <td>Reason</td>
-                                        {% endif %}
                                     </tr>
                                     {% if key == "Textual": %}
                                         {% for entry in split(mit_ns.new_mitigation, "<br/>")[1:] if entry[0] == "-": %}
@@ -263,14 +264,13 @@
                                     {% else %}
                                         {% for el, dictionary in mit_ns.new_mitigation.items() if el != "mapping": %}
                                             <tr>
-                                                <td>{{el}}</td>
-                                                <td>{{dictionary["level"]}}</td>
-                                                <td>{{dictionary["source"]}}</td>
                                                 {% set mit_ns.formatted_status = dictionary["status"] %}
                                                 {% for replacement in Replacements: %}
                                                     {% set mit_ns.formatted_status = sub(replacement, Replacements[replacement], mit_ns.formatted_status) %}
                                                 {% endfor %}
-                                                <td>{{mit_ns.formatted_status}}</td>
+                                                <td>{{el}}</td>
+                                                <td><para splitLongWords="false" fontName="Roboto">{{dictionary["level"]}}<font fontSize="6">{{mit_ns.formatted_status}}</font></para></td>
+                                                <td>{{dictionary["source"]}}</td>
                                             </tr>
                                         {% endfor %}
                                         </blockTable>

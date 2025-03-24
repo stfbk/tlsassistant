@@ -42,8 +42,8 @@ class Bundled:
                 else ""
             )
             x_mitigation_nginx = (
-                mitigation["Mitigation"]["Nginx"]
-                if "Nginx" in mitigation["Mitigation"]
+                mitigation["Mitigation"]["nginx"]
+                if "nginx" in mitigation["Mitigation"]
                 else ""
             )
         else:

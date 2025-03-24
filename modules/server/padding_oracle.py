@@ -47,7 +47,7 @@ class PaddingOracle(TLS_Scanner_base):
             ciphers = ":!".join(ciphers)
             
             result['mitigation']['Entry']['Mitigation']['Apache'] = result['mitigation']['Entry']['Mitigation']['Apache'].format(vuln_ciphersuites = ciphers) 
-            result['mitigation']['Entry']['Mitigation']['Nginx'] = result['mitigation']['Entry']['Mitigation']['Nginx'].format(vuln_ciphersuites = ciphers) 
+            result['mitigation']['Entry']['Mitigation']['nginx'] = result['mitigation']['Entry']['Mitigation']['nginx'].format(vuln_ciphersuites = ciphers) 
             
         return result if condition else {}
 
