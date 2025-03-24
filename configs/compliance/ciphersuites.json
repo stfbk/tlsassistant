@@ -869,18 +869,6 @@
         "NSS": "TLS_EMPTY_RENEGOTIATION_INFO_SCSV",
         "OpenSSL": ""
     },
-    "0x0A,0x0A": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
-        "NSS": "",
-        "OpenSSL": ""
-    },
-    "0x13,0x00": {
-        "GnuTLS": "",
-        "IANA": "Unassigned",
-        "NSS": "",
-        "OpenSSL": ""
-    },
     "0x13,0x01": {
         "GnuTLS": "TLS_AES_128_GCM_SHA256",
         "IANA": "TLS_AES_128_GCM_SHA256",
@@ -923,83 +911,11 @@
         "NSS": "",
         "OpenSSL": ""
     },
-    "0x1A,0x1A": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
-        "NSS": "",
-        "OpenSSL": ""
-    },
-    "0x2A,0x2A": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
-        "NSS": "",
-        "OpenSSL": ""
-    },
-    "0x3A,0x3A": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
-        "NSS": "",
-        "OpenSSL": ""
-    },
-    "0x4A,0x4A": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
-        "NSS": "",
-        "OpenSSL": ""
-    },
     "0x56,0x00": {
         "GnuTLS": "",
         "IANA": "TLS_FALLBACK_SCSV",
         "NSS": "TLS_FALLBACK_SCSV",
-        "OpenSSL": ""
-    },
-    "0x5A,0x5A": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
-        "NSS": "",
-        "OpenSSL": ""
-    },
-    "0x6A,0x6A": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
-        "NSS": "",
-        "OpenSSL": ""
-    },
-    "0x7A,0x7A": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
-        "NSS": "",
-        "OpenSSL": ""
-    },
-    "0x8A,0x8A": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
-        "NSS": "",
-        "OpenSSL": ""
-    },
-    "0x9A,0x9A": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
-        "NSS": "",
-        "OpenSSL": ""
-    },
-    "0xAA,0xAA": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
-        "NSS": "",
-        "OpenSSL": ""
-    },
-    "0xBA,0xBA": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
-        "NSS": "",
-        "OpenSSL": ""
-    },
-    "0xC0,0x00": {
-        "GnuTLS": "",
-        "IANA": "Unassigned",
-        "NSS": "",
-        "OpenSSL": ""
+        "OpenSSL": "TLS_FALLBACK_SCSV"
     },
     "0xC0,0x01": {
         "GnuTLS": "",
@@ -2100,7 +2016,7 @@
         "OpenSSL": ""
     },
     "0xC1,0x02": {
-        "GnuTLS": "",
+        "GnuTLS": "TLS_GOSTR341112_256_28147_CNT_IMIT",
         "IANA": "TLS_GOSTR341112_256_WITH_28147_CNT_IMIT",
         "NSS": "",
         "OpenSSL": ""
@@ -2126,12 +2042,6 @@
     "0xC1,0x06": {
         "GnuTLS": "",
         "IANA": "TLS_GOSTR341112_256_WITH_MAGMA_MGM_S",
-        "NSS": "",
-        "OpenSSL": ""
-    },
-    "0xCA,0xCA": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
         "NSS": "",
         "OpenSSL": ""
     },
@@ -2177,12 +2087,6 @@
         "NSS": "",
         "OpenSSL": "RSA-PSK-CHACHA20-POLY1305"
     },
-    "0xD0,0x00": {
-        "GnuTLS": "",
-        "IANA": "Unassigned",
-        "NSS": "",
-        "OpenSSL": ""
-    },
     "0xD0,0x01": {
         "GnuTLS": "",
         "IANA": "TLS_ECDHE_PSK_WITH_AES_128_GCM_SHA256",
@@ -2201,33 +2105,9 @@
         "NSS": "",
         "OpenSSL": ""
     },
-    "0xD0,0x04": {
-        "GnuTLS": "",
-        "IANA": "Unassigned",
-        "NSS": "",
-        "OpenSSL": ""
-    },
     "0xD0,0x05": {
         "GnuTLS": "",
         "IANA": "TLS_ECDHE_PSK_WITH_AES_128_CCM_SHA256",
-        "NSS": "",
-        "OpenSSL": ""
-    },
-    "0xDA,0xDA": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
-        "NSS": "",
-        "OpenSSL": ""
-    },
-    "0xEA,0xEA": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
-        "NSS": "",
-        "OpenSSL": ""
-    },
-    "0xFA,0xFA": {
-        "GnuTLS": "",
-        "IANA": "Reserved",
         "NSS": "",
         "OpenSSL": ""
     }
