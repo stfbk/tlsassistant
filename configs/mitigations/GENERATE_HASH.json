@@ -6,7 +6,7 @@
     "Mitigation": {
       "Textual": "Enable the following hash algorithms:{add}<br/>Remove the following hash algorithms:{remove}<br/>NOTE: By complying with the Signature Algorithms requirements, the Hash Algorithms compliance will also be addressed.",
       "Apache": "No snippet available",
-      "Nginx": "No snippet available"
+      "nginx": "No snippet available"
     }
   },
   "#ConfigurationInstructions": {

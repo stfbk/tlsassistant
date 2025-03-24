@@ -11,7 +11,7 @@ from utils.validation import Validator
 
 class Configuration:
     """
-    Apache/Nginx configuration file parser
+    Apache/nginx configuration file parser
     """
 
     def __init__(self, path: str, type_: WebserverType = WebserverType.AUTO, port=None, process=True):
@@ -22,14 +22,14 @@ class Configuration:
         :type type_: WebserverType
         :param port: port to use for the check.
         :type port: str
-        :param process: Nginx only, if false the loaded configuration is returned without further processing
+        :param process: nginx only, if false the loaded configuration is returned without further processing
         :type process: bool
         """
         Validator([(path, str), (type_, WebserverType), (port if port else "", str)])
         self.__path = path
         self.__type = type_
         self.__port = port
-        self.__logging = Logger("Configuration APACHE/NGINX")
+        self.__logging = Logger("Configuration Apache/nginx")
         self.__loaded_conf = self.__load_conf(path, process)
 
     def get_path(self):
@@ -89,7 +89,7 @@ class Configuration:
 
         :param path: path to the configuration file
         :type path: str
-        :param process: Nginx only, if false the loaded configuration is returned without further processing
+        :param process: nginx only, if false the loaded configuration is returned without further processing
         :type process: bool
         :return: loaded configuration
         :rtype: dict
@@ -98,7 +98,7 @@ class Configuration:
         file = Path(path)
         assert (
             file.exists()
-        ), f"Can't find the APACHE/NGINX file to parse at {file.absolute()}"
+        ), f"Can't find the Apache/nginx file to parse at {file.absolute()}"
 
         if self.__type == WebserverType.AUTO:
             try:
@@ -120,9 +120,9 @@ class Configuration:
             results = self.__load_nginx_conf(file, process)
 
         if self.__type == WebserverType.APACHE:
-            self.__logging.set_class_name("Configuration APACHE")
+            self.__logging.set_class_name("Configuration Apache")
         elif self.__type == WebserverType.NGINX:
-            self.__logging.set_class_name("Configuration NGINX")
+            self.__logging.set_class_name("Configuration nginx")
 
         return results
 

@@ -51,27 +51,33 @@ class Report:
             "module_to_mitigation", "configs/")
         custom_fonts = utils.loader.load_configuration(
             "custom_fonts", "configs/out_template/assets/pdf/")
-        self._replacements = {"name_mapping": {},
-                              'sub': re.sub,
-                              "split": str.split,
-                              "list": list,
-                              "str": str,
-                              "isinstance": isinstance,
-                              "levels": [levels_mapping[str(i)].upper() for i in range(1, 6)],
-                              # These replacements are applied only to the content of Textual, Apache and Nginx strings
-                              "Replacements": {
-                                  # Since the hyperlinks are not blue in RML we do it manually
-                                  "(<a href=.*?</a>)": "<font color=\"blue\">\\1</font>",
-                                  # Since the code tag is not directly supported in RML, we crete it with the font tag
-                                  "<code>(.*?)</code>": "<font color=\"#d63384\" fontName=\"Roboto\">\\1</font>",
-                                  "`(.*?)`": "<font color=\"#d63384\" fontName=\"Roboto\">\\1</font>",
-                                  "&nbsp;": "&#160;",
-                                  # The paragraph tags are removed because they are not needed in the RML format
-                                  "<p>": "",
-                                  "</p>": "",
-                                  "(<b>.*?</b>)": "<font fontName=\"Roboto Bold\">\\1</font>",
-                                  "(<i>.*?</i>)": "<font fontName=\"Roboto Italic\">\\1</font>"
-                                }
+        self._replacements = {
+            "name_mapping": {},
+            'sub': re.sub,
+            "split": str.split,
+            "list": list,
+            "str": str,
+            "isinstance": isinstance,
+            "levels": [levels_mapping[str(i)].upper() for i in range(1, 6)],
+            # These replacements are applied only to the content of Textual, Apache and nginx strings
+            "Replacements": {
+                # Since the hyperlinks are not blue in RML we do it manually
+                "(<a href=.*?</a>)": "<font color=\"blue\">\\1</font>",
+                # Since the code tag is not directly supported in RML, we crete it with the font tag
+                "<code>(.*?)</code>": "<font color=\"#d63384\" fontName=\"Roboto\">\\1</font>",
+                "`(.*?)`": "<font color=\"#d63384\" fontName=\"Roboto\">\\1</font>",
+                "&nbsp;": "&#160;",
+                # The paragraph tags are removed because they are not needed in the RML format
+                "<p>": "",
+                "</p>": "",
+                "(<b>.*?</b>)": "<font fontName=\"Roboto Bold\">\\1</font>",
+                "(<i>.*?</i>)": "<font fontName=\"Roboto Italic\">\\1</font>"
+            },
+            "key_replacements": {
+                "Textual": "Conforming",
+                "nginx": "Advanced syntax for nginx",
+                "Apache": "Advanced syntax for Apache",
+            }
         }
         for custom_font in custom_fonts:
             # Custom fonts must be defined in both html and custom_fonts.json
@@ -380,8 +386,9 @@ class Report:
                             results[hostname][module + "_" +
                                               sheet] = results[hostname][module][sheet]
                         elif "placeholder" in results[hostname][module][sheet]:
-                            modules[module + "_" + sheet] =""
-                            results[hostname][module + "_" + sheet] = results[hostname][module][sheet]
+                            modules[module + "_" + sheet] = ""
+                            results[hostname][module + "_" +
+                                              sheet] = results[hostname][module][sheet]
                         else:
                             self.__logging.debug(
                                 f"Removing {sheet} from {hostname} because no mitigation was found")

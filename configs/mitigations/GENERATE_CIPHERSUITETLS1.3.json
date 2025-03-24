@@ -5,8 +5,8 @@
     "Description": "Generate report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
       "Textual": "The following cipher suites were added to the server configuration:{add}<br/>Remove the following cipher suites from the server configuration:{remove}<br/>",
-      "Apache": "The directive that handles this elements inside the configuration is <code>SSLCipherSuite</code>. The separator for this directive is <code>:</code> and to disable an element you can add either <code>-</code> (remove once) or <code>!</code> (kill) in front of it.</p>",
-      "Nginx": "The directive that handles this elements inside the configuration is <code>ssl_conf_command Ciphersuites</code>. The separator for this directive is <code>:</code> and to disable an element you can add either <code>-</code> (remove once) or <code>!</code> (kill) in front of it.</p>"
+      "Apache": "The directive that handles these elements inside the configuration is <code>SSLCipherSuite</code>. The separator for this directive is <code>:</code> and to disable an element you can add either <code>-</code> (remove once) or <code>!</code> (kill) in front of it.</p>",
+      "nginx": "The directive that handles these elements inside the configuration is <code>ssl_conf_command Ciphersuites</code>. The separator for this directive is <code>:</code> and to disable an element you can add either <code>-</code> (remove once) or <code>!</code> (kill) in front of it.</p>"
     }
   },
   "#ConfigurationInstructions": {

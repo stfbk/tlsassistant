@@ -6,7 +6,7 @@
     "Mitigation": {
       "Textual": "The following extensions were added to the server configuration:{add}",
       "Apache": "{total_string}",
-      "Nginx": "{total_string}"
+      "nginx": "{total_string}"
     }
   },
   "#ConfigurationInstructions": {
@@ -19,7 +19,7 @@
     "server_name": "<br/>- the server_name extension {action}",
     "server_name_config": {
       "Apache": "<p>Server Name: add the directive <code>SSLServerName your_server_name</code> to your virtualhosts;</p>",
-      "Nginx": "<p>Server Name: add the directive <code>server_name your_server_name</code> to your virtualhosts;</p>"
+      "nginx": "<p>Server Name: add the directive <code>server_name your_server_name</code> to your virtualhosts;</p>"
     },
     "max_fragment_length": "<br/>- the max_fragment_length extension {action}",
     "client_certificate_url": "<br/>- the client_certificate_url extension {action}",
@@ -27,8 +27,8 @@
     "truncated_hmac": "<br/>- the truncated_hmac extension {action}",
     "status_request": "<br/>- the status_request extension {action} with level {level} according to guideline {guideline}",
     "status_request_config": {
-      "Apache": "<p>StatusRequest: the directive that handles this elements inside the configuration is <code>SSLStapling</code>;</p>",
-      "Nginx": "<p>StatusRequest: the directive that handles this elements inside the configuration is <code>ssl_stapling</code>;</p>"
+      "Apache": "<p>StatusRequest: the directive that handles these elements inside the configuration is <code>SSLStapling</code>;</p>",
+      "nginx": "<p>StatusRequest: the directive that handles these elements inside the configuration is <code>ssl_stapling</code>;</p>"
     },
     "user_mapping": "<br/>- the user_mapping extension {action}",
     "client_authz": "<br/>- the client_authz extension {action}",
@@ -50,8 +50,8 @@
     "record_size_limit": "<br/>- the record_size_limit extension {action}",
     "session_ticket": "<br/>- the session_ticket extension {action}",
     "session_ticket_config": {
-      "Apache": "<p>SessionTickets: the directive that handles this elements inside the configuration is <code>SSLSessionTickets</code>;</p>",
-      "Nginx": "<p>SessionTickets: the directive that handles this elements inside the configuration is <code>ssl_session_tickets</code>;</p>"
+      "Apache": "<p>SessionTickets: the directive that handles these elements inside the configuration is <code>SSLSessionTickets</code>;</p>",
+      "nginx": "<p>SessionTickets: the directive that handles these elements inside the configuration is <code>ssl_session_tickets</code>;</p>"
     },
     "pre_shared_key": "<br/>- the pre_shared_key extension {action}",
     "early_data": "<br/>- the early_data extension {action}",

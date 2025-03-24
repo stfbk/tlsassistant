@@ -9,7 +9,7 @@
     "Mitigation": {
       "Textual": "Enable the TLS Extensions {extensions}.",
       "Apache": "No snippet available",
-      "Nginx": "No snippet available"
+      "nginx": "No snippet available"
 
     }
   },

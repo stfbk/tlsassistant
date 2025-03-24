@@ -6,7 +6,7 @@
     "Mitigation": {
       "Textual": "Add the following curves to the server configuration:{add}<br/>Remove the following curves from the server configuration:{remove}",
       "Apache": "<p>- <b>Quick solution</b>: replace the instruction of the directive <code>SSLOpenSSLConfCmd groups</code> with the following string:<br/> {total_string}<br/>- <b>Advanced solution</b>: check the directive <code>SSLOpenSSLConfCmd groups</code> and for each element in the <b>Textual</b> section above, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element it is necessary to remove it from the string. <br/>NOTE: in order to disable <code>ffdhe*</code> groups remove the <code>dhparams</code> from the end of the first certificate file</p>",
-      "Nginx": "<p>- <b>Quick solution</b>: replace the instruction of the directive <code>ssl_ecdh_curve</code> with the following string:<br/> {total_string}<br/>- <b>Advanced solution</b>: check the directive <code>ssl_ecdh_curve</code> and for each element in the <b>Textual</b> section above, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element it is necessary to remove it from the string.<br/>NOTE: in order to disable <code>ffdhe*</code> groups remove the <code>ssl_dhparam</code> directive.<br/>NOTE: this directive is only supported by Nginx 1.19.4 or higher.</p>"
+      "nginx": "<p>- <b>Quick solution</b>: replace the instruction of the directive <code>ssl_ecdh_curve</code> with the following string:<br/> {total_string}<br/>- <b>Advanced solution</b>: check the directive <code>ssl_ecdh_curve</code> and for each element in the <b>Textual</b> section above, follow the instructions provided. The separator for this directive is <code>:</code> and to disable an element it is necessary to remove it from the string.<br/>NOTE: in order to disable <code>ffdhe*</code> groups remove the <code>ssl_dhparam</code> directive.<br/>NOTE: this directive is only supported by nginx 1.19.4 or higher.</p>"
     }
   },
   "#ConfigurationInstructions": {
@@ -30,7 +30,7 @@
     },
     "1024-long DH": {
       "Apache": "<p></code><br/>Run the following command to generate 1024 bits DH parameters: <code>openssl dhparam 1024 &gt;&gt; /path/to/cert</code>.<br/>To remove 1024 bits DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.</p>",
-      "Nginx": "<p></code><br/>Run the following command to generate 1024 bits DH parameters: <code>openssl dhparam 1024 %gt; /path/to/dhparams</code>.<br/> To remove 1024 bits DH keys disable the directive <code>ssl_dhparam</code>.</p>"
+      "nginx": "<p></code><br/>Run the following command to generate 1024 bits DH parameters: <code>openssl dhparam 1024 %gt; /path/to/dhparams</code>.<br/> To remove 1024 bits DH keys disable the directive <code>ssl_dhparam</code>.</p>"
     }
   },
   "#omit-xml-declaration": "yes"

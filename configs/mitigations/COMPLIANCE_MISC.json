@@ -6,7 +6,7 @@
     "Mitigation": {
       "Textual": "The following configurable elements are not compliant:<br/>{add}<br/>{remove}<br/>{notes}",
       "Apache": "<p></p>",
-      "Nginx": "<p></p>"
+      "nginx": "<p></p>"
     }
   },
   "#ConfigurationInstructions": {
@@ -14,12 +14,12 @@
     "Use TLS Compression": "<br/>TLS Compression {action}",
     "Use TLS Compression_config": {
       "Apache": "<p>Use TLS Compression: search for the <code>SSLCompression</code> directive and set it to <code>off</code>.</p>",
-      "Nginx": "<p>Update Nginx (newer versions are not vulnerable).</p>"
+      "nginx": "<p>Update nginx (newer versions are not vulnerable).</p>"
     },
     "Client-initiated renegotiation": "<br/>Client-initiated renegotiation {action}",
     "Client-initiated renegotiation_config": {
       "Apache": "<p>Client-initiated renegotiation: search for the <code>SSLInsecureRenegotiation</code> directive and set it to <code>off</code>.</p>",
-      "Nginx": "<p>Update Nginx (newer versions are not vulnerable).</p>"
+      "nginx": "<p>Update nginx (newer versions are not vulnerable).</p>"
     },
     "openssl_dependency": {
       "< 0.9.8m": {

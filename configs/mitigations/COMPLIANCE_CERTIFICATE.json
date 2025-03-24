@@ -6,7 +6,7 @@
     "Mitigation": {
       "Textual": "Your certificate has issues with the following fields:<br/>{add}<br/>{remove}<br/>You should re-issue it following the constraints in the notes.<br/>Additional notes: {notes}.",
       "Apache": "No snippet available",
-      "Nginx": "No snippet available"
+      "nginx": "No snippet available"
     }
   },
   "#ConfigurationInstructions": {

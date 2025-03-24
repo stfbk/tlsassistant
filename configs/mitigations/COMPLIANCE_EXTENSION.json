@@ -6,7 +6,7 @@
     "Mitigation": {
       "Textual": "Add the following extensions to make the configuration compliant:{add}<br/>Remove the following extensions to make the configuration compliant:{remove}",
       "Apache": "{total_string}",
-      "Nginx": "{total_string}"
+      "nginx": "{total_string}"
     }
   },
   "#ConfigurationInstructions": {
@@ -14,7 +14,7 @@
     "server_name": "<br/>- the server_name extension {action}",
     "server_name_config": {
       "Apache": "<p>Server Name: add the directive <code>SSLServerName your_server_name</code> to your virtualhosts;</p>",
-      "Nginx": "<p>Server Name: add the directive <code>server_name your_server_name</code> to your virtualhosts;</p>"
+      "nginx": "<p>Server Name: add the directive <code>server_name your_server_name</code> to your virtualhosts;</p>"
     },
     "max_fragment_length": "<br/>- the max_fragment_length extension {action}",
     "client_certificate_url": "<br/>- the client_certificate_url extension {action}",

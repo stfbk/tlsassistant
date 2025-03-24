@@ -10,7 +10,7 @@
       "Textual": "Update the TLS library to a version that contains the custom mitigations (e.g. OpenSSL v1.0.1e+).",
 
         "Apache": "No snippet available",
-        "Nginx": "The best mitigation is to update the OpenSSL libraries. The fastest mitigation is to disable all CBC ciphers.<br/><br/>1. In a default situation, you can edit your website configuration <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>);<br/>2. Inside <code>server {...}</code> brackets configuration, find <code>ssl_ciphers</code>;<br/>3. Remove any CBC-related cipher (even nested one).<br/><br/><br/>N.B. restart the server by typing: <code>sudo service nginx restart</code>.<br/>"
+        "nginx": "The best mitigation is to update the OpenSSL libraries. The fastest mitigation is to disable all CBC ciphers.<br/><br/>1. In a default situation, you can edit your website configuration <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>);<br/>2. Inside <code>server {...}</code> brackets configuration, find <code>ssl_ciphers</code>;<br/>3. Remove any CBC-related cipher (even nested one).<br/><br/><br/>N.B. restart the server by typing: <code>sudo service nginx restart</code>.<br/>"
 
     }
   },

@@ -9,7 +9,7 @@
     "Mitigation": {
       "Textual": "Update the TLS library to a version that contains the custom mitigations (e.g. OpenSSL v1.0.1f+).",
         "Apache": "No snippet available",
-        "Nginx": "No snippet available"
+        "nginx": "No snippet available"
     }
   },
   "#comment": " https://www.mitls.org/pages/attacks/SLOTH ",
