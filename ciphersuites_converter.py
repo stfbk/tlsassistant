@@ -5,6 +5,7 @@ import shutil
 
 tls_table = importlib.import_module("dependencies.tls-table.tls-table")
 data = tls_table.get_hex_values()
+data["0x56,0x00"]["OpenSSL"] = "TLS_FALLBACK_SCSV"
 
 iana_to_openssl = {}
 openssl_to_iana = {}
