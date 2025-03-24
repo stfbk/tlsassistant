@@ -294,7 +294,8 @@ class Install:
                         )  # if the user asked for debug mode, let him see the output.
                         else null  # else /dev/null
                     ),
-                    cwd=f_path
+                    cwd=f_path,
+                    env=dict(environ, JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"),
                 )
 
     def git_submodules_init(self, path, cmd):
