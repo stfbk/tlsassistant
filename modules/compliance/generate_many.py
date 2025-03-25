@@ -24,17 +24,6 @@ class GenerateMany(Generator):
             columns_temp = self.sheet_columns.get(sheet, columns)
             if isinstance(columns_temp, dict):
                 columns_temp = columns_temp["columns"]
-            if self._reverse_mapping.get(sheet) in different_names_pos:
-                _, num_columns = different_names_pos[self._reverse_mapping.get(sheet)]
-                for entry in evaluated_entries[sheet].values():
-                    el = entry["entry"]
-                    new_name = ""
-                    for i in range(num_columns):
-                        new_name += str(el[i]) + "_"
-                    new_el = tuple([new_name[:-1]])+el[num_columns:]
-                    entry["entry"] = new_el
-                for _ in range(num_columns-1):
-                    columns_temp.pop(1)
             # get guidelines from sheets_to_check
             guidelines = tables[sheet]
             self._config_class.add_configuration_for_field(field, field_rules, evaluated_entries[sheet].values(),

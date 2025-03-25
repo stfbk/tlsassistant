@@ -615,7 +615,8 @@ class CustomFunctions:
             cert_data = certificates[cert]
             san_field = cert_data.get("subjectAltName", "")
             names = [name for name in san_field]
-            instance = ConditionParser.general_name_dictionary.get(tokens[0], None)
+            instance = ConditionParser.general_name_dictionary.get(
+                tokens[0], None)
             if instance:
                 enabled = any([isinstance(name, instance) for name in names])
             else:
@@ -711,21 +712,21 @@ class CustomFunctions:
                     enabled = isinstance(point.__getattribute__(), ConditionParser.general_name_dictionary.get(
                         fields_to_check[1], x509.GeneralName))
 
-            reason= f"{tokens[0]} is"
+            reason = f"{tokens[0]} is"
             if not enabled:
                 reason += " not"
             reason += " found in the CRL Distribution Points field"
             for key in self.entry_updates.keys():
                 if key.startswith("note"):
                     for i, entry in enumerate(self.entry_updates[key]):
-                        self._entry_updates[key][i]= entry.replace(
+                        self._entry_updates[key][i] = entry.replace(
                             "{cert}", cert).replace("{reason}", reason)
         return enabled
 
-    @ staticmethod
+    @staticmethod
     def _get_configuration_field(field, levels):
         for level in levels:
-            field= field.get(level, {})
+            field = field.get(level, {})
         return field
 
     def check_dict_value(self, **kwargs):
@@ -735,23 +736,23 @@ class CustomFunctions:
         for cert in self._user_configuration.get("Certificate", {}):
             if cert.startswith("int"):
                 continue
-            cert_data= self._user_configuration["Certificate"][cert]
-            validity= cert_data["validity"]
-            data= kwargs.get("data", None)
+            cert_data = self._user_configuration["Certificate"][cert]
+            validity = cert_data["validity"]
+            data = kwargs.get("data", None)
             if not data:
                 raise ValueError("No amount of years provided")
             if not data.isnumeric():
                 raise ValueError("Amount of years must be a number")
-            years= int(data)
-            days= years * 365
+            years = int(data)
+            days = years * 365
             return validity.days < days
         self._logger.debug("No certificate information found, returning True")
         return True
 
     def verify_scsv(self, **kwargs):
-        scsv_finding= self._user_configuration.get("fallback_SCSV", "")
-        enabled= "offered" in scsv_finding and "not" not in scsv_finding
-        self._entry_updates["is_enabled"]= enabled
+        scsv_finding = self._user_configuration.get("fallback_SCSV", "")
+        enabled = "offered" in scsv_finding and "not" not in scsv_finding
+        self._entry_updates["is_enabled"] = enabled
         return True
 
     def check_aki(self, **kwargs):
@@ -761,97 +762,97 @@ class CustomFunctions:
         :param kwargs:
         :return:
         """
-        self.entry_updates["is_enabled"]= False
-        cert= kwargs.get("certificate_index", "1")
-        failed= False
-        cert_data= self._user_configuration["CertificateExtensions"].get(cert)
+        self.entry_updates["is_enabled"] = False
+        cert = kwargs.get("certificate_index", "1")
+        failed = False
+        cert_data = self._user_configuration["CertificateExtensions"].get(cert)
         if not cert_data:
             self._logger.warning(
                 "No certificate information found, returning False for condition check_aki")
-            self.entry_updates["is_enabled"]= False
+            self.entry_updates["is_enabled"] = False
             return True
-        aki: x509.AuthorityKeyIdentifier= cert_data.get(
+        aki: x509.AuthorityKeyIdentifier = cert_data.get(
             "authorityKeyIdentifier", "")
         if not aki:
             self._entry_updates["notes"].append(
                 f"No AKI found for certificate {cert}")
-            failed= True
+            failed = True
         if aki.authority_cert_issuer or aki.authority_cert_serial_number:
             self._entry_updates["notes"].append(
                 f"Certificate {cert} contains Issuer DN or Serial Number in the AKI field")
             self._entry_updates["levels"].append("must not")
-            self.entry_updates["is_enabled"]= True
-            failed= True
-        intermediate_certificate= self._user_configuration["CertificateExtensions"].get(
+            self.entry_updates["is_enabled"] = True
+            failed = True
+        intermediate_certificate = self._user_configuration["CertificateExtensions"].get(
             "int_" + cert, {})
         if not intermediate_certificate:
-            intermediate_certificate= self._user_configuration["CertificateExtensions"].get(
+            intermediate_certificate = self._user_configuration["CertificateExtensions"].get(
                 "int_1_" + cert, {})
         if not intermediate_certificate:
             self._entry_updates["notes"].append(
                 f"No intermediate certificate found for certificate {cert}")
-            failed= True
-        ski= intermediate_certificate.get("subjectKeyIdentifier", "")
+            failed = True
+        ski = intermediate_certificate.get("subjectKeyIdentifier", "")
         if not ski:
             self._entry_updates["notes"].append(
                 f"No SKI found for intermediate certificate {cert}")
-            failed= True
+            failed = True
         if failed:
             # The condition must be True so that the note is shown
             return True
-        result= ski == aki
-        self.entry_updates["is_enabled"]= result
+        result = ski == aki
+        self.entry_updates["is_enabled"] = result
         return result
 
     def check_same_key_usage(self, **kwargs):
-        cert= kwargs.get("certificate_index", "1")
-        cert_data= self._user_configuration["CertificateExtensions"].get(cert, {
+        cert = kwargs.get("certificate_index", "1")
+        cert_data = self._user_configuration["CertificateExtensions"].get(cert, {
         })
         if not cert_data:
             self._logger.debug(
                 "No certificate information found, returning False for condition check_same_key_usage")
-            self.entry_updates["is_enabled"]= False
+            self.entry_updates["is_enabled"] = False
 
-        key_usage: x509.KeyUsage= cert_data.get("keyUsage", "")
-        extended_key_usages: x509.ExtendedKeyUsage= cert_data.get(
+        key_usage: x509.KeyUsage = cert_data.get("keyUsage", "")
+        extended_key_usages: x509.ExtendedKeyUsage = cert_data.get(
             "extendedKeyUsage", "")
         if not key_usage or not extended_key_usages:
             self._entry_updates["notes"].append(
                 f"No key usage or extended key usage found for certificate {cert}")
             return False
-        key_usage= [key_usage[1:]
+        key_usage = [key_usage[1:]
                      for key_usage, valid in key_usage.__dict__.items() if valid]
-        extended_key_usages= [
+        extended_key_usages = [
             ext_key_usage._name for ext_key_usage in extended_key_usages]
-        results= []
-        findings= []
+        results = []
+        findings = []
         for ext_key_usage in extended_key_usages:
-            condition= self._extended_key_usage_consistency.get(
+            condition = self._extended_key_usage_consistency.get(
                 ext_key_usage, "")
-            checks= re.split(self._consistency_regex, condition)
-            checks= [check.strip() for check in checks if check.strip()]
+            checks = re.split(self._consistency_regex, condition)
+            checks = [check.strip() for check in checks if check.strip()]
             for check in checks:
-                condition= condition.replace(check, str(check in key_usage))
-            result= ConditionParser(
+                condition = condition.replace(check, str(check in key_usage))
+            result = ConditionParser(
                 self._user_configuration).run(condition, True)
             results.append(result)
             if not result:
                 findings.append(ext_key_usage)
         if findings:
-            self.entry_updates["note_true"]= [
+            self.entry_updates["note_true"] = [
                 f"The certificate {cert} contains extended key usages that aren't in the key usage field. "
                 f"The invalid usages are: {', '.join(findings)}"]
         return not all(results)
 
     def disable_if(self, **kwargs):
-        self._entry_updates["disable_if"]= kwargs.get("tokens", [""])[0]
+        self._entry_updates["disable_if"] = kwargs.get("tokens", [""])[0]
         return True
 
     def check_dn(self, **kwargs):
-        token= " ".join(kwargs.get("tokens", []))
+        token = " ".join(kwargs.get("tokens", []))
         for cert in self._user_configuration["Certificate"]:
-            cert_data= self._user_configuration["Certificate"][cert]
-            dn_data= cert_data.get(token, {})
+            cert_data = self._user_configuration["Certificate"][cert]
+            dn_data = cert_data.get(token, {})
             if not dn_data:
                 self._entry_updates["note_false"].append(
                     f"No DN data found for certificate {cert}")
@@ -866,8 +867,8 @@ class CustomFunctions:
                         f"Certificate {cert} has more then one value encoded in its Relative Distinguished Name")
                     return False
                 for rdn in dn.components:
-                    component_type= rdn.components[0]
-                    component_value= rdn.components[1]
+                    component_type = rdn.components[0]
+                    component_value = rdn.components[1]
                     if not isinstance(component_value, PrintableString):
                         self._entry_updates["note_false"].append(
                             f"Certificate {cert} has an attribute value that isn't a PrintableString,"
@@ -876,27 +877,27 @@ class CustomFunctions:
         return True
 
     def check_client_auth(self, **kwargs):
-        enabled= ConditionParser.is_enabled(
+        enabled = ConditionParser.is_enabled(
             self._user_configuration, "clientAuth", "clientAuth", (None, None))
         if not enabled:
             # this is needed to not show the missing clientAuth as a note
-            self.entry_updates["force_level"]= "optional"
-        self.entry_updates["is_enabled"]= enabled
+            self.entry_updates["force_level"] = "optional"
+        self.entry_updates["is_enabled"] = enabled
         return True
 
     def check_client_only(self, **kwargs):
         # Since we can not verify this condition we set the level to optional and return trues
-        self.entry_updates["force_level"]= "optional"
+        self.entry_updates["force_level"] = "optional"
         return True
 
-    @ staticmethod
+    @staticmethod
     def always_true(**kwargs):
         return True
 
-    @ property
+    @property
     def entry_updates(self):
         return self._entry_updates
 
     def reset(self):
-        self._entry_updates= {"levels": [], "notes": [], "note_false": [
+        self._entry_updates = {"levels": [], "notes": [], "note_false": [
         ], "note_always": [], "note_true": [], "force_level": ""}
