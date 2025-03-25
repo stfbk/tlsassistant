@@ -1051,6 +1051,8 @@ class Compliance:
                                     if removing:
                                         tokens.pop(i)
                             condition = " ".join(tokens)
+                            if sheet in ["Certificate", "CertificateExtensions"]:
+                                condition = ""
 
                         valid_condition = self._condition_parser.run(condition, enabled,
                                                                      cert_index=self._certificate_index)
@@ -1281,7 +1283,9 @@ class Generator(Compliance):
 
     def _prepare_generate_output(self):
         new_dict = {}
-        configuration = self._output_dict["configuration"].title()
+        configuration = self._output_dict["configuration"].lower()
+        if configuration == "apache":
+            configuration = "Apache"
         for sheet in self._output_dict:
             if not sheet or not sheet[0].isupper():
                 continue
