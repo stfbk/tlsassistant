@@ -5,8 +5,8 @@
     "Description": "Generate report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
       "Textual": "<br/>The following key lengths were added to the server configuration:{add}",
-      "Apache": "{total_string}",
-      "nginx": "{total_string}"
+      "Apache": "Dependent on the DHParams",
+      "nginx": "Dependent on the DHParams"
     }
   },
   "#ConfigurationInstructions": {

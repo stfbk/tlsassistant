@@ -5,8 +5,9 @@
     "Description": "Generate report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
       "Textual": "The following curves were added to the server configuration:{add}<br/>Remove the following curves from the server configuration:{remove}",
-      "Apache": "The directive that handles these elements inside the configuration is <code>SSLOpenSSLConfCmd groups</code>. The separator for this directive is <code>:</code> and to disable an element it is necessary to remove it from the string.",
-      "nginx": "The directive that handles these elements inside the configuration is <code>ssl_ecdh_curve</code>. The separator for this directive is <code>:</code> and to disable an element it is necessary to remove it from the string.<br/>NOTE: this directive is only supported by nginx 1.19.4 or higher."
+      "Apache": "These elements are managed by the <code>SSLOpenSSLConfCmd groups</code> directive, with <code>:</code> serving as separator and removing an element to disable it.",
+      "nginx": "These elements are managed by the <code>ssl_ecdh_curve</code> directive, with <code>:</code> serving as separator and removing an element to disable it.",
+      "Missing": "<p> The following curves/groups are not supported by the current OpenSSL version: {missing_elements}."
     }
   },
   "#ConfigurationInstructions": {

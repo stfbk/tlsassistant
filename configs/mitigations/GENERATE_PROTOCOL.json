@@ -5,8 +5,8 @@
     "Description": "Report of elements for {sheet} to achieve compliance against {guidelines} guidelines",
     "Mitigation": {
       "Textual": "The following protocols were added to the server configuration:{add}<br/>Remove the following protocols from the server configuration:{remove}",
-      "Apache": "The directive that handles these elements inside the configuration is <code>SSLProtocol</code>. The separator for this directive is a whitespace and to disable an element can add <code>-</code> in front of it.</p>",
-      "nginx": "The directive that handles these elements inside the configuration is <code>ssl_protocols</code>. The separator for this directive is a whitespace and to disable an element can add <code>-</code> in front of it.</p>"
+      "Apache": "These elements are managed by the <code>SSLProtocol</code> directive, with whitespaces serving as separators and ''-' used to disable elements (e.g., -ELEMENT)",
+      "nginx": "These elements are managed by the <code>ssl_protocols</code> directive, with whitespaces serving as separators and ''-' used to disable elements (e.g., -ELEMENT)"
     }
   },
   "#ConfigurationInstructions": {
