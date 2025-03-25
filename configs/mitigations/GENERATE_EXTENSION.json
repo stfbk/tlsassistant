@@ -25,10 +25,10 @@
     "client_certificate_url": "<br/>- the client_certificate_url extension {action}",
     "trusted_ca_keys": "<br/>- the trusted_ca_keys extension {action}",
     "truncated_hmac": "<br/>- the truncated_hmac extension {action}",
-    "status_request": "<br/>- the status_request extension {action} with level {level} according to guideline {guideline}",
+    "status_request": "<br/>- status_request extension {action} with level {level} according to guideline {guideline}",
     "status_request_config": {
-      "Apache": "<p>StatusRequest: the directive that handles these elements inside the configuration is <code>SSLStapling</code>;</p>",
-      "nginx": "<p>StatusRequest: the directive that handles these elements inside the configuration is <code>ssl_stapling</code>;</p>"
+      "Apache": "<p>StatusRequest: this element is handled by the <code>SSLStapling</code> directive;</p>",
+      "nginx": "<p>StatusRequest: this element is handled by the <code>ssl_stapling</code> directive;</p>"
     },
     "user_mapping": "<br/>- the user_mapping extension {action}",
     "client_authz": "<br/>- the client_authz extension {action}",
