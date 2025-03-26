@@ -67,6 +67,8 @@ class ApacheConfiguration(ConfigurationMaker):
         for line in to_remove:
             lines.remove(line)
         self._string_to_add = "\n".join(lines)
+        output_field = self.reverse_mapping.get(field, None)
+        self._output_dict[output_field].pop(name, None)
 
     def _write_to_file(self):
         if not os.path.isfile(self._config_template_path):

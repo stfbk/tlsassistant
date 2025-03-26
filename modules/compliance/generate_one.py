@@ -23,11 +23,6 @@ class GenerateOne(Generator):
                     sheet, guideline, sheets_to_check[sheet][guideline])
                 data = self._database_instance.run(
                     [table_name], other_filter=query_filter, columns=columns_temp)
-                entries = {
-                    
-                }
-                evaluated_entries = self._evaluate_entries([sheet], columns_temp, data)
-                print(evaluated_entries)
                 if self._reverse_mapping.get(sheet) in different_names_pos:
                     _, num_columns = different_names_pos[self._reverse_mapping.get(
                         sheet)]
