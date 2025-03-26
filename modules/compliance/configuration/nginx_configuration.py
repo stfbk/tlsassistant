@@ -85,6 +85,8 @@ class NginxConfiguration(ConfigurationMaker):
                         found = True
             else:
                 self._template["config"][0]["parsed"][1]["block"].remove(directive)
+        output_field = self.reverse_mapping.get(field, None)
+        self._output_dict[output_field].pop(name, None)
 
     def _load_template(self):
         self._load_conf(Path(self._config_template_path))
