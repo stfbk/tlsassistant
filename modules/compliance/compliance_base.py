@@ -757,6 +757,7 @@ class Compliance:
                     # self._add_certificate_signature_algorithm(signatures)
                     self._user_configuration["Hash"].update(hashes)
                     self._user_configuration["Signature"].update(signatures)
+                    self._user_configuration["Signature_12"].update(signatures)
 
                 # From TLS 1.3 the signature algorithms are different from the previous versions.
                 # So they are saved in a different field of the configuration dictionary.
@@ -767,6 +768,7 @@ class Compliance:
                     values = [convert_signature_algorithm(
                         sig) for sig in values]
                     self._user_configuration["Signature"].update(values)
+                    self._user_configuration["Signature_13"].update(values)
 
                 # The supported groups are available as a list in this field
                 elif field[-12:] == "ECDHE_curves":
@@ -1152,7 +1154,7 @@ class Compliance:
                             # is only used in a positive (recommended, must) context.
                             valid_condition = True
                         if additional_notes:
-                            notes[-1] += "\nNOTE:"
+                            notes[-1] += "\nNOTE: "
                             notes[-1] += "\n".join(additional_notes)
 
                     conditions.append(valid_condition)
