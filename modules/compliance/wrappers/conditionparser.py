@@ -6,12 +6,14 @@ from pyasn1.type.univ import SequenceOf
 
 from cryptography import x509
 
+from modules.compliance.wrappers.db_reader import Database
+
 from utils.loader import load_configuration
 from utils.logger import Logger
 from utils.validation import Validator
 
 # Configs from the tls-compliance-dataset repository
-from configs import sheets_mapping
+from configs import sheets_mapping, has_numeric_id
 
 
 class ConditionParser:
@@ -30,6 +32,22 @@ class ConditionParser:
     # same as above but also captures the separators
     splitting_capturing_regex = "(" + ")|(".join(regex_separators) + ")"
     _sheet_mapping = sheets_mapping
+    _has_numeric_id = has_numeric_id
+    _additional_info = {}
+    _additional_info_columns = {
+        "Signature": ["id", "version"]
+    }
+    _database_instance = Database()
+    for sheet in _additional_info_columns:
+        if _additional_info.get(sheet) is None:
+            _additional_info[sheet] = {}
+            columns = _additional_info_columns.get(sheet, [])
+            results = _database_instance.run(
+                tables=[sheet], columns=columns)
+            # make results a dictionary with the first column as key
+            # and the rest as values
+            results = {row[0]: row[1:] for row in results}
+            _additional_info[sheet] = results
     __logging = Logger("Condition parser")
     __logging.debug(_splitting_regex)
 
@@ -89,12 +107,21 @@ class ConditionParser:
         :type certificate_index: str
         :return:
         """
-        field_value = user_configuration.get(config_field, {})
         check_first = None
         if condition:
             check_first = ConditionParser.get_check_first(condition)
 
         enabled = False
+        if config_field in ConditionParser._has_numeric_id and isinstance(entry[0], int):
+            if entry[0] in ConditionParser._additional_info.get(config_field, []):
+                additional_data = ConditionParser._additional_info.get(
+                    config_field, {}).get(entry[0], [])
+                # Signature case
+                if additional_data[0] and len(additional_data) == 1:
+                    additional_data = additional_data[0].replace(".", "")
+                    config_field = config_field + "_" + additional_data
+        field_value = user_configuration.get(config_field, {})
+
         if isinstance(field_value, dict) and isinstance(field_value.get(name), bool):
             # Protocols case
             enabled = field_value.get(name, None)
@@ -275,7 +302,7 @@ class ConditionParser:
 
     def output(self):
         solution = self._solve(0, len(self.expression)) == "True"
-        self.entry_updates = self._custom_functions.entry_updates.copy()
+        self.entry_updates = self._custom_functions._entry_updates.copy()
         self._custom_functions.reset()
         self.__logging.debug("Solution: " + str(solution))
         return solution
@@ -446,7 +473,7 @@ class CustomFunctions:
                 recommend_dsa = True
             if data_pair[0].lower() == alg and data_pair[0] != data_pair[1] and data_pair not in valid_pairs:
                 note = f"The certificate with index {cert} isn't compliant with the guideline because it is signed " \
-                       f"with an algorithm that isn't consistent with the public key"
+                    f"with an algorithm that isn't consistent with the public key"
 
         if note:
             self._entry_updates["notes"].append(note)
@@ -485,9 +512,9 @@ class CustomFunctions:
                     reason = f"field {level} is missing" if not configuration_value else f"{value} {operator} {name}"
                     partial_result = self._operators[operator](
                         value, str(configuration_value))
-                    for key in self.entry_updates.keys():
+                    for key in self._entry_updates.keys():
                         if key.startswith("note"):
-                            for i, entry in enumerate(self.entry_updates[key]):
+                            for i, entry in enumerate(self._entry_updates[key]):
                                 self._entry_updates[key][i] = entry.replace(
                                     "{cert}", cert).replace("{reason}", reason)
                     result = result and partial_result
@@ -505,9 +532,9 @@ class CustomFunctions:
                 partial_result = self._operators[operator](
                     value, str(configuration_value))
                 reason = f"Failed check {name} {operator} {value} for {config_field}"
-                for key in self.entry_updates.keys():
+                for key in self._entry_updates.keys():
                     if key.startswith("note"):
-                        for i, entry in enumerate(self.entry_updates[key]):
+                        for i, entry in enumerate(self._entry_updates[key]):
                             self._entry_updates[key][i] = entry.replace(
                                 "{reason}", reason)
                 result = result and partial_result
@@ -543,9 +570,9 @@ class CustomFunctions:
             if not enabled:
                 reason += " not"
             reason += " enabled in the Key Usage field"
-            for key in self.entry_updates.keys():
+            for key in self._entry_updates.keys():
                 if key.startswith("note"):
-                    for i, entry in enumerate(self.entry_updates[key]):
+                    for i, entry in enumerate(self._entry_updates[key]):
                         self._entry_updates[key][i] = entry.replace(
                             "{cert}", cert).replace("{reason}", reason)
         return enabled
@@ -582,9 +609,9 @@ class CustomFunctions:
             if not enabled:
                 reason += " not"
             reason += " enabled in the Extended Key Usage field"
-            for key in self.entry_updates.keys():
+            for key in self._entry_updates.keys():
                 if key.startswith("note"):
-                    for i, entry in enumerate(self.entry_updates[key]):
+                    for i, entry in enumerate(self._entry_updates[key]):
                         self._entry_updates[key][i] = entry.replace(
                             "{cert}", cert).replace("{reason}", reason)
         return enabled
@@ -625,9 +652,9 @@ class CustomFunctions:
             if not enabled:
                 reason += " not"
             reason += " enabled in the Subject Alternative Name field"
-            for key in self.entry_updates.keys():
+            for key in self._entry_updates.keys():
                 if key.startswith("note"):
-                    for i, entry in enumerate(self.entry_updates[key]):
+                    for i, entry in enumerate(self._entry_updates[key]):
                         self._entry_updates[key][i] = entry.replace(
                             "{cert}", cert).replace("{reason}", reason)
         return enabled
@@ -677,9 +704,9 @@ class CustomFunctions:
             if not enabled:
                 reason += " not"
             reason += " found in the Authority Info Access field"
-            for key in self.entry_updates.keys():
+            for key in self._entry_updates.keys():
                 if key.startswith("note"):
-                    for i, entry in enumerate(self.entry_updates[key]):
+                    for i, entry in enumerate(self._entry_updates[key]):
                         self._entry_updates[key][i] = entry.replace(
                             "{cert}", cert).replace("{reason}", reason)
         return enabled
@@ -716,9 +743,9 @@ class CustomFunctions:
             if not enabled:
                 reason += " not"
             reason += " found in the CRL Distribution Points field"
-            for key in self.entry_updates.keys():
+            for key in self._entry_updates.keys():
                 if key.startswith("note"):
-                    for i, entry in enumerate(self.entry_updates[key]):
+                    for i, entry in enumerate(self._entry_updates[key]):
                         self._entry_updates[key][i] = entry.replace(
                             "{cert}", cert).replace("{reason}", reason)
         return enabled
@@ -762,14 +789,15 @@ class CustomFunctions:
         :param kwargs:
         :return:
         """
-        self.entry_updates["is_enabled"] = False
+        self._entry_updates["is_enabled"] = False
+        print(self._entry_updates)
         cert = kwargs.get("certificate_index", "1")
         failed = False
         cert_data = self._user_configuration["CertificateExtensions"].get(cert)
         if not cert_data:
             self._logger.warning(
                 "No certificate information found, returning False for condition check_aki")
-            self.entry_updates["is_enabled"] = False
+            self._entry_updates["is_enabled"] = False
             return True
         aki: x509.AuthorityKeyIdentifier = cert_data.get(
             "authorityKeyIdentifier", "")
@@ -781,7 +809,7 @@ class CustomFunctions:
             self._entry_updates["notes"].append(
                 f"Certificate {cert} contains Issuer DN or Serial Number in the AKI field")
             self._entry_updates["levels"].append("must not")
-            self.entry_updates["is_enabled"] = True
+            self._entry_updates["is_enabled"] = True
             failed = True
         intermediate_certificate = self._user_configuration["CertificateExtensions"].get(
             "int_" + cert, {})
@@ -800,8 +828,8 @@ class CustomFunctions:
         if failed:
             # The condition must be True so that the note is shown
             return True
-        result = ski == aki
-        self.entry_updates["is_enabled"] = result
+        result = ski.digest == aki.key_identifier
+        self._entry_updates["is_enabled"] = result
         return result
 
     def check_same_key_usage(self, **kwargs):
@@ -811,7 +839,7 @@ class CustomFunctions:
         if not cert_data:
             self._logger.debug(
                 "No certificate information found, returning False for condition check_same_key_usage")
-            self.entry_updates["is_enabled"] = False
+            self._entry_updates["is_enabled"] = False
 
         key_usage: x509.KeyUsage = cert_data.get("keyUsage", "")
         extended_key_usages: x509.ExtendedKeyUsage = cert_data.get(
@@ -839,7 +867,7 @@ class CustomFunctions:
             if not result:
                 findings.append(ext_key_usage)
         if findings:
-            self.entry_updates["note_true"] = [
+            self._entry_updates["note_true"] = [
                 f"The certificate {cert} contains extended key usages that aren't in the key usage field. "
                 f"The invalid usages are: {', '.join(findings)}"]
         return not all(results)
@@ -881,13 +909,13 @@ class CustomFunctions:
             self._user_configuration, "clientAuth", "clientAuth", (None, None))
         if not enabled:
             # this is needed to not show the missing clientAuth as a note
-            self.entry_updates["force_level"] = "optional"
-        self.entry_updates["is_enabled"] = enabled
+            self._entry_updates["force_level"] = "optional"
+        self._entry_updates["is_enabled"] = enabled
         return True
 
     def check_client_only(self, **kwargs):
         # Since we can not verify this condition we set the level to optional and return trues
-        self.entry_updates["force_level"] = "optional"
+        self._entry_updates["force_level"] = "optional"
         return True
 
     @staticmethod

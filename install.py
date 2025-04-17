@@ -21,6 +21,10 @@ parser.add_argument(
     "-v", "--verbose", help="Verbose mode.", action="store_true"
 )  # verbose flag
 
+parser.add_argument(
+    "-n", "--no_clean", help="Delete the dependencies/ folder", default=False, action="store_true"
+)
+
 args = parser.parse_args()  # parse arguments
 logger = Logger("INSTALLER")
 if args.verbose:  # if verbose is set
@@ -365,11 +369,12 @@ class Install:
 def main():  # exec main
     if not path.exists("dependencies"):  # if can't find dependency folder
         logger.debug("Folder dependencies does not exist. Creating a new one.")
-    else:
+    elif not args.no_clean:
         logger.debug(
             "Folder dependencies exist. Removing and creating a new one.")
         rm_rf("dependencies")  # delete the folder
-    mkdir("dependencies")  # create the folder
+    if not args.no_clean:
+        mkdir("dependencies")  # create the folder
     if path.exists("dependencies.json"):  # if  find the dependency file
         with open("dependencies.json", "r") as dep:  # load dependencies
             data = dep.read()

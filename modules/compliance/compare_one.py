@@ -1,5 +1,6 @@
 from modules.compliance.compliance_base import Compliance
 from utils.globals import DEFAULT_COLUMNS
+from configs import has_numeric_id
 
 class CompareOne(Compliance):
     def _worker(self, sheets_to_check, hostname):
@@ -18,6 +19,9 @@ class CompareOne(Compliance):
             # If the sheet isn't in the dictionary then I can use the default value
             query_filter = self.get_filters(sheet)
             columns = self.sheet_columns.get(sheet, {"columns": columns_orig})["columns"]
+            if sheet in has_numeric_id:
+                # if the sheet has a numeric id then I need to add it to the columns
+                columns = ["id"] + columns
             name_index = columns.index("name")
             name_columns = self.sheet_columns.get(sheet, {}).get("name_columns", [name_index])
             level_index = columns.index("level")

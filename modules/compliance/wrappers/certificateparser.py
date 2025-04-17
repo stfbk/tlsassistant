@@ -32,7 +32,7 @@ class CertificateParser:
         if self.certificate.issuer:
             issuer_der = der_decoder(self.certificate.issuer.public_bytes())[0]
             issuer_string = self.certificate.issuer.rfc4514_string()
-            issuer_string = issuer_string.replace("\,", "COMMA")
+            issuer_string = issuer_string.replace("\\,", "COMMA")
             components = issuer_string.split(",") if "," in issuer_string else [issuer_string]
             entries = [entry.split("=") for entry in components]
             entries = [(entry[0], entry[1].replace("COMMA", ",")) for entry in entries]

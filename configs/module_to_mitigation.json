@@ -45,7 +45,7 @@
   "compare_many_CertificateExtensions": "COMPLIANCE_CERTIFICATEEXTENSIONS.json",
   "compare_many_CertificateSignature": "COMPLIANCE_CERTIFICATESIGNATURE.json",
   "compare_many_CipherSuite": "COMPLIANCE_CIPHERSUITE.json",
-  "compare_many_CipherSuitesTLS1.3": "COMPLIANCE_CIPHERSUITES.json",
+  "compare_many_CipherSuitesTLS1.3": "COMPLIANCE_CIPHERSUITESTLS1.3.json",
   "compare_many_Extension" : "COMPLIANCE_EXTENSION.json",
   "compare_many_Groups": "COMPLIANCE_GROUPS.json",
   "compare_many_Hash": "COMPLIANCE_HASH.json",

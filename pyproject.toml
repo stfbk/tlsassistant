@@ -23,6 +23,9 @@ stix2-patterns = "2.0.0"
 beautifulsoup4 = "4.12.3"
 pyasn1 = "0.6.0"
 async-timeout = "4.0.3"
+idna = "3.10"
+pyopenssl = "25.0.0"
+requests = "2.32.3"
 
 [build-system]
 requires = ["poetry-core"]

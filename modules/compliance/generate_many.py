@@ -1,6 +1,7 @@
 from modules.compliance.compliance_base import Generator
 from utils.globals import DEFAULT_COLUMNS
 from configs import different_names_pos
+from configs import has_numeric_id
 
 
 class GenerateMany(Generator):
@@ -24,6 +25,9 @@ class GenerateMany(Generator):
             columns_temp = self.sheet_columns.get(sheet, columns)
             if isinstance(columns_temp, dict):
                 columns_temp = columns_temp["columns"]
+            if sheet in has_numeric_id:
+                # if the sheet has a numeric id then I need to add it to the columns
+                columns_temp = ["id"] + columns_temp
             # get guidelines from sheets_to_check
             guidelines = tables[sheet]
             self._config_class.add_configuration_for_field(field, field_rules, evaluated_entries[sheet].values(),
