@@ -790,7 +790,6 @@ class CustomFunctions:
         :return:
         """
         self._entry_updates["is_enabled"] = False
-        print(self._entry_updates)
         cert = kwargs.get("certificate_index", "1")
         failed = False
         cert_data = self._user_configuration["CertificateExtensions"].get(cert)
@@ -829,6 +828,9 @@ class CustomFunctions:
             # The condition must be True so that the note is shown
             return True
         result = ski.digest == aki.key_identifier
+        if not result:
+            self._entry_updates["notes"].append(
+                f"Certificate {cert} SKI and AKI don't match")
         self._entry_updates["is_enabled"] = result
         return result
 

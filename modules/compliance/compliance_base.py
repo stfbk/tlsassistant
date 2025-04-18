@@ -26,7 +26,7 @@ from utils.prune import pruner
 from utils.validation import Validator
 
 # Configs from the tls-compliance-dataset repository
-from configs import sheets_mapping, different_names_pos
+from configs import sheets_mapping, different_names_pos, has_numeric_id
 
 
 def convert_signature_algorithm(sig_alg: str) -> str:
@@ -926,6 +926,9 @@ class Compliance:
             columns_to_get = []
             columns_to_use = self.sheet_columns.get(
                 sheet, {"columns": columns})["columns"]
+            if sheet in has_numeric_id:
+                # if the sheet has a numeric id then I need to add it to the columns
+                columns_to_use = ["id"] + columns_to_use
             if not self._output_dict.get(sheet):
                 self._output_dict[sheet] = {}
             for guideline in sheets_to_check[sheet]:
@@ -1059,6 +1062,10 @@ class Compliance:
         for sheet in entries_to_check:
             columns = self.sheet_columns.get(
                 sheet, {"columns": original_columns})["columns"]
+            if sheet in has_numeric_id:
+                # if the sheet has a numeric id then I need to add it to the columns
+                columns = ["id"] + columns
+                print(columns)
             guideline_index = columns.index("guidelineName")
             # A more fitting name could be current_requirement_level
             level_index = columns.index("level")
