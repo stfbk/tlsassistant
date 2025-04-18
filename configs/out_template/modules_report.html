@@ -178,8 +178,10 @@ customElements.define('custom_font_code-2', CodeTwo);
         <footer class="text-center footer-basic"
             style="background: rgba(255,255,255,0);padding-bottom: 5px;padding-top: 72px;"><img class="img-fluid"
                 src="assets/img/FBK_Cybersecurity_white.png" style="width: 150px;">
+            {% set date = date.strftime("%Y-%m-%d %H:%M")%}
+            {% set year = date.split("-")[0] %}
             <p class="copyright" style="color: #a5a5a5;font-family: Roboto, sans-serif;font-size: 14px;">FBK - Security
-                And Trust Unit © 2024</p>
+                And Trust Unit © {{year}}</p>
         </footer><label class="form-label"></label>
     </header>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
