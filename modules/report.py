@@ -83,7 +83,6 @@ class Report:
             # Custom fonts must be defined in both html and custom_fonts.json
             self._replacements["Replacements"][f"<{custom_font}>(.*?)</{custom_font}>"] =\
                 f"<font {custom_fonts[custom_font]}>\\1</font>"
-        print(files)
         for module in files:
             # TODO fix poodle alias system
             if os.path.isfile(Path("configs/mitigations/" + files[module])):
