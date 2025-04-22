@@ -43,6 +43,7 @@ class Install:
         pips = []
         files = []
         git_submodules = {}
+        git_checkout = {}
         maven_paths = []
         python3_scripts = []
         logger.info("Loading dependencies...")
@@ -79,6 +80,10 @@ class Install:
                 git_submodules[dependency["path"]] = dependency["cmd"]
                 logger.debug(
                     f"Added git submodule of {dependency['path']} with command git submodule {dependency['cmd']}")
+            elif dependency["type"] == "git-checkout":
+                git_checkout[dependency["path"]] = dependency["cmd"]
+                logger.debug(
+                    f"Added git checkout of {dependency['path']} with command git checkout {dependency['cmd']}")
             elif dependency["type"] == "python3":
                 python3_scripts.append(dependency["path"])
                 logger.debug(f"Added dependency python3 {dependency['path']}")
@@ -117,6 +122,10 @@ class Install:
             # initialize submodules
             self.git_submodules_init(path, git_submodules[path])
             logger.info(f"Submodules of {path} done.")
+
+        for path in git_checkout:
+            self.git_checkout_init(path, git_checkout[path])
+            logger.info(f"Checkout of {path} done.")
 
         logger.debug(files)
         logger.debug("Getting all files...")
@@ -304,6 +313,22 @@ class Install:
 
     def git_submodules_init(self, path, cmd):
         cmd = ["git", "submodule"] + cmd.split(" ")
+        with open(devnull, "w") as null:
+            subprocess.check_call(
+                cmd,
+                stderr=sys.stderr,
+                stdout=(
+                    sys.stdout
+                    if logging.getLogger().isEnabledFor(
+                        logging.DEBUG
+                    )  # if the user asked for debug mode, let him see the output.
+                    else null  # else /dev/null
+                ),
+                cwd="dependencies/"+path
+            )
+
+    def git_checkout_init(self, path, cmd):
+        cmd = ["git", "checkout"] + cmd.split(" ")
         with open(devnull, "w") as null:
             subprocess.check_call(
                 cmd,
