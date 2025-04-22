@@ -246,6 +246,8 @@ class Compliance:
         elif self.hostname and self._validator.string(self.hostname) and self.hostname != "placeholder":
             test_ssl_output = {}
             dump_folder = "testssl_dumps"
+            if not os.path.isdir(dump_folder):
+                os.mkdir(dump_folder)
             file_hostname = self.hostname.replace(":", "_").replace("/", "_")
             file_path = f"{dump_folder}/testssl_output-{file_hostname}.json"
             if clean and os.path.isfile(file_path):
