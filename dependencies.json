@@ -65,6 +65,11 @@
     "url": "https://github.com/stfbk/tls-compliance-dataset"
   },
   {
+    "type": "git-checkout",
+    "cmd": "client_only",
+    "path": "tls-compliance-dataset"
+  },
+  {
     "type": "file",
     "url": "https://github.com/stfbk/tls-compliance-dataset/releases/latest/download/requirements.db"
   },
