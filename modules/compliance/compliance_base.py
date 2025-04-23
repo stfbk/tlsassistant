@@ -1067,7 +1067,6 @@ class Compliance:
             if sheet in has_numeric_id:
                 # if the sheet has a numeric id then I need to add it to the columns
                 columns = ["id"] + columns
-                print(columns)
             guideline_index = columns.index("guidelineName")
             # A more fitting name could be current_requirement_level
             level_index = columns.index("level")
