@@ -367,7 +367,7 @@ python3 run.py -m generate_one --guidelines nist --output_conf compliant_config.
 </details>
 
 
-### Avaliable analysis modules
+### Available analysis modules
 
 <details>
 <summary>Show modules list</summary>
