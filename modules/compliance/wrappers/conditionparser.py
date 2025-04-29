@@ -564,7 +564,11 @@ class CustomFunctions:
             if cert.startswith("int"):
                 continue
             cert_data = certificates[cert]
-            key_usage_field = cert_data.get("keyUsage", "")
+            key_usage_field = cert_data.get("keyUsage")
+            if not key_usage_field:
+                self._logger.warning(
+                    f"No Key Usage found for certificate {cert}, returning True")
+                return True
             enabled = key_usage_field.__getattribute__(tokens[0])
             reason = f"{tokens[0]} is"
             if not enabled:
