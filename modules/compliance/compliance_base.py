@@ -1002,8 +1002,10 @@ class Compliance:
                 levels.insert(0, level)
                 to_use = self.level_to_use(levels, self._security)
                 level = levels[to_use]
-            level = self._condition_parser.entry_updates.get(
+            forced_level = self._condition_parser.entry_updates.get(
                 "force_level", level)
+            if forced_level:
+                level = forced_level
 
         has_alternative = self._condition_parser.entry_updates.get(
             "has_alternative")
