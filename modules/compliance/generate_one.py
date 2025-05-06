@@ -17,7 +17,7 @@ class GenerateOne(Generator):
             if isinstance(columns_temp, dict):
                 columns_temp = columns_temp["columns"]
             # Only the first guideline of each sheet is the interesting one
-            if sheets_to_check[sheet]:
+            if sheets_to_check.get(sheet):
                 guideline = list(sheets_to_check[sheet].keys())[0]
                 table_name = self._database_instance.get_table_name(
                     sheet, guideline, sheets_to_check[sheet][guideline])

@@ -378,6 +378,10 @@ class Report:
             "compare") or module.startswith("generate")]
         if compliance_modules:
             module = compliance_modules[0]
+            if module.startswith("generate"):
+                self.__path = Path(
+                    self.__path.__str__().replace("html", "pdf"))
+                self.__logging.info("HTML report is not available for generate modules, switching to PDF")
             for hostname in results:
                 if results[hostname].get(module):
                     for sheet in results[hostname][module]:
