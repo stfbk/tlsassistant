@@ -41,7 +41,7 @@
         "AGID": "INTERMEDIATE"
     },
     "Groups": {
-        "NIST": "",
+        "NIST": "CUSTOMERFACING",
         "BSI": "CUSTOMERFACING",
         "ANSSI": "",
         "MOZILLA": "INTERMEDIATE",
