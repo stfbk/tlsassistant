@@ -451,6 +451,7 @@ class Report:
                 xml_path = output_path
                 output_path = output_path[:-4] + ".pdf"
                 rml2pdf.go(xml_path, output_path)
+                os.remove(xml_path)
             except Exception as e:
                 self.__logging.error(f"Error converting to PDF: {e}")
                 self.__logging.debug("Dumping results used by jinja to file")

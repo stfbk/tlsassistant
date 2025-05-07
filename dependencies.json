@@ -9,7 +9,7 @@
   },
   {
     "type": "git",
-    "url": "https://github.com/tomato42/tlsfuzzer"
+    "url": "https://github.com/tlsfuzzer/tlsfuzzer"
   },
   {
     "type": "pkg",
