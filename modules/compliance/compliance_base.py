@@ -758,7 +758,7 @@ class Compliance:
                         signatures.append(convert_signature_algorithm(el))
                     # self._add_certificate_signature_algorithm(signatures)
                     self._user_configuration["Hash"].update(hashes)
-                    self._user_configuration["Signature"].update(signatures)
+                    self._user_configuration["SignatureAlgsCertificate"].update(signatures)
                     self._user_configuration["Signature_12"].update(signatures)
 
                 # From TLS 1.3 the signature algorithms are different from the previous versions.
@@ -769,7 +769,7 @@ class Compliance:
                         " ") if " " in finding else [finding]
                     values = [convert_signature_algorithm(
                         sig) for sig in values]
-                    self._user_configuration["Signature"].update(values)
+                    self._user_configuration["SignatureAlgsCertificate"].update(values)
                     self._user_configuration["Signature_13"].update(values)
 
                 # The supported groups are available as a list in this field
@@ -1578,7 +1578,7 @@ class AliasParser:
         self._aliases = load_configuration(
             "alias_mapping", "configs/compliance/alias/")
         self._default_versions = load_configuration(
-            "default_versions", "configs/compliance/alias/")
+            "default_versions", "dependencies/tls-compliance-dataset/utils/")
 
     def list_aliases(self):
         print("Alias mapping:")
