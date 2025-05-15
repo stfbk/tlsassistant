@@ -83,5 +83,10 @@
   {
     "type": "git",
     "url": "https://github.com/internetstandards/dhe_groups"
+  },
+  {
+    "type": "git-checkout",
+    "cmd": "origin/ACN",
+    "path": "tls-compliance-dataset"
   }
 ]
