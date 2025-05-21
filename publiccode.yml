@@ -1,116 +1,70 @@
-# This repository adheres to the publiccode.yml standard by including this 
-# metadata file that makes public software easily discoverable.
-# More info at https://github.com/italia/publiccode.yml
-
-publiccodeYmlVersion: '0.2'
+publiccodeYmlVersion: 0.4.0
+name: TLSAssistant
+url: https://github.com/stfbk/tlsassistant
+landingURL: https://st.fbk.eu/tools/TLSAssistant/
+softwareVersion: "3.2"
+releaseDate: 2025-06-06
+logo: https://raw.githubusercontent.com/stfbk/tlsassistant/refs/heads/master/assets/logo.png
+platforms:
+  - linux
 categories:
+  - it-asset-management
   - it-security
+developmentStatus: stable
+softwareType: standalone/desktop
 description:
   it:
-    documentation: 'https://github.com/stfbk/tlsassistant/wiki'
-    features:
-      - analisi di vulnerabilità per webserver Apache e nginx
-      - analisi di conformità per webserver Apache e nginx
-      - |-
-        report contenenti frammenti di codice da copia-incollare per mitigare i
-
-        problemi rilevati
-    genericName: tool d'analisi TLS
-    longDescription: |
-      TLSAssistant è un tool di ricerca sviluppato per facilitare il lavoro
-
-      degli amministratori di sistema e sviluppatori iOS/Android alle prese con
-
-      implementazioni TLS.
-
-
-
-      Il suo utilizzo permette di analizzare i webserver (in locale o da remoto)
-
-      e le app iOS/Android per valutarne lo stato di sicurezza e la totalità delle
-
-      vulnerabilità TLS che potrebbero essere sfruttate per mettere in pericolo
-
-      la sicurezza delle trasmissioni.
-
+    shortDescription: Analizza implementazioni TLS per scoprirne le vulnerabilità,
+      il grado di conformità e suggerire le mitigazioni necessarie per
+      correggerne i problemi
+    longDescription: >-
+      TLSAssistant è un tool di ricerca sviluppato per facilitare il lavoro di
+      amministratori di sistema e sviluppatori iOS/Android alle prese con
+      implementazioni TLS. Il suo utilizzo permette di analizzare i webserver
+      (in locale o da remoto) e le app iOS/Android per valutarne lo stato di
+      sicurezza e la totalità delle vulnerabilità TLS che potrebbero essere
+      sfruttate per mettere in pericolo la sicurezza delle trasmissioni.
 
 
       TLSAssistant è anche in grado di verificare il grado di conformità di un
-
-      implementazione rispetto a una serie di cinque linee guida nazionali e
-
+      implementazione rispetto a una serie di linee guida nazionali e
       sovranazionali
 
 
-
-      ​
-
-
-
-      Il punto di forza di TLSAssistant è la generazione di un report in grado
-
+      ​Il punto di forza di TLSAssistant è la generazione di un report in grado
       di elencare le vulnerabilità presenti, spiegare il loro impatto e guidare
-
       passo passo verso la loro risoluzione.
 
 
-
-      ​
-
-
-
-      Le mitigazioni sono state collezionate estraendo informazioni dalla
-
+      ​Le mitigazioni sono state collezionate estraendo informazioni dalla
       letteratura scientifica e dai manuali tecnici forniti da ogni produttore.
+    documentation: https://github.com/stfbk/tlsassistant/wiki
+    features:
+      - Analisi di vulnerabilità per webserver Apache e nginx, app iOS e Android
+      - Analisi di conformità per webserver Apache e nginx
+      - Report contenenti frammenti di codice da copia-incollare per mitigare i
+        problemi rilevati
     screenshots:
-      - |-
-        https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_vuln.png
-      - |-
-        https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_compliance.png
-    shortDescription: |-
-      Analizza implementazioni TLS per scoprirne le vulnerabilità, il grado di
-
-      conformità e suggerire le mitigazioni necessarie per correggerne i
-
-      problemi
-developmentStatus: stable
-it:
-  conforme:
-    gdpr: false
-    lineeGuidaDesign: false
-    misureMinimeSicurezza: false
-    modelloInteroperabilita: false
-  countryExtensionVersion: '0.2'
-  piattaforme:
-    anpr: false
-    cie: false
-    pagopa: false
-    spid: false
-  riuso:
-    codiceIPA: fbk
+      - https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_vuln.png
+      - https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_compliance.png
 legal:
   license: Apache-2.0
+maintenance:
+  type: internal
+  contacts:
+    - name: TLSA customer support
+      email: tlsa-cs@fbk.eu
+      phone: ""
+      affiliation: Fondazione Bruno Kessler
+    - name: Salvatore Manfredi
+      email: smanfredi@fbk.eu
+      phone: "+390461314193"
+      affiliation: Fondazione Bruno Kessler
+    - name: Riccardo Germenia
+      email: rgermenia@fbk.eu
+      phone: ""
+      affiliation: Fondazione Bruno Kessler
 localisation:
+  localisationReady: false
   availableLanguages:
     - en
-  localisationReady: false
-maintenance:
-  contacts:
-    - affiliation: Fondazione Bruno Kessler
-      email: tlsa-cs@fbk.eu
-      name: Salvatore Manfredi
-      phone: '+390461314193'
-    - affiliation: Fondazione Bruno Kessler
-      name: Matteo Rizzi
-    - affiliation: Fondazione Bruno Kessler
-      name: Riccardo Germenia
-  type: internal
-name: TLSAssistant
-platforms:
-  - linux
-releaseDate: '2024-12-18'
-softwareType: standalone/desktop
-softwareVersion: 3.1.0
-url: 'https://github.com/stfbk/tlsassistant'
-usedBy:
-  - Poligrafico e Zecca dello Stato
