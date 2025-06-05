@@ -215,7 +215,7 @@ class ConfigurationMaker:
                 openssl_version, "")
             if not default_ciphers:
                 self._logger.warning(
-                    "No default ciphersuites found for the current openssl version")
+                    "No default ciphersuites found for the current OpenSSL version")
             elif isinstance(default_ciphers, tuple):
                 default_ciphers = default_ciphers[0]
             user_configuration["CipherSuites"] = default_ciphers
@@ -224,7 +224,7 @@ class ConfigurationMaker:
                 openssl_version, "")
             if not default_ciphers:
                 self._logger.warning(
-                    "No default ciphersuites found for the current openssl version")
+                    "No default ciphersuites found for the current OpenSSL version")
             elif isinstance(default_ciphers, tuple):
                 default_ciphers = default_ciphers[1]
             elif isinstance(default_ciphers, str):
@@ -235,7 +235,7 @@ class ConfigurationMaker:
                 openssl_version, "")
             if not user_configuration["Groups"]:
                 self._logger.warning(
-                    "No default groups found for the current openssl version")
+                    "No default groups found for the current OpenSSL version")
 
     @staticmethod
     def prepare_ciphers(ciphers: str):
@@ -436,7 +436,7 @@ class Actions:
         groups = string.split(":") if ":" in string else [string]
         if self._openssl.less_than(self.openssl_version, "1.0.2"):
             self._logger.warning(
-                "The provided openssl version can not use multiple groups, only the first one will be used.")
+                "The provided OpenSSL version can not use multiple groups, only the first one will be used.")
             groups = groups[:1]
             string = string.split(":")[0]
         for group in groups:
