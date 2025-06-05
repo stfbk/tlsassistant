@@ -2,16 +2,16 @@
 
 # TLSAssistant v3
 
-**TLSAssistant v3.1** is the latest version of TLSAssistant, a modular state-of-the-art TLS analyzer, extensible with new features and thus capable of streamlining the mitigation process of known and newly discovered TLS attacks even for non-expert users. The companion page, containing additional details can be found [here](https://st.fbk.eu/tools/TLSAssistant/).
+**TLSAssistant v3.2** is the latest version of TLSAssistant, a modular state-of-the-art TLS analyzer, extensible with new features and capable of streamlining the mitigation process of known and newly discovered TLS attacks even for non-expert users. The companion page, containing additional details can be found [here](https://st.fbk.eu/tools/TLSAssistant/).
 
-The latest release introduces a redesigned PDF report, a novel module able to perform compliance analyses against five agency-issued technical guidelines:
-- **AgID** [ver.2020-01](https://cert-agid.gov.it/wp-content/uploads/2020/11/AgID-RACCSECTLS-01.pdf)
-- **ANSSI** [v1.2](https://cyber.gouv.fr/sites/default/files/2017/07/anssi-guide-recommandations_de_securite_relatives_a_tls-v1.2.pdf)
-- **BSI** [TR-02102-2](https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TG02102/BSI-TR-02102-2.html) and [TR-03116-4](https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR03116/BSI-TR-03116-4.html)
-- **Mozilla** [v5.7](https://wiki.mozilla.org/Security/Server_Side_TLS)
-- **NIST** [SP 800-52 Rev. 2](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r2.pdf) (and related)
+The latest release improves and enhances the previously introduced compliance analysis by offering a refined PDF report together with two new compliance modules feature based on our [latest research article]([doi.org/10.5220/0012764700003767](https://doi.org/10.5220/0012764700003767)): `generate_one` and `generate_many`. These modules let users easily generate compliant configurations from scratch by selecting one (or multiple) guideline and a target webserver, either Apache or nginx.
 
-and the integration of a new state-of-the-art static and extensible app security testing tool called [SEBASTiAn](https://github.com/talos-security/SEBASTiAn). Its presence enhanced existing Android analyses and introduces the possiblity to analyze iOS applications.
+Moreover, thanks to the recent updates to our [compliance dataset](https://github.com/stfbk/tls-compliance-dataset), TLSAssistant is now able to verify a server compliance against two new guidelines from:
+
+- **ACN**, the new cybersecurity agency of the Italian government and
+- **ENISA**, the European Union Agency for Cybersecurity.
+
+These and more features are now showcased in our new playlist of demo recordings available [here](TODO).
 
 
 ## Features
@@ -82,10 +82,12 @@ The list of detectable issues is:
 ![compliance_report](assets/report_compliance.png)
 *Compliance analysis report*
 
-TLSAssistant is able to perform an automated compliance analysis against fivefive agency-issued technical guidelines:
+TLSAssistant is able to perform an automated compliance analysis against seven agency-issued technical guidelines:
+- **ACN** [v1.0](https://www.acn.gov.it/portale/documents/20119/85999/ACN_LG_Transport_Layer_Security_TLS.pdf)
 - **AgID** [ver.2020-01](https://cert-agid.gov.it/wp-content/uploads/2020/11/AgID-RACCSECTLS-01.pdf)
 - **ANSSI** [v1.2](https://cyber.gouv.fr/sites/default/files/2017/07/anssi-guide-recommandations_de_securite_relatives_a_tls-v1.2.pdf)
 - **BSI** [TR-02102-2](https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TG02102/BSI-TR-02102-2.html) and [TR-03116-4](https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR03116/BSI-TR-03116-4.html)
+- **ENISA** [v2.0](https://certification.enisa.europa.eu/document/download/a845662b-aee0-484e-9191-890c4cfa7aaa_en?filename=ECCG%20Agreed%20Cryptographic%20Mechanisms%20version%202.pdf)
 - **Mozilla** [v5.7](https://wiki.mozilla.org/Security/Server_Side_TLS)
 - **NIST** [SP 800-52 Rev. 2](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r2.pdf) (and related)
 
@@ -100,24 +102,22 @@ It supports the following use-cases:
 ## Download
 
 > [!TIP]
-> We suggest to download the pre-built Docker provided by GitHub by fetching it with.
+> The recommended usage method is the the pre-built Docker image provided by GitHub. You can fetch it using the following command
+>
 > ```bash
-> docker pull ghcr.io/stfbk/tlsassistant:v3.1
+> docker pull ghcr.io/stfbk/tlsassistant:v3.2
 > ```
-> and running it with
+> and then running it 
 > ```bash
-> docker run --rm -v ${PWD}/results:/tlsassistant/results -t ghcr.io/stfbk/tlsassistant:v3.1 -s www.fbk.eu
+> docker run --rm -v ${PWD}/results:/tlsassistant/results -t ghcr.io/stfbk/tlsassistant:v3.2 -s www.fbk.eu
 > ```
 
-However, if you want to install the dependencies on the system, you can use the following building methods:
+However, if you want to install the dependencies on the system, you can use one of the the following building methods:
 ### One Liner
 To install the tool (in a virtual environment), execute the following command:
 ```bash
 sudo apt update && sudo apt install git python3-dev python3-pip python3-venv -y && git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant && python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt && python3 install.py -v
 ```
----
-### Step by Step
-If you want to download and install by executing every step:
 <details>
 
 <summary>Show single steps</summary>
@@ -159,10 +159,10 @@ git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant
 
 Recommended for non-Ubuntu users:
 
-Since it does use APT and install dependencies, we can use the Dockerfile to build the image and contain the installation process.
+Since TLSAssistant installer uses APT and autonomously installs its dependencies, you can use the provided Dockerfile to autonomously build the image
 
 <details>
-<summary>Docker build and run tutorial</summary>
+<summary>Show commands</summary>
 
 clone the repository:
 
@@ -194,7 +194,7 @@ python3 run.py -h
 ```
 <details>
 
-<summary>Show raw output</summary>
+<summary>Show all the available attributes</summary>
 
 ```
 usage: TLSAssistant [-h] [--version] [-v] [--openssl OPENSSL | --ignore-openssl] [-ot {pdf,html}] [-o OUTPUT] [--group-by {host,module}] (-s SERVER | -f FILE | -d DOMAIN_FILE | -l [LIST] | -a APK) [--apply-fix [APPLY_FIX]]
@@ -265,6 +265,28 @@ optional arguments:
 
 ```
 </details>
+
+
+
+### Available analysis types
+The various types of analysis that can (currently) be performed are:
+<details>
+
+<summary>Show</summary>
+
+### Single Host
+Since most of the vulnerabilities analyzed by the tool are covered by testssl.sh tool, we decided to make the analysis more efficient by performing a pre-analysis to populate a cache with its result. These will be used by the corresponding testssl.sh modules such as POODLE (an attack that exploits the availability of SSLv3 to downgrade the strength of the connection), during current and future analysis. Thus, in Step 3a the arguments of each individual module related to testssl.sh are obtained. These arguments will be provided to the method in order to perform the testssl.sh pre-analysis and populate the cache with the results. Once this is done, the individual modules are executed (Step 3b) and mitigations added if vulnerable.
+
+### Single APK
+Each Android-related module, such as Unsecure TrustManager (which evaluates if a custom implementation may be exploited to break certificate validation), runs the analysis (Step 3b) on the provided APK.
+
+### Multiple Hosts
+We perform a Single Host analysis on each one of the domains specified in an input list. Each result is concatenated and provided to the Output module as a single output.	
+
+### TLS Configuration and Fixes
+If a configuration file is provided, a WhiteBox analysis is performed by loading the TLS configuration into memory and performing a complete check of all available modules (Step 3b). Otherwise, if a configuration file is provided along with a valid hostname, a singlehost analysis is performed and then the fixes are integrated in the provided TLS configuration. We refer to this analysis as Hybrid: we perform a BlackBox analysis on the hostname and then we apply the fixes on the configuration file.
+</details>
+
 
 ### Examples 
 <details>
@@ -444,25 +466,14 @@ Use
 
 ---
 
-## Analysis types
-The various types of analysis that can (currently) be performed are:
-
-### Single Host
-Since most of the vulnerabilities analyzed by the tool are covered by testssl.sh tool, we decided to make the analysis more efficient by performing a pre-analysis to populate a cache with its result. These will be used by the corresponding testssl.sh modules such as POODLE (an attack that exploits the availability of SSLv3 to downgrade the strength of the connection), during current and future analysis. Thus, in Step 3a the arguments of each individual module related to testssl.sh are obtained. These arguments will be provided to the method in order to perform the testssl.sh pre-analysis and populate the cache with the results. Once this is done, the individual modules are executed (Step 3b) and mitigations added if vulnerable.
-
-### Single APK
-Each Android-related module, such as Unsecure TrustManager (which evaluates if a custom implementation may be exploited to break certificate validation), runs the analysis (Step 3b) on the provided APK.
-
-### Multiple Hosts
-We perform a Single Host analysis on each one of the domains specified in an input list. Each result is concatenated and provided to the Output module as a single output.	
-
-### TLS Configuration and Fixes
-If a configuration file is provided, a WhiteBox analysis is performed by loading the TLS configuration into memory and performing a complete check of all available modules (Step 3b). Otherwise, if a configuration file is provided along with a valid hostname, a singlehost analysis is performed and then the fixes are integrated in the provided TLS configuration. We refer to this analysis as Hybrid: we perform a BlackBox analysis on the hostname and then we apply the fixes on the configuration file.
-
 ## How to contribute
 Please refer to the related [Wiki](https://github.com/stfbk/tlsassistant/wiki) page.
 
-## External/related projects
+## Related projects
+- [TLS Compliance Dataset](https://github.com/stfbk/tls-compliance-dataset) is the result of the collection, translation, standardization, and structuring of a series of technical requirements derived from the guidelines of seven cybersecurity agencies. It is offered as an auditable database and leveraged for TLSAssistant compliance analyses.
+
+
+## External projects
 
 - Employed in the context of the industrial collaboration with [IPZS](https://www.ipzs.it)/F&C
 
