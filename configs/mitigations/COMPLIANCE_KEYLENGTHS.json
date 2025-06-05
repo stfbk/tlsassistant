@@ -37,7 +37,7 @@
     },
     "openssl_dependency": {
       ">= 1.0.2": {
-        "Textual": "<br/>NOTE: with your openssl version in order to fix DH keys it may be enough to follow the mitigation of the Key Lengths section."
+        "Textual": "<br/>NOTE: with your OpenSSL version in order to fix DH keys it may be enough to follow the mitigation of the Key Lengths section."
       }
     }
   },
