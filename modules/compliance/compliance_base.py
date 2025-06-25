@@ -1249,6 +1249,7 @@ class Generator(Compliance):
             "\" , \"".join(self.tls1_3_ciphers) + "\")"
         self._reverse_mapping = dict(
             [(v, k) for k, v in sheets_mapping.items()])
+        self.has_tls12 = None
 
     def _get_config_name(self, field):
         name = self._configuration_mapping.get(field, None)

@@ -25,6 +25,7 @@
     "disable": "!name",
     "separator": ":",
     "added_negatives": true,
+    "enable_optional": true,
     "post_actions": {
       "convert_ciphers": "CipherSuitesTLS1.3"
     }

@@ -15,11 +15,12 @@
     "not recommended": "-name",
     "recommended": "name",
     "must": "name",
+    "optional": "name",
     "info": "",
     "connector": ":",
     "mode": "standard",
     "actions_on_final_string": {
-      "convert_ciphers": "",
+      "convert_ciphers": "CipherSuitesTLS1.3",
       "replace": {
         ":;": ";"
       }

@@ -40,3 +40,9 @@ class GenerateOne(Generator):
                     field_rules = self._configuration_rules.get(field, {})
                     self._config_class.add_configuration_for_field(
                         field, field_rules, data, columns_temp, table_name)
+                if self.has_tls12 is None and sheet == "Protocol":
+                    for p in data:
+                        if p[0] == "TLS 1.2":
+                            self.has_tls12 = p[1] not in ["not recommended", "must not"]
+                    if self.has_tls12 is False:
+                        self._ciphers1_2_filter = self._ciphers1_2_filter.replace("\")", "\") AND 1 = 2")

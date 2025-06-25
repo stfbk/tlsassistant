@@ -16,7 +16,7 @@
     "added_negatives": false,
     "enable_optional": true,
     "post_actions": {
-      "convert_ciphers": "",
+      "convert_ciphers": "CipherSuite",
       "prepend_after": {
         "string": "-ALL:",
         "separator": " "
