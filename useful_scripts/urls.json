@@ -210,6 +210,10 @@
     "openssl-3.3.1": "https://www.openssl.org/source/old/3.3/openssl-3.3.1.tar.gz",
     "openssl-3.3.2": "https://www.openssl.org/source/old/3.3/openssl-3.3.2.tar.gz",
     "openssl-3.4.0-alpha1": "https://www.openssl.org/source/old/3.4/openssl-3.4.0-alpha1.tar.gz",
-    "openssl-3.4.0": "https://www.openssl.org/source/old/3.4/openssl-3.4.0.tar.gz"
-
+    "openssl-3.4.0-beta1": "https://github.com/openssl/openssl/releases/download/openssl-3.4.0-beta1/openssl-3.4.0-beta1.tar.gz",
+    "openssl-3.4.0": "https://www.openssl.org/source/old/3.4/openssl-3.4.0.tar.gz",
+    "openssl-3.4.1": "https://www.openssl.org/source/old/3.4/openssl-3.4.1.tar.gz",
+    "openssl-3.5.0-alpha1": "https://www.openssl.org/source/old/3.5/openssl-3.5.0-alpha1.tar.gz",
+    "openssl-3.5.0-beta1": "https://www.openssl.org/source/old/3.5/openssl-3.5.0-beta1.tar.gz",
+    "openssl-3.5.0": "https://www.openssl.org/source/old/3.5/openssl-3.5.0.tar.gz"
 }

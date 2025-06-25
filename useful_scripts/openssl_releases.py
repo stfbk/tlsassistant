@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import shutil
 import tarfile
 import time
@@ -7,7 +8,7 @@ import time
 import requests
 
 # dentro ssl/ssl.h c'è # define SSL_DEFAULT_CIPHER_LIST "ALL:!EXPORT:!aNULL:!eNULL:!SSLv2"
-releases = ["0.9.x", "1.0.0", "1.0.1", "1.0.2", "1.1.0", "1.1.1", "3.0", "3.1", "3.2"]
+releases = ["0.9.x", "1.0.0", "1.0.1", "1.0.2", "1.1.0", "1.1.1", "3.0", "3.1", "3.2", "3.3", "3.4", "3.5"]
 
 
 # THIS SCRIPT IS USED TO DOWNLOAD THE OPENSSL RELEASES AND EXTRACT THE SIGALGS
@@ -66,7 +67,7 @@ def extract_files():
                 f.write(r.content)
         # unzip only the necessary files
         files = ["t1_lib.c", "ssl_local.h", "s3_lib.c", "s2_lib.c", "ssl.h", "ssl_ciph.c", "ssl_locl.h", "ssl3.h",
-                 "tls1.h", "ssl.h.in"]
+                 "tls1.h", "ssl.h.in", "ssl_locl.h", "tlsgroups.h"]
         for file in files:
             if not os.path.exists(f"tmp/{release}/{file}"):
                 extract_file(release, file)
@@ -85,6 +86,8 @@ def extract_file(release, file):
     member_string = f"{first_name}/ssl/{file}"
     if member_string not in names:
         member_string = f"{first_name}/include/openssl/{file}"
+    if member_string not in names:
+        member_string = f"{first_name}/include/internal/{file}"
     if member_string in names and not os.path.exists(f"tmp/{release}/{file}"):
         obj = tar.getmember(member_string)
         tar.extract(obj, path=f"tmp/")
@@ -112,6 +115,11 @@ def extract_tables():
             "end": "};",
             "key": "groups_default"
         },
+        "eccurves_auto[]": {
+            "end": "};",
+            "key": "groups_default"
+        },
+
     }
     tables = {}
     for release in [r for r in os.listdir("tmp") if r[-2:] != "gz" and r[-3:] != "csv"]:
@@ -160,22 +168,50 @@ def extract_groups(releases_data):
         json.dump(groups_dict, f, indent=4, sort_keys=True)
 
 
+def is_newer_then(version, target):
+    """
+    Check if the version is newer than the target version.
+    :param version: The version to check.
+    :param target: The target version to compare against.
+    :return: True if the version is newer than the target, False otherwise.
+    """
+    version = version.lower().replace("openssl-", "").strip()
+
+    version_parts = [int(x) if x.isdigit() else x for x in version.split(".")]
+    target_parts = [int(x) if x.isdigit() else x for x in target.split(".")]
+    return version_parts > target_parts
+
 def extract_sigalgs(releases_data):
     sigalgs_dict = {}
     sigalgs_table = {}
+    skip = False
     for release in releases_data:
         print(release)
+        new_table = False
         lines = releases_data[release].get("sigalgs", [])
         sigalgs = []
-        for l in lines:
+        new_table = is_newer_then(release, "3.5")
+
+        for num, l in enumerate(lines):
+            if skip:
+                skip -= 1
+                continue
             if "TLSEXT_SIGALG" in l and "gost" not in l:
                 l = l.strip().strip("{").strip(",")
-                name, tlsext = l.split(",")
+                if new_table:
+                    while l.count(",") < 2:
+                        l += "," + lines[num + 1].strip().strip("{").strip(",")
+                        skip += 1
+                if new_table:
+                    name, _, tlsext = l.split(",")
+                else:
+                    name, tlsext = l.split(",")
                 name = name.strip().strip("\"")
                 if name != "NULL":
                     sigalgs.append(name)
                 if name not in sigalgs_table and name != "NULL":
-                    with open(f"tmp/{release}/ssl_local.h", "r") as f:
+                    file_name = "ssl_local.h" if os.path.isfile(f"tmp/{release}/ssl_local.h") else "ssl_locl.h"
+                    with open(f"tmp/{release}/{file_name}", "r") as f:
                         line = "a"
                         i = 0
                         while line:
@@ -543,6 +579,8 @@ def extract_ciphersuites_tags():
 if __name__ == "__main__":
     if not os.path.exists("tmp"):
         os.mkdir("tmp")
-    # extract_files()
+    # check for --extract flag
+    if sys.argv[1:] and sys.argv[1] == "--extract":
+        extract_files()
     extract_tables()
     extract_ciphersuites_tags()

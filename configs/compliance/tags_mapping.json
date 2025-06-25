@@ -14670,7 +14670,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "COMPLEMENTOFALL": {
@@ -14733,7 +14738,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "COMPLEMENTOFDEFAULT": {
@@ -14796,7 +14806,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "kRSA": {
@@ -14859,7 +14874,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "kEDH": {
@@ -14922,7 +14942,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "kDHE": {
@@ -14985,7 +15010,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "DH": {
@@ -15048,7 +15078,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "kEECDH": {
@@ -15111,7 +15146,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "kECDHE": {
@@ -15174,7 +15214,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "ECDH": {
@@ -15237,7 +15282,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "kPSK": {
@@ -15300,7 +15350,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "kRSAPSK": {
@@ -15363,7 +15418,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "kECDHEPSK": {
@@ -15426,7 +15486,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "kDHEPSK": {
@@ -15489,7 +15554,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "kSRP": {
@@ -15552,7 +15622,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "kGOST": {
@@ -15615,7 +15690,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "kGOST18": {
@@ -15676,7 +15756,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "aRSA": {
@@ -15739,7 +15824,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "aDSS": {
@@ -15802,7 +15892,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "DSS": {
@@ -15865,7 +15960,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "aNULL": {
@@ -15928,7 +16028,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "aECDSA": {
@@ -15991,7 +16096,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "ECDSA": {
@@ -16054,7 +16164,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "aPSK": {
@@ -16117,7 +16232,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "aGOST01": {
@@ -16180,7 +16300,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "aGOST12": {
@@ -16243,7 +16368,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "aGOST": {
@@ -16306,7 +16436,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "aSRP": {
@@ -16369,7 +16504,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "EDH": {
@@ -16433,7 +16573,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "DHE": {
@@ -16497,7 +16642,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "EECDH": {
@@ -16561,7 +16711,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "ECDHE": {
@@ -16625,7 +16780,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "NULL": {
@@ -16688,7 +16848,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "RSA": {
@@ -16752,7 +16917,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "ADH": {
@@ -16816,7 +16986,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "AECDH": {
@@ -16880,7 +17055,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "PSK": {
@@ -16943,7 +17123,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "SRP": {
@@ -17006,7 +17191,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "3DES": {
@@ -17069,7 +17259,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "RC4": {
@@ -17132,7 +17327,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "RC2": {
@@ -17195,7 +17395,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "IDEA": {
@@ -17258,7 +17463,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "SEED": {
@@ -17321,7 +17531,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "eNULL": {
@@ -17384,7 +17599,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "GOST89": {
@@ -17451,7 +17671,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "AES128": {
@@ -17514,7 +17739,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "AES256": {
@@ -17577,7 +17807,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "AES": {
@@ -17640,7 +17875,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "AESGCM": {
@@ -17703,7 +17943,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "AESCCM": {
@@ -17766,7 +18011,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "AESCCM8": {
@@ -17829,7 +18079,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "CAMELLIA128": {
@@ -17892,7 +18147,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "CAMELLIA256": {
@@ -17955,7 +18215,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "CAMELLIA": {
@@ -18018,7 +18283,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "CHACHA20": {
@@ -18081,7 +18351,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "GOST2012-GOST8912-GOST8912": {
@@ -18144,7 +18419,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "ARIA": {
@@ -18207,7 +18487,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "ARIAGCM": {
@@ -18270,7 +18555,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "ARIA128": {
@@ -18333,7 +18623,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "ARIA256": {
@@ -18396,7 +18691,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "CBC": {
@@ -18456,7 +18756,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "MD5": {
@@ -18519,7 +18824,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "SHA1": {
@@ -18582,7 +18892,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "SHA": {
@@ -18645,7 +18960,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "GOST94": {
@@ -18708,7 +19028,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "GOST89MAC": {
@@ -18771,7 +19096,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "SHA256": {
@@ -18834,7 +19164,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "SHA384": {
@@ -18897,7 +19232,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "GOST12": {
@@ -18960,7 +19300,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "SSLv3": {
@@ -19023,7 +19368,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "TLSv1": {
@@ -19086,7 +19436,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "TLSv1.0": {
@@ -19149,7 +19504,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "TLSv1.2": {
@@ -19212,7 +19572,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "LOW": {
@@ -19275,7 +19640,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "MEDIUM": {
@@ -19338,7 +19708,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "HIGH": {
@@ -19401,7 +19776,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "FIPS": {
@@ -19465,7 +19845,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "SSL3_TXT_EDH_DSS_DES_192_CBC3_SHA": {
@@ -19532,7 +19917,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         },
         "SSL3_TXT_EDH_RSA_DES_192_CBC3_SHA": {
@@ -19599,7 +19989,12 @@
                 "3.3.1": true,
                 "3.3.2": true,
                 "3.4.0": true,
-                "3.4.0-alpha1": true
+                "3.4.0-alpha1": true,
+                "3.4.0-beta1": true,
+                "3.4.1": true,
+                "3.5.0": true,
+                "3.5.0-alpha1": true,
+                "3.5.0-beta1": true
             }
         }
     }

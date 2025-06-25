@@ -390,55 +390,259 @@
         "secp160r2"
     ],
     "1.0.2b": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2c": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2d": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2e": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2f": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2h": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2i": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2j": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2k": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2l": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2m": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2n": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2o": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2p": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2q": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2s": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.0.2u": [
-        "prime256v1"
+        "secp256r1",
+        "secp521r1",
+        "brainpool512r1",
+        "brainpoolP384r1",
+        "secp384r1",
+        "brainpoolP256r1",
+        "secp256k1",
+        "sect571r1",
+        "sect571k1",
+        "sect409k1",
+        "sect409r1",
+        "sect283k1",
+        "sect283r1"
     ],
     "1.1.0": [
         "secp256r1",
@@ -1264,5 +1468,34 @@
         "ffdhe4096",
         "ffdhe6144",
         "ffdhe8192"
+    ],
+    "3.4.0-beta1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.4.1": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "3.5.0": [
+        "prime256v1"
+    ],
+    "3.5.0-alpha1": [
+        "prime256v1"
+    ],
+    "3.5.0-beta1": [
+        "prime256v1"
     ]
 }
