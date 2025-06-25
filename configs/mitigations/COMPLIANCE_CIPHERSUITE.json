@@ -18,7 +18,7 @@
     "connector": ":",
     "mode": "standard",
     "actions_on_final_string": {
-      "convert_ciphers": "",
+      "convert_ciphers": "CipherSuite",
       "replace": {
         ":;": ";"
       }

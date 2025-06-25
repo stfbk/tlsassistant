@@ -23,6 +23,12 @@ class GenerateMany(Generator):
             field_rules = self._configuration_rules.get(field, {})
             # the guideline here is defined as None because it will be defined in the function
             columns_temp = self.sheet_columns.get(sheet, columns)
+            if self.has_tls12 is None and sheet == "Protocol":
+                for k,v in evaluated_entries["Protocol"].items():
+                    if v.get("entry", [0])[0] == "TLS 1.2":
+                        self.has_tls12 = v["level"] not in ["not recommended", "must not"]
+                if self.has_tls12 is False:
+                    self._ciphers1_2_filter = self._ciphers1_2_filter.replace("\")", "\") AND 1 = 2")
             if isinstance(columns_temp, dict):
                 columns_temp = columns_temp["columns"]
             if sheet in has_numeric_id:
