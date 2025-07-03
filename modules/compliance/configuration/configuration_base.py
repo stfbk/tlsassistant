@@ -351,6 +351,9 @@ class Actions:
         self._condition_parser = ConditionParser({})
         self._dh_converter = load_configuration(
             "dhparams_mapping", "configs/compliance/")
+        self.groups_table = load_configuration(
+            "groups_enabled", "configs/compliance/"
+        )
         self.security = True
         self._output_data = {}
 
@@ -444,6 +447,11 @@ class Actions:
                 string = string.replace(group, group.split("/")[0].strip())
             if "long DH" in group:
                 string = string.replace(group, "")
+            group = group.split(" ")[0]
+            if group not in self.groups_table.get(self.openssl_version, []):
+                string = string.replace(group, "")
+                self._logger.info(
+                    f"Group {group} is not supported by the current OpenSSL version {self.openssl_version}")
         string = self.clean_final_string(string)
         return string
 

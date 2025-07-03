@@ -1373,6 +1373,7 @@ class Generator(Compliance):
                 new_dict[sheet_name] = {}
             new_dict[sheet_name].update(self._output_dict[sheet])
         # move the post_actions_output to the respective sheet
+        print(self._output_dict.get("post_actions_output"))
         for sheet in self._output_dict.get("post_actions_output", {}):
             for entry, values in self._output_dict["post_actions_output"][sheet].items():
                 for value, content in values.items():
@@ -1530,6 +1531,9 @@ class Generator(Compliance):
                         statuses_mapping[tmp_el_dict["status"]] = new_status
                     tmp_el_dict["status"] = new_status
                     total_dict[el] = tmp_el_dict
+                    lines = mitigation["Entry"]["Mitigation"]["Textual"].split("<br/>") 
+                    mitigation["Entry"]["Mitigation"]["Textual"] = "<br/>".join(
+                        [line for line in lines if el not in line])
 
                 reverse_statuses_mapping = {
                     v: k for k, v in statuses_mapping.items()}
