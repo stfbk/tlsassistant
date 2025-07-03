@@ -132,6 +132,10 @@ def extract_tables():
             "end": "};",
             "key": "groups_default"
         },
+        "nid_list[]": {
+            "end": "};",
+            "key": "curve_nid_list"
+        }
 
     }
     tables = {}
@@ -179,6 +183,16 @@ def extract_groups(releases_data):
             groups = ["prime256v1"]
         groups_dict[release] = groups
         used_groups = extract_capabilities(release, "GROUP")
+        if not used_groups:
+            for line in releases_data[release].get("curve_nid_list", []):
+                if "NID_" in line and "/*" in line:
+                    line = line.split("/*")[1].strip()
+                    name, decimal_id, _ = line.split(" ")
+                    decimal_id = decimal_id.strip().strip("()")
+                    decimal_id = int(decimal_id, 16) if "0x" in decimal_id else int(decimal_id)
+                    used_groups[name] = "0x"+format(decimal_id, "04x").upper()
+            
+        release = release.lower().replace("openssl", "")[1:]
         enabled_groups_dict[release] = used_groups
 
     with open("../configs/compliance/groups_defaults.json", "w", encoding="utf-8") as f:
