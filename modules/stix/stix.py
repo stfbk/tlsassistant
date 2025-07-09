@@ -149,7 +149,12 @@ class Stix:
             for host in results:
                 self.__logger.debug(f"creating {host}...")
                 # obtaining vuln module list:
-                vulnerable_modules = {k: modules[k] for k in results[host]}
+                vulnerable_modules = {k: modules[k] for k in results[host] if k in modules}
+                if not vulnerable_modules and "errors" in results[host]:
+                    self.__logger.error(
+                        f"Host {host} has no vulnerable modules, but errors: {results[host]['errors']}"
+                    )
+                    return None
                 if vulnerable_modules:
                     sighting, group, object_refs, observed_data = self.run(
                         modules=vulnerable_modules, hostname_or_path=host
@@ -176,7 +181,8 @@ class Stix:
         return self
 
     def build_and_save(self, results: dict, modules: dict, path: str):
-        return self.build(results, modules).save_to_file(path)
+        stix_file = self.build(results, modules)
+        return stix_file.save_to_file(path) if stix_file else None
 
     def save_to_file(self, path: str):
         self.__save_bundle(self.bundle, path)

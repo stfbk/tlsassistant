@@ -698,8 +698,10 @@ class Core:
                         not validate_ip(hostname_or_path):
                     hostname_or_path = f"www.{hostname_or_path}"
                 if extraction.suffix:
-                    hostname_index = hostname_or_path.index(f".{extraction.suffix}")
-                    actual_hostname = hostname_or_path[:hostname_index+len(extraction.suffix)+1]
+                    hostname_index = hostname_or_path.index(
+                        f".{extraction.suffix}")
+                    actual_hostname = hostname_or_path[:hostname_index+len(
+                        extraction.suffix)+1]
                 else:
                     actual_hostname = hostname_or_path
                 try:
@@ -709,13 +711,30 @@ class Core:
                     self.__logging.error(
                         f"Hostname {hostname_or_path} not found, skipping.."
                     )
-                    return loaded_modules, {
-                        "errors":
-                        {
-                            hostname_or_path:
-                            {"Invalid hostname": "Critical"}
+                    result_dict = {
+                        "errors": {
+                            hostname_or_path: {"Invalid hostname": "Critical"}
                         }
                     }
+                    for module in loaded_modules:
+                        result_dict[module] = {
+                            "errors": [
+                                "Invalid hostname: Critical"
+                            ]
+                        }
+                    return loaded_modules, result_dict
+            result_dict = {
+                        "errors": {
+                            hostname_or_path: {"Invalid hostname": "Critical"}
+                        }
+                    }
+            for module in loaded_modules:
+                result_dict[module] = {
+                    "errors": [
+                        "Invalid hostname: Critical"
+                    ]
+                }
+            return loaded_modules, result_dict
             full_analysis = False
             for module in loaded_modules:
                 if module.startswith("compare"):
