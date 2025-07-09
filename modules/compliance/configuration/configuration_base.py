@@ -360,7 +360,7 @@ class Actions:
     def clean_final_string(self, string):
         while "::" in string:
             string = string.replace("::", ":")
-        if string[-1] == ":":
+        if string and string[-1] == ":":
             string = string[:-1]
         return string
 
@@ -436,10 +436,27 @@ class Actions:
         """
         string = kwargs.get("value", None)
         self.validator.string(string)
+        has_code = string.startswith("<code>")
+        if has_code:
+            string = string[6:]
         groups = string.split(":") if ":" in string else [string]
+        if self._output_data.get("Groups") is None:
+            self._output_data["Groups"] = {
+                "convert_groups": {}
+            }
         if self._openssl.less_than(self.openssl_version, "1.0.2"):
             self._logger.warning(
                 "The provided OpenSSL version can not use multiple groups, only the first one will be used.")
+            if self._output_data["Groups"].get("comment_format") is None:
+                self._output_data["Groups"]["comment_format"] = {
+                    "comment_format": ""
+                }
+            self._output_data["Groups"]["comment_format"]["comment_format"] += "The provided OpenSSL version can not use multiple groups, only the first one will be used.\n"
+            remaining_groups = groups[1:]
+            for group in remaining_groups:
+                group = group.split(" ")[0]
+                self._output_data["Groups"]["convert_groups"][group] = "Not supported by this OpenSSL version"
+                self._output_data["Groups"]["convert_groups"]["missing_elements"] = True
             groups = groups[:1]
             string = string.split(":")[0]
         for group in groups:
@@ -452,7 +469,13 @@ class Actions:
                 string = string.replace(group, "")
                 self._logger.info(
                     f"Group {group} is not supported by the current OpenSSL version {self.openssl_version}")
+                if "brainpool" in group and "tls13" in group:
+                    continue
+                self._output_data["Groups"]["convert_groups"][group] = "Not supported by this OpenSSL version"
+                self._output_data["Groups"]["convert_groups"]["missing_elements"] = True
         string = self.clean_final_string(string)
+        if has_code:
+            string = "<code>" + string
         return string
 
     def convert_sigalgs(self, **kwargs) -> str:
