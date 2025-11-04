@@ -734,7 +734,7 @@ class Core:
                         "Invalid hostname: Critical"
                     ]
                 }
-            return loaded_modules, result_dict
+
             full_analysis = False
             for module in loaded_modules:
                 if module.startswith("compare"):
