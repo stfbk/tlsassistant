@@ -162,7 +162,7 @@ class Report:
             # the results are good, we need to remove the "Entry" key but preserve the rest with the CaseInsensitiveDict
             if hostname not in out:
                 out[hostname] = {}
-            if "errors" in results[hostname]:
+            if "errors" in results[hostname] and hostname in results[hostname]["errors"]:
                 out[hostname]["errors"] = results[hostname]["errors"][hostname]
             for module in results[hostname]:
                 raw_results = {}
