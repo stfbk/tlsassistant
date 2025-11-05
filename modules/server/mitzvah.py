@@ -34,7 +34,7 @@ class Mitzvah(Testssl_base):
         """
         Sets the arguments for the testssl command
         """
-        self._arguments = ["-rc4"]
+        self._arguments = ["--rc4"]
 
     # to override
     def _worker(self, results):
