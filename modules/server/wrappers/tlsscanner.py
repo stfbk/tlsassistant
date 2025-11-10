@@ -94,6 +94,12 @@ class Parser:
                     j += 1
                 padding_oracle_details_temp = output[i+2:j-1]
                 for detail in padding_oracle_details_temp:
+                    if detail.strip() == "No test results":
+                        padding_oracle_details[name] = {
+                            "Behaviour": "No test results",
+                            "Result": "NOT VULNERABLE",
+                        }
+                        continue
                     detail = detail.split("|")
                     name = ('-'.join(detail[0].split("\t")[2:])).strip()
                     behaviour_difference = detail[1].strip()
