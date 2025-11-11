@@ -63,6 +63,18 @@ class Testssl_base:
         """
         raise NotImplementedError("This method should be reimplemented!")
 
+    def _get_ciphers_per_ip(self, results: dict):
+        ciphers_per_ip = {}
+        for ip in results:
+            ciphers_per_ip[ip] = {}
+            for key, item in results[ip].items():
+                if not ciphers_per_ip[ip].get(item["port"]):         
+                    ciphers_per_ip[ip][item["port"]] = []
+                if key.startswith("cipher_"):
+                    ciphers_per_ip[ip][item["port"]].append(item["finding"])
+
+        return ciphers_per_ip
+
     # to override
     def _worker(self, results):
         """
@@ -91,6 +103,7 @@ class Testssl_base:
         val = Validator([(results, dict), (keys, list)])
         out = {}
         for ip in results:
+            self.currently_analysed_ip = ip
             for key in keys:
                 val.string(key)
                 if key not in results[ip]:
@@ -101,6 +114,7 @@ class Testssl_base:
                     and results[ip][key]["severity"] != "INFO"
                     and results[ip][key]["severity"] != "WARN"
                 )
+                self.currently_analysed_port = results[ip][key].get("port")
                 conditioned_result = self._set_mitigations(
                     results[ip][key], key, condition
                 )
