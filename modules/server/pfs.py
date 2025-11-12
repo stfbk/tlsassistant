@@ -29,7 +29,7 @@ class Pfs(Testssl_base):
         :return: the mitigations for the given result
         :rtype: dict
         """
-        if key == "FS_ciphers":
+        if key == "FS_ciphers" and " " in result["finding"]:
             secure_ciphers = result["finding"].split(" ")
             used_ciphers = self.ciphers_per_ip[self.currently_analysed_ip][self.currently_analysed_port].copy()
             to_remove = []

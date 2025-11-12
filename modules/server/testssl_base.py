@@ -68,6 +68,8 @@ class Testssl_base:
         for ip in results:
             ciphers_per_ip[ip] = {}
             for key, item in results[ip].items():
+                if item["finding"] == "ERROR_NOT_FOUND":
+                    continue
                 if not ciphers_per_ip[ip].get(item["port"]):         
                     ciphers_per_ip[ip][item["port"]] = []
                 if key.startswith("cipher_"):
