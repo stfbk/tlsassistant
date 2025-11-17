@@ -20,6 +20,12 @@ class Tlsfuzzer_base:
         self._output_dict = {}
         self._mitigations = {}
         self._set_arguments()
+        self.requirements_dict = {}
+        for i, el in enumerate(self._arguments):
+            if len(el) == 3:
+                self.requirements_dict[el[0]] = el[2]
+                self._arguments[i] = (el[0], el[1])
+        
         self.__logging = self._get_logger()
         self._testssl = Testssl()
 
@@ -112,25 +118,9 @@ class Tlsfuzzer_base:
                     out = self._set_mitigations(
                         out, list_of_checks["MITIGATION"], True)
             else:
-                reason = "Reason: "
-                if script == "test-certificate-verify" and "Unexpected message from peer: Handshake(server_hello_done)" in \
-                        results[script]:
-                    reason += "Server did not send a CertificateVerify message, the test cannot be performed."
-                elif script == "test-clienthello-md5" and "Alert(fatal, handshake_failure)" in results[script] and \
-                        not self._testssl.output(**{
-                            "hostname": self._input_dict["hostname"]}).get("cipher-tls1_2_x6b", False):
-                    reason += "Server does not support cipher `TLS_DHE_RSA_WITH_AES_256_CBC_SHA256`, the test cannot be performed."
-                elif script == "test-tls13-pkcs-signature" and "Alert(fatal, handshake_failure)" in results[script] and \
-                        not self._testssl.output(**{
-                            "hostname": self._input_dict["hostname"]}).get("TLS1_3", {}).get("finding", "").startswith("not"):
-                    reason += "Server does not support TLS 1.3, the test cannot be performed."
-                else:
-                    self.__logging.warning(
-                        f"Results won't make sense for script {script}, sanity check failed."
-                    )
-                if reason != "Reason: ":
-                    self.__logging.info(
-                        f"Ignoring {script} analysis.\n" + reason)
+                self.__logging.warning(
+                    f"Results won't make sense for script {script}, sanity check failed."
+                )
         return out
 
     def _worker(self, results):
@@ -176,11 +166,34 @@ class Tlsfuzzer_base:
             [(self._input_dict["hostname"], str), (self._input_dict["port"], str)]
         )
         self._input_dict["hostname"] = url_domain(self._input_dict["hostname"])
+
         # testssl.sh does not have a port argument, the port is part of the hostname
         testssl_args = {"hostname": self._input_dict["hostname"]+":"+self._input_dict["port"],
-                        "args": ["-e", "-p"],
+                        "args": ["-e", "-p", "-S"],
                         }
         self._testssl.run(**testssl_args, force=True)
+
+        testssl_results = self._testssl.output(**{
+            "hostname": self._input_dict["hostname"]
+        })
+        testssl_results = testssl_results.get(list(testssl_results.keys())[0], {})
+        
+        new_args = []
+        for i in range(len(self._arguments)):
+            script_name = self._arguments[i][0]
+            if script_name in self.requirements_dict:
+                requirements = self.requirements_dict[script_name]
+                for req_key, req_value in requirements.items():
+                    if req_key not in testssl_results or "not" in testssl_results[req_key]["finding"] or \
+                            testssl_results[req_key]["finding"] == "none":
+                        self.__logging.info(
+                            f"Ignoring {script_name} analysis.\nReason: Server does {req_value}, the test cannot be performed."
+                        )
+                        break
+                    else:
+                        new_args.append(self._arguments[i])
+        self._arguments = new_args
+
         logging.debug(
             f"Executing analysis in {self._input_dict['hostname']} in port {self._input_dict['port']} with scripts "
             f"{', '.join([s[0] for s in self._arguments])}"
