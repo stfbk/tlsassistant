@@ -42,18 +42,31 @@ class Sloth(Tlsfuzzer_base):
             (
                 "test-certificate-verify",
                 ["-k", key_location, "-c", cert_location],
+                {
+                    "clientAuth": "not send a CertificateVerify message",
+                }
             ),
             (
                 "test-sig-algs",
                 [],
+                {
+                    "cipher_xc013": "not support ciphers `TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA` nor `TLS_DHE_RSA_WITH_AES_128_CBC_SHA`",
+                    "cipher_x33": "not support ciphers `TLS_DHE_RSA_WITH_AES_128_CBC_SHA` nor `TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA`"
+                }
             ),
             (
                 "test-clienthello-md5",
                 [],
+                {
+                    "cipher_x6b": "not support cipher `TLS_DHE_RSA_WITH_AES_256_CBC_SHA256`"
+                }
             ),
             (
                 "test-tls13-pkcs-signature",
                 [],
+                {
+                    "TLS1_3": "not support TLS 1.3"
+                }
             ),
         ]
 
@@ -71,17 +84,23 @@ class Sloth(Tlsfuzzer_base):
             "test-certificate-verify": {
                 "MD5 forced": 2,
                 "TLSv1.1 signature in TLSv1.2 Certificate Verify": 1,
-                "MITIGATION": "SLOTH",
+                "MITIGATION": "SLOTH"
             },
-            "test-sig-algs": {"MD5 first": 2, "MITIGATION": "SLOTH"},
+            "test-sig-algs": {
+                "MD5 first": 2,
+                "MITIGATION": "SLOTH"
+            },
             "test-clienthello-md5": {
                 "only-md5-rsa-signature_algorithm": 1,
                 "unknown-signature_algorithm-numbers": 1,
-                "MITIGATION": "SLOTH",
+                "MITIGATION": "SLOTH"
             },
             "test-tls13-pkcs-signature": {
                 "rsa_pkcs1_md5 signature": 1,
-                "MITIGATION": "SLOTH_MD5_SIGNATURE_TLS_1_3",
+                "MITIGATION": "SLOTH_MD5_SIGNATURE_TLS_1_3"
             },
         }
+        for script in list(keys.keys()):
+            if script not in results:
+                keys.pop(script)
         return self._obtain_results(results, keys)
