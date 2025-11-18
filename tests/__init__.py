@@ -5,3 +5,4 @@ if os.getcwd().endswith("tests"):
     os.chdir("..")
 # add root directory to path to make imports work
 sys.path.append(os.getcwd())
+sys.path.append(os.path.join(os.getcwd(), "tests"))
