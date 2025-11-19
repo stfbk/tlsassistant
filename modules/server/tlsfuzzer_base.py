@@ -177,12 +177,12 @@ class Tlsfuzzer_base:
             "hostname": self._input_dict["hostname"]
         })
         testssl_results = testssl_results.get(list(testssl_results.keys())[0], {})
-        
         new_args = []
         for i in range(len(self._arguments)):
             script_name = self._arguments[i][0]
             if script_name in self.requirements_dict:
                 requirements = self.requirements_dict[script_name]
+                stop_after_one = requirements.pop("only_one", False)
                 for req_key, req_value in requirements.items():
                     if req_key not in testssl_results or "not" in testssl_results[req_key]["finding"] or \
                             testssl_results[req_key]["finding"] == "none":
@@ -192,6 +192,8 @@ class Tlsfuzzer_base:
                         break
                     else:
                         new_args.append(self._arguments[i])
+                        if stop_after_one:
+                            break
         self._arguments = new_args
 
         logging.debug(
