@@ -50,6 +50,7 @@ class Sloth(Tlsfuzzer_base):
                 "test-sig-algs",
                 [],
                 {
+                    "only_one": True,
                     "cipher_xc013": "not support ciphers `TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA` nor `TLS_DHE_RSA_WITH_AES_128_CBC_SHA`",
                     "cipher_x33": "not support ciphers `TLS_DHE_RSA_WITH_AES_128_CBC_SHA` nor `TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA`"
                 }
