@@ -35,3 +35,7 @@ jobs:
         run: |
           docker run --rm -d --network host \
             ghcr.io/stfbk/tlsassistant-testbed:v2.0.1
+        
+      - name: Run Vulnerability Scan
+        run: |
+          python3 tests/vulnerability_test.py
