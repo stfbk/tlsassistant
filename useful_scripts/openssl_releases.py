@@ -261,6 +261,9 @@ def extract_capabilities(release, category):
             constant_id = line.strip().split("(")[1].split(",")[-2].strip().strip(")")
             hex_id = constants[int(constant_id)].split("{")[1].split(",")[0].strip()
             if category == "GROUP":
+                # fix the X* groups names
+                if name.startswith("x"):
+                    name = "X" + name[1:]
                 for line in groups_lines:
                     if hex_id in line:
                         hex_id = line.split(" ")[-1].strip()
