@@ -38,6 +38,14 @@ class ConditionParser:
         "Signature": ["id", "version"]
     }
     _database_instance = Database()
+    _extension_versions_db = _database_instance.run(
+            tables=["TlsVersionExtension"], columns=["extension_name", "version"])
+    _extension_versions = {}
+    for ext, ver in _extension_versions_db:
+        if ext not in _extension_versions:
+            _extension_versions[ext] = set()
+        _extension_versions[ext].add(ver)
+
     for sheet in _additional_info_columns:
         if _additional_info.get(sheet) is None:
             _additional_info[sheet] = {}
@@ -100,7 +108,7 @@ class ConditionParser:
         :param config_field: the field of the configuration containing the target data
         :param name: the value to search
         :param entry: the database entry (only the first two elements are checked, they are needed for KeyLengths)
-        :param partial_match: Default to false, if True the
+        :param partial_match: Default to false, if True the name is checked for partial matches
         :param condition: Default to "", the condition that the field has.
         :type condition: str
         :param certificate_index: Default to "1", the certificate to check
@@ -289,6 +297,18 @@ class ConditionParser:
                                       certificate_index=self._certificate_index)
             result = enabled if not negation else not enabled
         return result
+    
+    @staticmethod
+    def check_extension_availability(extension_name, user_configuration):
+        tls_versions = user_configuration.get("Protocol", {})
+        tls_versions = [version.split(" ")[1] for version in tls_versions if tls_versions[version]]
+        if ConditionParser._extension_versions.get(extension_name):
+            supported_versions = ConditionParser._extension_versions.get(
+                extension_name, set())
+            if all([version not in supported_versions for version in tls_versions]):
+                return False
+        return True
+        
 
     def input(self, expression, enabled, cert_index):
         self.expression = expression

@@ -758,7 +758,7 @@ class Compliance:
                         signatures.append(convert_signature_algorithm(el))
                     # self._add_certificate_signature_algorithm(signatures)
                     self._user_configuration["Hash"].update(hashes)
-                    self._user_configuration["SignatureAlgsCertificate"].update(signatures)
+                    self._user_configuration["Signature"].update(signatures)
                     self._user_configuration["Signature_12"].update(signatures)
 
                 # From TLS 1.3 the signature algorithms are different from the previous versions.
@@ -769,7 +769,7 @@ class Compliance:
                         " ") if " " in finding else [finding]
                     values = [convert_signature_algorithm(
                         sig) for sig in values]
-                    self._user_configuration["SignatureAlgsCertificate"].update(values)
+                    self._user_configuration["Signature"].update(values)
                     self._user_configuration["Signature_13"].update(values)
 
                 # The supported groups are available as a list in this field
@@ -1031,9 +1031,13 @@ class Compliance:
         # Filter for TLS1.3 ciphers
         if name in self.tls1_3_ciphers:
             sheet = "CipherSuitesTLS1.3"
+
+        if sheet == "Extension" and not self._condition_parser.check_extension_availability(
+                name, self._user_configuration):
+            level = "<Not mentioned>"
         self.update_result(sheet, name, level, enabled,
                            entry[-1], valid_condition, hostname)
-        
+
         if additional_notes:
             note += "\nNOTE: "
             note += "\n".join(additional_notes)
@@ -1200,6 +1204,10 @@ class Compliance:
                 # Custom guidelines don't have notes
                 if source_guideline.upper() not in self._guidelines:
                     note = ""
+
+                if sheet == "Extension" and not self._condition_parser.check_extension_availability(
+                        name, self._user_configuration):
+                    resulting_level = "<Not mentioned>"
 
                 # Save it to the dictionary
                 evaluated_entries[sheet][total] = {
@@ -1531,7 +1539,8 @@ class Generator(Compliance):
                         statuses_mapping[tmp_el_dict["status"]] = new_status
                     tmp_el_dict["status"] = new_status
                     total_dict[el] = tmp_el_dict
-                    lines = mitigation["Entry"]["Mitigation"]["Textual"].split("<br/>") 
+                    lines = mitigation["Entry"]["Mitigation"]["Textual"].split(
+                        "<br/>")
                     mitigation["Entry"]["Mitigation"]["Textual"] = "<br/>".join(
                         [line for line in lines if el not in line])
 
