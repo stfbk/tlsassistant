@@ -55,7 +55,7 @@ class Database:
         :type tables: list
         :param join_condition: Default to 1==1, the condition to apply to the join in case of multiple tables
         :type join_condition: str
-        :param: other_filter -- (Optional) A filter to add to the query the WHERE/AND part will be handled automatically
+        :param: other_filter -- (Optional) A filter to add to the query
         :type other_filter: str
         :param: raw -- (Optional) A raw query to execute, if defined the other parameters will be ignored
         :type raw: str
@@ -110,7 +110,7 @@ class Database:
         :type tables: list
         :param join_condition: Default to 1==1, the condition to apply to the join in case of multiple tables
         :type join_condition: str
-        :param: other_filter -- (Optional) A filter to add to the query the WHERE/AND part will be handled automatically
+        :param: other_filter -- (Optional) A filter to add to the query
         :type other_filter: str
         :param: tables -- List of tables from which data should be retrieved
         :type columns: list
