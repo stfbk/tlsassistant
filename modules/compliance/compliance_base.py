@@ -340,6 +340,8 @@ class Compliance:
             textual = mitigation["Entry"]["Mitigation"]["Textual"]
             total_string_apache = total_string_nginx = "<code>"
             conf_instructions = mitigation["#ConfigurationInstructions"]
+
+            remove_add = True
             if self._output_dict[sheet]["entries_add"]:
                 add_string = "<br/>- {name} {action} according to {source}"
                 add_list = []
@@ -351,9 +353,11 @@ class Compliance:
                                                                                     add_list,
                                                                                     to_append)
                 # this is necessary to avoid having an extra empty line
-                textual = textual.format(add="".join(
-                    add_list), remove="{remove}", notes="{notes}")
-            else:
+                if add_list:
+                    textual = textual.format(add="".join(
+                        add_list), remove="{remove}", notes="{notes}")
+                    remove_add = False
+            if remove_add:
                 # remove the line that contains {add}
                 lines = textual.split("<br/>")
                 textual = "<br/>".join(

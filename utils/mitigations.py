@@ -59,8 +59,9 @@ class MitigationLoader:
             if mitigation_name in self.__cache:
                 mitigation_data = deepcopy(self.__cache[mitigation_name])
             else:
-                mitigation_data = self.load_mitigation(
+                self.load_mitigation(
                     mitigation_name, raise_error, force=True
                 )
+                mitigation_data = deepcopy(self.__cache[mitigation_name])
 
         return mitigation_data
