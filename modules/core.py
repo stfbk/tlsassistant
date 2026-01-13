@@ -105,6 +105,8 @@ class Core:
         self.__logging = Logger("Core")
         self.__input_dict = {}
         self.__cache = {}
+        first_key = list(compliance_args.keys())[0]
+        self.__skip_webservertype = compliance_args.get(first_key, {}).get("use_cache", False)
         modules = None
         if isinstance(configuration, list):  # if modules as argument
             modules = configuration
@@ -705,7 +707,8 @@ class Core:
                 else:
                     actual_hostname = hostname_or_path
                 try:
-                    _ = socket.gethostbyname(actual_hostname)
+                    if not self.__skip_webservertype:
+                        _ = socket.gethostbyname(actual_hostname)
                 except socket.error as e:
                     self.__logging.debug(e)
                     self.__logging.error(
@@ -744,9 +747,10 @@ class Core:
                 self.__preanalysis_testssl(
                     testssl_args, type_of_analysis, hostname_or_path, port, full_analysis
                 )
-                self.__preanalysis_webserver_type(
-                    hostname_or_path
-                )
+                if not self.__skip_webservertype:
+                    self.__preanalysis_webserver_type(
+                        hostname_or_path
+                    )
                 self.__preanalysis_tls_scanner(
                     tls_scanner_args, type_of_analysis, hostname_or_path, port
                 )
