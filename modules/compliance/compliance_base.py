@@ -888,14 +888,16 @@ class Compliance:
                 "action": action,
                 "source": source,
                 "total_string_only": total_string_only,
-                "original_level": entry_level
+                "original_level": entry_level,
+                "enabled": enabled
             }
         elif name not in self._output_dict[sheet]:
             self._output_dict[sheet][name] = {
                 "level": "INFO",
                 "action": "NOTE: ",
                 "source": source,
-                "original_level": entry_level
+                "original_level": entry_level,
+                "enabled": enabled
             }
             self._output_dict[sheet]["notes"].append(name)
         if not self._output_dict[sheet].get("guidelines"):
