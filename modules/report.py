@@ -393,6 +393,12 @@ class Report:
                             modules[module + "_" + sheet] = ""
                             results[hostname][module + "_" +
                                               sheet] = results[hostname][module][sheet]
+                        elif sheet == "error":
+                            if not "errors" in results[hostname]:
+                                results[hostname]["errors"] = {
+                                    hostname: []
+                                }
+                            results[hostname]["errors"][hostname].append(results[hostname][module][sheet]) 
                         else:
                             self.__logging.debug(
                                 f"Removing {sheet} from {hostname} because no mitigation was found")

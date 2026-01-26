@@ -107,6 +107,7 @@ class Compliance:
         self.tls1_3_ciphers = get_1_3_ciphers()
         self._no_psk = None
         self._guidelines_string = ""
+        self.dump_folder = "./testssl_dumps"
 
     def prepare_sheet_columns(self):
         resulting_dict = {}
@@ -245,11 +246,10 @@ class Compliance:
 
         elif self.hostname and self._validator.string(self.hostname) and self.hostname != "placeholder":
             test_ssl_output = {}
-            dump_folder = "testssl_dumps"
-            if not os.path.isdir(dump_folder):
-                os.mkdir(dump_folder)
+            if not os.path.isdir(self.dump_folder):
+                os.mkdir(self.dump_folder)
             file_hostname = self.hostname.replace(":", "_").replace("/", "_")
-            file_path = f"{dump_folder}/testssl_output-{file_hostname}.json"
+            file_path = f"{self.dump_folder}/testssl_output-{file_hostname}.json"
             if clean and os.path.isfile(file_path):
                 os.remove(file_path)
             if use_cache and os.path.isfile(file_path):
@@ -266,8 +266,6 @@ class Compliance:
                 test_ssl_output = self.test_ssl.run(
                     **{"hostname": actual_hostname + port, "one": True})
                 if use_cache:
-                    if not os.path.isdir(dump_folder):
-                        os.mkdir(dump_folder)
                     with open(file_path, "w") as f:
                         json.dump(test_ssl_output, f, indent=4)
             failed = 0
@@ -314,8 +312,10 @@ class Compliance:
     def output(self):
         if logging.getLogger().level == logging.DEBUG:
             file_hostname = self.hostname.replace(":", "_").replace("/", "_")
-            with open(f"testssl_dumps/report_{file_hostname}_{self._guidelines_string}.json", "w") as f:
+            with open(f"{self.dump_folder}/report_{file_hostname}_{self._guidelines_string}.json", "w") as f:
                 for category in self._output_dict:
+                    if category == "error":
+                        continue
                     if self._output_dict[category].get("guidelines"):
                         self._output_dict[category]["guidelines"] = list(
                             self._output_dict[category]["guidelines"])
