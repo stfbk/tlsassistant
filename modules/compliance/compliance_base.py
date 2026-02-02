@@ -275,6 +275,10 @@ class Compliance:
                     failed += 1
                     self._logging.warning(
                         f"Testssl failed to perform the analysis on {key}")
+                elif test_ssl_output[key].get("scanTime", {}).get("finding", "") == "Scan interrupted":
+                    failed += 1
+                    self._logging.warning(
+                        f"Testssl scan interrupted on {key}")
             if failed == len(test_ssl_output):
                 self._output_dict = {
                     "error": "Testssl failed to perform the analysis"}
