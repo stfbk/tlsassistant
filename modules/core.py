@@ -105,8 +105,11 @@ class Core:
         self.__logging = Logger("Core")
         self.__input_dict = {}
         self.__cache = {}
-        first_key = list(compliance_args.keys())[0]
-        self.__skip_webservertype = compliance_args.get(first_key, {}).get("use_cache", False)
+        if isinstance(compliance_args, dict):
+            first_key = list(compliance_args.keys())[0]
+            self.__skip_webservertype = compliance_args.get(first_key, {}).get("use_cache", False)
+        else:
+            self.__skip_webservertype = False
         modules = None
         if isinstance(configuration, list):  # if modules as argument
             modules = configuration
