@@ -184,6 +184,7 @@ class Compliance:
                     f"Custom guidelines file {self._custom_guidelines} not found")
             with open(custom_guidelines, "r") as f:
                 self._custom_guidelines = json.load(f)
+            self._custom_guidelines = {k.lower(): v for k, v in self._custom_guidelines.items()}
 
         guidelines_string = kwargs.get("guidelines")
         self._guidelines_string = guidelines_string
@@ -269,19 +270,22 @@ class Compliance:
                     with open(file_path, "w") as f:
                         json.dump(test_ssl_output, f, indent=4)
             failed = 0
+            reason = ""
             for key in test_ssl_output:
                 if test_ssl_output[key].get("scanProblem") and test_ssl_output[key]["scanProblem"].get(
                         "severity") == "FATAL":
                     failed += 1
                     self._logging.warning(
                         f"Testssl failed to perform the analysis on {key}")
+                    reason = "Reason: " + test_ssl_output[key]["scanProblem"].get("finding", "No reason provided")
                 elif test_ssl_output[key].get("scanTime", {}).get("finding", "") == "Scan interrupted":
                     failed += 1
                     self._logging.warning(
                         f"Testssl scan interrupted on {key}")
+                    reason = "Reason: scan interrupted"
             if failed == len(test_ssl_output):
                 self._output_dict = {
-                    "error": "Testssl failed to perform the analysis"}
+                    "error": "Testssl failed to perform the analysis. " + reason}
                 self.output()
             self.prepare_testssl_output(test_ssl_output)
         if output_file and self._validator.string(output_file):
@@ -314,7 +318,8 @@ class Compliance:
         return self.output()
 
     def output(self):
-        if logging.getLogger().level == logging.DEBUG:
+        # TODO put it back to debug
+        if logging.getLogger().level == logging.INFO:
             file_hostname = self.hostname.replace(":", "_").replace("/", "_")
             with open(f"{self.dump_folder}/report_{file_hostname}_{self._guidelines_string}.json", "w") as f:
                 for category in self._output_dict:
@@ -1191,10 +1196,9 @@ class Compliance:
                 note = notes[best_level]
                 # if best level is 0 it is the first one
                 source_guideline = entry[guideline_index + step * best_level]
-
                 for guideline in custom_guidelines_list:
-                    custom_entry = self._custom_guidelines[sheet].get(
-                        guideline, {}).get(name)
+                    custom_entry = self._custom_guidelines[guideline].get(
+                        sheet, {}).get(name)
                     if custom_entry:
                         levels = [resulting_level, custom_entry["level"]]
                         guidelines_to_check = list(sheets_to_check[sheet])
@@ -1695,11 +1699,12 @@ class AliasParser:
             if alias == "aliases":
                 self.list_aliases()
             custom_guidelines_list = set()
-            for sheet in custom_guidelines:
-                for guideline in custom_guidelines[sheet]:
+            for guideline in custom_guidelines:
+                for sheet in custom_guidelines[guideline]:
                     custom_guidelines_list.add(guideline.upper())
             self.is_valid(alias, custom_guidelines_list)
             tokens = alias.split("-")
+            guideline_orig = tokens[0]
             guideline = tokens[0].upper()
             tokens.append("")
             for i, sheet in enumerate(self._sheets_versions_dict):
@@ -1709,6 +1714,8 @@ class AliasParser:
                     version = self._default_versions[sheet].get(guideline)
                     if version is not None:
                         sheets_to_check[sheet][guideline] = version
+                    elif guideline_orig in custom_guidelines and sheet in custom_guidelines[guideline_orig]:
+                        sheets_to_check[sheet][guideline_orig] = ""
                     else:
                         self.__logging.info(
                             f"Skipping {guideline} in {sheet} because no version is available.")
@@ -1719,10 +1726,6 @@ class AliasParser:
                     if sheet + guideline + token in self._database_instance.table_names and \
                             not (token == "" and sheets_to_check[sheet].get(guideline)):
                         sheets_to_check[sheet][guideline] = token
-            for sheet in custom_guidelines:
-                if sheets_to_check.get(sheet):
-                    for guideline in custom_guidelines[sheet]:
-                        sheets_to_check[sheet][guideline] = ""
 
         to_remove = set()
         for sheet in sheets_to_check.keys():
