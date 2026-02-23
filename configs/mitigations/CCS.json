@@ -1,6 +1,6 @@
 {
   "Entry": {
-    "Name": "CSS Injection",
+    "Name": "CCS Injection",
     "ExtendedName": "<strong>C</strong>hange <strong>C</strong>ipher <strong>S</strong>pec Injection",
     "CVE": "2014-0224",
     "CVSS3": "7.4 (HIGH)",
