@@ -6,7 +6,7 @@ from utils.mitigations import load_mitigation
 class Ccs_injection(Testssl_base):
 
     """
-    Analysis of the css_injection testssl results
+    Analysis of the ccs_injection testssl results
     """
 
     stix = Bundled(mitigation_object=load_mitigation("CCS_INJECTION"))
