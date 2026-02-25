@@ -68,7 +68,8 @@ class Core:
         webhook="",
         prometheus="",
         config_type=WebserverType.AUTO,
-        compliance_args=None
+        compliance_args=None,
+        resolve_ip=False
     ):
         """
         :param hostname_or_path: hostname or path to scan
@@ -129,7 +130,8 @@ class Core:
             webhook=webhook,
             prometheus=prometheus,
             config_type=config_type,
-            compliance_args=compliance_args
+            compliance_args=compliance_args,
+            resolve_ip=resolve_ip
         )
         self.__cache[configuration] = self.__load_configuration(modules)
         self.__exec(
@@ -698,6 +700,33 @@ class Core:
         else:
             if type_of_analysis in [self.Analysis.HOST, self.Analysis.DOMAINS] \
                     and hostname_or_path != "placeholder":
+                if self.__input_dict.get("resolve_ip", False) and not validate_ip(hostname_or_path):
+                    host_part = hostname_or_path.split(":")[0]
+                    try:
+                        resolved_ip = socket.gethostbyname(host_part)
+                        port_suffix = hostname_or_path[len(host_part):]  # keeps ":port" if present
+                        hostname_or_path = resolved_ip + port_suffix
+                        self.__logging.debug(
+                            f"resolve ip: resolved {host_part} -> {resolved_ip}, "
+                            f"using {hostname_or_path}"
+                        )
+                    except socket.error as e:
+                        self.__logging.debug(e)
+                        self.__logging.error(
+                            f"Could not resolve {host_part} to an IP address, skipping.."
+                        )
+                        result_dict = {
+                            "errors": {
+                                hostname_or_path: {"Invalid hostname": "Critical"}
+                            }
+                        }
+                        for module in loaded_modules:
+                            result_dict[module] = {
+                                "errors": [
+                                    "Invalid hostname: Critical"
+                                ]
+                            }
+                        return loaded_modules, result_dict
                 extraction = tldextract.extract(hostname_or_path)
                 if not extraction.subdomain and hostname_or_path != "localhost" and \
                         not validate_ip(hostname_or_path):

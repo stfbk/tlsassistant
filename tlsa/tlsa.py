@@ -195,7 +195,8 @@ class Tlsa:
                 config_type=args.config_type,
                 openssl_version=args.openssl,
                 ignore_openssl=args.ignore_openssl,
-                compliance_args=args.compliance_args
+                compliance_args=args.compliance_args,
+                resolve_ip=args.resolve_ip
             )
         elif args.app:
             Core(
@@ -226,7 +227,8 @@ class Tlsa:
                 config_type=args.config_type,
                 openssl_version=args.openssl,
                 ignore_openssl=args.ignore_openssl,
-                compliance_args=args.compliance_args
+                compliance_args=args.compliance_args,
+                resolve_ip=args.resolve_ip
             )
         elif args.file and any(module in ["compare_one", "compare_many"]
                                for module in args.configuration):
