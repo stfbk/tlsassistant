@@ -131,6 +131,15 @@ if __name__ == "__main__":
         help="Apply fix in the current configuration.\n Give a path if using -s.\ni.e."
              "\n\tpython3 run.py -s fbk.eu --apply-fix myconf.conf",
     )
+    parser.add_argument(
+        "--resolve-ip",   # TODO: understand where it is better to place this arg for better help
+        dest="resolve_ip",
+        action="store_true",
+        default=False,
+        help="Resolve the hostname to an IP before analysis. "
+             "Useful when the target is a local/Docker hostname that would "
+             "otherwise get a 'www.' prefix prepended (e.g. testbed containers).",
+    )
     configurations = parser.add_mutually_exclusive_group()
     configurations.add_argument(
         "-c",
