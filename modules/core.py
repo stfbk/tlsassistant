@@ -713,20 +713,8 @@ class Core:
                     except socket.error as e:
                         self.__logging.debug(e)
                         self.__logging.error(
-                            f"Could not resolve {host_part} to an IP address, skipping.."
+                            f"resolve ip: could not resolve {host_part} to an IP address, trying to resolve www.{host_part}..."
                         )
-                        result_dict = {
-                            "errors": {
-                                hostname_or_path: {"Invalid hostname": "Critical"}
-                            }
-                        }
-                        for module in loaded_modules:
-                            result_dict[module] = {
-                                "errors": [
-                                    "Invalid hostname: Critical"
-                                ]
-                            }
-                        return loaded_modules, result_dict
                 extraction = tldextract.extract(hostname_or_path)
                 if not extraction.subdomain and hostname_or_path != "localhost" and \
                         not validate_ip(hostname_or_path):
