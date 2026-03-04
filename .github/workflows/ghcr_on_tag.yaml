@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build, Test and Push Docker Image
 
 permissions:
   contents: read
@@ -12,16 +12,37 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Build docker image
-        run: docker build -t ghcr.io/${{ github.repository }}:${{ github.ref_name }} .
+        run: docker build -t ${{ env.IMAGE_NAME }} .
+
+      - name: Create tlsa network
+        run: docker network create tlsa || true
+
+      - name: Pull testbed image and run it
+        run: |
+          docker pull ghcr.io/stfbk/tlsassistant-testbed:v2.0.1
+          docker run -d --rm --name testbed --network tlsa -p 9000-9008:9000-9008 -t ghcr.io/stfbk/tlsassistant-testbed:v2.0.1
+
+      - name: Wait for testbed
+        run: |
+          sleep 5
+
+      - name: Run tests
+        env:
+          TLSA_IMAGE: ${{ env.IMAGE_NAME }}
+          TLSA_NETWORK: tlsa
+        run: |
+          python3 tests/vulnerability_test.py
 
       - name: Push Docker image to ghcr
         run: |
           # Log in to GitHub Container Registry and push the image
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin && \
-          docker push ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+          docker push ${{ env.IMAGE_NAME }}
