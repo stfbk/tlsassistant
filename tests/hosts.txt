@@ -1,8 +1,8 @@
-localhost:9001
-localhost:9002
-localhost:9003
-localhost:9004
-localhost:9005
-localhost:9006
-localhost:9007
-localhost:9008
+testbed:9000
+testbed:9001
+testbed:9002
+testbed:9003
+testbed:9004
+testbed:9005
+testbed:9006
+testbed:9007
