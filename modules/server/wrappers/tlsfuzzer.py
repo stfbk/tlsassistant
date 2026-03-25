@@ -115,7 +115,7 @@ class Tlsfuzzer:
             validate.list(script_args)
 
             script_name = (
-                script_name[-3] if script_name.endswith(".py") else script_name
+                script_name[:-3] if script_name.endswith(".py") else script_name
             )
             script_names.append(script_name)
             tmp_path = Path(
@@ -123,10 +123,11 @@ class Tlsfuzzer:
             )
             if not tmp_path.exists():
                 raise FileNotFoundError(f"file {script_name} not found.")
-            dest = copyfile(
-                str(tmp_path.absolute()), f"{tmp_path.parents[1]}{sep}{tmp_path.name}"
-            )  # copy file for tlsfuzzer workaround
-            tmp_path = Path(dest)
+            # TODO: understand if this was here for permission issues
+            # dest = copyfile(
+            #     str(tmp_path.absolute()), f"{tmp_path.parents[1]}{sep}{tmp_path.name}"
+            # )  # copy file for tlsfuzzer workaround
+            # tmp_path = Path(dest)
             path_scripts.append((tmp_path, script_args))
 
         self.__worker(
@@ -150,6 +151,7 @@ class Tlsfuzzer:
         :param port: Port to connect to.
         :type port: str
         """
+        # TODO: update cache to keep track of which script is cached and with which args
         hostname_cache = cache_name(hostname, port)
         if force:
             for script in scripts:
@@ -172,10 +174,6 @@ class Tlsfuzzer:
                 except subprocess.CalledProcessError as c:
                     logging.debug(c)
                     output = c.output.decode()
-                if (
-                    script_name.exists()
-                ):  # workaround, remove temp file moved to the root of tlsfuzzer
-                    remove(str(script_name.absolute()))
                 if hostname_cache not in self.__cache:
                     self.__cache[hostname_cache] = {}
                 self.__cache[hostname_cache][script_name.stem] = output
@@ -199,8 +197,4 @@ class Tlsfuzzer:
                 )
                 logging.debug(difference)
                 self.__worker(hostname, difference, force=True, port=port)
-                for key, value in script_args.items():
-                    if value[
-                        0
-                    ].exists():  # workaround, remove temp file moved to the root of tlsfuzzer
-                        remove(str(value[0].absolute()))
+                
