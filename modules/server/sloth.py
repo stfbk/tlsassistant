@@ -3,6 +3,7 @@ from pathlib import Path
 
 from modules.server.tlsfuzzer_base import Tlsfuzzer_base
 from modules.stix.stix_base import Bundled
+from utils.loader import load_configuration
 from utils.logger import Logger
 from utils.mitigations import load_mitigation
 
@@ -26,28 +27,24 @@ class Sloth(Tlsfuzzer_base):
     # to override
     def _set_arguments(self):
         """
-        Set the arguments for the fuzzer
+        Set static arguments for the fuzzer.
+        Cipher-dependent scripts are added at runtime from testssl output.
         """
-        cert_location = f"dependencies{sep}certificates{sep}localuser.crt"
-        key_location = f"dependencies{sep}certificates{sep}localuser.key"
-        assert Path(cert_location).exists(), (
+        self._cipher_name_to_hex = self._load_cipher_name_to_hex()
+        self._cert_location = f"dependencies{sep}certificates{sep}localuser.crt"
+        self._key_location = f"dependencies{sep}certificates{sep}localuser.key"
+        assert Path(self._cert_location).exists(), (
             f"The certificate isn't "
-            f"present at location {Path(cert_location).absolute()}"
+            f"present at location {Path(self._cert_location).absolute()}"
         )
-        assert Path(key_location).exists(), (
+        assert Path(self._key_location).exists(), (
             f"The certificate key isn't "
-            f"present at location {Path(key_location).absolute()}"
+            f"present at location {Path(self._key_location).absolute()}"
         )
+
         self._arguments = [
             (
-                "test-certificate-verify",
-                ["-k", key_location, "-c", cert_location],
-                {
-                    "clientAuth": "not send a CertificateVerify message",
-                }
-            ),
-            (
-                "test-sig-algs",
+                "test-sig-algs", # this one does not allow cipher selection
                 [],
                 {
                     "only_one": True,
@@ -70,6 +67,83 @@ class Sloth(Tlsfuzzer_base):
                 }
             ),
         ]
+
+    def _post_filter_arguments(self, testssl_results: dict):
+        """
+        Add sloth scripts using ciphers discovered by testssl
+        """
+        supported_ciphers = self._extract_supported_ciphers(testssl_results)
+        filtered_ciphers = self._filter_sloth_ciphers(supported_ciphers)
+
+        # client impersonation
+        for cipher in filtered_ciphers["client_impersonation"]:
+            extra_flags = "-d" if "DHE" in cipher["name"] else ""
+            self._arguments.append(
+                (
+                    "test-certificate-verify",
+                    ["-k", self._key_location, "-c", self._cert_location, "-C", cipher["id"], extra_flags],
+                )
+            )
+
+    def _load_cipher_name_to_hex(self) -> dict:
+        """
+        Build a map from IANA names (TLS_...) to hex values (0xHHHH)
+
+        This is needed since tlsfuzzer fails on some older ciphersuites names
+        """
+        ciphersuites = load_configuration(
+            "ciphersuites", "configs/compliance/")
+        mapping = {}
+        # TODO: mapping all of this is not really needed, we could do it on demand
+        for hex_value, names in ciphersuites.items():
+            iana_name = names.get("IANA", "")
+            if not iana_name:
+                continue
+            compact_hex = hex_value.replace("0x", "").replace(",", "")
+            hex_id = f"0x{compact_hex}"
+            mapping[iana_name] = hex_id
+        return mapping
+
+    def _extract_supported_ciphers(self, testssl_results: dict) -> list:
+        """
+        Extract supported ciphers from endpoint result
+        """
+        ciphers = []
+        for key, item in testssl_results.items():
+            if not key.startswith("cipher_"):
+                continue
+            finding = item.get("finding", "")
+            if not finding or finding == "ERROR_NOT_FOUND":
+                continue
+            if finding == "none" or "not offered" in finding:
+                continue
+
+            cipher_name = finding.split()[-1]
+            cipher_hex = self._cipher_name_to_hex.get(cipher_name)
+            if not cipher_hex:
+                continue
+            ciphers.append({"id": cipher_hex, "name": cipher_name})
+
+        # de-dupliate by hex id
+        return list({cipher["id"]: cipher for cipher in ciphers}.values())
+
+    def _filter_sloth_ciphers(self, ciphers: list) -> dict:
+        """
+        Filter raw ciphersuites to test with sloth
+        """
+        sloth_targets = {
+            "client_impersonation": [],
+        }
+        for cipher in ciphers:
+            cipher_name = cipher["name"]
+            if "WITH" not in cipher_name: # tls 1.2 always has WITH, tls 1.3 does not have it and it is not vulnerable
+                continue
+            if "PSK" in cipher_name or "ANON" in cipher_name:
+                continue
+            if "RSA" in cipher_name or "ECDSA" in cipher_name:
+                sloth_targets["client_impersonation"].append(cipher)
+
+        return sloth_targets
 
     # to override
     def _worker(self, results):

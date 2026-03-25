@@ -137,6 +137,13 @@ class Tlsfuzzer_base:
         """
         raise NotImplementedError("This method should be reimplemented!")
 
+    def _post_filter_arguments(self, testssl_results: dict):
+        """
+        Optional hook for subclasses.
+        Called after requirements filtering and before tlsfuzzer execution.
+        """
+        return
+
     def run(self, **kwargs):
         """
         Run the analysis
@@ -173,10 +180,15 @@ class Tlsfuzzer_base:
                         }
         self._testssl.run(**testssl_args, force=True)
 
-        testssl_results = self._testssl.output(**{
+        raw_testssl_results = self._testssl.output(**{
             "hostname": self._input_dict["hostname"]
         })
-        testssl_results = testssl_results.get(list(testssl_results.keys())[0], {})
+        if raw_testssl_results:
+            first_key = next(iter(raw_testssl_results), None)
+            testssl_results = raw_testssl_results.get(first_key, {})
+        else:
+            testssl_results = {}
+
         new_args = []
         for i in range(len(self._arguments)):
             script_name = self._arguments[i][0]
@@ -195,6 +207,8 @@ class Tlsfuzzer_base:
                         if stop_after_one:
                             break
         self._arguments = new_args
+        # inject new specific dynamic arguments for the analysis
+        self._post_filter_arguments(testssl_results)
 
         logging.debug(
             f"Executing analysis in {self._input_dict['hostname']} in port {self._input_dict['port']} with scripts "
