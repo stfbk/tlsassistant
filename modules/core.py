@@ -712,7 +712,7 @@ class Core:
                         )
                     except socket.error as e:
                         self.__logging.debug(e)
-                        self.__logging.error(
+                        self.__logging.warning(
                             f"resolve ip: could not resolve {host_part} to an IP address, trying to resolve www.{host_part}..."
                         )
                 extraction = tldextract.extract(hostname_or_path)
