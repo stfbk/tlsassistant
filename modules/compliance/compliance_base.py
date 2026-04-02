@@ -706,6 +706,8 @@ class Compliance:
                             sig_alg, hash_alg = hash_alg, sig_alg
                         sig_alg = self._add_certificate_signature_algorithm(sig_alg)[
                             0]
+                        sig_alg_cert = convert_signature_algorithm(f"{sig_alg}+{hash_alg.upper()}")
+                        self._user_configuration["SignatureAlgsCertificate"].add(sig_alg_cert)
                         self._user_configuration["Hash"].add(hash_alg.lower())
                         cert_index = self.find_cert_index(field)
                         if not self._user_configuration["Certificate"].get(cert_index):
@@ -1395,7 +1397,6 @@ class Generator(Compliance):
                 new_dict[sheet_name] = {}
             new_dict[sheet_name].update(self._output_dict[sheet])
         # move the post_actions_output to the respective sheet
-        print(self._output_dict.get("post_actions_output"))
         for sheet in self._output_dict.get("post_actions_output", {}):
             for entry, values in self._output_dict["post_actions_output"][sheet].items():
                 for value, content in values.items():
