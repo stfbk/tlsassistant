@@ -139,7 +139,8 @@ class Certificate:
         :raise Exception: If the hostname is not found or could not return any results
         """
         req = requests.get(
-            f"https://crt.sh/?q=%.{url}&output=json{'&exclude=expired' if not expired else ''}"
+            f"https://crt.sh/?q=%.{url}&output=json{'&exclude=expired' if not expired else ''}",
+            timeout=15
         )
 
         if not req.ok or req.status_code != 200:

@@ -257,7 +257,9 @@ class Install:
                 logger.debug(f"Installing dependencies{sep}{file}")
                 with open(devnull, "w") as null:
                     params = [
-                        "pip3",
+                        sys.executable,  # use the current python executable
+                        "-m",
+                        "pip",
                         "install",
                         file
                     ]
@@ -367,7 +369,7 @@ class Install:
 
         file_name = self.get_filename(url)
 
-        async with async_timeout.timeout(60):
+        async with async_timeout.timeout(120):
             async with session.get(url) as response:
                 with open(f"dependencies{sep}{file_name}", "wb") as fd:
                     async for data in response.content.iter_chunked(1024):

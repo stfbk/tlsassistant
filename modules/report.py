@@ -301,6 +301,7 @@ class Report:
                     webhook_url,
                     headers=headers,
                     json=json_data,
+                    timeout=10
                 )
             else:
 
@@ -308,6 +309,7 @@ class Report:
                     webhook_url,
                     headers=headers,
                     params=json_data,
+                    timeout=10
                 )
         except Exception as e:
             self.__logging.error(f"Error sending results to webhook: {e}")
