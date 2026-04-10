@@ -1195,9 +1195,9 @@ stix2==3.0.2 ; python_version >= "3.10" and python_version < "3.13" \
 tldextract==5.3.1 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:6bfe36d518de569c572062b788e16a659ccaceffc486d243af0484e8ecf432d9 \
     --hash=sha256:a72756ca170b2510315076383ea2993478f7da6f897eef1f4a5400735d5057fb
-tlslite-ng==0.8.2 ; python_version >= "3.10" and python_version < "3.13" \
-    --hash=sha256:9ac377526c60a7d6e7625bd49e7a5ae551b12b0465b07d691342c64a0b3e8440 \
-    --hash=sha256:bc17945ab48c7a2ecb16ae9d4b32cf976bfd67d7db74c0fedc093f9094e49ae5
+tlslite-ng==0.9.0b2 ; python_version >= "3.10" and python_version < "3.13" \
+    --hash=sha256:d69afaa207972506fcdad4362de09a422f0c8b780f370ec881cf7e789e858aa1 \
+    --hash=sha256:ff971e02061f17c43b46b41817c4627ba2765cc319e032e33bc4182c4d7091fb
 typing-extensions==4.15.0 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466 \
     --hash=sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548
