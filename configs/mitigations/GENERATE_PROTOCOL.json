@@ -12,6 +12,7 @@
   "#ConfigurationInstructions": {
     "must not": "-name",
     "not recommended": "-name",
+    "optional": "name",
     "recommended": "name",
     "must": "name",
     "info": "",
