@@ -15,6 +15,7 @@
     "not recommended": "-name",
     "recommended": "name",
     "must": "name",
+    "optional": "name",
     "info": "",
     "server_name": "<br/>- the server_name extension {action}",
     "server_name_config": {

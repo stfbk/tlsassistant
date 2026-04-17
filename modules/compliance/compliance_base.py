@@ -91,6 +91,8 @@ class Compliance:
             "user_conf_types", "configs/compliance/generate/")
         self.oakley_mapping = load_configuration(
             "oakley_mapping", "configs/compliance/")
+        self.enable_optional = load_configuration(
+            "enable_optional", "configs/compliance/")
         self._type_converter = {
             "dict": dict,
             "list": list,
@@ -184,7 +186,8 @@ class Compliance:
                     f"Custom guidelines file {self._custom_guidelines} not found")
             with open(custom_guidelines, "r") as f:
                 self._custom_guidelines = json.load(f)
-            self._custom_guidelines = {k.lower(): v for k, v in self._custom_guidelines.items()}
+            self._custom_guidelines = {
+                k.lower(): v for k, v in self._custom_guidelines.items()}
 
         guidelines_string = kwargs.get("guidelines")
         self._guidelines_string = guidelines_string
@@ -277,7 +280,9 @@ class Compliance:
                     failed += 1
                     self._logging.warning(
                         f"Testssl failed to perform the analysis on {key}")
-                    reason = "Reason: " + test_ssl_output[key]["scanProblem"].get("finding", "No reason provided")
+                    reason = "Reason: " + \
+                        test_ssl_output[key]["scanProblem"].get(
+                            "finding", "No reason provided")
                 elif test_ssl_output[key].get("scanTime", {}).get("finding", "") == "Scan interrupted":
                     failed += 1
                     self._logging.warning(
@@ -706,8 +711,10 @@ class Compliance:
                             sig_alg, hash_alg = hash_alg, sig_alg
                         sig_alg = self._add_certificate_signature_algorithm(sig_alg)[
                             0]
-                        sig_alg_cert = convert_signature_algorithm(f"{sig_alg}+{hash_alg.upper()}")
-                        self._user_configuration["SignatureAlgsCertificate"].add(sig_alg_cert)
+                        sig_alg_cert = convert_signature_algorithm(
+                            f"{sig_alg}+{hash_alg.upper()}")
+                        self._user_configuration["SignatureAlgsCertificate"].add(
+                            sig_alg_cert)
                         self._user_configuration["Hash"].add(hash_alg.lower())
                         cert_index = self.find_cert_index(field)
                         if not self._user_configuration["Certificate"].get(cert_index):
@@ -858,15 +865,14 @@ class Compliance:
         entry_level = get_standardized_level(
             entry_level) if entry_level else None
         total_string_only = False
-        # print(f"{sheet} - {name} - {entry_level} - {enabled} - {source} - {valid_condition}")
         if entry_level == "must" and valid_condition and not enabled:
             information_level = "MUST"
             action = "has to be enabled"
-        elif (entry_level in ["must", "recommended"] and enabled and valid_condition and
-              sheet in self.report_config.get("has_total_string", [])):
+        elif ((entry_level in ["must", "recommended"] or
+               (entry_level == "optional" and source in self.enable_optional))
+                and enabled and valid_condition and sheet in self.report_config.get("has_total_string", [])):
             # these entries are not added to the output dict
-            total_string_only = sheet in Compliance.report_config.get(
-                "has_total_string", [])
+            total_string_only = True
             information_level = "MUST"
             action = "has to be enabled"
         elif entry_level == "must not" and valid_condition and enabled:
@@ -883,6 +889,9 @@ class Compliance:
         elif entry_level == "not recommended" and valid_condition and enabled:
             information_level = "NOT RECOMMENDED"
             action = "should be disabled"
+        elif entry_level == "optional" and valid_condition and not enabled and source in self.enable_optional:
+            information_level = "OPTIONAL"
+            action = "can be enabled"
         if not self._output_dict.get(sheet):
             self._output_dict[sheet] = {
                 "entries_add": [],
@@ -890,7 +899,7 @@ class Compliance:
                 "notes": []
             }
         if information_level:
-            if entry_level in ["must", "recommended"]:
+            if entry_level in ["must", "recommended", "optional"]:
                 self._output_dict[sheet]["entries_add"].append(name)
             elif entry_level in ["must not", "not recommended"]:
                 self._output_dict[sheet]["entries_remove"].append(name)
@@ -1032,8 +1041,7 @@ class Compliance:
             enabled, valid_condition)
         self._condition_parser.entry_updates = {}
         note = ""
-        if has_alternative and not enabled and isinstance(condition, str) and \
-                condition.count(" ") > 1:
+        if (has_alternative and not enabled and isinstance(condition, str) and condition.count(" ") > 1):
             parts = entry[condition_index].split(" ")
             # Tokens[1] is the logical operator
             note = f"\nNOTE: {name} {parts[1].upper()} {' '.join(parts[2:])} is needed"

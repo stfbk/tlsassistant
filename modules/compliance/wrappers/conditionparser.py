@@ -44,7 +44,7 @@ class ConditionParser:
     for ext, ver in _extension_versions_db:
         if ext not in _extension_versions:
             _extension_versions[ext] = set()
-        _extension_versions[ext].add(ver)
+        _extension_versions[ext].add(str(ver))
 
     for sheet in _additional_info_columns:
         if _additional_info.get(sheet) is None:
