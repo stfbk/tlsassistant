@@ -1,3 +1,4 @@
+from copy import deepcopy
 import json
 import os.path
 import re
@@ -57,6 +58,7 @@ class Report:
             "split": str.split,
             "list": list,
             "str": str,
+            "load_dict": json.loads,
             "isinstance": isinstance,
             "levels": [levels_mapping[str(i)].upper() for i in range(1, 6)],
             # These replacements are applied only to the content of Textual, Apache and nginx strings
@@ -140,8 +142,8 @@ class Report:
                     if hostname not in vuln_hosts:
                         vuln_hosts.append(hostname)
             if raw_results:
-                out[module]["raw"] = raw_results.copy() if rml else pformat(
-                    raw_results.copy(), indent=2)
+                out[module]["raw"] = pformat(raw_results.copy(), indent=2)
+                out[module]["raw_dict"] = deepcopy(raw_results)
             if vuln_hosts:
                 out[module]["hosts"] = vuln_hosts.copy()
             if not out[module]:
@@ -181,6 +183,7 @@ class Report:
                         out[hostname][module]["raw"] = pformat(
                             raw_results.copy(), indent=2
                         )
+                        out[hostname][module]["raw_dict"] = deepcopy(raw_results)
         return out
 
     def __jinja2__report(

@@ -30,6 +30,7 @@
         <paraStyle name = "vulnerable_websites_list" fontName = "Roboto Italic" fontSize = "12" alignment="left" spaceAfter="5"/>
         <paraStyle name = "not_vulnerable" fontName="Roboto"/>
         <paraStyle name = "potentially_vulnerable" fontName="Roboto Bold" textColor="red"/>
+        <paraStyle name = "partially_compliant" fontName="Roboto Bold" textColor="orange"/>
         <paraStyle name = "custom_font_code-2" fontName="Roboto" fontSize="12" backColor="yellow"/>
         <blockTableStyle id="report">
             <lineStyle start="0,0" stop="-1,-1" kind="grid" thickness="0.25" colorName="black" cap="default"/>
@@ -166,7 +167,24 @@
                         <td>
                         {% if results[host][module] %}
                             {% if module.startswith("compare_") %}
-                                <para style="potentially_vulnerable">Not Compliant</para>
+                                {% set optional = namespace(i=0, total=0) %}
+                                {% if not results[host][module]["raw_dict"]["entries_remove"] %}
+                                    {% for entry in results[host][module]["raw_dict"]["entries_add"] %}
+                                        {% if not results[host][module]["raw_dict"][entry]["total_string_only"] %}
+                                            {% if results[host][module]["raw_dict"][entry].get("level") == "OPTIONAL" %}
+                                                {% set optional.i = optional.i + 1 %}
+                                            {% endif %}
+                                            {% set optional.total = optional.total + 1 %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if optional.i != 0 and optional.i == optional.total %}
+                                        <para style="partially_compliant">Partially Compliant</para>
+                                    {% else %}
+                                        <para style="potentially_vulnerable">Not Compliant</para>
+                                    {% endif %}
+                                {% else %}
+                                    <para style="potentially_vulnerable">Not Compliant</para>
+                                {% endif %}
                             {% else %}
                                 <para style="potentially_vulnerable">Potentially Vulnerable</para>
                             {% endif %}

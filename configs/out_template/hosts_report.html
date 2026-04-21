@@ -64,15 +64,39 @@ customElements.define('custom_font_code-2', CodeTwo);
                                         style="font-family: Roboto, sans-serif;background: rgba(255,175,175,0);font-style: italic;">
                                         {{host}}</td>
                                     {% for module in modules %}
+                                        {% set optional = namespace(i=0, total=0) %}
                                         {% if results[host][module] %}
-                                            <td
-                                                style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(255,175,175,0.59);">
-                                                {% if module.startswith("compare_") %}
-                                                    Not Compliant
+                                            {% if module.startswith("compare_") %}
+                                                {% if not results[host][module]["raw_dict"]["entries_remove"] %}
+                                                    {% for entry in results[host][module]["raw_dict"]["entries_add"] %}
+                                                        {% if not results[host][module]["raw_dict"][entry]["total_string_only"] %}
+                                                            {% if results[host][module]["raw_dict"][entry].get("level") == "OPTIONAL" %}
+                                                                {% set optional.i = optional.i + 1 %}
+                                                            {% endif %}
+                                                            {% set optional.total = optional.total + 1 %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    {% if optional.i != 0 and optional.i == optional.total %}
+                                                        {% set optional.result = "Partially Compliant" %}
+                                                        {% set optional.partial = True %}
+                                                    {% else %}
+                                                        {% set optional.result = "Not Compliant" %}
+                                                    {% endif %}
                                                 {% else %}
-                                                    Potentially Vulnerable
+                                                    {% set optional.result = "Not Compliant" %}
                                                 {% endif %}
-                                            </td>
+                                            {% else %}
+                                                {% set optional.result = "Potentially Vulnerable" %}
+                                            {% endif %}
+                                            {% if optional.partial %}
+                                                <td style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(244, 172, 96, 0.59);">
+                                                    {{optional.result}}
+                                                </td>
+                                            {% else %}
+                                                <td style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(255,175,175,0.59);">
+                                                    {{optional.result}}
+                                                </td>
+                                            {% endif %}
                                         {% elif results[host].get("errors", None) %}
                                             <td
                                                 style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(255,175,175,0.59);">
