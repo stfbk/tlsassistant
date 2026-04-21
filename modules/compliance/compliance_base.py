@@ -725,7 +725,11 @@ class Compliance:
                 elif field.startswith("cert_keySize"):
                     # the first two tokens (after doing a space split) are the Key Algorithm and its key size
                     element_to_add = actual_dict["finding"].split(" ")[:2]
-                    element_to_add[1] = int(element_to_add[1])
+                    if element_to_add[1][:2] == "Ed":
+                        # The key size of Ed25519 and Ed448 is fixed, so it is not specified in the finding, but it can be inferred from the name of the algorithm
+                        element_to_add[1] = 256 if "25519" in element_to_add[0] else 456
+                    else:
+                        element_to_add[1] = int(element_to_add[1])
                     # *ecdsa*|*ecPublicKey* -> EC in testssl.sh output
                     if element_to_add[0] == "EC":
                         element_to_add[0] = "ECDSA"
@@ -782,6 +786,7 @@ class Compliance:
                     self._user_configuration["Hash"].update(hashes)
                     self._user_configuration["Signature"].update(signatures)
                     self._user_configuration["Signature_12"].update(signatures)
+                    self._user_configuration["SignatureAlgsCertificate"].update(signatures)
 
                 # From TLS 1.3 the signature algorithms are different from the previous versions.
                 # So they are saved in a different field of the configuration dictionary.
@@ -793,6 +798,7 @@ class Compliance:
                         sig) for sig in values]
                     self._user_configuration["Signature"].update(values)
                     self._user_configuration["Signature_13"].update(values)
+                    self._user_configuration["SignatureAlgsCertificate"].update(values)
 
                 # The supported groups are available as a list in this field
                 elif field[-12:] == "ECDHE_curves":
@@ -844,7 +850,7 @@ class Compliance:
                     # this should happen only with RSAPSS
                     if not self._user_configuration["Certificate"][cert_index].get("KeyAlg"):
                         self._user_configuration["Certificate"][cert_index]["KeyAlg"] = cert_data["SigAlgName"]
-                        if cert_data["SigAlgName"] == "RSASSA-PSS":
+                        if cert_data["SigAlgName"] in ["RSASSA-PSS", "rsassaPss"]:
                             self._user_configuration["CertificateSignature"].add(
                                 "rsa")
                             self._user_configuration["KeyLengths"].add(

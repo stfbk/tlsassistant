@@ -4,7 +4,7 @@
     "Extended Name": "Compliance report for Key Lengths",
     "Description": "Compliance report for {sheet} against {guidelines} guidelines",
     "Mitigation": {
-      "Textual": "<br/>Enable the following key lengths:{add}<br/>Do not use the following signature algorithms and key lengths:{remove}<br/>NOTE: to enable/disable ECDSA, RSA or DSA keys, you have to re-issue the certificate with a valid key length.",
+      "Textual": "<br/>Enable the following key lengths:{add}<br/>Do not use the following signature algorithms and key lengths:{remove}<br/>NOTE: to enable/disable ECDSA, EdDSA, RSA or DSA keys, you have to re-issue the certificate with a valid key length.",
       "Apache": "{total_string}",
       "nginx": "{total_string}"
     }
@@ -13,13 +13,15 @@
     "mode": "specific_mitigation",
     "ECDSA_224": "<br/>- ECDSA 224 bits: {action}",
     "ECDSA_256": "<br/>- ECDSA 256 bits: {action}",
+    "EdDSA_256": "<br/>- EdDSA 256 bits: {action}",
+    "EdDSA_456": "<br/>- EdDSA 456 bits: {action}",
     "DSA_2048": "<br/>- DSA 2048 bits: {action}",
     "DSA_3076": "<br/>- DSA 3076 bits: {action}",
     "RSA_1024": "<br/>- RSA 1024 bits: {action}",
     "RSA_2048": "<br/>- RSA 2048 bits: {action}",
     "RSA_3076": "<br/>- RSA 3076 bits: {action}",
-    "ECDH_224": "<br/>- ECDH 224 bits: {action}",
-    "ECDH_256": "<br/>- ECDH 256 bits: {action}",
+    "ECDH_224": "<br/>- ECDH / ECDHE 224 bits: {action}",
+    "ECDH_256": "<br/>- ECDH / ECDHE 256 bits: {action}",
     "DH_1024": "<br/>- DH 1024 bits: {action}",
     "DH_1024_config": {
       "Apache": "<p>Run the following command to generate 1024 bits DH parameters: <code>openssl dhparam 1024 >> /path/to/cert</code>.<br/>To remove DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.</p>",
@@ -37,7 +39,7 @@
     },
     "openssl_dependency": {
       ">= 1.0.2": {
-        "Textual": "<br/>NOTE: with your OpenSSL version in order to fix DH keys it may be enough to follow the mitigation of the Key Lengths section."
+        "Textual": "<br/>NOTE: with your OpenSSL version in order to fix DH/ECDH/ECDHE keys it may be enough to follow the mitigation of the <b>Supported Groups compliance</b> section."
       }
     }
   },

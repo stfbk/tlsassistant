@@ -4,7 +4,8 @@
     "CipherSuitesTLS1.3",
     "Protocol",
     "Groups",
-    "Signature"
+    "Signature",
+    "SignatureAlgsCertificate"
   ],
   "has_specific_textual": [
     "Certificate",
