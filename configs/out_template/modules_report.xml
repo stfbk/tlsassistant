@@ -157,7 +157,7 @@
                     <td>{{name_mapping.get(module, module)}}</td>
                     {% if i_ns.i == results.keys().__len__() %}
                         <td><para style="potentially_vulnerable"> All the hosts encountered an error</para></td>
-                    {% elif module in results %}
+                    {% elif module in results and results[module].get("Name") %}
                         {%set hosts_count = results[module]["hosts"].__len__()%}
                         {% if hosts_count > 0 %}
                             {% if hosts_count == 1 %}
@@ -205,7 +205,7 @@
                 {% endfor %}
             {% endif %}
             {% for module in modules %}
-                {% if module in results and results[module]%}
+                {% if module in results and results[module].get("Name")%}
                     <h3 style = "module">{{results[module]['Name']}}</h3>
                     {% set ns = namespace(cvss_string = "", i=0)%}
                     {%for cvss in ['CVE', 'CVSS2','CVSS3']%}
@@ -239,7 +239,7 @@
                     {% endif %}
                     {# {% if 'raw' in results[module] %}
                         <h4>Raw Output</h4>
-                        <para fontName="Roboto">{{results[module]['raw']|e}}</para>
+                        <para fontName="Roboto">{{results[module]['raw_dict']|e}}</para>
                     {% endif %} #}
                     {% if 'hosts' in results[module] and results[module]['hosts']%}
                         {% if module.startswith("compare_") %}
