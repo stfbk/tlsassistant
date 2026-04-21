@@ -8,6 +8,10 @@ class CertificateParser:
     def __init__(self):
         self.certificate = None
         self._output_dict = {}
+        self._keysize_dict = {
+            "Ed25519PublicKey": 256,
+            "Ed448PublicKey": 456
+        }
 
     def input(self, certificate):
         self.certificate = x509.load_pem_x509_certificate(certificate.encode())
@@ -27,7 +31,9 @@ class CertificateParser:
         self._output_dict[cert_sha]["X.509 version"] = self.certificate.version.value
         self._output_dict[cert_sha]["SigAlgName"] = self.certificate.signature_algorithm_oid._name
         self._output_dict[cert_sha]["SigAlgOID"] = self.certificate.signature_algorithm_oid.dotted_string
-        self._output_dict[cert_sha]["KeySize"] = self.certificate.public_key().key_size
+        class_name = self.certificate.public_key().__class__.__name__
+        value = self._keysize_dict.get(class_name)
+        self._output_dict[cert_sha]["KeySize"] = value if value else self.certificate.public_key().key_size
         # this list comprehension takes every tuple, decodes its elements and puts the decoded pair in a new list
         if self.certificate.issuer:
             issuer_der = der_decoder(self.certificate.issuer.public_bytes())[0]
