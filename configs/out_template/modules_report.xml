@@ -242,16 +242,51 @@
                         <para fontName="Roboto">{{results[module]['raw_dict']|e}}</para>
                     {% endif %} #}
                     {% if 'hosts' in results[module] and results[module]['hosts']%}
+                        {% set partial = namespace(partial_compliant=list(), non_compliant=list(), i=0, total=0) %}
+                        {% for host in results[module]['hosts'] %}
+                            {% if not results[module]['raw_dict'][host]['entries_remove'] %}
+                                {% for entry in results[module]['raw_dict'][host]['entries_add'] %}
+                                    {% if not results[module]['raw_dict'][host][entry]["total_string_only"] %}
+                                        {% if results[module]['raw_dict'][host][entry].get("level") == "OPTIONAL" %}
+                                            {% set partial.i = partial.i + 1 %}
+                                        {% endif %}
+                                        {% set partial.total = partial.total + 1 %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if partial.total != 0 and partial.i == partial.total %}
+                                    {% set partial.partial_compliant = partial.partial_compliant + [host] %}
+                                {% else %}
+                                    {% set partial.non_compliant = partial.non_compliant + [host] %}
+                                {% endif %}
+                            {% else %}
+                                {% set partial.non_compliant = partial.non_compliant + [host] %}
+                            {% endif %}
+                        {% endfor %}
                         {% if module.startswith("compare_") %}
-                            <h4 style = "vulnerable_websites">Non compliant websites</h4>
+                            {% if partial.partial_compliant %}
+                                <h4 style = "vulnerable_websites">Partially compliant websites</h4>
+                                <para style = "vulnerable_websites_list">
+                                {%for host in partial.partial_compliant%}
+                                    {{host}}
+                                {%endfor%}
+                                </para>
+                            {% endif %}
+                            {% if partial.non_compliant %}
+                                <h4 style = "vulnerable_websites">Non compliant websites</h4>
+                                <para style = "vulnerable_websites_list">
+                                {%for host in partial.non_compliant%}
+                                    {{host}}
+                                {%endfor%}
+                                </para>
+                            {% endif %}
                         {% else %}
                             <h4 style = "vulnerable_websites">Vulnerable websites</h4>
+                            <para style = "vulnerable_websites_list">
+                            {%for host in results[module]['hosts']%}
+                                {{host}}
+                            {%endfor%}
+                            </para>
                         {% endif %}
-                        <para style = "vulnerable_websites_list">
-                        {%for host in results[module]['hosts']%}
-                            {{host}}
-                        {%endfor%}
-                        </para>
                     {%endif%}
                     {# {% if 'references' in results[module] %}
                         <h4>References</h4>
