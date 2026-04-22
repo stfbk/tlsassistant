@@ -74,7 +74,7 @@ customElements.define('custom_font_code-2', CodeTwo);
                     {% endfor %}
                 {% endif %}
                 {% for module in modules %}
-                {% if module in results and results[module]%}
+                {% if module in results and results[module].get("Name") %}
                 <div class="card">
                     <div class="card-body">
                         <h3 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">{{results[module]['name']}}</h3>
@@ -135,27 +135,72 @@ customElements.define('custom_font_code-2', CodeTwo);
                             </div>
                         </div>
                         {% endif %}
-                        {% if 'hosts' in results[module] and results[module]['hosts']%}
-                        <div class="card">
-                            <div class="card-body"
-                                style="border-right-style: solid;border-right-color: var(--bs-red);border-left-style: solid;border-left-color: var(--bs-red);">
-                                <h4 class="text-center card-title"
-                                    style="color: var(--bs-red);font-family: Roboto, sans-serif;">
-                                    {% if module.startswith("compare_") %}
-                                        Non Compliant Websites
-                                    {% else %}
-                                        Vulnerable Websites
+                        {% set partial = namespace(partial_compliant=list(), non_compliant=list(), i=0, total=0) %}
+                        {% for host in results[module]['hosts'] %}
+                            {% if not results[module]['raw_dict'][host]['entries_remove'] %}
+                                {% for entry in results[module]['raw_dict'][host]['entries_add'] %}
+                                    {% if not results[module]['raw_dict'][host][entry]["total_string_only"] %}
+                                        {% if results[module]['raw_dict'][host][entry].get("level") == "OPTIONAL" %}
+                                            {% set partial.i = partial.i + 1 %}
+                                        {% endif %}
+                                        {% set partial.total = partial.total + 1 %}
                                     {% endif %}
-                                </h4>
-                                <h6 class="text-muted card-subtitle mb-2"
-                                    style="text-align: center;font-family: 'Roboto Mono', monospace;">
-                                    {%for host in results[module]['hosts']%}{{host}}<br>{%endfor%}</h6>
+                                {% endfor %}
+                                {% if partial.total != 0 and partial.i == partial.total %}
+                                    {% set partial.partial_compliant = partial.partial_compliant + [host] %}
+                                {% else %}
+                                    {% set partial.non_compliant = partial.non_compliant + [host] %}
+                                {% endif %}
+                            {% else %}
+                                {% set partial.non_compliant = partial.non_compliant + [host] %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if module.startswith("compare_") %}
+                            <div class="card">
+                                {% if partial.non_compliant %}
+                                    <div class="card-body"
+                                        style="border-right-style: solid;border-right-color: var(--bs-red);border-left-style: solid;border-left-color: var(--bs-red);">
+                                        <h4 class="text-center card-title"
+                                            style="color: var(--bs-red);font-family: Roboto, sans-serif;">
+                                                Non Compliant Websites
+                                        </h4>
+                                    </div>
+                                    <h6 class="text-muted card-subtitle mb-2"
+                                        style="text-align: center;font-family: 'Roboto Mono', monospace;">
+                                        {% for host in partial.non_compliant %}{{host}}<br>{%endfor%}
+                                    </h6>
+                                {% endif %}
+                                {% if partial.partial_compliant %}
+                                    <div class="card-body"
+                                        style="border-right-style: solid;border-right-color: var(--bs-orange);border-left-style: solid;border-left-color: var(--bs-orange);">
+                                        <h4 class="text-center card-title"
+                                            style="color: var(--bs-orange);font-family: Roboto, sans-serif;">
+                                                Partially Compliant Websites
+                                        </h4>
+                                    </div>
+                                    <h6 class="text-muted card-subtitle mb-2"
+                                        style="text-align: center;font-family: 'Roboto Mono', monospace;">
+                                        {% for host in partial.partial_compliant %}{{host}}<br>{%endfor%}
+                                    </h6>
+                                {% endif %}
                             </div>
-                        </div>
+                        {% elif 'hosts' in results[module] and results[module]['hosts']%}
+                            <div class="card">
+                                <div class="card-body"
+                                    style="border-right-style: solid;border-right-color: var(--bs-red);border-left-style: solid;border-left-color: var(--bs-red);">
+                                    <h4 class="text-center card-title"
+                                        style="color: var(--bs-red);font-family: Roboto, sans-serif;">
+                                            Vulnerable Websites
+                                    </h4>
+                                    <h6 class="text-muted card-subtitle mb-2"
+                                        style="text-align: center;font-family: 'Roboto Mono', monospace;">
+                                        {%for host in results[module]['hosts']%}{{host}}<br>{%endfor%}</h6>
+                                </div>
+                            </div>
                         {% endif %}
                         {% if 'references' in results[module] %}
-                        <a class="card-link" href="{{results[module]['references']}}">Link to the
-                            webpage</a>
+                            <a class="card-link" href="{{results[module]['references']}}">Link to the
+                                webpage</a>
                         {% endif %}
                     </div>
                 </div>

@@ -152,74 +152,74 @@ customElements.define('custom_font_code-2', CodeTwo);
                     </div>
                 {% endif %}
                 {% for module in modules %}
-                {% if results[host][module] %}
-                <div class="card">
-                    <div class="card-body">
-                        <h3 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">{{results[host][module]['name']}}</h3>
+                    {% if results[host][module] %}
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">{{results[host][module]['name']}}</h3>
 
-                        <h6 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">
-                            {%set i = 0%}
-                            {%for cvss in ['CVE', 'CVSS2','CVSS3']%}
-                                {% if cvss in results[host][module] %}{%if i != 0%}-{%endif%}{{cvss}}:&nbsp;{{results[host][module][cvss]}} {% endif %}
-                                {% set i = i+1 %}
-                            {% endfor %}
-                            </h6>
-                        {% if results[host][module]["extendedname"] != results[host][module]["name"] %}
-                            <h6 class="text-muted card-subtitle mb-2"
-                                style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[host][module]['extendedname']}}
-                            </h6>
-                        {% endif %}
-                        <p class="card-text"
-                            style="font-family: 'Roboto Condensed', sans-serif;color: #6c757d;font-style: italic;">
-                            {{results[host][module]['description']}}
-                        </p>
-                        {% if 'mitigation' in results[host][module] %}
-                        <div class="card" style="border-style: none;padding: 2px;margin: 0px;">
-                            <h5 style="color: #000000;font-family: Roboto, sans-serif;">Mitigation</h5>
-                            <ul class="list-group list-group-flush" style="border-style: solid;border-color: #8db53d;">
-
-                                {% for key,mitigation in results[host][module]['mitigation'].items() %}
-                                <li class="list-group-item" style="border-radius: 4px;border-style: none;">
-                                    <h5 class="mb-0"
-                                        style="border-style: none;border-bottom-style: none;font-family: Roboto, sans-serif;">
-                                        <strong>{{key}}</strong>
-                                    </h5>
-                                    <p style="font-family: Roboto, sans-serif;text-align: justify;margin: 3px;">{{mitigation}}</p>
-                                    </p>
-                                </li>
+                            <h6 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">
+                                {%set i = 0%}
+                                {%for cvss in ['CVE', 'CVSS2','CVSS3']%}
+                                    {% if cvss in results[host][module] %}{%if i != 0%}-{%endif%}{{cvss}}:&nbsp;{{results[host][module][cvss]}} {% endif %}
+                                    {% set i = i+1 %}
                                 {% endfor %}
-                            </ul>
-                        </div>
-                        {% endif %}
-                        {% if 'raw' in results[host][module] %}
-                        <div class="card" style="border-style: none;padding: 2px;margin: 0px;">
-                            {%set ns.accordion_count = ns.accordion_count + 1%}
-                            <div class="accordion" role="tablist" id="accordion-{{ns.accordion_count}}"
-                                style="border-width: 3px;border-radius: 0px,0px,3px,3px;">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" role="tab"><button class="accordion-button collapsed"
-                                            data-bs-toggle="collapse" data-bs-target="#accordion-{{ns.accordion_count}} .item-1"
-                                            aria-expanded="false" aria-controls="accordion-{{ns.accordion_count}} .item-1"
-                                            style="border-style: solid;border-color: #8db53d;font-weight: bold;font-family: Roboto, sans-serif;color: #000000;">RAW
-                                            Output</button></h2>
-                                    <div class="accordion-collapse collapse item-1" role="tabpanel"
-                                        data-bs-parent="#accordion-{{ns.accordion_count}}"
-                                        style="border-style: solid;border-color: #0068b4;border-top-style: none;border-bottom-style: none;height: 200px;">
-                                        <div class="accordion-body"><textarea onclick="this.focus();this.select()"
-                                                style="max-width: 100%;min-width: 100%;width: 100%;height: 150px;min-height: 0px;max-height: none;border-radius: 3px;font-family: 'Roboto Mono', monospace;background: #f5faff;color: #0068b4;border-width: 3px;border-color: #0068b4;border-top-style: none;border-right-color: #acd5fe;border-bottom-style: none;border-left-color: #acd5fe;padding: 12px;margin: 0px;font-size: 13px;margin-top: 10px;"
-                                                readonly="" name="raw_code">{{results[host][module]['raw']}}</textarea></div>
+                                </h6>
+                            {% if results[host][module]["extendedname"] != results[host][module]["name"] %}
+                                <h6 class="text-muted card-subtitle mb-2"
+                                    style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[host][module]['extendedname']}}
+                                </h6>
+                            {% endif %}
+                            <p class="card-text"
+                                style="font-family: 'Roboto Condensed', sans-serif;color: #6c757d;font-style: italic;">
+                                {{results[host][module]['description']}}
+                            </p>
+                            {% if 'mitigation' in results[host][module] %}
+                                <div class="card" style="border-style: none;padding: 2px;margin: 0px;">
+                                    <h5 style="color: #000000;font-family: Roboto, sans-serif;">Mitigation</h5>
+                                    <ul class="list-group list-group-flush" style="border-style: solid;border-color: #8db53d;">
+
+                                        {% for key,mitigation in results[host][module]['mitigation'].items() %}
+                                            <li class="list-group-item" style="border-radius: 4px;border-style: none;">
+                                                <h5 class="mb-0"
+                                                    style="border-style: none;border-bottom-style: none;font-family: Roboto, sans-serif;">
+                                                    <strong>{{key}}</strong>
+                                                </h5>
+                                                <p style="font-family: Roboto, sans-serif;text-align: justify;margin: 3px;">{{mitigation}}</p>
+                                                </p>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                            {% if 'raw' in results[host][module] %}
+                            <div class="card" style="border-style: none;padding: 2px;margin: 0px;">
+                                {%set ns.accordion_count = ns.accordion_count + 1%}
+                                <div class="accordion" role="tablist" id="accordion-{{ns.accordion_count}}"
+                                    style="border-width: 3px;border-radius: 0px,0px,3px,3px;">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" role="tab"><button class="accordion-button collapsed"
+                                                data-bs-toggle="collapse" data-bs-target="#accordion-{{ns.accordion_count}} .item-1"
+                                                aria-expanded="false" aria-controls="accordion-{{ns.accordion_count}} .item-1"
+                                                style="border-style: solid;border-color: #8db53d;font-weight: bold;font-family: Roboto, sans-serif;color: #000000;">RAW
+                                                Output</button></h2>
+                                        <div class="accordion-collapse collapse item-1" role="tabpanel"
+                                            data-bs-parent="#accordion-{{ns.accordion_count}}"
+                                            style="border-style: solid;border-color: #0068b4;border-top-style: none;border-bottom-style: none;height: 200px;">
+                                            <div class="accordion-body"><textarea onclick="this.focus();this.select()"
+                                                    style="max-width: 100%;min-width: 100%;width: 100%;height: 150px;min-height: 0px;max-height: none;border-radius: 3px;font-family: 'Roboto Mono', monospace;background: #f5faff;color: #0068b4;border-width: 3px;border-color: #0068b4;border-top-style: none;border-right-color: #acd5fe;border-bottom-style: none;border-left-color: #acd5fe;padding: 12px;margin: 0px;font-size: 13px;margin-top: 10px;"
+                                                    readonly="" name="raw_code">{{results[host][module]['raw']}}</textarea></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            {% endif %}
+                            {% if 'references' in results[host][module] %}
+                            <a class="card-link" href="{{results[host][module]['references']}}">Link to the
+                                webpage</a>
+                            {% endif %}
                         </div>
-                        {% endif %}
-                        {% if 'references' in results[host][module] %}
-                        <a class="card-link" href="{{results[host][module]['references']}}">Link to the
-                            webpage</a>
-                        {% endif %}
                     </div>
-                </div>
-                {% endif %}
+                    {% endif %}
                 {% endfor %}
             </div>
             {% endfor %}
