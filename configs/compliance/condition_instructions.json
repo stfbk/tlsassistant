@@ -6,6 +6,7 @@
   "GROUPS": "Groups",
   "HASH": "Hash",
   "KEYLEN": "KeyLengths",
+  "SIGNATURE": "Signature",
   "TLS": "Protocol",
   "CERTSIG": "CertificateSignature",
   "CERTIFICATESIGNATURE": "CertificateSignature",

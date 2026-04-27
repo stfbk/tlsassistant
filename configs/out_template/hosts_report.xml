@@ -30,7 +30,7 @@
         <paraStyle name = "vulnerable_websites_list" fontName = "Roboto Italic" fontSize = "12" alignment="left" spaceAfter="5"/>
         <paraStyle name = "not_vulnerable" fontName="Roboto"/>
         <paraStyle name = "potentially_vulnerable" fontName="Roboto Bold" textColor="red"/>
-        <paraStyle name = "partially_compliant" fontName="Roboto Bold" textColor="orange"/>
+        <paraStyle name = "partially_compliant" fontName="Roboto Bold" textColor="#ff8a0c"/>
         <paraStyle name = "custom_font_code-2" fontName="Roboto" fontSize="12" backColor="yellow"/>
         <blockTableStyle id="report">
             <lineStyle start="0,0" stop="-1,-1" kind="grid" thickness="0.25" colorName="black" cap="default"/>
