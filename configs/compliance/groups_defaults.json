@@ -1159,7 +1159,57 @@
         "ffdhe6144",
         "ffdhe8192"
     ],
+    "openssl-3.0.16": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "openssl-3.0.17": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "openssl-3.0.18": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "openssl-3.0.19": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
     "openssl-3.0.2": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "openssl-3.0.20": [
         "secp256r1",
         "secp521r1",
         "secp384r1",
@@ -1329,6 +1379,16 @@
         "ffdhe6144",
         "ffdhe8192"
     ],
+    "openssl-3.1.8": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
     "openssl-3.2.0": [
         "secp256r1",
         "secp521r1",
@@ -1399,6 +1459,36 @@
         "ffdhe6144",
         "ffdhe8192"
     ],
+    "openssl-3.2.4": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "openssl-3.2.5": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "openssl-3.2.6": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
     "openssl-3.3.0": [
         "secp256r1",
         "secp521r1",
@@ -1449,6 +1539,56 @@
         "ffdhe6144",
         "ffdhe8192"
     ],
+    "openssl-3.3.3": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "openssl-3.3.4": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "openssl-3.3.5": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "openssl-3.3.6": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "openssl-3.3.7": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
     "openssl-3.4.0": [
         "secp256r1",
         "secp521r1",
@@ -1489,6 +1629,46 @@
         "ffdhe6144",
         "ffdhe8192"
     ],
+    "openssl-3.4.2": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "openssl-3.4.3": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "openssl-3.4.4": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
+    "openssl-3.4.5": [
+        "secp256r1",
+        "secp521r1",
+        "secp384r1",
+        "ffdhe2048",
+        "ffdhe3072",
+        "ffdhe4096",
+        "ffdhe6144",
+        "ffdhe8192"
+    ],
     "openssl-3.5.0": [
         "prime256v1"
     ],
@@ -1496,6 +1676,45 @@
         "prime256v1"
     ],
     "openssl-3.5.0-beta1": [
+        "prime256v1"
+    ],
+    "openssl-3.5.1": [
+        "prime256v1"
+    ],
+    "openssl-3.5.3": [
+        "prime256v1"
+    ],
+    "openssl-3.5.4": [
+        "prime256v1"
+    ],
+    "openssl-3.5.5": [
+        "prime256v1"
+    ],
+    "openssl-3.5.6": [
+        "prime256v1"
+    ],
+    "openssl-3.6.0": [
+        "prime256v1"
+    ],
+    "openssl-3.6.0-alpha1": [
+        "prime256v1"
+    ],
+    "openssl-3.6.0-beta1": [
+        "prime256v1"
+    ],
+    "openssl-3.6.1": [
+        "prime256v1"
+    ],
+    "openssl-3.6.2": [
+        "prime256v1"
+    ],
+    "openssl-4.0.0": [
+        "prime256v1"
+    ],
+    "openssl-4.0.0-alpha1": [
+        "prime256v1"
+    ],
+    "openssl-4.0.0-beta1": [
         "prime256v1"
     ]
 }

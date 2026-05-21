@@ -17,7 +17,8 @@ import time
 import requests
 
 RELEASES = ["0.9.x", "1.0.0", "1.0.1", "1.0.2", "1.1.0",
-            "1.1.1", "3.0", "3.1", "3.2", "3.3", "3.4", "3.5"]
+            "1.1.1", "3.0", "3.1", "3.2", "3.3", "3.4", "3.5",
+            "3.6", "4.0"]
 
 
 def download_releases():
@@ -74,7 +75,7 @@ def extract_files():
             # download the file
             r = requests.get(urls[release], timeout=5)
             # write the file
-            with open(f"tmp/{release}.tar.gz", "wb", encoding="utf-8") as f:
+            with open(f"tmp/{release}.tar.gz", "wb") as f:
                 f.write(r.content)
         # unzip only the necessary files
         files = ["t1_lib.c", "ssl_local.h", "s3_lib.c", "s2_lib.c", "ssl.h", "ssl_ciph.c",
