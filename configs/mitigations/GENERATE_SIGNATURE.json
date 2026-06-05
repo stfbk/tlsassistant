@@ -15,6 +15,7 @@
     "not recommended": "",
     "recommended": "name",
     "must": "name",
+    "optional": "name",
     "info": "",
     "connector": ":",
     "mode": "standard",
