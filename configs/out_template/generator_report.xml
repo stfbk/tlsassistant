@@ -121,17 +121,17 @@
         <!--forse mettere il comando usato per generare il report-->
         {% set additional_info_ns = namespace() %}
         {% set additional_info_ns.conf_name = "generate_one_additional_info" if "generate_one_additional_info" in results else "generate_many_additional_info" %}
-        {% set additional_info_ns.hosts = list(results[additional_info_ns.conf_name]["raw"].keys())%}
+        {% set additional_info_ns.hosts = list(results[additional_info_ns.conf_name]["raw_dict"].keys())%}
         {% set _ = modules.remove(additional_info_ns.conf_name) %}
         {% if hosts.__len__() == 1 %}
             {%set additional_info_ns.host = additional_info_ns.hosts[0]%}
-            <para style="title"><b>Target: {{results[additional_info_ns.conf_name]["raw"][additional_info_ns.host].get("name", "placeholder")}}</b></para>
+            <para style="title"><b>Target: {{results[additional_info_ns.conf_name]["raw_dict"][additional_info_ns.host].get("name", "placeholder")}}</b></para>
         {% elif hosts.__len__() > 1 %}
             <para style="title"><b>Target: <i>multiple hosts</i></b></para>
         {% else %}
             <para style="title"><b>NO HOST LIST FOUND</b></para>
         {% endif %}
-        <para style="subtitle">Generation performed on {{date}}<br/>Considered OpenSSL version: {{results[additional_info_ns.conf_name]["raw"][additional_info_ns.host].get("openssl_version", "Not defined")}}</para>
+        <para style="subtitle">Generation performed on {{date}}<br/>Considered OpenSSL version: {{results[additional_info_ns.conf_name]["raw_dict"][additional_info_ns.host].get("openssl_version", "Not defined")}}</para>
         <setNextTemplate name="disclaimer"/>
         <nextFrame/>
         <para fontName="Roboto Bold" fontSize="16" leading="20" spaceAfter="5">Confidentiality Disclaimer</para>
@@ -172,10 +172,10 @@
                         <td><para style="potentially_vulnerable"> The generation encountered an error</para></td>
                     {% elif module in results %}
                         {% if module.startswith("generate_") %}
-                            {% set host_name = list(results[module]["raw"].keys())[0] %}
-                            {% if results[module]["raw"][host_name].get("missing_elements") %}
+                            {% set host_name = list(results[module]["raw_dict"].keys())[0] %}
+                            {% if results[module]["raw_dict"][host_name].get("missing_elements") %}
                                 <td><para style="generated_missing">Limited compliance</para></td>
-                            {% elif results[module]["raw"][host_name].get("user_action") %}
+                            {% elif results[module]["raw_dict"][host_name].get("user_action") %}
                                 <td><para style="generated_user_action">User interaction required</para></td>
                             {% else %}
                                 <td><para style="generated_fine">Compliant</para></td>
@@ -211,8 +211,8 @@
                 {% set user_action_ns.host = data["hosts"][0] %}
             {% endfor%}
             {% set user_action_ns.final_string = "" %}
-            {% for module, data in results.items() if data["raw"][user_action_ns.host].get("user_action"): %}
-                {% set user_action_ns.final_string = user_action_ns.final_string + "- " + data["raw"][user_action_ns.host]["user_action"] + "<br/>" %}
+            {% for module, data in results.items() if data["raw_dict"][user_action_ns.host].get("user_action"): %}
+                {% set user_action_ns.final_string = user_action_ns.final_string + "- " + data["raw_dict"][user_action_ns.host]["user_action"] + "<br/>" %}
             {% endfor%}
             {% for replacement in Replacements %}
                 {% set user_action_ns.final_string = sub(replacement, Replacements[replacement], user_action_ns.final_string) %}

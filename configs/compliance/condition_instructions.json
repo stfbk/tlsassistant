@@ -37,5 +37,6 @@
   "DISABLE_IF": "FUNCTION disable_if",
   "CHECK_DN": "FUNCTION check_dn",
   "CLIENT_AUTH": "FUNCTION check_client_auth",
-  "CLIENT_ONLY": "FUNCTION check_client_only"
+  "CLIENT_ONLY": "FUNCTION check_client_only",
+  "PRIORITY": "FUNCTION handle_priority"
 }
