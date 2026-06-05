@@ -679,6 +679,13 @@ class Compliance:
                         value = value.split(" ")[-1]
                         value = self._ciphers_converter.get(value, value)
                         self._user_configuration["CipherSuite"].add(value)
+                        if "SHA" in value:
+                            # If the cipher contains SHA it is possible to extract the hashing algorithm used for the cipher
+                            hash_alg = value.split("SHA")[-1][:3]
+                            if hash_alg:
+                                self._user_configuration["Hash"].add(
+                                    "sha" + hash_alg)
+                        
 
                 elif field == "FS_ciphers":
                     value = actual_dict.get("finding", "")
@@ -707,25 +714,24 @@ class Compliance:
 
                 # From the certificate signature algorithm is possible to extract both CertificateSignature and Hash
                 elif field.startswith("cert_Algorithm") or field.startswith("cert_signatureAlgorithm"):
-                    if " " in actual_dict["finding"]:
-                        tokens = actual_dict["finding"].split(" ")
-                        sig_alg = tokens[-1]
-                        hash_alg = tokens[0]
-                        # sometimes the hashing algorithm comes first, so they must be switched
-                        if sig_alg.startswith("SHA"):
-                            sig_alg, hash_alg = hash_alg, sig_alg
-                        sig_alg = self._add_certificate_signature_algorithm(sig_alg)[
-                            0]
-                        sig_alg_cert = convert_signature_algorithm(
-                            f"{sig_alg}+{hash_alg.upper()}")
-                        self._user_configuration["SignatureAlgsCertificate"].add(
-                            sig_alg_cert)
-                        self._user_configuration["Hash"].add(hash_alg.lower())
-                        cert_index = self.find_cert_index(field)
-                        if not self._user_configuration["Certificate"].get(cert_index):
-                            self._user_configuration["Certificate"][cert_index] = {
-                            }
-                        self._user_configuration["Certificate"][cert_index]["SigAlg"] = sig_alg
+                    tokens = actual_dict["finding"].split(" ")
+                    sig_alg = tokens[-1]
+                    hash_alg = tokens[0]
+                    # sometimes the hashing algorithm comes first, so they must be switched
+                    if sig_alg.startswith("SHA"):
+                        sig_alg, hash_alg = hash_alg, sig_alg
+                    sig_alg = self._add_certificate_signature_algorithm(sig_alg)[
+                        0]
+                    sig_alg_cert = convert_signature_algorithm(
+                        f"{sig_alg}+{hash_alg.upper()}")
+                    self._user_configuration["SignatureAlgsCertificate"].add(
+                        sig_alg_cert)
+                    self._user_configuration["Hash"].add(hash_alg.lower())
+                    cert_index = self.find_cert_index(field)
+                    if not self._user_configuration["Certificate"].get(cert_index):
+                        self._user_configuration["Certificate"][cert_index] = {
+                        }
+                    self._user_configuration["Certificate"][cert_index]["SigAlg"] = sig_alg
 
                 elif field.startswith("cert_keySize"):
                     # the first two tokens (after doing a space split) are the Key Algorithm and its key size
