@@ -91,7 +91,7 @@ class Compliance:
             "user_conf_types", "configs/compliance/generate/")
         self.oakley_mapping = load_configuration(
             "oakley_mapping", "configs/compliance/")
-        self.enable_optional = load_configuration(
+        self.enable_optional_guideline = load_configuration(
             "enable_optional", "configs/compliance/")
         self._type_converter = {
             "dict": dict,
@@ -110,6 +110,11 @@ class Compliance:
         self._no_psk = None
         self._guidelines_string = ""
         self.dump_folder = "./testssl_dumps"
+        self._ml_keysizes = {
+            "44": 1312,
+            "65": 1952,
+            "87": 2592
+        }
 
     def prepare_sheet_columns(self):
         resulting_dict = {}
@@ -728,6 +733,8 @@ class Compliance:
                     if element_to_add[1][:2] == "Ed":
                         # The key size of Ed25519 and Ed448 is fixed, so it is not specified in the finding, but it can be inferred from the name of the algorithm
                         element_to_add[1] = 256 if "25519" in element_to_add[0] else 456
+                    elif element_to_add[1].startswith("ML"):
+                        element_to_add[1] = self._ml_keysizes.get(element_to_add[1][:2], element_to_add[1])
                     else:
                         element_to_add[1] = int(element_to_add[1])
                     # *ecdsa*|*ecPublicKey* -> EC in testssl.sh output
@@ -765,13 +772,18 @@ class Compliance:
                             else:
                                 self._user_configuration["Groups"].append(
                                     group)
+                
+                elif field == "FS_KEMs":
+                    finding = actual_dict["finding"]
+                    kems = finding.split(" ")
+                    for kem in kems:
+                        self._user_configuration["Groups"].append(kem)
 
                 # The field FS_TLS_12_sig_algs contains the signature algorithms that can be used for Forward secrecy.
                 # For more details https://github.com/drwetter/testssl.sh/issues/2440
                 elif field[-11:] == "12_sig_algs":
                     finding = actual_dict["finding"]
-                    elements = finding.split(
-                        " ") if " " in finding else [finding]
+                    elements = finding.split(" ")
                     hashes = []
                     signatures = []
                     for el in elements:
@@ -816,7 +828,7 @@ class Compliance:
                             bits = "256"
                         self._user_configuration["KeyLengths"].add(
                             ("ECDH", int(bits)))
-                    self._user_configuration["Groups"] = values
+                    self._user_configuration["Groups"].extend(values)
 
                 # The transparency field describes how the transparency is handled in each certificate.
                 # https://developer.mozilla.org/en-US/docs/Web/Security/Certificate_Transparency (for the possibilities)
@@ -877,7 +889,7 @@ class Compliance:
             information_level = "MUST"
             action = "has to be enabled"
         elif ((entry_level in ["must", "recommended"] or
-               (entry_level == "optional" and source in self.enable_optional))
+               (entry_level == "optional" and source in self.enable_optional_guideline))
                 and enabled and valid_condition and sheet in self.report_config.get("has_total_string", [])):
             # these entries are not added to the output dict
             total_string_only = True
@@ -897,7 +909,7 @@ class Compliance:
         elif entry_level == "not recommended" and valid_condition and enabled:
             information_level = "NOT RECOMMENDED"
             action = "should be disabled"
-        elif entry_level == "optional" and valid_condition and not enabled and source in self.enable_optional:
+        elif entry_level == "optional" and valid_condition and not enabled and source in self.enable_optional_guideline:
             information_level = "OPTIONAL"
             action = "can be enabled"
         if not self._output_dict.get(sheet):
@@ -1080,7 +1092,7 @@ class Compliance:
         if sheet == "KeyLengths" and enabled and valid_condition and level in ["recommended", "must"]:
             self.valid_keysize = True
 
-    def handle_conditions_results(self, notes, enabled, valid_condition, level):
+    def handle_conditions_results(self, notes, enabled, valid_condition, level, condition, name):
         if self._condition_parser.entry_updates.get("disable_if"):
             enabled = self.check_disable_if(self._condition_parser.entry_updates.get("disable_if"),
                                             enabled, valid_condition)
@@ -1210,7 +1222,7 @@ class Compliance:
                             "is_enabled", enabled)
                         self._logging.debug(f"Condition: {condition} - enabled: {enabled} - valid: {valid_condition}")
                         enabled, valid_condition, level, priority = self.handle_conditions_results(
-                            notes, enabled, valid_condition, level)
+                            notes, enabled, valid_condition, level, condition, name)
 
                     conditions.append(valid_condition)
                     levels.append(level)
@@ -1243,7 +1255,7 @@ class Compliance:
                         valid_condition = self._condition_parser.run(
                             condition, enabled, cert_index=self._certificate_index)
                         enabled, valid_condition, resulting_level, priority = self.handle_conditions_results(
-                            notes, enabled, valid_condition, resulting_level)
+                            notes, enabled, valid_condition, resulting_level, condition, name)
                         field_is_enabled_in_guideline[guideline] = enabled
 
                 if sheet == "Extension" and not self._condition_parser.check_extension_availability(
@@ -1271,12 +1283,11 @@ class Compliance:
                     level = custom_entry[name]["level"]
                     enabled = ConditionParser.is_enabled(self._user_configuration, sheet, name, entry,
                                                          certificate_index=self._certificate_index)
-
                     condition = custom_entry[name].get("condition", "")
                     valid_condition = self._condition_parser.run(
                         condition, enabled, cert_index=self._certificate_index)
                     enabled, valid_condition, level, priority = self.handle_conditions_results(
-                        notes, enabled, valid_condition, level)
+                        notes, enabled, valid_condition, level, condition, name)
                     evaluated_entries[sheet][total] = {
                         "entry": entry,
                         "level": level,

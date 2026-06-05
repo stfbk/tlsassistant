@@ -37,6 +37,8 @@ class ConfigurationMaker:
         self._groups_defaults = load_configuration(
             "groups_defaults", "configs/compliance/")
         self._database_instance = Database()
+        self._enable_optional_guideline = load_configuration(
+            "enable_optional", "configs/compliance/")
 
     def set_out_file(self, output_file):
         """
@@ -86,7 +88,7 @@ class ConfigurationMaker:
         self._write_to_file()
         return self._output_dict.copy()
 
-    def _get_string_to_add(self, field_rules, name, level, field):
+    def _get_string_to_add(self, field_rules, name, level, field, guideline):
         """
         :param field_rules: set of rules that should be used for this field
         :type field_rules: dict
@@ -96,6 +98,8 @@ class ConfigurationMaker:
         :type level: str
         :param field: Name of the field in the configuration file
         :type field: str
+        :param guideline: the guideline from which the level was deducted
+        :type guideline: str
         :return: The string that should be added to the configuration
         :rtype: str
         """
@@ -111,7 +115,8 @@ class ConfigurationMaker:
         if field in self._enabled_once:
             return ""
         level = get_standardized_level(level)
-        if level in ["must", "recommended"] or field_rules.get("enable_optional") and level == "optional":
+        if level in ["must", "recommended"] or (field_rules.get("enable_optional") and level == "optional") or \
+            (self._enable_optional_guideline.get(guideline) and level == "optional"):
             if field_rules.get("enable_one_time"):
                 self._enabled_once.add(field)
             string_to_add += allow_string.replace("name", name)
@@ -153,7 +158,7 @@ class ConfigurationMaker:
             for replacement in replacements:
                 name = name.replace(replacement, replacements[replacement])
             tmp_string += self._get_string_to_add(
-                field_rules, name, level, field)
+                field_rules, name, level, field, guideline)
             if self._output_dict[field].get(name):
                 if condition:
                     index = len(self.conditions_to_check)
