@@ -25,7 +25,7 @@
   },
   {
     "type": "pip",
-    "url": "z3c.rml==4.4.0"
+    "url": "z3c.rml==5.0.1"
   },
   {
     "type": "zip",

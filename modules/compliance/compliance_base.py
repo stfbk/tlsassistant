@@ -786,7 +786,8 @@ class Compliance:
                     self._user_configuration["Hash"].update(hashes)
                     self._user_configuration["Signature"].update(signatures)
                     self._user_configuration["Signature_12"].update(signatures)
-                    self._user_configuration["SignatureAlgsCertificate"].update(signatures)
+                    self._user_configuration["SignatureAlgsCertificate"].update(
+                        signatures)
 
                 # From TLS 1.3 the signature algorithms are different from the previous versions.
                 # So they are saved in a different field of the configuration dictionary.
@@ -798,7 +799,8 @@ class Compliance:
                         sig) for sig in values]
                     self._user_configuration["Signature"].update(values)
                     self._user_configuration["Signature_13"].update(values)
-                    self._user_configuration["SignatureAlgsCertificate"].update(values)
+                    self._user_configuration["SignatureAlgsCertificate"].update(
+                        values)
 
                 # The supported groups are available as a list in this field
                 elif field[-12:] == "ECDHE_curves":
@@ -1078,6 +1080,41 @@ class Compliance:
         if sheet == "KeyLengths" and enabled and valid_condition and level in ["recommended", "must"]:
             self.valid_keysize = True
 
+    def handle_conditions_results(self, notes, enabled, valid_condition, level):
+        if self._condition_parser.entry_updates.get("disable_if"):
+            enabled = self.check_disable_if(self._condition_parser.entry_updates.get("disable_if"),
+                                            enabled, valid_condition)
+        if self._condition_parser.entry_updates.get("flip_level"):
+            level = self.level_flipper.get(level, level)
+        if self._condition_parser.entry_updates.get("levels"):
+            potential_levels = self._condition_parser.entry_updates.get(
+                "levels")
+            level = potential_levels[self.level_to_use(
+                potential_levels, self._security)]
+        new_level = self._condition_parser.entry_updates.get(
+            "force_level", level)
+        if new_level:
+            level = new_level
+        has_alternative = self._condition_parser.entry_updates.get(
+            "has_alternative")
+        additional_notes = self._condition_parser.entry_updates.get(
+            "notes", "")
+        conditional_notes = self.add_conditional_notes(
+            enabled, valid_condition)
+        notes[-1] += conditional_notes
+        if has_alternative and not enabled and isinstance(condition, str) and condition.count(" ") > 1:
+            parts = condition.split(" ")
+            # Tokens[1] is the logical operator
+            notes[-1] += f"\nNOTE: {name} {parts[1].upper()} {' '.join(parts[2:])} is needed"
+            # This is to trigger the output condition. This works because I'm assuming that "THIS"
+            # is only used in a positive (recommended, must) context.
+            valid_condition = True
+        if additional_notes:
+            notes[-1] += "\nNOTE: "
+            notes[-1] += "\n".join(additional_notes)
+        priority = self._condition_parser.entry_updates.get("priority", 0)
+        return enabled, valid_condition, level, priority
+
     def _evaluate_entries(self, sheets_to_check, original_columns, entries_to_check):
         """
         This function checks the entries with the same name and chooses which guideline to follow for that entry.
@@ -1120,6 +1157,7 @@ class Compliance:
             custom_guidelines_list = sheets_to_check[sheet].keys(
             ) - self._guidelines
             total = 0
+            names = []
             for entry in entries:
                 # These three are lists and not a single dictionary because the function level_to_use takes a list
                 conditions = []
@@ -1127,9 +1165,11 @@ class Compliance:
                 # list holding all the notes so that a note gets displayed only if needed
                 notes = []
                 name = entry[name_index]
+                names.append(name)
 
                 pos = level_index
                 field_is_enabled_in_guideline = {}
+                priority = 0
                 while pos < len(entry):
                     level = entry[pos]
                     condition = entry[pos + level_to_condition_index]
@@ -1168,39 +1208,9 @@ class Compliance:
                                                                      cert_index=self._certificate_index)
                         enabled = self._condition_parser.entry_updates.get(
                             "is_enabled", enabled)
-                        if self._condition_parser.entry_updates.get("disable_if"):
-                            enabled = self.check_disable_if(self._condition_parser.entry_updates.get("disable_if"),
-                                                            enabled, valid_condition)
-                        self._logging.debug(
-                            f"Condition: {condition} - enabled: {enabled} - valid: {valid_condition}")
-                        if self._condition_parser.entry_updates.get("flip_level"):
-                            level = self.level_flipper.get(level, level)
-                        if self._condition_parser.entry_updates.get("levels"):
-                            potential_levels = self._condition_parser.entry_updates.get(
-                                "levels")
-                            level = potential_levels[self.level_to_use(
-                                potential_levels, self._security)]
-                        new_level = self._condition_parser.entry_updates.get(
-                            "force_level", level)
-                        if new_level:
-                            level = new_level
-                        has_alternative = self._condition_parser.entry_updates.get(
-                            "has_alternative")
-                        additional_notes = self._condition_parser.entry_updates.get(
-                            "notes", "")
-                        conditional_notes = self.add_conditional_notes(
-                            enabled, valid_condition)
-                        notes[-1] += conditional_notes
-                        if has_alternative and not enabled and isinstance(condition, str) and condition.count(" ") > 1:
-                            parts = condition.split(" ")
-                            # Tokens[1] is the logical operator
-                            notes[-1] += f"\nNOTE: {name} {parts[1].upper()} {' '.join(parts[2:])} is needed"
-                            # This is to trigger the output condition. This works because I'm assuming that "THIS"
-                            # is only used in a positive (recommended, must) context.
-                            valid_condition = True
-                        if additional_notes:
-                            notes[-1] += "\nNOTE: "
-                            notes[-1] += "\n".join(additional_notes)
+                        self._logging.debug(f"Condition: {condition} - enabled: {enabled} - valid: {valid_condition}")
+                        enabled, valid_condition, level, priority = self.handle_conditions_results(
+                            notes, enabled, valid_condition, level)
 
                     conditions.append(valid_condition)
                     levels.append(level)
@@ -1216,6 +1226,7 @@ class Compliance:
                     custom_entry = self._custom_guidelines[guideline].get(
                         sheet, {}).get(name)
                     if custom_entry:
+                        condition = custom_entry.get("condition", "")
                         levels = [resulting_level, custom_entry["level"]]
                         guidelines_to_check = list(sheets_to_check[sheet])
                         # If the custom_guideline appears before the source_guideline (actual guideline from which
@@ -1229,11 +1240,11 @@ class Compliance:
                         resulting_level = levels[best_level]
                         enabled = ConditionParser.is_enabled(self._user_configuration, sheet, name, entry,
                                                              certificate_index=self._certificate_index)
+                        valid_condition = self._condition_parser.run(
+                            condition, enabled, cert_index=self._certificate_index)
+                        enabled, valid_condition, resulting_level, priority = self.handle_conditions_results(
+                            notes, enabled, valid_condition, resulting_level)
                         field_is_enabled_in_guideline[guideline] = enabled
-
-                # Custom guidelines don't have notes
-                if source_guideline.upper() not in self._guidelines:
-                    note = ""
 
                 if sheet == "Extension" and not self._condition_parser.check_extension_availability(
                         name, self._user_configuration):
@@ -1246,9 +1257,37 @@ class Compliance:
                     "source": source_guideline,
                     "enabled": field_is_enabled_in_guideline[source_guideline],
                     "valid_condition": condition,
-                    "note": note
+                    "note": note,
+                    "priority": priority
                 }
                 total += 1
+            for guideline in self._custom_guidelines:
+                custom_entry = self._custom_guidelines[guideline].get(
+                    sheet, {})
+                missing_names = set(custom_entry.keys()) - set(names)
+                for name in missing_names:
+                    entry = [None] * len(columns)
+                    entry[name_index] = name
+                    level = custom_entry[name]["level"]
+                    enabled = ConditionParser.is_enabled(self._user_configuration, sheet, name, entry,
+                                                         certificate_index=self._certificate_index)
+
+                    condition = custom_entry[name].get("condition", "")
+                    valid_condition = self._condition_parser.run(
+                        condition, enabled, cert_index=self._certificate_index)
+                    enabled, valid_condition, level, priority = self.handle_conditions_results(
+                        notes, enabled, valid_condition, level)
+                    evaluated_entries[sheet][total] = {
+                        "entry": entry,
+                        "level": level,
+                        "source": guideline,
+                        "enabled": enabled,
+                        "valid_condition": valid_condition,
+                        # TODO handle notes here
+                        "note": "",
+                        "priority": priority
+                    }
+                    total += 1
         return evaluated_entries
 
     @staticmethod

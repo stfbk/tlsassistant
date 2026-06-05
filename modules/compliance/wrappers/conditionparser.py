@@ -773,6 +773,16 @@ class CustomFunctions:
                         self._entry_updates[key][i] = entry.replace(
                             "{cert}", cert).replace("{reason}", reason)
         return enabled
+    
+    def handle_priority(self, **kwargs):
+        data = kwargs.get("data", "")
+        if not data.isnumeric():
+            logger.error(f"Invalid priority value: {data}, it must be a number. Ignoring the priority for this entry.")
+            return True
+
+        priority = int(data)
+        self._entry_updates["priority"] = priority
+        return True
 
     @staticmethod
     def _get_configuration_field(field, levels):

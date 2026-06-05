@@ -2,6 +2,7 @@ from modules.compliance.compliance_base import Generator
 from utils.globals import DEFAULT_COLUMNS
 from configs import different_names_pos
 from configs import has_numeric_id
+from collections import OrderedDict
 
 
 class GenerateMany(Generator):
@@ -16,10 +17,14 @@ class GenerateMany(Generator):
             tables = {}
             sheet, query_filter = self.get_sheet_filter(conf_mapping[field])
             query_filters = {sheet: query_filter}
+            if sheet not in sheets_to_check:
+                continue
             sheets_to_use = {sheet: sheets_to_check[sheet]}
             # Retrieve entries from the database
             entries = self._retrieve_entries(sheets_to_use, columns, query_filters, tables)
             evaluated_entries = self._evaluate_entries(sheets_to_use, columns, entries)
+            # evaluated_entries sorted(OrderedDict(evaluated_entries.items(), key=lambda x:  ))
+            evaluated_entries[sheet] = OrderedDict(sorted(list(evaluated_entries.values())[0].items(), key=lambda x: x[1]["priority"], reverse=True))
             field_rules = self._configuration_rules.get(field, {})
             # the guideline here is defined as None because it will be defined in the function
             columns_temp = self.sheet_columns.get(sheet, columns)
