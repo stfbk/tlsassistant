@@ -953,6 +953,23 @@ class CustomFunctions:
         # Since we can not verify this condition we set the level to optional and return trues
         self._entry_updates["force_level"] = "optional"
         return True
+    
+    def check_no_brainpool(self, **kwargs):
+        """
+        Function that checks that the current element is enabled only if no brainpool curve is available.
+        If the brainpool curves are available the entry becomes a NOT RECOMMENDED and a note is added.
+        Always returns True.
+        """
+        # if the element is not enabled we are done
+        if not kwargs.get("enabled", False):
+            return True
+        
+        brainpool_curves = ["brainpoolP256r1", "brainpoolP384r1", "brainpoolP512r1", "brainpoolP256r1tls13", "brainpoolP384r1tls13", "brainpoolP512r1tls13"]
+        available_curves = self._user_configuration.get("Groups", [])
+        if any(curve in available_curves for curve in brainpool_curves):
+            self._entry_updates["force_level"] = "not recommended"
+            self._entry_updates["notes"].append("Brainpool curves are enabled, the guideline recommends using them instead of this one.")
+        return True
 
     @staticmethod
     def always_true(**kwargs):

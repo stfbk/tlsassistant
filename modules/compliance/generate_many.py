@@ -23,7 +23,7 @@ class GenerateMany(Generator):
             # Retrieve entries from the database
             entries = self._retrieve_entries(sheets_to_use, columns, query_filters, tables)
             evaluated_entries = self._evaluate_entries(sheets_to_use, columns, entries)
-            # evaluated_entries sorted(OrderedDict(evaluated_entries.items(), key=lambda x:  ))
+            # Handle the priority of the entries
             evaluated_entries[sheet] = OrderedDict(sorted(list(evaluated_entries.values())[0].items(), key=lambda x: x[1]["priority"], reverse=True))
             field_rules = self._configuration_rules.get(field, {})
             # the guideline here is defined as None because it will be defined in the function
@@ -43,8 +43,6 @@ class GenerateMany(Generator):
             guidelines = tables[sheet]
             self._config_class.add_configuration_for_field(field, field_rules, evaluated_entries[sheet].values(),
                                                            columns_temp, ",".join(guidelines))
-        for field in self._config_class.conditions_to_check:
-            condition = self._config_class.conditions_to_check[field]
 
 
 

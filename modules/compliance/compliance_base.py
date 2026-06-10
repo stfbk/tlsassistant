@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import itertools
 import json
 import logging
@@ -328,8 +329,7 @@ class Compliance:
         return self.output()
 
     def output(self):
-        # TODO put it back to debug
-        if logging.getLogger().level == logging.INFO:
+        if logging.getLogger().level == logging.debug:
             file_hostname = self.hostname.replace(":", "_").replace("/", "_")
             with open(f"{self.dump_folder}/report_{file_hostname}_{self._guidelines_string}.json", "w") as f:
                 for category in self._output_dict:
@@ -476,10 +476,13 @@ class Compliance:
     def remove_duplicates_from_mitigation(self, mitigation, line_sep):
         for key in mitigation["Entry"]["Mitigation"]:
             if isinstance(mitigation["Entry"]["Mitigation"][key], str):
+                # this is needed to avoid removing duplicate notes that are added to the textual mitigation, since they are added with a <br/>&nbsp;&nbsp; at the beginning
+                mitigation["Entry"]["Mitigation"][key] = mitigation["Entry"]["Mitigation"][key].replace("<br/>&nbsp;&nbsp;", "&nbsp;2637611841&nbsp;")
                 mitigation["Entry"]["Mitigation"][key] = utils.remove_duplicates.remove_duplicates(
                     mitigation["Entry"]["Mitigation"][key], line_sep)
                 mitigation["Entry"]["Mitigation"][key] = mitigation["Entry"]["Mitigation"][key].replace(
                     "{total_string}", "No snippet available")
+                mitigation["Entry"]["Mitigation"][key] = mitigation["Entry"]["Mitigation"][key].replace("&nbsp;2637611841&nbsp;", "<br/>&nbsp;&nbsp;")
 
     def get_filters(self, sheet):
         cert_keys = self.get_cert_key_types()
@@ -781,6 +784,8 @@ class Compliance:
                 
                 elif field == "FS_KEMs":
                     finding = actual_dict["finding"]
+                    if finding.startswith("No "):
+                        continue
                     kems = finding.split(" ")
                     for kem in kems:
                         self._user_configuration["Groups"].append(kem)
@@ -1038,41 +1043,17 @@ class Compliance:
                                                     entry, condition=condition,
                                                     certificate_index=self._certificate_index)
         valid_condition = True
+        notes = [""]
         if condition:
             valid_condition = self._condition_parser.run(
                 condition, enabled, cert_index=self._certificate_index)
             enabled = self._condition_parser.entry_updates.get(
                 "is_enabled", enabled)
-            if self._condition_parser.entry_updates.get("disable_if"):
-                enabled = self.check_disable_if(self._condition_parser.entry_updates.get("disable_if"),
-                                                enabled,
-                                                valid_condition)
-            self._logging.debug(
-                f"Condition: {condition} - enabled: {enabled} - valid_condition: {valid_condition}")
-            if self._condition_parser.entry_updates.get("levels"):
-                levels = self._condition_parser.entry_updates.get("levels")
-                levels.insert(0, level)
-                to_use = self.level_to_use(levels, self._security)
-                level = levels[to_use]
-            forced_level = self._condition_parser.entry_updates.get(
-                "force_level", level)
-            if forced_level:
-                level = forced_level
+            enabled, valid_condition, level, priority = self.handle_conditions_results(
+                notes, enabled, valid_condition, level, condition, name)
 
-        has_alternative = self._condition_parser.entry_updates.get(
-            "has_alternative")
-        additional_notes = self._condition_parser.entry_updates.get(
-            "notes", "")
-        conditional_notes = self.add_conditional_notes(
-            enabled, valid_condition)
         self._condition_parser.entry_updates = {}
-        note = ""
-        if (has_alternative and not enabled and isinstance(condition, str) and condition.count(" ") > 1):
-            parts = entry[condition_index].split(" ")
-            # Tokens[1] is the logical operator
-            note = f"\nNOTE: {name} {parts[1].upper()} {' '.join(parts[2:])} is needed"
-            valid_condition = True
-
+        note = notes[-1]
         # if has_alternative or additional_notes:
         #     # This is to trigger the output condition. This works because I'm assuming that "THIS" is only
         #     # used in a positive (recommended, must) context.
@@ -1089,11 +1070,7 @@ class Compliance:
         self.update_result(sheet, name, level, enabled,
                            entry[-1], valid_condition, hostname)
 
-        if additional_notes:
-            note += "\nNOTE: "
-            note += "\n".join(additional_notes)
-        note += conditional_notes
-        if self._output_dict[sheet].get(name) is not None:
+        if note and self._output_dict[sheet].get(name) is not None:
             self._output_dict[sheet][name]["notes"] = note
         if sheet == "KeyLengths" and enabled and valid_condition and level in ["recommended", "must"]:
             self.valid_keysize = True
@@ -1602,6 +1579,7 @@ class Generator(Compliance):
                 mitigation["Entry"]["Mitigation"]["Textual"] = "<br/>".join(
                     mitigation["Entry"]["Mitigation"]["Textual"].split("<br/>")[1:])
             self.remove_duplicates_from_mitigation(mitigation, "<br/>")
+
             missing_elements = []
             for el in self._output_dict[sheet]:
                 if isinstance(self._output_dict[sheet][el], dict):
