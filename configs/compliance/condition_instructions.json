@@ -38,5 +38,6 @@
   "CHECK_DN": "FUNCTION check_dn",
   "CLIENT_AUTH": "FUNCTION check_client_auth",
   "CLIENT_ONLY": "FUNCTION check_client_only",
-  "PRIORITY": "FUNCTION handle_priority"
+  "PRIORITY": "FUNCTION handle_priority",
+  "CHECK_NO_BRAINPOOL": "FUNCTION check_no_brainpool"
 }

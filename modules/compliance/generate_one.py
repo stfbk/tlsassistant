@@ -37,6 +37,15 @@ class GenerateOne(Generator):
                         columns_temp.pop(1)
                     data = new_data
                 if data:
+                    # run the condition_parser
+                    priorities = {}
+                    for entry in data:
+                        condition = entry[columns_temp.index("condition")]
+                        if condition:
+                            self._condition_parser.run(condition, True)
+                        priorities[entry[columns_temp.index("name")]] = self._condition_parser.entry_updates.get("priority", 0)
+                    if any(priorities.values()):
+                        data = sorted(data, key=lambda x: priorities.get(x[columns_temp.index("name")], 0), reverse=True)
                     field_rules = self._configuration_rules.get(field, {})
                     self._config_class.add_configuration_for_field(
                         field, field_rules, data, columns_temp, table_name)
