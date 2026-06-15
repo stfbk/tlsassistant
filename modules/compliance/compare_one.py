@@ -29,6 +29,7 @@ class CompareOne(Compliance):
             guideline = list(sheets_to_check[sheet].keys())[0]
             table_name = self._database_instance.get_table_name(sheet, guideline, sheets_to_check[sheet][guideline])
             data = self._database_instance.run(tables=[table_name], columns=columns, other_filter=query_filter)
+            self._logging.debug(f"Data retrieved for sheet {sheet}: {data}")
             config_field = sheet
             for entry in data:
                 if config_field:

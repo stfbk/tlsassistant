@@ -23,6 +23,7 @@ class GenerateOne(Generator):
                     sheet, guideline, sheets_to_check[sheet][guideline])
                 data = self._database_instance.run(
                     [table_name], other_filter=query_filter, columns=columns_temp)
+                self._logging.debug(f"Data retrieved for sheet {sheet}: {data}")
                 if self._reverse_mapping.get(sheet) in different_names_pos:
                     _, num_columns = different_names_pos[self._reverse_mapping.get(
                         sheet)]
@@ -43,9 +44,8 @@ class GenerateOne(Generator):
                         condition = entry[columns_temp.index("condition")]
                         if condition:
                             self._condition_parser.run(condition, True)
-                        priorities[entry[columns_temp.index("name")]] = self._condition_parser.entry_updates.get("priority", 0)
-                    if any(priorities.values()):
-                        data = sorted(data, key=lambda x: priorities.get(x[columns_temp.index("name")], 0), reverse=True)
+                        priorities[entry[columns_temp.index("name")]] = self._condition_parser.entry_updates.get("priority", -1 if entry[columns_temp.index("level")] == "optional" else 0)
+                    data = sorted(data, key=lambda x: priorities.get(x[columns_temp.index("name")], -1 if x[columns_temp.index("level")] == "optional" else 0), reverse=True)
                     field_rules = self._configuration_rules.get(field, {})
                     self._config_class.add_configuration_for_field(
                         field, field_rules, data, columns_temp, table_name)

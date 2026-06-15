@@ -155,6 +155,8 @@ class ConditionParser:
                     field_value.values(), name)
 
         elif field_value and isinstance(field_value, set) and isinstance(list(field_value)[0], tuple):
+            if isinstance(entry, list):
+                entry = tuple(entry[:2])
             # KeyLengths case
             enabled = entry[:2] in field_value
             if not enabled and check_first:

@@ -39,6 +39,17 @@ class ConfigurationMaker:
         self._database_instance = Database()
         self._enable_optional_guideline = load_configuration(
             "enable_optional", "configs/compliance/")
+        self._configuration_mapping = load_configuration(
+            "configuration_mapping", f"configs/compliance/generate/")
+        self._database_instance.input(["Guideline"])
+        self._guidelines = [name[0].upper()
+                            for name in self._database_instance.output()]
+        alias_parser = compliance_base.AliasParser()
+        self._guideline_versions = {}
+        for guideline in alias_parser._guidelines_versions:
+            for n in alias_parser._guidelines_versions[guideline]:
+                for alias in alias_parser._guidelines_versions[guideline][n]:
+                    self._guideline_versions[guideline.upper()+alias.upper()] = guideline.upper()
 
     def set_out_file(self, output_file):
         """
@@ -115,8 +126,13 @@ class ConfigurationMaker:
         if field in self._enabled_once:
             return ""
         level = get_standardized_level(level)
+        added_field = self._configuration_mapping.get(field, "")
+        if isinstance(added_field, dict):
+            added_field = list(added_field.keys())[0] 
+        guideline_profile = guideline.replace(added_field, "").strip()
+        guideline_only = self._guideline_versions.get(guideline_profile, guideline_profile)
         if level in ["must", "recommended"] or (field_rules.get("enable_optional") and level == "optional") or \
-            (self._enable_optional_guideline.get(guideline) and level == "optional"):
+            (self._enable_optional_guideline.get(guideline_only) and level == "optional"):
             if field_rules.get("enable_one_time"):
                 self._enabled_once.add(field)
             string_to_add += allow_string.replace("name", name)
