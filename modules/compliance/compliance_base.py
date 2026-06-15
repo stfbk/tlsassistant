@@ -102,7 +102,8 @@ class Compliance:
         # This is used in the check_year function to disable entries that are not valid anymore
         self.level_flipper = {
             "must": "must not",
-            "recommended": "not recommended"
+            "recommended": "not recommended",
+            "optional": "not recommended"
         }
         self._cert_key_filters = load_configuration(
             "cert_key_filters", "configs/compliance/")
@@ -923,6 +924,15 @@ class Compliance:
         elif entry_level == "optional" and valid_condition and not enabled and source in self.enable_optional_guideline:
             information_level = "OPTIONAL"
             action = "can be enabled"
+        # case of entries that are enabled but the condition is not valid
+        elif entry_level in ["must", "recommended", "optional"] and enabled and not valid_condition:
+            information_level = self.level_flipper.get(entry_level, entry_level.upper()).upper()
+            action = ""
+            if information_level == "MUST NOT":
+                action += "has to be disabled"
+            elif information_level == "NOT RECOMMENDED":
+                action += "should be disabled"
+            action += " because the condition is not valid, "
         if not self._output_dict.get(sheet):
             self._output_dict[sheet] = {
                 "entries_add": [],
@@ -1107,7 +1117,7 @@ class Compliance:
         if additional_notes:
             notes[-1] += "\nNOTE: "
             notes[-1] += "\n".join(additional_notes)
-        priority = self._condition_parser.entry_updates.get("priority", 0)
+        priority = self._condition_parser.entry_updates.get("priority", -1 if level == "optional" else 0)
         return enabled, valid_condition, level, priority
 
     def _evaluate_entries(self, sheets_to_check, original_columns, entries_to_check):
@@ -1159,14 +1169,15 @@ class Compliance:
                 levels = []
                 # list holding all the notes so that a note gets displayed only if needed
                 notes = []
+                priorities = []
                 name = entry[name_index]
                 names.append(name)
 
                 pos = level_index
                 field_is_enabled_in_guideline = {}
-                priority = 0
                 while pos < len(entry):
                     level = entry[pos]
+                    priority = -1 if level == "optional" else 0
                     condition = entry[pos + level_to_condition_index]
                     guideline = entry[pos + level_to_guideline_index]
 
@@ -1209,10 +1220,12 @@ class Compliance:
 
                     conditions.append(valid_condition)
                     levels.append(level)
+                    priorities.append(priority)
                     field_is_enabled_in_guideline[guideline] = enabled
                     pos += step
                 best_level = self.level_to_use(levels, self._security)
                 resulting_level = levels[best_level]
+                priority = priorities[best_level]
                 condition = conditions[best_level]
                 note = notes[best_level]
                 # if best level is 0 it is the first one
@@ -1226,7 +1239,7 @@ class Compliance:
                         guidelines_to_check = list(sheets_to_check[sheet])
                         # If the custom_guideline appears before the source_guideline (actual guideline from which
                         # the level was deducted) it has greater priority, so it is necessary to switch them
-                        if guidelines_to_check.index(guideline) < guidelines_to_check.index(source_guideline):
+                        if guidelines_to_check.index(guideline) < guidelines_to_check.index(source_guideline.upper()):
                             levels = levels[::-1]
                         best_level = self.level_to_use(levels, self._security)
                         # if best_level is 0 the source_guideline is the best
@@ -1235,10 +1248,11 @@ class Compliance:
                         resulting_level = levels[best_level]
                         enabled = ConditionParser.is_enabled(self._user_configuration, sheet, name, entry,
                                                              certificate_index=self._certificate_index)
-                        valid_condition = self._condition_parser.run(
-                            condition, enabled, cert_index=self._certificate_index)
-                        enabled, valid_condition, resulting_level, priority = self.handle_conditions_results(
-                            notes, enabled, valid_condition, resulting_level, condition, name)
+                        if condition.strip():
+                            valid_condition = self._condition_parser.run(
+                                condition, enabled, cert_index=self._certificate_index)
+                            enabled, valid_condition, resulting_level, priority = self.handle_conditions_results(
+                                notes, enabled, valid_condition, resulting_level, condition, name)
                         field_is_enabled_in_guideline[guideline] = enabled
 
                 if sheet == "Extension" and not self._condition_parser.check_extension_availability(
@@ -1267,10 +1281,11 @@ class Compliance:
                     enabled = ConditionParser.is_enabled(self._user_configuration, sheet, name, entry,
                                                          certificate_index=self._certificate_index)
                     condition = custom_entry[name].get("condition", "")
-                    valid_condition = self._condition_parser.run(
-                        condition, enabled, cert_index=self._certificate_index)
-                    enabled, valid_condition, level, priority = self.handle_conditions_results(
-                        notes, enabled, valid_condition, level, condition, name)
+                    if condition.strip():
+                        valid_condition = self._condition_parser.run(
+                            condition, enabled, cert_index=self._certificate_index)
+                        enabled, valid_condition, level, priority = self.handle_conditions_results(
+                            notes, enabled, valid_condition, level, condition, name)
                     evaluated_entries[sheet][total] = {
                         "entry": entry,
                         "level": level,

@@ -80,8 +80,9 @@ class NginxConfiguration(ConfigurationMaker):
             if name:
                 for i, element in enumerate(directive["args"]):
                     if name in element:
-                        directive["args"][i] = element.replace(name, "")
-                        directive["args"][i] = re.sub("::*", ":", directive["args"][i])
+                        elements = directive["args"][i].split(":") 
+                        elements.remove(name)
+                        directive["args"][i] = ":".join(elements)
                         found = True
             else:
                 self._template["config"][0]["parsed"][1]["block"].remove(directive)
