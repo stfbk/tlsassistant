@@ -140,7 +140,7 @@ class Certificate:
         """
         req = requests.get(
             f"https://crt.sh/?q=%.{url}&output=json{'&exclude=expired' if not expired else ''}",
-            timeout=15
+            timeout=30
         )
 
         if not req.ok or req.status_code != 200:
