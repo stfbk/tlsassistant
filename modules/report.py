@@ -9,6 +9,7 @@ from os import mkdir
 from os.path import sep
 from pathlib import Path
 from pprint import pformat
+import sys
 
 import requests
 from jinja2 import Environment, FileSystemLoader
@@ -502,6 +503,9 @@ class Report:
             Prometheus(results=results, modules=modules).run(
                 output_path_prometheus)
 
+        if len(results) == 0 or all("errors" in results[hostname] for hostname in results):
+            self.__logging.debug("All scans errored, system will exit with code 1")
+            sys.exit(1)
 
 class Prometheus:
     """
