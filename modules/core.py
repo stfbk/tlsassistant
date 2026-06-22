@@ -722,6 +722,8 @@ class Core:
                 if extraction.suffix:
                     hostname_index = hostname_or_path.index(
                         f".{extraction.suffix}")
+                    if  extraction.domain.startswith(extraction.suffix):
+                        hostname_index += len(extraction.domain) + 1
                     actual_hostname = hostname_or_path[:hostname_index+len(
                         extraction.suffix)+1]
                 else:
