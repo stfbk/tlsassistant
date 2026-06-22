@@ -269,6 +269,7 @@ class Https:
                 requests.exceptions.ConnectTimeout,
                 requests.exceptions.ConnectTimeout,
                 requests.exceptions.ConnectionError,
+                requests.exceptions.ReadTimeout
             ) as ex:
                 self.__logging.error(f"I can't connect to host:\n{ex}")
                 self.__logging.warning(
