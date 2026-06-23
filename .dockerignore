@@ -160,3 +160,6 @@ testssl_dumps/
 
 # poetry lock
 poetry.lock
+
+# temporary files used during development
+useful_scripts/
