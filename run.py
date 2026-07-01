@@ -111,7 +111,7 @@ if __name__ == "__main__":
         "-l",
         "--list",
         nargs="?",
-        help="List all modules or print an help of a module.\nFor Example\n-l freak",
+        help="List all modules or print an help of a module.\nFor example: -l freak",
         default="",
     )
     hostname_or_apk.add_argument(
@@ -128,7 +128,7 @@ if __name__ == "__main__":
         type=str,
         nargs="?",
         default="",
-        help="Apply fix in the current configuration.\n Give a path if using -s.\ni.e."
+        help="Apply fix in the current configuration.\nProvide a path if using -s. For example:"
              "\n\tpython3 run.py -s fbk.eu --apply-fix myconf.conf",
     )
     parser.add_argument(
@@ -136,9 +136,9 @@ if __name__ == "__main__":
         dest="resolve_ip",
         action="store_true",
         default=False,
-        help="Resolve the hostname to an IP before analysis. "
+        help="Resolve the hostname to an IP before the analysis. "
              "Useful when the target is a local/Docker hostname that would "
-             "otherwise get a 'www.' prefix prepended (e.g. testbed containers).",
+             "otherwise get a 'www.' prefix prepended (e.g., testbed containers).",
     )
     configurations = parser.add_mutually_exclusive_group()
     configurations.add_argument(
@@ -156,7 +156,7 @@ if __name__ == "__main__":
         action="store",
         dest="configuration",
         nargs="+",
-        help="List of modules to run" "\nFor example\n\t-m breach crime freak",
+        help="List of modules to run. For example:\n\t-m breach crime freak",
     )
     parser.add_argument(
         "-e",
@@ -164,7 +164,7 @@ if __name__ == "__main__":
         action="store",
         dest="exclude",
         nargs="+",
-        help="List of modules to exclude" "\nFor example\n\t-e breach crime",
+        help="List of modules to exclude. For example:\n\t-e breach crime",
     )
     parser.add_argument(
         "--stix",
@@ -206,7 +206,7 @@ if __name__ == "__main__":
         dest="compliance_args",
         help="A string containing the names of the guidelines that should be checked in the form: "
              "guideline_profile_variant in the case of multiple guidelines they should be comma separated. "
-             "Use \"list\" for a list of valid strings and \"aliases\" for a list of aliases."
+             "Use \"list\" for the set of valid strings and \"aliases\" for a list of aliases."
     )
 
     parser.add_argument(
@@ -225,7 +225,7 @@ if __name__ == "__main__":
         action=ComplianceAction,
         default=True,
         dest="compliance_args",
-        help="Default to True. If False the legacy level priority will be used"
+        help="Default to True. If False, the legacy level priority will be used."
     )
 
     parser.add_argument(
@@ -234,7 +234,7 @@ if __name__ == "__main__":
         nargs=1,
         action=ComplianceAction,
         dest="compliance_args",
-        help="Where to save the output configuration file, only needed for generate one/many"
+        help="Where to save the output configuration file, only needed for generate one/many."
     )
 
     parser.add_argument(
@@ -244,7 +244,7 @@ if __name__ == "__main__":
         action=ComplianceAction,
         dest="compliance_args",
         help="The index of the certificate to use for the analysis, only needed if the website has multiple certificates."
-             "Default to 1  (first certificate)."
+             "Defaults to 1 (first certificate)."
     )
 
     parser.add_argument(

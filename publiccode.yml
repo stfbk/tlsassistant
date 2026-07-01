@@ -1,4 +1,4 @@
-publiccodeYmlVersion: 0.4.0
+publiccodeYmlVersion: 0.5.0
 name: TLSAssistant
 url: https://github.com/stfbk/tlsassistant
 landingURL: https://st.fbk.eu/tools/TLSAssistant/
@@ -10,6 +10,13 @@ platforms:
 categories:
   - it-asset-management
   - it-security
+  - compliance-management
+  - it-service-management
+organisation:
+  uri: https://www.fbk.eu/en/
+  name: Fondazione Bruno Kessler
+usedBy:
+  - Istituto Poligrafico e Zecca dello Stato (IPZS)
 developmentStatus: stable
 softwareType: standalone/desktop
 description:
@@ -47,6 +54,14 @@ description:
     screenshots:
       - https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_vuln.png
       - https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_compliance.png
+    videos:
+      - https://www.youtube.com/watch?v=hi72cvoV__4&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=1
+      - https://www.youtube.com/watch?v=IzChZjDLJgA&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=2
+      - https://www.youtube.com/watch?v=_8CNoUVmjDc&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=3
+      - https://www.youtube.com/watch?v=rsX-5QA_1xM&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=4
+      - https://www.youtube.com/watch?v=2q3buNevlE4&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=5
+      - https://www.youtube.com/watch?v=uapgzsJ6SB8&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=6
+      - https://www.youtube.com/watch?v=AVos9--xwKg&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=7
 legal:
   license: Apache-2.0
 maintenance:
@@ -54,7 +69,6 @@ maintenance:
   contacts:
     - name: TLSA customer support
       email: tlsa-cs@fbk.eu
-      phone: ""
       affiliation: Fondazione Bruno Kessler
     - name: Salvatore Manfredi
       email: smanfredi@fbk.eu
@@ -62,7 +76,6 @@ maintenance:
       affiliation: Fondazione Bruno Kessler
     - name: Riccardo Germenia
       email: rgermenia@fbk.eu
-      phone: ""
       affiliation: Fondazione Bruno Kessler
 localisation:
   localisationReady: false

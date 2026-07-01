@@ -6,9 +6,10 @@
 
 The latest release improves and enhances the previously introduced compliance analysis by offering a refined PDF report together with two new compliance modules feature based on our [latest research article]([doi.org/10.5220/0012764700003767](https://doi.org/10.5220/0012764700003767)): `generate_one` and `generate_many`. These modules let users easily generate compliant configurations from scratch by selecting one (or multiple) guideline and a target webserver, either Apache or nginx.
 
-Moreover, thanks to the recent updates to our [compliance dataset](https://github.com/stfbk/tls-compliance-dataset), TLSAssistant is now able to verify a server compliance against two new guidelines from:
+Moreover, thanks to the recent updates to our [compliance dataset](https://github.com/stfbk/tls-compliance-dataset), TLSAssistant is now able to verify a server compliance against three new guidelines from:
 
-- **ACN**, the new cybersecurity agency of the Italian government and
+- **ACN**, the new cybersecurity agency of the Italian government,
+- **CNSA**, the Commercial National Security Algorithm Suite provided by US' NSA, and
 - **ENISA**, the European Union Agency for Cybersecurity.
 
 These and more features are now showcased in our new playlist of demo recordings available [here](TODO).
@@ -82,13 +83,14 @@ The list of detectable issues is:
 ![compliance_report](assets/report_compliance.png)
 *Compliance analysis report*
 
-TLSAssistant is able to perform an automated compliance analysis against seven agency-issued technical guidelines:
-- **ACN** [v1.0](https://www.acn.gov.it/portale/documents/20119/85999/ACN_LG_Transport_Layer_Security_TLS.pdf)
+TLSAssistant is able to perform an automated compliance analysis against eight agency-issued technical guidelines:
+- **ACN** [v2.0](https://www.acn.gov.it/portale/documents/20119/85999/ACN_LG_Transport_Layer_Security_TLS.pdf)
 - **AgID** [ver.2020-01](https://cert-agid.gov.it/wp-content/uploads/2020/11/AgID-RACCSECTLS-01.pdf)
 - **ANSSI** [v1.2](https://cyber.gouv.fr/sites/default/files/2017/07/anssi-guide-recommandations_de_securite_relatives_a_tls-v1.2.pdf)
 - **BSI** [TR-02102-2](https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TG02102/BSI-TR-02102-2.html) and [TR-03116-4](https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR03116/BSI-TR-03116-4.html)
+- **CNSA** [1.0](https://media.defense.gov/2021/Sep/27/2002862527/-1/-1/0/CNSS%20WORKSHEET.PDF) and [2.0](https://media.defense.gov/2025/May/30/2003728741/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS.PDF)
 - **ENISA** [v2.0](https://certification.enisa.europa.eu/document/download/a845662b-aee0-484e-9191-890c4cfa7aaa_en?filename=ECCG%20Agreed%20Cryptographic%20Mechanisms%20version%202.pdf)
-- **Mozilla** [v5.7](https://wiki.mozilla.org/Security/Server_Side_TLS)
+- **Mozilla** [v6.0](https://docs.tlsref.org/server-side-tls.html)
 - **NIST** [SP 800-52 Rev. 2](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r2.pdf) (and related)
 
 It supports the following use-cases:
@@ -197,9 +199,10 @@ python3 run.py -h
 <summary>Show all the available attributes</summary>
 
 ```
-usage: TLSAssistant [-h] [--version] [-v] [--openssl OPENSSL | --ignore-openssl] [-ot {pdf,html}] [-o OUTPUT] [--group-by {host,module}] (-s SERVER | -f FILE | -d DOMAIN_FILE | -l [LIST] | -a APK) [--apply-fix [APPLY_FIX]]
-                    [-c CONFIGURATION | -m CONFIGURATION [CONFIGURATION ...]] [-e EXCLUDE [EXCLUDE ...]] [--stix] [--webhook [WEBHOOK]] [--prometheus [PROMETHEUS]] [--config_type {apache,nginx,auto}] [--guidelines COMPLIANCE_ARGS]
-                    [--apache] [--security COMPLIANCE_ARGS] [--output_config COMPLIANCE_ARGS] [--certificate_index COMPLIANCE_ARGS] [--custom_guidelines COMPLIANCE_ARGS] [--use_cache] [--clean] [--no_psk]
+usage: TLSAssistant [-h] [--version] [-v] [--openssl OPENSSL | --ignore-openssl] [-ot {pdf,html}] [-o OUTPUT] [--group-by {host,module}]
+                    (-s SERVER | -f FILE | -d DOMAIN_FILE | -l [LIST] | -a APP) [--apply-fix [APPLY_FIX]] [--resolve-ip] [-c CONFIGURATION | -m CONFIGURATION [CONFIGURATION ...]]
+                    [-e EXCLUDE [EXCLUDE ...]] [--stix] [--webhook [WEBHOOK]] [--prometheus [PROMETHEUS]] [--config_type {apache,nginx,auto}] [--guidelines COMPLIANCE_ARGS] [--apache]
+                    [--security COMPLIANCE_ARGS] [--output_config COMPLIANCE_ARGS] [--certificate_index COMPLIANCE_ARGS] [--custom_guidelines COMPLIANCE_ARGS] [--use_cache] [--clean] [--no_psk]
 
 TLSAssistant Help
 
@@ -224,23 +227,21 @@ optional arguments:
                         The file path which has the hostname to analyze.
   -l [LIST], --list [LIST]
                         List all modules or print an help of a module.
-                        For Example
-                        -l freak
+                        For example: -l freak
   -a APP, --app APP     The apk/ipa path, target of the analysis.
   --apply-fix [APPLY_FIX]
                         Apply fix in the current configuration.
-                         Give a path if using -s.
-                        i.e.
+                        Provide a path if using -s. For example:
                           python3 run.py -s fbk.eu --apply-fix myconf.conf
+  --resolve-ip
+                        Resolve the hostname to an IP before the analysis. Useful when the target is a local/Docker hostname that would otherwise get a 'www.' prefix prepended (e.g., testbed containers).                        
   -c CONFIGURATION, --conf CONFIGURATION, --configuration CONFIGURATION
                         Configuration path.
   -m CONFIGURATION [CONFIGURATION ...], --modules CONFIGURATION [CONFIGURATION ...]
-                        List of modules to run
-                        For example
+                        List of modules to run. For example:
                           -m breach crime freak
   -e EXCLUDE [EXCLUDE ...], --exclude EXCLUDE [EXCLUDE ...]
-                        List of modules to exclude
-                        For example
+                        List of modules to exclude. For example:
                           -e breach crime
   --stix                Generate STIX2 compliant output.
   --webhook [WEBHOOK]   Add a webhook url to send the results.
@@ -249,14 +250,14 @@ optional arguments:
   --config_type {apache,nginx,auto}
                         Define the type of configuration to analyze.
   --guidelines COMPLIANCE_ARGS
-                        A string containing the names of the guidelines that should be checked in the form: guideline_version1_version2 in the case of multiple guidelines they should be comma separated. Use "list" for a list of valid strings and "aliases" for a list of aliases.
+                        A string containing the names of the guidelines that should be checked in the form: 'guideline_profile_variant' in the case of multiple guidelines they should be comma separated. Use "list" for a set of valid strings and "aliases" for a list of aliases.
   --apache              Default to False. If True the output configuration will have apache syntax, if false nginx will be used.
   --security COMPLIANCE_ARGS
-                        Default to True. If False the legacy level priority will be used
+                        Default to True. If False, the legacy level priority will be used.
   --output_config COMPLIANCE_ARGS
-                        Where to save the output configuration file, only needed for generate one/many
+                        Where to save the output configuration file, only needed for generate one/many.
   --certificate_index COMPLIANCE_ARGS
-                        The index of the certificate to use for the analysis, only needed if the website has multiple certificates.Default to 1  (first certificate).
+                        The index of the certificate to use for the analysis, only needed if the website has multiple certificates.Defaults to 1 (first certificate).
   --custom_guidelines COMPLIANCE_ARGS
                         A path to a custom guideline file, only needed if the user wants to use a custom guideline.
   --use_cache           Default to False. If True the program will use the cached testssl analysis, if False the cache will be ignored.
@@ -479,7 +480,7 @@ Please refer to the related [Wiki](https://github.com/stfbk/tlsassistant/wiki) p
 
 - Integrated in the Horizon 2020 [FINSEC project](https://www.finsec-project.eu/)
 
-- Listed as [software of interest](https://developers.italia.it/it/software/stfbk-tlsassistant-e1ccc0) for the Italian Public Administrations
+- Listed as software of interest for the [Italian Public Administrations](https://developers.italia.it/it/software/stfbk-tlsassistant-e1ccc0) and [European Public Services](https://interoperable-europe.ec.europa.eu/eu-oss-catalogue/solutions/tlsassistant)
 
 
 ## License
