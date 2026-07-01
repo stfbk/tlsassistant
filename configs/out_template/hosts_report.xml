@@ -167,21 +167,10 @@
                         <td>
                         {% if results[host][module] %}
                             {% if module.startswith("compare_") %}
-                                {% set optional = namespace(i=0, total=0) %}
-                                {% if not results[host][module]["raw_dict"]["entries_remove"] %}
-                                    {% for entry in results[host][module]["raw_dict"]["entries_add"] %}
-                                        {% if not results[host][module]["raw_dict"][entry]["total_string_only"] %}
-                                            {% if results[host][module]["raw_dict"][entry].get("level") == "OPTIONAL" %}
-                                                {% set optional.i = optional.i + 1 %}
-                                            {% endif %}
-                                            {% set optional.total = optional.total + 1 %}
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% if optional.i != 0 and optional.i == optional.total %}
-                                        <para style="partially_compliant">Partially Compliant</para>
-                                    {% else %}
-                                        <para style="potentially_vulnerable">Not Compliant</para>
-                                    {% endif %}
+                                {% if results[host][module]["raw_dict"]["sheet_level"] == "Compliant" %}
+                                    <para style="not_vulnerable">Compliant</para>
+                                {% elif results[host][module]["raw_dict"]["sheet_level"] == "Partially compliant" %}
+                                    <para style="partially_compliant">Partially Compliant</para>
                                 {% else %}
                                     <para style="potentially_vulnerable">Not Compliant</para>
                                 {% endif %}

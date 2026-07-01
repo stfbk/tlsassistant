@@ -13,6 +13,7 @@
     "mode": "specific_mitigation",
     "ECDSA_224": "<br/>- ECDSA 224 bits: {action}",
     "ECDSA_256": "<br/>- ECDSA 256 bits: {action}",
+    "ECDSA_384": "<br/>- ECDSA 384 bits: {action}",
     "EdDSA_256": "<br/>- EdDSA 256 bits: {action}",
     "EdDSA_456": "<br/>- EdDSA 456 bits: {action}",
     "DSA_2048": "<br/>- DSA 2048 bits: {action}",
@@ -29,14 +30,20 @@
     },
     "DH_2048": "<br/>- DH 2048 bits: {action}",
     "DH_2048_config": {
-      "Apache": "<p>To add a 2048 bits DH key run the following command: <code>cat configs/compliance/ffdhe/ffdhe2048.txt >> /path/to/cert</code>.<br/>To remove DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.</p>",
-      "nginx": "<p>To add a 2048 bits DH key run the following command: <code>cat configs/compliance/ffdhe/ffdhe2048.txt > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.</p>"
+      "Apache": "<p>To add a 2048 bits DH key run the following command: <code>cat dependencies/dhe_groups/ffdhe2048.pem >> /path/to/cert</code>.<br/>To remove DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.</p>",
+      "nginx": "<p>To add a 2048 bits DH key run the following command: <code>cat dependencies/dhe_groups/ffdhe2048.pem > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.</p>"
     },
     "DH_3072": "<br/>- DH 3072 bits: {action}",
     "DH_3072_config": {
-      "Apache": "<p>To add a 3072 bits DH key run the following command: <code>cat configs/compliance/ffdhe/ffdhe3072.txt >> /path/to/cert</code>.<br/>To remove DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.</p>",
-      "nginx": "<p>To add a 3072 bits DH key run the following command: <code>cat configs/compliance/ffdhe/ffdhe3072.txt > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.</p>"
+      "Apache": "<p>To add a 3072 bits DH key run the following command: <code>cat dependencies/dhe_groups/ffdhe3072.pem >> /path/to/cert</code>.<br/>To remove DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.</p>",
+      "nginx": "<p>To add a 3072 bits DH key run the following command: <code>cat dependencies/dhe_groups/ffdhe3072.pem > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.</p>"
     },
+    "DH_4096": "<br/>- DH 4096 bits: {action}",
+    "DH_4096_config": {
+      "Apache": "<p>To add a 4096 bits DH key run the following command: <code>cat dependencies/dhe_groups/ffdhe4096.pem >> /path/to/cert</code>.<br/>To remove DH keys run the following command: <code>sed -i '/BEGIN DH PARAMETERS/,/END DH PARAMETERS/d' /path/to/cert</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.</p>",
+      "nginx": "<p>To add a 4096 bits DH key run the following command: <code>cat dependencies/dhe_groups/ffdhe4096.pem > /path/to/dhparams</code>.<br/> To remove DH keys disable the directive <code>ssl_dhparam</code>.<br/> NOTE: these DH parameters are defined in RFC 7919.</p>"
+    },
+    "DH_8192": "<br/>- DH 8192 bits: {action}",
     "openssl_dependency": {
       ">= 1.0.2": {
         "Textual": "<br/>NOTE: with your OpenSSL version in order to fix DH/ECDH/ECDHE keys it may be enough to follow the mitigation of the <b>Supported Groups compliance</b> section."

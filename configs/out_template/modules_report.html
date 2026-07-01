@@ -135,22 +135,12 @@ customElements.define('custom_font_code-2', CodeTwo);
                             </div>
                         </div>
                         {% endif %}
-                        {% set partial = namespace(partial_compliant=list(), non_compliant=list(), i=0, total=0) %}
+                        {% set partial = namespace(partial_compliant=list(), non_compliant=list(), compliant=list()) %}
                         {% for host in results[module]['hosts'] %}
-                            {% if not results[module]['raw_dict'][host]['entries_remove'] %}
-                                {% for entry in results[module]['raw_dict'][host]['entries_add'] %}
-                                    {% if not results[module]['raw_dict'][host][entry]["total_string_only"] %}
-                                        {% if results[module]['raw_dict'][host][entry].get("level") == "OPTIONAL" %}
-                                            {% set partial.i = partial.i + 1 %}
-                                        {% endif %}
-                                        {% set partial.total = partial.total + 1 %}
-                                    {% endif %}
-                                {% endfor %}
-                                {% if partial.total != 0 and partial.i == partial.total %}
-                                    {% set partial.partial_compliant = partial.partial_compliant + [host] %}
-                                {% else %}
-                                    {% set partial.non_compliant = partial.non_compliant + [host] %}
-                                {% endif %}
+                            {% if results[module]['raw_dict'][host]["sheet_level"] == "Partially compliant" %}
+                                {% set partial.partial_compliant = partial.partial_compliant + [host] %}
+                            {% elif results[module]['raw_dict'][host]["sheet_level"] == "Compliant" %}
+                                {% set partial.compliant = partial.compliant + [host] %}
                             {% else %}
                                 {% set partial.non_compliant = partial.non_compliant + [host] %}
                             {% endif %}
