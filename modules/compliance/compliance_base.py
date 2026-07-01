@@ -361,6 +361,27 @@ class Compliance:
             total_string_apache = total_string_nginx = "<code>"
             conf_instructions = mitigation["#ConfigurationInstructions"]
 
+
+            # check if the sheet is compliant
+            requirements_tuples = [(entry, self._output_dict[sheet][entry]["level"], self._output_dict[sheet][entry]["compliant"]) for entry in self._output_dict[sheet] if isinstance(self._output_dict[sheet][entry], dict)]
+            sheet_level = "Not compliant"
+            at_least_one = any([compliant and level in ["MUST", "RECOMMENDED"] for _, level, compliant in requirements_tuples])
+            at_least_one_optional = any([compliant and level == "OPTIONAL" for _, level, compliant in requirements_tuples])
+            at_least_one_not_recommended = any([not compliant and level in ["NOT RECOMMENDED"] for _, level, compliant in requirements_tuples])
+            must_violations = any([not compliant and level in ["MUST", "MUST NOT"] for _, level, compliant in requirements_tuples])
+            all_info = all([level == "INFO" for _, level, _ in requirements_tuples])
+            current_sheet_level = self._output_dict[sheet].get("sheet_level", "")
+            if not must_violations:
+                if at_least_one or all_info:
+                    sheet_level = "Compliant"
+                if at_least_one_optional and not at_least_one:
+                    sheet_level = "Partially compliant"
+                if at_least_one_not_recommended and (at_least_one or at_least_one_optional):
+                    sheet_level = "Partially compliant"
+            levels_priority = ["Not compliant", "Partially compliant", "Compliant", ""]
+            if levels_priority.index(sheet_level) < levels_priority.index(current_sheet_level):
+                self._output_dict[sheet]["sheet_level"] = sheet_level
+
             remove_add = True
             if self._output_dict[sheet]["entries_add"]:
                 add_string = "<br/>- {name} {action} according to {source}"
@@ -939,6 +960,8 @@ class Compliance:
                 "entries_remove": [],
                 "notes": []
             }
+        compliant = (information_level in ["MUST", "RECOMMENDED", "OPTIONAL"] and enabled and valid_condition) \
+            or (information_level in ["MUST NOT", "NOT RECOMMENDED"] and not enabled)
         if information_level:
             if entry_level in ["must", "recommended", "optional"]:
                 self._output_dict[sheet]["entries_add"].append(name)
@@ -950,7 +973,8 @@ class Compliance:
                 "source": source,
                 "total_string_only": total_string_only,
                 "original_level": entry_level,
-                "enabled": enabled
+                "enabled": enabled,
+                "compliant": compliant
             }
         elif name not in self._output_dict[sheet]:
             self._output_dict[sheet][name] = {
@@ -958,7 +982,8 @@ class Compliance:
                 "action": "NOTE: ",
                 "source": source,
                 "original_level": entry_level,
-                "enabled": enabled
+                "enabled": enabled,
+                "compliant": compliant
             }
             self._output_dict[sheet]["notes"].append(name)
         if not self._output_dict[sheet].get("guidelines"):
