@@ -32,25 +32,61 @@ description:
       sicurezza e la totalità delle vulnerabilità TLS che potrebbero essere
       sfruttate per mettere in pericolo la sicurezza delle trasmissioni.
 
-
       TLSAssistant è anche in grado di verificare il grado di conformità di un
       implementazione rispetto a una serie di linee guida nazionali e
       sovranazionali
 
 
       ​Il punto di forza di TLSAssistant è la generazione di un report in grado
-      di elencare le vulnerabilità presenti, spiegare il loro impatto e guidare
-      passo passo verso la loro risoluzione.
-
+      di elencare gli errori di configurazione presenti, spiegare il loro
+      impatto e guidare passo passo verso la loro risoluzione.
 
       ​Le mitigazioni sono state collezionate estraendo informazioni dalla
       letteratura scientifica e dai manuali tecnici forniti da ogni produttore.
-    documentation: https://github.com/stfbk/tlsassistant/wiki
     features:
       - Analisi di vulnerabilità per webserver Apache e nginx, app iOS e Android
       - Analisi di conformità per webserver Apache e nginx
       - Report contenenti frammenti di codice da copia-incollare per mitigare i
         problemi rilevati
+    screenshots:
+      - https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_vuln.png
+      - https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_compliance.png
+    videos:
+      - https://www.youtube.com/watch?v=hi72cvoV__4&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=1
+      - https://www.youtube.com/watch?v=IzChZjDLJgA&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=2
+      - https://www.youtube.com/watch?v=_8CNoUVmjDc&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=3
+      - https://www.youtube.com/watch?v=rsX-5QA_1xM&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=4
+      - https://www.youtube.com/watch?v=2q3buNevlE4&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=5
+      - https://www.youtube.com/watch?v=uapgzsJ6SB8&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=6
+      - https://www.youtube.com/watch?v=AVos9--xwKg&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=7
+  en:
+    shortDescription: Analyze TLS implementations to identify vulnerabilities and
+      assess compliance levels, and recommend the necessary mitigations to
+      resolve the issues
+    longDescription: >-
+      TLSAssistant is a research tool developed to assist system administrators
+      and iOS/Android developers working on TLS implementations. It allows users
+      to analyze web servers (locally or remotely) and iOS/Android apps to
+      assess their security status and identify all TLS vulnerabilities that
+      could be exploited to compromise the security of data transmissions.
+
+      TLSAssistant can also verify the degree of compliance of an implementation
+      with a set of national and supranational guidelines.
+
+
+      The strength of TLSAssistant lies in its ability to generate an actionable
+      report that lists existing misconfigurations, explains their impact, and
+      provides step-by-step guidance on how to resolve them.
+
+      ​The mitigation strategies were compiled by extracting information from
+      scientific literature and technical manuals provided by each vendor.
+    documentation: https://github.com/stfbk/tlsassistant/wiki
+    features:
+      - TLS vulnerability analysis for Apache and Nginx webservers, iOS and
+        Android Apps
+      - TLS compliance analysis for Apache and Nginx webservers
+      - Actionable reports containing copy-and-paste code snippets to address
+        the detected issues
     screenshots:
       - https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_vuln.png
       - https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_compliance.png
