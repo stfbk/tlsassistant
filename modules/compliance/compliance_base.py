@@ -855,12 +855,14 @@ class Compliance:
                     values = [re.sub(r"prime(\d+)v1", r"secp\1r1", val)
                               for val in values]
                     for val in values:
-                        bits = re.match(r".*?(\d+)", val).groups()[0]
-                        # The curve X25519 has a keysize of 256bits
-                        if bits == "25519":
-                            bits = "256"
-                        self._user_configuration["KeyLengths"].add(
-                            ("ECDH", int(bits)))
+                        bits = re.match(r".*?(\d+)", val)
+                        if bits:
+                            bits = bits.groups()[0]
+                            # The curve X25519 has a keysize of 256bits
+                            if bits == "25519":
+                                bits = "256"
+                            self._user_configuration["KeyLengths"].add(
+                                ("ECDH", int(bits)))
                     self._user_configuration["Groups"].extend(values)
 
                 # The transparency field describes how the transparency is handled in each certificate.
