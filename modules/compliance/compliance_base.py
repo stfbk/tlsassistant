@@ -361,16 +361,22 @@ class Compliance:
             total_string_apache = total_string_nginx = "<code>"
             conf_instructions = mitigation["#ConfigurationInstructions"]
 
-
             # check if the sheet is compliant
-            requirements_tuples = [(entry, self._output_dict[sheet][entry]["level"], self._output_dict[sheet][entry]["compliant"]) for entry in self._output_dict[sheet] if isinstance(self._output_dict[sheet][entry], dict)]
+            requirements_tuples = [(entry, self._output_dict[sheet][entry]["level"], self._output_dict[sheet][entry]["compliant"])
+                                   for entry in self._output_dict[sheet] if isinstance(self._output_dict[sheet][entry], dict)]
             sheet_level = "Not compliant"
-            at_least_one = any([compliant and level in ["MUST", "RECOMMENDED"] for _, level, compliant in requirements_tuples])
-            at_least_one_optional = any([compliant and level == "OPTIONAL" for _, level, compliant in requirements_tuples])
-            at_least_one_not_recommended = any([not compliant and level in ["NOT RECOMMENDED"] for _, level, compliant in requirements_tuples])
-            must_violations = any([not compliant and level in ["MUST", "MUST NOT"] for _, level, compliant in requirements_tuples])
-            all_info = all([level == "INFO" for _, level, _ in requirements_tuples])
-            current_sheet_level = self._output_dict[sheet].get("sheet_level", "")
+            at_least_one = any([compliant and level in ["MUST", "RECOMMENDED"]
+                               for _, level, compliant in requirements_tuples])
+            at_least_one_optional = any(
+                [compliant and level == "OPTIONAL" for _, level, compliant in requirements_tuples])
+            at_least_one_not_recommended = any([not compliant and level in [
+                                               "NOT RECOMMENDED"] for _, level, compliant in requirements_tuples])
+            must_violations = any([not compliant and level in [
+                                  "MUST", "MUST NOT"] for _, level, compliant in requirements_tuples])
+            all_info = all([level == "INFO" for _, level,
+                           _ in requirements_tuples])
+            current_sheet_level = self._output_dict[sheet].get(
+                "sheet_level", "")
             if not must_violations:
                 if at_least_one or all_info:
                     sheet_level = "Compliant"
@@ -378,7 +384,8 @@ class Compliance:
                     sheet_level = "Partially compliant"
                 if at_least_one_not_recommended and (at_least_one or at_least_one_optional):
                     sheet_level = "Partially compliant"
-            levels_priority = ["Not compliant", "Partially compliant", "Compliant", ""]
+            levels_priority = ["Not compliant",
+                               "Partially compliant", "Compliant", ""]
             if levels_priority.index(sheet_level) < levels_priority.index(current_sheet_level):
                 self._output_dict[sheet]["sheet_level"] = sheet_level
 
@@ -499,12 +506,14 @@ class Compliance:
         for key in mitigation["Entry"]["Mitigation"]:
             if isinstance(mitigation["Entry"]["Mitigation"][key], str):
                 # this is needed to avoid removing duplicate notes that are added to the textual mitigation, since they are added with a <br/>&nbsp;&nbsp; at the beginning
-                mitigation["Entry"]["Mitigation"][key] = mitigation["Entry"]["Mitigation"][key].replace("<br/>&nbsp;&nbsp;", "&nbsp;2637611841&nbsp;")
+                mitigation["Entry"]["Mitigation"][key] = mitigation["Entry"]["Mitigation"][key].replace(
+                    "<br/>&nbsp;&nbsp;", "&nbsp;2637611841&nbsp;")
                 mitigation["Entry"]["Mitigation"][key] = utils.remove_duplicates.remove_duplicates(
                     mitigation["Entry"]["Mitigation"][key], line_sep)
                 mitigation["Entry"]["Mitigation"][key] = mitigation["Entry"]["Mitigation"][key].replace(
                     "{total_string}", "No snippet available")
-                mitigation["Entry"]["Mitigation"][key] = mitigation["Entry"]["Mitigation"][key].replace("&nbsp;2637611841&nbsp;", "<br/>&nbsp;&nbsp;")
+                mitigation["Entry"]["Mitigation"][key] = mitigation["Entry"]["Mitigation"][key].replace(
+                    "&nbsp;2637611841&nbsp;", "<br/>&nbsp;&nbsp;")
 
     def get_filters(self, sheet):
         cert_keys = self.get_cert_key_types()
@@ -710,7 +719,6 @@ class Compliance:
                             if hash_alg:
                                 self._user_configuration["Hash"].add(
                                     "sha" + hash_alg)
-                        
 
                 elif field == "FS_ciphers":
                     value = actual_dict.get("finding", "")
@@ -765,7 +773,8 @@ class Compliance:
                         # The key size of Ed25519 and Ed448 is fixed, so it is not specified in the finding, but it can be inferred from the name of the algorithm
                         element_to_add[1] = 256 if "25519" in element_to_add[0] else 456
                     elif element_to_add[1].startswith("ML"):
-                        element_to_add[1] = self._ml_keysizes.get(element_to_add[1][:2], element_to_add[1])
+                        element_to_add[1] = self._ml_keysizes.get(
+                            element_to_add[1][:2], element_to_add[1])
                     else:
                         element_to_add[1] = int(element_to_add[1])
                     # *ecdsa*|*ecPublicKey* -> EC in testssl.sh output
@@ -803,7 +812,7 @@ class Compliance:
                             else:
                                 self._user_configuration["Groups"].append(
                                     group)
-                
+
                 elif field == "FS_KEMs":
                     finding = actual_dict["finding"]
                     if finding.startswith("No "):
@@ -949,7 +958,8 @@ class Compliance:
             action = "can be enabled"
         # case of entries that are enabled but the condition is not valid
         elif entry_level in ["must", "recommended", "optional"] and enabled and not valid_condition:
-            information_level = self.level_flipper.get(entry_level, entry_level.upper()).upper()
+            information_level = self.level_flipper.get(
+                entry_level, entry_level.upper()).upper()
             action = ""
             if information_level == "MUST NOT":
                 action += "has to be disabled"
@@ -1144,7 +1154,8 @@ class Compliance:
         if additional_notes:
             notes[-1] += "\nNOTE: "
             notes[-1] += "\n".join(additional_notes)
-        priority = self._condition_parser.entry_updates.get("priority", -1 if level == "optional" else 0)
+        priority = self._condition_parser.entry_updates.get(
+            "priority", -1 if level == "optional" else 0)
         return enabled, valid_condition, level, priority
 
     def _evaluate_entries(self, sheets_to_check, original_columns, entries_to_check):
@@ -1241,7 +1252,8 @@ class Compliance:
                                                                      cert_index=self._certificate_index)
                         enabled = self._condition_parser.entry_updates.get(
                             "is_enabled", enabled)
-                        self._logging.debug(f"Condition: {condition} - enabled: {enabled} - valid: {valid_condition}")
+                        self._logging.debug(
+                            f"Condition: {condition} - enabled: {enabled} - valid: {valid_condition}")
                         enabled, valid_condition, level, priority = self.handle_conditions_results(
                             notes, enabled, valid_condition, level, condition, name)
 

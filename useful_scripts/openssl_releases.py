@@ -732,3 +732,35 @@ if __name__ == "__main__":
         extract_files()
     extract_tables()
     extract_ciphersuites_tags()
+    with open("urls.json", "r", encoding="utf-8") as f:
+        urls = json.load(f)
+    latest_release = sorted(urls.keys())[-1]
+    with open(f"tmp/{latest_release}/capabilities.c", "r", encoding="utf-8") as f:
+        lines = f.readlines()
+    start = "group_list[]"
+    end = "};"
+    useful_lines = []
+    reading = False
+    for line in lines:
+        if start in line:
+            reading = True
+            continue
+        if end in line and reading:
+            reading = False
+            break
+        if reading:
+            useful_lines.append(line.strip())
+    groups_versions = {}
+    for line in useful_lines:
+        l = line.split(",")
+        name = l[0].split("{")[1].strip().split("_")[-1]
+        min_version = l[2].replace("_VERSION", "").strip()
+        max_version = l[3].replace("_VERSION", "").strip()
+        groups_versions[name] = {
+            "min_version": min_version,
+            "max_version": max_version
+        }
+    with open("../configs/compliance/groups_versions.json", "w", encoding="utf-8") as f:
+        json.dump(groups_versions, f, indent=4, sort_keys=True)
+
+    

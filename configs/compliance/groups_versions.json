@@ -1,0 +1,178 @@
+{
+    "SecP256r1MLKEM768": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
+    "SecP384r1MLKEM1024": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
+    "X25519MLKEM768": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
+    "brainpoolP256r1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "brainpoolP384r1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "brainpoolP512r1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "curveSM2": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
+    "curveSM2MLKEM768": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
+    "ffdhe2048": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
+    "ffdhe3072": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
+    "ffdhe4096": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
+    "ffdhe6144": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
+    "ffdhe8192": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
+    "mlkem1024": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
+    "mlkem512": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
+    "mlkem768": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
+    "secp160k1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "secp160r1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "secp160r2": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "secp192k1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "secp192r1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "secp224k1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "secp224r1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "secp256k1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "secp256r1": {
+        "max_version": "0",
+        "min_version": "TLS1"
+    },
+    "secp384r1": {
+        "max_version": "0",
+        "min_version": "TLS1"
+    },
+    "secp521r1": {
+        "max_version": "0",
+        "min_version": "TLS1"
+    },
+    "sect163k1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "sect163r1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "sect163r2": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "sect193r1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "sect193r2": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "sect233k1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "sect233r1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "sect239k1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "sect283k1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "sect283r1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "sect409k1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "sect409r1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "sect571k1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "sect571r1": {
+        "max_version": "TLS1_2",
+        "min_version": "TLS1"
+    },
+    "tls13": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
+    "x25519": {
+        "max_version": "0",
+        "min_version": "TLS1"
+    },
+    "x448": {
+        "max_version": "0",
+        "min_version": "TLS1"
+    }
+}
