@@ -61,7 +61,7 @@
         <pageTemplate id="main">
             <pageGraphics>
                 <!-- Header -->
-                <image x="30" y="750" file="{{image_path}}FBK_Cybersecurity_colour.png" width = "150" height = "70"/>
+                <image x="0" y="714" file="{{image_path}}FBK_Cybersecurity_colour.png" width = "254" height = "130"/>
                 {% set frame_w = 455 %}
                 {% set frame_h = 600 %}
                 {% set frame_x = (page_w - frame_w) / 2%}
