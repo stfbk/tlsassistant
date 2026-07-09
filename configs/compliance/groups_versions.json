@@ -15,13 +15,25 @@
         "max_version": "TLS1_2",
         "min_version": "TLS1"
     },
+    "brainpoolP256r1tls13": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
     "brainpoolP384r1": {
         "max_version": "TLS1_2",
         "min_version": "TLS1"
     },
+    "brainpoolP384r1tls13": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
+    },
     "brainpoolP512r1": {
         "max_version": "TLS1_2",
         "min_version": "TLS1"
+    },
+    "brainpoolP512r1tls13": {
+        "max_version": "0",
+        "min_version": "TLS1_3"
     },
     "curveSM2": {
         "max_version": "0",
@@ -162,10 +174,6 @@
     "sect571r1": {
         "max_version": "TLS1_2",
         "min_version": "TLS1"
-    },
-    "tls13": {
-        "max_version": "0",
-        "min_version": "TLS1_3"
     },
     "x25519": {
         "max_version": "0",

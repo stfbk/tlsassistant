@@ -753,7 +753,7 @@ if __name__ == "__main__":
     groups_versions = {}
     for line in useful_lines:
         l = line.split(",")
-        name = l[0].split("{")[1].strip().split("_")[-1]
+        name = l[0].split("{")[1].strip().replace("_tls13", "tls13").split("_")[-1]
         min_version = l[2].replace("_VERSION", "").strip()
         max_version = l[3].replace("_VERSION", "").strip()
         groups_versions[name] = {
