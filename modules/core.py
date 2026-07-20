@@ -5,6 +5,7 @@ from enum import Enum
 from os.path import sep
 from pathlib import Path
 import tldextract
+import sys
 
 from modules.android.wrappers.sebastian import CustomAndroidVulnerabilityManager
 from modules.configuration.configuration import Configuration
@@ -687,6 +688,30 @@ class Core:
         loaded_modules, loaded_arguments, testssl_args, tls_scanner_args = self.__load_modules(
             parsed_configuration
         )
+
+        generate_modules = [m for m in loaded_modules if m.startswith("generate")]
+        # self.__logging.info(f"Loaded modules: {list(loaded_modules.keys())}")
+        # self.__logging.info(f"Scanned hosts: {list(self.__enumerate_hosts(hostname_or_path, type_of_analysis))}")
+
+        if generate_modules and self.__input_dict["type_of_analysis"] == self.Analysis.DOMAINS:
+            self.__logging.error(
+                "Generate modules are not supported in multi-host scans"
+            )
+            # TODO: generate a report showing the error
+            # result_dict = {
+            #        "errors": {
+            #            hostname_or_path: {"generate-multihost-error": "Generate"}
+            #        }
+            # }
+            # for module in generate_modules:
+            #            result_dict[module] = {
+            #                "errors": [
+            #                    "generate-multihost-error: Critical"
+            #                ]
+            #            }
+            sys.exit(1)
+            # return loaded_modules, result_dict
+
         # preanalysis if needed
         self.__logging.info("Running analysis..")
         if type_of_analysis == self.Analysis.CONFIGURATION:
