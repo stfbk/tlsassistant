@@ -435,6 +435,12 @@ class Report:
                         )  # i'm expecting only one mitigation per module, is it ok?
                 results[hostname][module]["raw"] = raw
         use_rml = False
+        
+        if self.__input_dict["mode"] == self.Mode.DOMAINS :
+            self.__path = Path(
+                    self.__path.__str__().replace("pdf", "html"))
+            self.__logging.info("PDF report is not available for multi-host scans, switching to HTML")
+        
         if self.__path.suffix.lower() == ".pdf":
             self.__logging.debug("Using jinja2 to generate RML...")
             use_rml = True
@@ -444,7 +450,11 @@ class Report:
             results = {list(self.__input_dict['results'].keys())[
                 i]: '' for i in range(len(self.__input_dict['results']))}
         if any("generate" in module for module in modules):
-            self.__input_dict["mode"] = self.Mode.GENERATE
+            # i'm expecting this to never be true, extra guard for safety
+            if self.__path.suffix.lower() != ".pdf":
+                self.__logging.debug("Generate report is not supported with non-pdf output, skipping")
+            else:
+                self.__input_dict["mode"] = self.Mode.GENERATE
         with open(output_path, "w") as f:
             f.write(
                 self.__jinja2__report(
