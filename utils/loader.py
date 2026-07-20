@@ -128,5 +128,8 @@ def load_list_of_domains(path: str) -> [str]:
     with file.open() as f:
         for line in f:
             url, port = link_sep(line)
-            urls.append(f"{url_domain(url)}:{port}")
+            # avoid 1:1 duplicates
+            entry = f"{url_domain(url)}:{port}"
+            if entry not in urls:
+                urls.append(entry)
     return urls
