@@ -485,7 +485,7 @@ class Core:
                     loaded_modules[name], tls_scanner_args
                 )
             else:
-                self.__logging.debug(f"Module {name} excluded, skipping..")
+                self.__logging.debug(f"Module {name} excluded, skipping...")
         return loaded_modules, loaded_arguments, testssl_args, tls_scanner_args
 
     def __run_analysis(
@@ -578,7 +578,7 @@ class Core:
         ):  # checks if it's a host or a domain list analysis
             # perform enumeration if needed
             self.__logging.info(
-                f"Performing subdomain enumeration on {hostname_or_path}.."
+                f"Performing subdomain enumeration on {hostname_or_path}..."
             )
             for host in enumerate(remove_wildcard(hostname_or_path)):
                 if has_wildcard(host):  # escape wildcard
@@ -652,7 +652,7 @@ class Core:
             self.__wrap_execution(
                 res, hostname_or_path, type_of_analysis, configuration, port
             )
-        self.__logging.info("Generating output..")
+        self.__logging.info("Generating output...")
         self.__call_output_modules(res, type_of_analysis)
 
     def __exec_anaylsis(
@@ -680,10 +680,10 @@ class Core:
         if type_of_analysis not in [self.Analysis.APK, self.Analysis.IPA, self.Analysis.CONFIGURATION]:
             hostname_or_path, port = link_sep(hostname_or_path)
         configuration_name = configuration
-        self.__logging.info(f"Loading configuration {configuration_name} ..")
+        self.__logging.info(f"Loading configuration {configuration_name}...")
         parsed_configuration = self.__cache[configuration_name]
 
-        self.__logging.info("Loading modules..")
+        self.__logging.info("Loading modules...")
         # loading modules
         loaded_modules, loaded_arguments, testssl_args, tls_scanner_args = self.__load_modules(
             parsed_configuration
@@ -713,7 +713,7 @@ class Core:
             # return loaded_modules, result_dict
 
         # preanalysis if needed
-        self.__logging.info("Running analysis..")
+        self.__logging.info("Running analysis...")
         if type_of_analysis == self.Analysis.CONFIGURATION:
             results = self.__conf_analysis(
                 hostname_or_path,
@@ -759,7 +759,7 @@ class Core:
                 except socket.error as e:
                     self.__logging.debug(e)
                     self.__logging.error(
-                        f"Hostname {hostname_or_path} not found, skipping.."
+                        f"Hostname {hostname_or_path} not found, skipping..."
                     )
                     result_dict = {
                         "errors": {

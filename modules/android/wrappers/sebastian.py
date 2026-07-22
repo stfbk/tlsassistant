@@ -128,7 +128,7 @@ class Sebastian:
 
         """
         file_id = str(path.absolute())
-        self.__logging.debug(f"Starting analysis of {file_id} ...")
+        self.__logging.debug(f"Starting analysis of {file_id}...")
 
         if force:
             self.__logging.debug(

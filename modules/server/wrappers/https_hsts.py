@@ -222,10 +222,10 @@ class Https:
             return "strict-transport-security" in response.headers
         else:
             if not self.__preloaded_moz:
-                self.__logging.debug("Preloading mozilla hsts..")
+                self.__logging.debug("Preloading mozilla hsts...")
                 self.__preloaded_moz = Parse().output()
             if not self.__preloaded_gog:
-                self.__logging.debug("Preloading google hsts..")
+                self.__logging.debug("Preloading google hsts...")
                 self.__preloaded_gog = Parse(moz=False).output()
             if response.request:
                 parsed_url = url_domain(response.request.url)
