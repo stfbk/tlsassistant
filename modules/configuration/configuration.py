@@ -353,7 +353,7 @@ class Configuration:
         :return: dict with the changes
         :rtype: dict
         """
-        self.__logging.debug(f"Fixing vulnerability {name} in vhost {vhost_name}..")
+        self.__logging.debug(f"Fixing vulnerability {name} in vhost {vhost_name}...")
         return module.conf.fix(vhost)
 
     def __blackbox(
@@ -392,7 +392,7 @@ class Configuration:
         :return: dict changes made and edit boolean results as pointer.
         :rtype: dict
         """
-        self.__logging.debug(f"Analyzing vulnerability {name} in vhost {vhost_name}..")
+        self.__logging.debug(f"Analyzing vulnerability {name} in vhost {vhost_name}...")
         if vhost_name not in boolean_results:
             boolean_results[vhost_name] = {}
 
