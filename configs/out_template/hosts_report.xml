@@ -165,7 +165,9 @@
                     <td>{{name_mapping.get(module, module)}}</td>
                     {% for host in results %}
                         <td>
-                        {% if results[host][module] %}
+                        {% if results[host].get("module_errors", {}).get(module) %}
+                            <para style="potentially_vulnerable">Error</para>
+                        {% elif results[host][module] %}
                             {% if module.startswith("compare_") %}
                                 {% if results[host][module]["raw_dict"]["sheet_level"] == "Compliant" %}
                                     <para style="not_vulnerable">Compliant</para>
@@ -175,9 +177,9 @@
                                     <para style="potentially_vulnerable">Not Compliant</para>
                                 {% endif %}
                             {% else %}
-                                <para style="potentially_vulnerable">Potentially Vulnerable</para>
+                                <para style="potentially_vulnerable">{{(result_label_mapping|default({})).get(module, "Potentially Vulnerable")}}</para>
                             {% endif %}
-                        {% elif results[host].get("errors", None) %}
+                        {% elif results[host].get("errors", None) and not results[host].get("module_errors", {}) %}
                             <para style="potentially_vulnerable">Error</para>
                         {% else %}
                             {% if module.startswith("compare_") %}
