@@ -80,6 +80,11 @@ class Report:
                 "Textual": "Conforming",
                 "nginx": "Advanced syntax for nginx",
                 "Apache": "Advanced syntax for Apache",
+            },
+            # this allows to map results to a more specific label
+            "result_label_mapping": {
+                "hsts_set": "Not Set",
+                "hsts_preloading": "Not Preloaded",
             }
         }
         for custom_font in custom_fonts:
@@ -172,6 +177,9 @@ class Report:
                 if "errors" in results[hostname][module]:
                     if out[hostname].get("errors") is None:
                         out[hostname]["errors"] = {}
+                    if out[hostname].get("module_errors") is None:
+                        out[hostname]["module_errors"] = {}
+                    out[hostname]["module_errors"][module] = results[hostname][module]["errors"]
                     for i, error in enumerate(results[hostname][module]["errors"]):
                         out[hostname]["errors"][f"{module} error_{i}"] = error
                 if "raw" in results[hostname][module]:

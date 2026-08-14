@@ -180,7 +180,7 @@ customElements.define('custom_font_code-2', CodeTwo);
                                     style="border-right-style: solid;border-right-color: var(--bs-red);border-left-style: solid;border-left-color: var(--bs-red);">
                                     <h4 class="text-center card-title"
                                         style="color: var(--bs-red);font-family: Roboto, sans-serif;">
-                                            Vulnerable Websites
+                                            {{(result_label_mapping|default({})).get(module, "Vulnerable")}} Websites
                                     </h4>
                                     <h6 class="text-muted card-subtitle mb-2"
                                         style="text-align: center;font-family: 'Roboto Mono', monospace;">

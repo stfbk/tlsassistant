@@ -168,7 +168,8 @@
                             {% if module.startswith("compare_") %}
                                 <td><para style="potentially_vulnerable">{{hosts_count}} {{hosts_connector}} not compliant</para></td>
                             {% else %}
-                                <td><para style="potentially_vulnerable">{{hosts_count}} {{hosts_connector}} potentially vulnerable</para></td>
+                                {% set result_text = (result_label_mapping|default({})).get(module, "potentially vulnerable") %}
+                                <td><para style="potentially_vulnerable">{{hosts_count}} {{hosts_connector}} {{result_text}}</para></td>
                             {% endif %}
                         {% endif %}
                     {% else %}
@@ -270,7 +271,7 @@
                                 </para>
                             {% endif %}
                         {% else %}
-                            <h4 style = "vulnerable_websites">Vulnerable websites</h4>
+                            <h4 style = "vulnerable_websites">{{(result_label_mapping|default({})).get(module, "Vulnerable")}} websites</h4>
                             <para style = "vulnerable_websites_list">
                             {%for host in results[module]['hosts']%}
                                 {{host}}
