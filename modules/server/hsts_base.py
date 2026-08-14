@@ -1,6 +1,6 @@
 from modules.server.wrappers.https_hsts import Https
 from utils.mitigations import load_mitigation
-from utils.urls import url_domain
+from utils.urls import url_domain, validate_ip
 from utils.validation import Validator
 
 
@@ -11,6 +11,7 @@ class Hsts_base:
     """
 
     _instance = Https()
+    _skip_on_ip = False
 
     def __init__(self):
         self._input_dict = {}
@@ -154,6 +155,15 @@ class Hsts_base:
         self.__logging.debug(
             f"Executing analysis in {self._input_dict['hostname']} with args {self._arguments}"
         )
+
+        if self._skip_on_ip and validate_ip(self._input_dict["hostname"]):
+            self.__logging.warning(
+                "HSTS analysis cannot be performed on an IP address, marking module as errored."
+            )
+            self._output_dict = {
+                "errors": ["HSTS analysis cannot be performed on an IP address"]
+            }
+            return self.output()
 
         self._output_dict = self._worker(
             self._instance.run(

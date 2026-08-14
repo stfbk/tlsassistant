@@ -10,6 +10,7 @@ class Https_enforced(Hsts_base):
     This function checks if the server is configured to enforce HTTPS.
     """
 
+    _skip_on_ip = True
     conf = Parse_configuration_checks_redirect()
     stix = Bundled(mitigation_object=load_mitigation("HTTPS_NOT_ENFORCED"))
 
