@@ -16,6 +16,8 @@ This file lists the main contributions. For the full list of contributions, plea
   - PDF report redesign
   - primary contributor for v3.x
 
+* Emiliano Rizzonelli (contributor)
+  - [tlsassistant-testbed](https://github.com/stfbk/tlsassistant-testbed) integration
 ##### Further credits (in chronological order)
 
 * wry-run
