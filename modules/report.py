@@ -85,6 +85,7 @@ class Report:
             "result_label_mapping": {
                 "hsts_set": "Not Set",
                 "hsts_preloading": "Not Preloaded",
+                "https_enforced": "Not Enforced",
             }
         }
         for custom_font in custom_fonts:
