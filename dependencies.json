@@ -53,7 +53,7 @@
   },
   {
     "type": "git-submodule",
-    "cmd": "update --init --recursive",
+    "cmd": "update --init --recursive --depth 1",
     "path": "TLS-Scanner"
   },
   {
