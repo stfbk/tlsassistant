@@ -25,6 +25,12 @@ parser.add_argument(
     "-n", "--no_clean", help="Delete the dependencies/ folder", default=False, action="store_true"
 )
 
+parser.add_argument(
+    "-d", "--depth", help="Depth of the git clone.", default=20, type=int
+)
+
+multi_stage_build = environ.get("DOCKER_MULTI_STAGE_BUILD", False)
+
 args = parser.parse_args()  # parse arguments
 logger = Logger("INSTALLER")
 if args.verbose:  # if verbose is set
@@ -311,7 +317,8 @@ class Install:
                         else null  # else /dev/null
                     ),
                     cwd=f_path,
-                    env=dict(environ, JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"),
+                    env=dict(
+                        environ, JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"),
                 )
 
     def git_submodules_init(self, path, cmd):
@@ -354,6 +361,8 @@ class Install:
                     "git",
                     "clone",
                     str(url),
+                    "--no-single-branch",
+                    f"--depth={args.depth}",
                     f"{path if path else 'dependencies' + sep + file_name}",
                 ],
                 stderr=sys.stderr

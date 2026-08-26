@@ -3,7 +3,7 @@
 
 #NOTE: any output file (html and png) will be created within the tlsassistant/Report folder
 
-FROM ubuntu:22.04
+FROM ubuntu:22.04 AS builder
 
 ENV PATH="/root/.local/bin:$PATH"
 
@@ -40,7 +40,9 @@ COPY ./configs/compliance/ciphersuites.json /tlsassistant/configs/compliance/cip
 
 ENV TLSA_IN_A_DOCKER_CONTAINER=Yes
 
-RUN poetry run python3 install.py -v
+ENV DOCKER_MULTI_STAGE_BUILD=Yes
+
+RUN poetry run python3 install.py -v --depth 1
 
 WORKDIR "/tlsassistant/dependencies/tls-compliance-dataset"
 
@@ -51,6 +53,31 @@ RUN poetry run python3 schema_creator.py
 RUN poetry run python3 database_filler.py
 
 RUN cp requirements.db /tlsassistant/dependencies/
+
+FROM ubuntu:22.04
+
+ENV PATH="/root/.local/bin:$PATH"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+ENV LANG=en_US.UTF-8
+
+ENV LANGUAGE=en_US:en
+
+ENV LC_ALL=en_US.UTF-8
+
+ENV TZ=Europe/Rome
+
+RUN apt-get update && apt-get install -y pipx bsdmainutils locales dnsutils libcairo2-dev openjdk-11-jre
+
+RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
+    locale-gen
+
+RUN pipx install poetry
+
+COPY --from=builder /root/.cache/pypoetry/virtualenvs/ /root/.cache/pypoetry/virtualenvs/
+
+COPY --from=builder /tlsassistant/dependencies/ /tlsassistant/dependencies/
 
 COPY . /tlsassistant
 
