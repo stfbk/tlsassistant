@@ -27,8 +27,8 @@ jobs:
 
       - name: Pull testbed image and run it
         run: |
-          docker pull ghcr.io/stfbk/tlsassistant-testbed:v2.0.1
-          docker run -d --rm --name testbed --network tlsa -p 9000-9008:9000-9008 -t ghcr.io/stfbk/tlsassistant-testbed:v2.0.1
+          docker pull ghcr.io/stfbk/tlsassistant-testbed:v2.1.2
+          docker run -d --rm --name testbed --network tlsa -p 9000-9008:9000-9008 -t ghcr.io/stfbk/tlsassistant-testbed:v2.1.2
 
       - name: Wait for testbed
         run: |
