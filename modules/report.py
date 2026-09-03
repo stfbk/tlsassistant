@@ -443,6 +443,18 @@ class Report:
                             mitigation.copy()
                         )  # i'm expecting only one mitigation per module, is it ok?
                 results[hostname][module]["raw"] = raw
+        # preserve all originally scanned hosts in host-based reports.
+        if self.__input_dict["mode"] in (
+            self.Mode.HOSTS,
+            self.Mode.DOMAINS,
+            self.Mode.APK,
+            self.Mode.IPA,
+        ):
+            original_hosts = list(self.__input_dict["results"].keys())
+            results = {
+                host: results[host] if host in results else ""
+                for host in original_hosts
+            }
         use_rml = False
         
         if self.__input_dict["mode"] == self.Mode.DOMAINS :
