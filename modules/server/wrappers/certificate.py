@@ -5,12 +5,12 @@ from utils.validation import Validator
 
 class Parser:
     """
-    Parser for the crt.sh API
+    Parser for the ctlogs.dev API
     """
 
     def __init__(self, results):
         """
-        :param results: The results from the crt.sh API
+        :param results: The results from the ctlogs.dev API
         :type results: list
         """
         self.__cache = {}
@@ -18,29 +18,30 @@ class Parser:
 
     def __parse(self, results):
         """
-        Parses the results from the crt.sh API
-        :param results: The results from the crt.sh API
+        Parses the results from the ctlogs.dev API
+        :param results: The results from the ctlogs.dev API
         :type results: list
         """
-        for cert in results:
-            url = cert["common_name"]
-            cert.pop("common_name", None)
-            if url not in self.__cache:
-                self.__cache[url] = [cert]
-            else:
-                self.__cache[url].append(cert)
+        for result in results:
+            for cert in result["rows"]:
+                url = cert["match"]
+                cert.pop("match", None)
+                if url not in self.__cache:
+                    self.__cache[url] = [cert]
+                else:
+                    self.__cache[url].append(cert)
 
     def output(self):
         """
         Returns the cached results
-        :return: The output of the crt.sh API
+        :return: The output of the ctlogs.dev API
         """
         return self.__cache
 
 
 class Certificate:
     """
-    Calls the crt.sh API and returns the results
+    Calls the ctlogs.dev API and returns the results
     """
 
     __cache = {}
@@ -82,7 +83,7 @@ class Certificate:
 
     def run(self, **kwargs):
         """
-        Runs the crt.sh API
+        Runs the ctlogs.dev API
 
         :param kwargs: The input arguments
         :type kwargs: dict
@@ -130,20 +131,32 @@ class Certificate:
 
     def __requester(self, url, expired=True) -> dict:
         """
-        Requests the crt.sh API
+        Requests the ctlogs.dev API
 
         :param url: The hostname to lookup
         :type url: str
-        :return: The results of the crt.sh API
-        :rtype: dict
+        :return: The results of the ctlogs.dev API
+        :rtype: List[dict]
         :raise Exception: If the hostname is not found or could not return any results
         """
-        req = requests.get(
-            f"https://crt.sh/?q=%.{url}&output=json{'&exclude=expired' if not expired else ''}",
-            timeout=30
-        )
+        has_next = True
+        final_req = {}
+        results = []
+        request_url = f"https://ctlogs.dev/search?q=.{url}&output=json{'&exclude=expired' if not expired else ''}"
+        while has_next:
+            req = requests.get(
+                request_url,
+                timeout=30
+            )
 
-        if not req.ok or req.status_code != 200:
-            raise Exception("Couldn't retrieve any result.")
+            if not req.ok or req.status_code != 200:
+                raise Exception("Couldn't retrieve any result.")
 
-        return req.json()
+            req = req.json()
+            has_next = req.get("has_next", None)
+            next_cursor = req.get("next_cursor", None)
+            request_url = f"https://ctlogs.dev/search?q=.{url}&output=json{'&exclude=expired' if not expired else ''}&after={next_cursor}"
+            if req:
+                results.append(req)
+
+        return results            
