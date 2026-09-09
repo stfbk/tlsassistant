@@ -3,7 +3,7 @@ name: TLSAssistant
 url: https://github.com/stfbk/tlsassistant
 landingURL: https://st.fbk.eu/tools/TLSAssistant/
 softwareVersion: "3.2"
-releaseDate: 2025-06-06
+releaseDate: 2026-09-25
 logo: https://raw.githubusercontent.com/stfbk/tlsassistant/refs/heads/master/assets/logo.png
 platforms:
   - linux
