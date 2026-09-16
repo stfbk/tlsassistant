@@ -4,6 +4,7 @@ from os.path import sep
 from pathlib import Path
 from pydoc import locate
 
+from utils.paths import resource_path
 from utils.urls import link_sep, url_domain
 from utils.validation import Validator
 
@@ -81,21 +82,20 @@ def load_configuration(module: str, configs_path=None) -> dict:
     Validator().string(module)
     module = module.lower()
     if configs_path:
-        module_path = Path(f"{configs_path}{module}.json")  # search for config file
+        module_path = resource_path(configs_path, f"{module}.json")
         if not module_path.exists():
             raise FileNotFoundError(
                 f"Couldn't find the configuration file of the module {module_path.absolute()}"
             )
     else:
-
-        server_path = Path(
-            f"configs{sep}modules{sep}server{sep}{module}.json"
+        server_path = resource_path(
+            "configs", "modules", "server", f"{module}.json"
         )  # search for config file in server
-        android_path = Path(
-            f"configs{sep}modules{sep}android{sep}{module}.json"
+        android_path = resource_path(
+            "configs", "modules", "android", f"{module}.json"
         )  # search for config file in android
-        ios_path = Path(
-            f"configs{sep}modules{sep}ios{sep}{module}.json"
+        ios_path = resource_path(
+            "configs", "modules", "ios", f"{module}.json"
         )  # search for config file in ios
 
         if server_path.exists():

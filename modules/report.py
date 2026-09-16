@@ -22,6 +22,7 @@ from modules.server.webserver_type import WebserverType
 from modules.stix.stix import Stix
 from utils.globals import version
 from utils.logger import Logger
+from utils.paths import resource_path
 from utils.prune import pruner
 from utils.validation import Validator, rec_search_key
 
@@ -47,7 +48,7 @@ class Report:
     def __init__(self):
         self.__input_dict = {}
         self.__path = ""
-        self.__template_dir = Path(f"configs{sep}out_template")
+        self.__template_dir = resource_path("configs", "out_template")
         self.__logging = Logger("Report")
         files = utils.loader.load_configuration(
             "module_to_mitigation", "configs/")
@@ -94,8 +95,9 @@ class Report:
                 f"<font {custom_fonts[custom_font]}>\\1</font>"
         for module in files:
             # TODO fix poodle alias system
-            if os.path.isfile(Path("configs/mitigations/" + files[module])):
-                with open(Path("configs/mitigations/" + files[module]), "r") as f:
+            mitigation_path = resource_path("configs", "mitigations", files[module])
+            if os.path.isfile(mitigation_path):
+                with open(mitigation_path, "r") as f:
                     data = json.load(f)
                 self._replacements["name_mapping"][module] = data.get(
                     "Entry", {}).get("Name", "Unknown")
@@ -217,8 +219,14 @@ class Report:
         fsl = FileSystemLoader(searchpath=self.__template_dir)
         env = Environment(loader=fsl)
         file_extension = "xml" if rml else "html"
-        to_process = {"version": version, "date": date,
-                      "modules": modules, "hosts": list(results.keys())}
+        to_process = {
+            "version": version,
+            "date": date,
+            "modules": modules,
+            "hosts": list(results.keys()),
+            "font_dir": str(resource_path("dependencies", "roboto-unhinted")),
+            "image_path": str(resource_path("configs", "out_template", "assets", "pdf")),
+        }
 
         if mode == self.Mode.MODULES:
             self.__logging.info("Generating modules report...")
@@ -376,7 +384,7 @@ class Report:
         if not Path(f"results{sep}assets").exists():
             self.__logging.debug("Copying assets folder...")
             cp(
-                str(Path(f"configs{sep}out_template{sep}assets").absolute()),
+                str(resource_path("configs", "out_template", "assets")),
                 str(Path(f"results{sep}assets").absolute()),
             )
 

@@ -3,8 +3,8 @@ import subprocess
 
 from utils.urls import url_domain, cache_name
 from utils.validation import Validator
+from utils.paths import resource_path
 from pathlib import Path
-from os.path import sep
 from os import remove
 from shutil import copyfile
 
@@ -118,8 +118,8 @@ class Tlsfuzzer:
                 script_name[:-3] if script_name.endswith(".py") else script_name
             )
             script_names.append(script_name)
-            tmp_path = Path(
-                f"dependencies{sep}tlsfuzzer{sep}scripts{sep}{script_name}.py"
+            tmp_path = resource_path(
+                "dependencies", "tlsfuzzer", "scripts", f"{script_name}.py"
             )
             if not tmp_path.exists():
                 raise FileNotFoundError(f"file {script_name} not found.")

@@ -3,12 +3,13 @@ import logging
 import subprocess
 import sys
 import uuid
-from os.path import devnull, sep, join
+from os.path import devnull, join
 from pathlib import Path
 from shutil import rmtree as rm_rf
 from os import walk
 
 from utils.logger import Logger
+from utils.paths import resource_path
 from utils.validation import Validator
 
 
@@ -219,14 +220,17 @@ class Super:
                 f"Scanning {path.absolute()}, saving result to temp folder {folder_name}"
             )
             with open(devnull, "w") as null:
+                base_dir = resource_path("dependencies", folder_name)
+                results_dir = base_dir.joinpath("results")
+                dist_dir = base_dir.joinpath("dist")
                 cmd = [
                     "super-analyzer",
                     "--results",
-                    f"dependencies{sep}{folder_name}{sep}results",
+                    str(results_dir),
                     "--dist",
-                    f"dependencies{sep}{folder_name}{sep}dist",
+                    str(dist_dir),
                     "--rules",
-                    f"configs{sep}tls_rules.json",
+                    str(resource_path("configs", "tls_rules.json")),
                     "--json",
                 ]
 
@@ -237,9 +241,7 @@ class Super:
                 cmd.append(str(path.absolute()))
                 exit_code = self.subprocess_call(cmd, null)
                 self.__logging.debug(f"exit code: {exit_code}")
-                file_name = self.__find_file(
-                    f"dependencies{sep}{folder_name}{sep}results"
-                )
+                file_name = self.__find_file(str(results_dir))
                 if Path(file_name).exists():  # load the temp file results
                     with open(file_name, "r") as file:  # load temp file
                         data = file.read()
@@ -247,7 +249,7 @@ class Super:
                             json.loads(data)
                         ).output()
 
-                    rm_rf(f"dependencies{sep}{folder_name}")
+                    rm_rf(str(base_dir))
                 else:
                     raise Exception("Couldn't decompile the APK")
         else:

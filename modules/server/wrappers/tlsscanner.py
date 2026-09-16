@@ -5,6 +5,7 @@ import sys
 from os import devnull, sep
 from collections import defaultdict
 
+from utils.paths import resource_path
 from utils.urls import url_strip
 from utils.validation import Validator
 
@@ -181,7 +182,9 @@ class TLS_Scanner:
         """
         Loads TLS-Scanner variables.
         """
-        self.__tls_scanner = f"dependencies{sep}TLS-Scanner{sep}apps{sep}TLS-Server-Scanner.jar"
+        self.__tls_scanner = str(resource_path(
+            "dependencies", "TLS-Scanner", "apps", "TLS-Server-Scanner.jar"
+        ))
         self.__input_dict = {}
 
     def input(self, **kwargs):
