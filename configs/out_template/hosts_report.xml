@@ -1,10 +1,10 @@
 <!DOCTYPE document SYSTEM "rml.dtd">
 <document>
     <docinit>
-        <registerTTFont faceName="Roboto" fileName="dependencies/roboto-unhinted/Roboto-Regular.ttf" />
-        <registerTTFont faceName="Roboto Bold" fileName="dependencies/roboto-unhinted/Roboto-Bold.ttf" />
-        <registerTTFont faceName="Roboto Italic" fileName="dependencies/roboto-unhinted/Roboto-Italic.ttf" />
-        <registerTTFont faceName="Roboto Bold Italic" fileName="dependencies/roboto-unhinted/Roboto-BoldItalic.ttf" />
+        <registerTTFont faceName="Roboto" fileName="{{ font_dir }}/Roboto-Regular.ttf" />
+        <registerTTFont faceName="Roboto Bold" fileName="{{ font_dir }}/Roboto-Bold.ttf" />
+        <registerTTFont faceName="Roboto Italic" fileName="{{ font_dir }}/Roboto-Italic.ttf" />
+        <registerTTFont faceName="Roboto Bold Italic" fileName="{{ font_dir }}/Roboto-BoldItalic.ttf" />
     </docinit>
 <!--To edit the font of a string edit the corresponding style here-->
     <stylesheet>
@@ -48,12 +48,11 @@
     {% set year = date.split("-")[0] %}
     {% set page_w = 595 %}
     {% set page_h = 842 %}
-    {% set image_path = "configs/out_template/assets/pdf/" %}
     <template pagesize="({{page_w}}, {{page_h}})" showBoundary="0">
         <pageTemplate id="main">
             <pageGraphics>
                 <!-- Header -->
-                <image x="0" y="714" file="{{image_path}}FBK_Cybersecurity_colour.png" width = "254" height = "130"/>
+                <image x="0" y="714" file="{{image_path}}/FBK_Cybersecurity_colour.png" width = "254" height = "130"/>
                 {% set frame_w = 455 %}
                 {% set frame_h = 600 %}
                 {% set frame_x = (page_w - frame_w) / 2%}
@@ -84,8 +83,8 @@
                 {% set footer_frame_h = 12 %}
                 {% set footer_frame_y = footer_line_y / 2%}
                 <!--Logo block-->
-                <image x="{{logo_x}}" y = "{{logo_y}}" file="{{image_path}}logo_only2.png" width = "{{logo_w}}" height = "{{logo_h}}"/>
-                <image x="{{name_x}}" y = "{{name_y}}" file="{{image_path}}name2.png" width = "{{name_w}}" height = "{{name_h}}"/>
+                <image x="{{logo_x}}" y = "{{logo_y}}" file="{{image_path}}/logo_only2.png" width = "{{logo_w}}" height = "{{logo_h}}"/>
+                <image x="{{name_x}}" y = "{{name_y}}" file="{{image_path}}/name2.png" width = "{{name_w}}" height = "{{name_h}}"/>
                 <setFont name="Roboto Bold Italic" size="12"/>
                 <drawRightString x="{{version_x}}" y="{{version_y}}">Version {{version}}</drawRightString>
                 <stroke color="#4160b0"/>

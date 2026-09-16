@@ -1,9 +1,10 @@
 import json
 import subprocess
 import sys
-from os import sep, devnull, path, remove
+from os import devnull, path, remove
 import uuid
 import logging
+from utils.paths import resource_path
 from utils.validation import Validator
 from utils.urls import url_strip, link_sep, validate_ip
 
@@ -65,7 +66,7 @@ class Testssl:
         """
         Loads testssl variables.
         """
-        self.__testssl = f"dependencies{sep}testssl.sh{sep}testssl.sh"
+        self.__testssl = str(resource_path("dependencies", "testssl.sh", "testssl.sh"))
         self.__input_dict = {}
 
     def input(self, **kwargs):
@@ -252,11 +253,12 @@ class Testssl:
             logging.debug(
                 f"Scanning {hostname}, saving result to temp file {file_name}"
             )
+            json_file = resource_path("dependencies", f"{file_name}.json")
             with open(devnull, "w") as null:
                 cmd = [
                     "bash",
                     self.__testssl,
-                    f"--jsonfile=dependencies{sep}{file_name}.json",
+                    f"--jsonfile={json_file}",
                 ]
                 if one and not validate_ip(hostname):
                     logging.debug("Scanning with --IP=one..")
@@ -283,16 +285,12 @@ class Testssl:
                     )
                 except subprocess.CalledProcessError as c:
                     logging.debug(c)
-                if path.exists(
-                    f"dependencies{sep}{file_name}.json"
-                ):  # load the temp file results
-                    with open(
-                        f"dependencies{sep}{file_name}.json", "r"
-                    ) as file:  # load temp file
+                if path.exists(json_file):  # load the temp file results
+                    with open(json_file, "r") as file:  # load temp file
                         data = file.read()
                         cache, ip_cache = Parser(json.loads(data)).output()
                         self.__update_cache(cache, ip_cache)
-                    remove(f"dependencies{sep}{file_name}.json")
+                    remove(json_file)
         else:
             if not validate_ip(
                 hostname

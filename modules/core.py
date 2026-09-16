@@ -7,7 +7,6 @@ from pathlib import Path
 import tldextract
 import sys
 
-from modules.android.wrappers.sebastian import CustomAndroidVulnerabilityManager
 from modules.configuration.configuration import Configuration
 from modules.parse_input_conf import Parser
 from modules.server.testssl_base import Testssl_base
@@ -257,6 +256,8 @@ class Core:
             f"Loading configuration {self.__input_dict['configuration']}"
         )
         if modules and self.__input_dict["type_of_analysis"] == self.Analysis.APK:
+            from modules.android.wrappers.sebastian import CustomAndroidVulnerabilityManager
+
             tmp_modules = ["".join(tmp.split("_"))
                            if "_" in tmp else tmp for tmp in modules]
             remaining_plugins = [

@@ -1,6 +1,6 @@
 import logging
 from os import listdir
-from os.path import isfile, join, sep
+from os.path import isfile, join
 from pathlib import Path
 import sys
 
@@ -9,9 +9,8 @@ from utils.colors import Color
 from utils.configuration import pretty
 from utils.loader import load_configuration, load_list_of_domains
 from utils.logger import Logger
+from utils.paths import resource_path
 from utils.type import WebserverType
-
-from dependencies.SEBASTiAn.src.SEBASTiAn.util import check_valid_apk_file, check_valid_ipa_file
 
 config_types_mapping = {
     "apache": WebserverType.APACHE,
@@ -68,14 +67,17 @@ class Tlsa:
                     ]
                 )
             else:
+                android_dir = resource_path("configs", "modules", "android")
+                server_dir = resource_path("configs", "modules", "server")
+                ios_dir = resource_path("configs", "modules", "ios")
                 android_modules = (
                     f"{Color.CGREEN}Android:{Color.ENDC}\n\t"
                     + "\n\t".join(
                         [
                             f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
-                            for f in listdir(f"configs{sep}modules{sep}android{sep}")
+                            for f in listdir(android_dir)
                             if f.endswith(".json")
-                            and isfile(join(f"configs{sep}modules{sep}android{sep}", f))
+                            and isfile(join(android_dir, f))
                         ]
                     )
                 )
@@ -84,9 +86,9 @@ class Tlsa:
                     + "\n\t".join(
                         [
                             f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
-                            for f in listdir(f"configs{sep}modules{sep}server{sep}")
+                            for f in listdir(server_dir)
                             if f.endswith(".json")
-                            and isfile(join(f"configs{sep}modules{sep}server{sep}", f))
+                            and isfile(join(server_dir, f))
                         ]
                     )
                 )
@@ -95,9 +97,9 @@ class Tlsa:
                     + "\n\t".join(
                         [
                             f"{Color.CBEIGE}{Path(f).stem}{Color.ENDC}"
-                            for f in listdir(f"configs{sep}modules{sep}ios{sep}")
+                            for f in listdir(ios_dir)
                             if f.endswith(".json")
-                            and isfile(join(f"configs{sep}modules{sep}ios{sep}", f))
+                            and isfile(join(ios_dir, f))
                         ]
                     )
                 )
@@ -121,6 +123,8 @@ class Tlsa:
         self.__logging.debug("Initializing Core element.")
         platform = None
         if args.app:
+            from dependencies.SEBASTiAn.src.SEBASTiAn.util import check_valid_apk_file, check_valid_ipa_file
+
             if not isfile(args.app):
                 self.__logging.error(
                     f"File '{args.app}' does not exist")

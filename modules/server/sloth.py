@@ -1,4 +1,3 @@
-from os.path import sep
 from pathlib import Path
 
 from modules.server.tlsfuzzer_base import Tlsfuzzer_base
@@ -6,6 +5,7 @@ from modules.stix.stix_base import Bundled
 from utils.loader import load_configuration
 from utils.logger import Logger
 from utils.mitigations import load_mitigation
+from utils.paths import resource_path
 
 
 class Sloth(Tlsfuzzer_base):
@@ -31,8 +31,12 @@ class Sloth(Tlsfuzzer_base):
         Cipher-dependent scripts are added at runtime from testssl output.
         """
         self._cipher_name_to_hex = self._load_cipher_name_to_hex()
-        self._cert_location = f"dependencies{sep}certificates{sep}localuser.crt"
-        self._key_location = f"dependencies{sep}certificates{sep}localuser.key"
+        self._cert_location = str(
+            resource_path("dependencies", "certificates", "localuser.crt")
+        )
+        self._key_location = str(
+            resource_path("dependencies", "certificates", "localuser.key")
+        )
         assert Path(self._cert_location).exists(), (
             f"The certificate isn't "
             f"present at location {Path(self._cert_location).absolute()}"

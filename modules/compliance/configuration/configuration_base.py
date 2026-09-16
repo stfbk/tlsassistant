@@ -8,6 +8,7 @@ from utils.ciphersuites import get_1_3_ciphers
 from utils.database import get_standardized_level
 from utils.loader import load_configuration
 from utils.logger import Logger
+from utils.paths import resource_path
 from utils.validation import Validator
 
 
@@ -17,7 +18,9 @@ class ConfigurationMaker:
             "mapping", f"configs/compliance/{config_type}/")
         self.reverse_mapping = dict((v, k) for k, v in self.mapping.items())
         self._output_dict = {"configuration": config_type}
-        self._config_template_path = f"configs/compliance/{config_type}/template.conf"
+        self._config_template_path = resource_path(
+            "configs", "compliance", config_type, "template.conf"
+        )
         self._template = None
         self._config_output = None
         self.configuration = None

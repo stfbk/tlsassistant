@@ -3,13 +3,14 @@ import sqlite3
 import utils.database as db_utils
 from utils.loader import load_configuration
 from utils.logger import Logger
+from utils.paths import resource_path
 
 # Configs from the tls-compliance-dataset repository
 from configs import sheets_mapping
 
 
 class Database:
-    database_file = "dependencies/requirements.db"
+    database_file = str(resource_path("dependencies", "requirements.db"))
 
     def __init__(self, file: str = database_file):
         self.database_file = file

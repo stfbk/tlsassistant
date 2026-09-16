@@ -1,8 +1,8 @@
 import json
 import logging
-from pathlib import Path
-from os.path import sep
 from copy import deepcopy
+
+from utils.paths import resource_path
 
 def load_mitigation(mitigation_name: str, raise_error=False, force=False) -> dict:
     """
@@ -40,7 +40,7 @@ class MitigationLoader:
         """
         mitigation_name = mitigation_name.replace(" ", "_")
         mitigation_name = mitigation_name.upper()
-        mitigation_path = Path(f"configs{sep}mitigations{sep}{mitigation_name}.json")
+        mitigation_path = resource_path("configs", "mitigations", f"{mitigation_name}.json")
         if not mitigation_path.exists():
             if raise_error:
                 raise FileNotFoundError(
