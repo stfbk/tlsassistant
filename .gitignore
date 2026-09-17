@@ -162,3 +162,5 @@ testssl_dumps/
 poetry.lock
 
 .history/
+
+flake.lock
