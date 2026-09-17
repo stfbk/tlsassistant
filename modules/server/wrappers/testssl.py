@@ -1,7 +1,8 @@
 import json
 import subprocess
 import sys
-from os import devnull, path, remove
+from os import devnull, path, remove, environ
+import tempfile
 import uuid
 import logging
 from utils.paths import resource_path
@@ -254,6 +255,8 @@ class Testssl:
                 f"Scanning {hostname}, saving result to temp file {file_name}"
             )
             json_file = resource_path("dependencies", f"{file_name}.json")
+            if environ.get("TLSA_NIX"):
+                json_file = tempfile.mkstemp(suffix=".json")[1]
             with open(devnull, "w") as null:
                 cmd = [
                     "bash",
