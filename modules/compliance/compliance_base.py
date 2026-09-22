@@ -206,18 +206,18 @@ class Compliance:
         if isinstance(self._certificate_index, int):
             self._certificate_index = str(self._certificate_index)
         if ignore_openssl and ignore_openssl[0]:
-            self._openssl_version = "3.0.12"
-            self._logging.info("Using the latest LTS OpenSSL release: 3.0.12")
+            self._openssl_version = "3.5.6"
+            self._logging.info("Using the latest LTS OpenSSL release: 3.5.6")
         elif openssl_version:
             self._openssl_version = openssl_version[0]
         if self._openssl_version not in self._configuration_maker.signature_algorithms:
             if openssl_version is None:
                 self._logging.warning(
-                    f"OpenSSL version not provided, using 3.0.12")
+                    f"OpenSSL version not provided, using 3.5.6")
             else:
                 self._logging.warning(
-                    f"OpenSSL version {openssl_version[0]} is not supported, using 3.0.12")
-            self._openssl_version = "3.0.12"
+                    f"OpenSSL version {openssl_version[0]} is not supported, using 3.5.6")
+            self._openssl_version = "3.5.6"
         self._configuration_maker.set_openssl_version(self._openssl_version)
 
         # guidelines evaluation
@@ -275,7 +275,7 @@ class Compliance:
                 else:
                     actual_hostname = self.hostname
                 test_ssl_output = self.test_ssl.run(
-                    **{"hostname": actual_hostname + port, "one": True})
+                    **{"hostname": actual_hostname + port, "one": True, "args": ["-e", "-E", "-s", "-f", "-p", "-g", "-S", "-p", "-h", "-U"]})
                 if use_cache:
                     with open(file_path, "w") as f:
                         json.dump(test_ssl_output, f, indent=4)
@@ -365,27 +365,51 @@ class Compliance:
             requirements_tuples = [(entry, self._output_dict[sheet][entry]["level"], self._output_dict[sheet][entry]["compliant"])
                                    for entry in self._output_dict[sheet] if isinstance(self._output_dict[sheet][entry], dict)]
             sheet_level = "Not compliant"
-            at_least_one = any([compliant and level in ["MUST", "RECOMMENDED"]
-                               for _, level, compliant in requirements_tuples])
-            at_least_one_optional = any(
-                [compliant and level == "OPTIONAL" for _, level, compliant in requirements_tuples])
-            at_least_one_not_recommended = any([not compliant and level in [
-                                               "NOT RECOMMENDED"] for _, level, compliant in requirements_tuples])
+            all_recommended = all(compliant and level == "RECOMMENDED" for _, level, compliant in requirements_tuples) or \
+                not [level for _, level, _ in requirements_tuples if level == "RECOMMENDED"]
+            all_not_recommended = all(compliant and level == "NOT RECOMMENDED" for _, level, compliant in requirements_tuples) or \
+                not [level for _, level, _ in requirements_tuples if level == "NOT RECOMMENDED"]
+            any_recommended = any(compliant and level == "RECOMMENDED" for _, level, compliant in requirements_tuples) or \
+                not [level for _, level, _ in requirements_tuples if level == "RECOMMENDED"]
+            any_not_recommended = any(compliant and level == "NOT RECOMMENDED" for _, level, compliant in requirements_tuples) or \
+                not [level for _, level, _ in requirements_tuples if level == "NOT RECOMMENDED"]
             must_violations = any([not compliant and level in [
                                   "MUST", "MUST NOT"] for _, level, compliant in requirements_tuples])
+            at_least_one_must = any([level in ["MUST", "MUST NOT"] for _, level, _ in requirements_tuples])
             all_info = all([level == "INFO" for _, level,
                            _ in requirements_tuples])
             current_sheet_level = self._output_dict[sheet].get(
                 "sheet_level", "")
+
+            print(must_violations, all_recommended, all_not_recommended, any_recommended, all_info)
             if not must_violations:
-                if at_least_one or all_info:
-                    sheet_level = "Compliant"
-                if at_least_one_optional and not at_least_one:
-                    sheet_level = "Partially compliant"
-                if at_least_one_not_recommended and (at_least_one or at_least_one_optional):
-                    sheet_level = "Partially compliant"
+                if all_info:
+                    sheet_level = "Fully Compliant"
+                elif all_recommended:
+                    if all_not_recommended:
+                        sheet_level = "Fully compliant"
+                    elif any_not_recommended:
+                        sheet_level = "Partially compliant"
+                    else:
+                        sheet_level = "Not compliant"
+                else:
+                    if any_recommended:
+                        if all_not_recommended:
+                            sheet_level = "Compliant"
+                        elif any_not_recommended:
+                            sheet_level = "Partially compliant"
+                        else:
+                            sheet_level = "Not compliant"
+                    else:
+                        if all_not_recommended:
+                            sheet_level = "Compliant"
+                        elif any_not_recommended:
+                            sheet_level = "Partially compliant"
+                        else:
+                            sheet_level = "Not compliant"
+            print(f"Sheet {sheet} level: {sheet_level}, current level: {current_sheet_level}")
             levels_priority = ["Not compliant",
-                               "Partially compliant", "Compliant", ""]
+                               "Partially compliant", "Compliant", "Fully compliant", ""]
             if levels_priority.index(sheet_level) < levels_priority.index(current_sheet_level):
                 self._output_dict[sheet]["sheet_level"] = sheet_level
 
@@ -922,6 +946,9 @@ class Compliance:
 
                 elif field == "clientAuth":
                     self._user_configuration["clientAuth"] = actual_dict["finding"] != "none"
+        import pprint
+        with open("dump.txt", "w") as f:
+            pprint.pprint(self._user_configuration, stream=f)
 
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition, hostname):
         information_level = None
