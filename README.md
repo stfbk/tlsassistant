@@ -2,11 +2,11 @@
 
 # TLSAssistant v3
 
-**TLSAssistant v3.2** is the latest version of TLSAssistant, a modular state-of-the-art TLS analyzer, extensible with new features and capable of streamlining the mitigation process of known and newly discovered TLS attacks even for non-expert users. The companion page, containing additional details can be found [here](https://st.fbk.eu/tools/TLSAssistant/).
+**TLSAssistant v3.2** is the latest version of TLSAssistant, a modular state-of-the-art TLS analyzer, extensible with new features and capable of streamlining the mitigation process of known and newly discovered TLS attacks even for non-expert users. The companion page, containing additional details, can be found [here](https://st.fbk.eu/tools/TLSAssistant/).
 
-The latest release improves and enhances the previously introduced compliance analysis by offering a refined PDF report together with two new compliance modules feature based on our [latest research article]([doi.org/10.5220/0012764700003767](https://doi.org/10.5220/0012764700003767)): `generate_one` and `generate_many`. These modules let users easily generate compliant configurations from scratch by selecting one (or multiple) guideline and a target webserver, either Apache or nginx.
+The latest release improves and enhances the previously introduced compliance analysis by offering a refined PDF report together with two new compliance module features based on our [latest research article]([doi.org/10.5220/0012764700003767](https://doi.org/10.5220/0012764700003767)): `generate_one` and `generate_many`. These modules let users easily generate compliant configurations from scratch by selecting one (or multiple) guideline and a target webserver, either Apache or nginx.
 
-Moreover, thanks to the recent updates to our [compliance dataset](https://github.com/stfbk/tls-compliance-dataset), TLSAssistant is now able to verify a server compliance against three new guidelines from:
+Moreover, thanks to the recent updates to our [compliance dataset](https://github.com/stfbk/tls-compliance-dataset), TLSAssistant is now able to verify server compliance against three new guidelines from:
 
 - **ACN**, the new cybersecurity agency of the Italian government,
 - **CNSA**, the Commercial National Security Algorithm Suite provided by US' NSA, and
@@ -104,17 +104,17 @@ It supports the following use-cases:
 ## Download
 
 > [!TIP]
-> The recommended usage method is the the pre-built Docker image provided by GitHub. You can fetch it using the following command
+> The recommended usage method is the pre-built Docker image provided by GitHub. You can fetch it using the following command
 >
 > ```bash
 > docker pull ghcr.io/stfbk/tlsassistant:v3.2
 > ```
-> and then running it 
+> and then run it 
 > ```bash
 > docker run --rm -v ${PWD}/results:/tlsassistant/results -t ghcr.io/stfbk/tlsassistant:v3.2 -s www.fbk.eu
 > ```
 
-However, if you want to install the dependencies on the system, you can use one of the the following building methods:
+However, if you want to install the dependencies on the system, you can use one of the following building methods:
 ### One Liner
 To install the tool (in a virtual environment), execute the following command:
 ```bash
@@ -161,7 +161,7 @@ git clone https://github.com/stfbk/tlsassistant.git && cd tlsassistant
 
 Recommended for non-Ubuntu users:
 
-Since TLSAssistant installer uses APT and autonomously installs its dependencies, you can use the provided Dockerfile to autonomously build the image
+Since the TLSAssistant installer uses APT and autonomously installs its dependencies, you can use the provided Dockerfile to autonomously build the image
 
 <details>
 <summary>Show commands</summary>
@@ -226,7 +226,7 @@ optional arguments:
   -d DOMAIN_FILE, --domain_file DOMAIN_FILE
                         The file path which has the hostname to analyze.
   -l [LIST], --list [LIST]
-                        List all modules or print an help of a module.
+                        List all modules or print help of a module.
                         For example: -l freak
   -a APP, --app APP     The apk/ipa path, target of the analysis.
   --apply-fix [APPLY_FIX]
@@ -257,7 +257,7 @@ optional arguments:
   --output_config COMPLIANCE_ARGS
                         Where to save the output configuration file, only needed for generate one/many.
   --certificate_index COMPLIANCE_ARGS
-                        The index of the certificate to use for the analysis, only needed if the website has multiple certificates.Defaults to 1 (first certificate).
+                        The index of the certificate to use for the analysis, only needed if the website has multiple certificates. Defaults to 1 (first certificate).
   --custom_guidelines COMPLIANCE_ARGS
                         A path to a custom guideline file, only needed if the user wants to use a custom guideline.
   --use_cache           Default to False. If True the program will use the cached testssl analysis, if False the cache will be ignored.
@@ -390,7 +390,7 @@ python3 run.py -m generate_one --guidelines nist --output_conf compliant_config.
 </details>
 
 
-### Avaliable analysis modules
+### Available analysis modules
 
 <details>
 <summary>Show modules list</summary>
@@ -426,7 +426,7 @@ Compliance:
         generate_many
 iOS:
         allow_http_plist
-        allow_connection_plist
+        insecure_connection_plist
         allow_tls_version_plist
         no_forward_secrecy_plist
         weak_crypto

@@ -406,7 +406,7 @@ class Compliance:
                             sheet_level = "Partially compliant"
                         else:
                             sheet_level = "Not compliant"
-            print(f"Sheet {sheet} level: {sheet_level}, current level: {current_sheet_level}")
+            # print(f"Sheet {sheet} level: {sheet_level}, current level: {current_sheet_level}")
             levels_priority = ["Not compliant",
                                "Partially compliant", "Compliant", "Fully compliant", ""]
             if levels_priority.index(sheet_level) < levels_priority.index(current_sheet_level):
@@ -945,9 +945,9 @@ class Compliance:
 
                 elif field == "clientAuth":
                     self._user_configuration["clientAuth"] = actual_dict["finding"] != "none"
-        import pprint
-        with open("dump.txt", "w") as f:
-            pprint.pprint(self._user_configuration, stream=f)
+        # import pprint
+        # with open("dump.txt", "w") as f:
+        #    pprint.pprint(self._user_configuration, stream=f)
 
     def update_result(self, sheet, name, entry_level, enabled, source, valid_condition, hostname):
         information_level = None
