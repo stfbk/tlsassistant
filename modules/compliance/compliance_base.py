@@ -381,7 +381,6 @@ class Compliance:
             current_sheet_level = self._output_dict[sheet].get(
                 "sheet_level", "")
 
-            print(must_violations, all_recommended, all_not_recommended, any_recommended, all_info)
             if not must_violations:
                 if all_info:
                     sheet_level = "Fully Compliant"
