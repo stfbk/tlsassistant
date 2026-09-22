@@ -537,7 +537,7 @@ class Report:
         if 'prometheus' in self.__input_dict and self.__input_dict['prometheus'] != '':
             self.__logging.info("Starting prometheus...")
 
-            output_path_prometheus = f"{output_file.absolute().parent}{sep}{output_file.stem}_prometheus.log" if not \
+            output_path_prometheus = f"{output_file.absolute().parent}{sep}{output_file.stem}_prometheus.prom" if not \
                 self.__input_dict['prometheus'] else self.__input_dict['prometheus']
             Prometheus(results=results, modules=modules).run(
                 output_path_prometheus)

@@ -75,6 +75,8 @@ customElements.define('custom_font_code-2', CodeTwo);
                                                     {% set optional.result = "Compliant" %}
                                                 {% elif results[host][module]["raw_dict"]["sheet_level"] == "Partially compliant" %}
                                                     {% set optional.result = "Partially Compliant" %}
+                                                {% elif results[host][module]["raw_dict"]["sheet_level"] == "Fully compliant" %}
+                                                    {% set optional.result = "Fully Compliant" %}
                                                 {% else %}
                                                     {% set optional.result = "Not Compliant" %}
                                                 {% endif %}
@@ -87,7 +89,11 @@ customElements.define('custom_font_code-2', CodeTwo);
                                                 </td>
                                             {% elif optional.result == "Compliant" %}
                                             <td                                                
-                                                style="font-family: Roboto, sans-serif;font-style: italic;color: rgb(33, 37, 41);background: rgba(235,235,235,0.59);"> Compliant 
+                                                style="font-family: Roboto, sans-serif;font-style: italic;color: rgb(33, 37, 41);background: rgba(235,235,235,0.59);"> {{optional.result}} 
+                                            </td>
+                                            {% elif optional.result == "Fully Compliant" %}
+                                            <td
+                                                style="font-family: Roboto, sans-serif;font-style: italic;color: rgb(33, 37, 41);background: rgba(175, 208, 149, 0.59);"> {{optional.result}}
                                             </td>
                                             {% else %}
                                                 <td style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(255,175,175,0.59);">

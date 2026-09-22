@@ -400,7 +400,7 @@ class Core:
             or type_of_analysis == self.Analysis.DOMAINS
         ):
             if full_analysis:
-                testssl_args = []
+                testssl_args = ["-e", "-E", "-s", "-f", "-p", "-g", "-S", "-p", "-h", "-U"]
             self.__logging.debug(
                 f"Starting preanalysis testssl with args {testssl_args}..."
             )
