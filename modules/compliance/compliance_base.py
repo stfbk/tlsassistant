@@ -371,15 +371,15 @@ class Compliance:
                 not [level for _, level, _ in requirements_tuples if level == "NOT RECOMMENDED"]
             any_recommended = any(compliant and level == "RECOMMENDED" for _, level, compliant in requirements_tuples) or \
                 not [level for _, level, _ in requirements_tuples if level == "RECOMMENDED"]
-            any_not_recommended = any(compliant and level == "NOT RECOMMENDED" for _, level, compliant in requirements_tuples) or \
-                not [level for _, level, _ in requirements_tuples if level == "NOT RECOMMENDED"]
+            not_recommended_count = self._output_dict[sheet].get("not_recommended_count", 0)
+            any_not_recommended = len([compliant and level == "NOT RECOMMENDED" for _, level, compliant in requirements_tuples]) <= not_recommended_count
             must_violations = any([not compliant and level in [
                                   "MUST", "MUST NOT"] for _, level, compliant in requirements_tuples])
-            at_least_one_must = any([level in ["MUST", "MUST NOT"] for _, level, _ in requirements_tuples])
             all_info = all([level == "INFO" for _, level,
                            _ in requirements_tuples])
             current_sheet_level = self._output_dict[sheet].get(
                 "sheet_level", "")
+
 
             if not must_violations:
                 if all_info:
@@ -998,6 +998,13 @@ class Compliance:
                 "entries_remove": [],
                 "notes": []
             }
+        else:
+            if not self._output_dict[sheet].get("notes"):
+                self._output_dict[sheet]["notes"] = []
+            if not self._output_dict[sheet].get("entries_add"):
+                self._output_dict[sheet]["entries_add"] = []
+            if not self._output_dict[sheet].get("entries_remove"):
+                self._output_dict[sheet]["entries_remove"] = []
         compliant = (information_level in ["MUST", "RECOMMENDED", "OPTIONAL"] and enabled and valid_condition) \
             or (information_level in ["MUST NOT", "NOT RECOMMENDED"] and not enabled)
         if information_level:
@@ -1147,6 +1154,8 @@ class Compliance:
             self._output_dict[sheet][name]["notes"] = note
         if sheet == "KeyLengths" and enabled and valid_condition and level in ["recommended", "must"]:
             self.valid_keysize = True
+        if level == "not recommended":
+            self._output_dict[sheet]["not_recommended_count"] = self._output_dict[sheet].get("not_recommended_count", 0) + 1
 
     def handle_conditions_results(self, notes, enabled, valid_condition, level, condition, name):
         if self._condition_parser.entry_updates.get("disable_if"):
@@ -1334,6 +1343,8 @@ class Compliance:
                     "note": note,
                     "priority": priority
                 }
+                if level == "not recommended":
+                    self._output_dict[sheet]["not_recommended_count"] = self._output_dict[sheet].get("not_recommended_count", 0) + 1
                 total += 1
             for guideline in self._custom_guidelines:
                 custom_entry = self._custom_guidelines[guideline].get(
