@@ -111,7 +111,7 @@ if __name__ == "__main__":
         "-l",
         "--list",
         nargs="?",
-        help="List all modules or print an help of a module.\nFor example: -l freak",
+        help="List all modules or print help of a module.\nFor example: -l freak",
         default="",
     )
     hostname_or_apk.add_argument(
@@ -243,7 +243,7 @@ if __name__ == "__main__":
         nargs=1,
         action=ComplianceAction,
         dest="compliance_args",
-        help="The index of the certificate to use for the analysis, only needed if the website has multiple certificates."
+        help="The index of the certificate to use for the analysis, only needed if the website has multiple certificates. "
              "Defaults to 1 (first certificate)."
     )
 

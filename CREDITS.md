@@ -18,6 +18,7 @@ This file lists the main contributions. For the full list of contributions, plea
 
 * Emiliano Rizzonelli (contributor)
   - [tlsassistant-testbed](https://github.com/stfbk/tlsassistant-testbed) integration
+
 ##### Further credits (in chronological order)
 
 * wry-run
