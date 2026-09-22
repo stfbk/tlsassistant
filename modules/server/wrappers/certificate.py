@@ -143,7 +143,9 @@ class Certificate:
         final_req = {}
         results = []
         request_url = f"https://ctlogs.dev/search?q=.{url}&output=json{'&exclude=expired' if not expired else ''}"
-        while has_next:
+        counter = 0
+        while has_next and counter < 10:
+            counter += 1
             req = requests.get(
                 request_url,
                 timeout=30
