@@ -840,7 +840,7 @@ class CustomFunctions:
             self._entry_updates["notes"].append(
                 f"No AKI found for certificate {cert}")
             failed = True
-        if aki.authority_cert_issuer or aki.authority_cert_serial_number:
+        elif aki.authority_cert_issuer or aki.authority_cert_serial_number:
             self._entry_updates["notes"].append(
                 f"Certificate {cert} contains Issuer DN or Serial Number in the AKI field")
             self._entry_updates["levels"].append("must not")
