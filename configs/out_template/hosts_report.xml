@@ -29,6 +29,7 @@
         <paraStyle name = "vulnerable_websites" fontName = "Roboto" fontSize = "18" alignment="left" spaceAfter="10"/>
         <paraStyle name = "vulnerable_websites_list" fontName = "Roboto Italic" fontSize = "12" alignment="left" spaceAfter="5"/>
         <paraStyle name = "not_vulnerable" fontName="Roboto"/>
+        <paraStyle name = "fully_compliant" fontName="Roboto" textColor="#afd095"/>
         <paraStyle name = "potentially_vulnerable" fontName="Roboto Bold" textColor="red"/>
         <paraStyle name = "partially_compliant" fontName="Roboto Bold" textColor="#ff8a0c"/>
         <paraStyle name = "custom_font_code-2" fontName="Roboto" fontSize="12" backColor="yellow"/>
@@ -170,6 +171,8 @@
                             {% if module.startswith("compare_") %}
                                 {% if results[host][module]["raw_dict"]["sheet_level"] == "Compliant" %}
                                     <para style="not_vulnerable">Compliant</para>
+                                {% elif results[host][module]["raw_dict"]["sheet_level"] == "Fully compliant" %}
+                                    <para style="fully_compliant">Fully Compliant</para>
                                 {% elif results[host][module]["raw_dict"]["sheet_level"] == "Partially compliant" %}
                                     <para style="partially_compliant">Partially Compliant</para>
                                 {% else %}
