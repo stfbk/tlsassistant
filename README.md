@@ -4,18 +4,43 @@
 
 **TLSAssistant v3.2** is the latest version of TLSAssistant, a modular state-of-the-art TLS analyzer, extensible with new features and capable of streamlining the mitigation process of known and newly discovered TLS attacks even for non-expert users. The companion page, containing additional details, can be found [here](https://st.fbk.eu/tools/TLSAssistant/).
 
-The latest release improves and enhances the previously introduced compliance analysis by offering a refined PDF report together with two new compliance module features based on our [latest research article]([doi.org/10.5220/0012764700003767](https://doi.org/10.5220/0012764700003767)): `generate_one` and `generate_many`. These modules let users easily generate compliant configurations from scratch by selecting one (or multiple) guideline and a target webserver, either Apache or nginx.
+The latest release improves and enhances the compliance analysis by offering a new scoring system and introduces several under-the-hood improvements that increase the analysis speed, provide more accurate results, and reduce the space required to deploy the framework.
 
-Moreover, thanks to the recent updates to our [compliance dataset](https://github.com/stfbk/tls-compliance-dataset), TLSAssistant is now able to verify server compliance against three new guidelines from:
+Moreover, thanks to the recent updates to our [compliance dataset](https://github.com/stfbk/tls-compliance-dataset), TLSAssistant is now able to verify server compliance against four new guidelines from:
 
-- **ACN**, the new cybersecurity agency of the Italian government,
-- **CNSA**, the Commercial National Security Algorithm Suite provided by US' NSA, and
-- **ENISA**, the European Union Agency for Cybersecurity.
+- **ACN**, the Italian National Cybersecurity Agency,
+- **CNSA**, the Commercial National Security Algorithm Suite provided by US' NSA,
+- **ENISA**, the European Union Agency for Cybersecurity, and
+- **TLSRef**, formerly known as [Mozilla Server Side TLS](https://wiki.mozilla.org/Security/Server_Side_TLS).
 
-These and more features are now showcased in our new playlist of demo recordings available [here](TODO).
+These and more features are now showcased in our latest [blogpost](https://st.fbk.eu/tools/TLSAssistant/blog/2026-09-25_new_tlsassistant_release) and in the new playlist of demo recordings available on [Youtube](https://www.youtube.com/watch?v=hi72cvoV__4&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX).
 
 
 ## Features
+<details>
+
+<summary>Compliance analysis</summary>
+
+![compliance_report](assets/report_compliance.png)
+*Compliance analysis report*
+
+TLSAssistant is able to perform an automated compliance analysis against eight agency-issued technical guidelines:
+- **ACN** [v2.0](https://www.acn.gov.it/portale/documents/20119/85999/ACN_LG_Transport_Layer_Security_TLS.pdf)
+- **AgID** [ver.2020-01](https://cert-agid.gov.it/wp-content/uploads/2020/11/AgID-RACCSECTLS-01.pdf)
+- **ANSSI** [v1.2](https://cyber.gouv.fr/sites/default/files/2017/07/anssi-guide-recommandations_de_securite_relatives_a_tls-v1.2.pdf)
+- **BSI** [TR-02102-2](https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TG02102/BSI-TR-02102-2.html) and [TR-03116-4](https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR03116/BSI-TR-03116-4.html)
+- **CNSA** [1.0](https://media.defense.gov/2021/Sep/27/2002862527/-1/-1/0/CNSS%20WORKSHEET.PDF) and [2.0](https://media.defense.gov/2025/May/30/2003728741/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS.PDF)
+- **ENISA** [v2.0](https://certification.enisa.europa.eu/document/download/a845662b-aee0-484e-9191-890c4cfa7aaa_en?filename=ECCG%20Agreed%20Cryptographic%20Mechanisms%20version%202.pdf)
+- **NIST** [SP 800-52 Rev. 2](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r2.pdf) (and related)
+- **TLSRef** [v6.0](https://docs.tlsref.org/server-side-tls.html)
+
+It supports the following use-cases:
+- **compare-to-one** - compare an already existing configuration against a single guideline. The output consists of a report that highlights the differences between the current and the target configuration and guides the system administrator towards closing the gap;
+- **compare-to-many** - similar to the *compare-to-one* but considering multiple guidelines;
+- **generate-after-one** - generate a working configuration compliant with a single guideline, taking into account any additional narrowing set by the user;
+- **generate-after-many** - similar to the *generate-after-one* but considering multiple guidelines.
+
+</details>
 <details>
 
 <summary>Vulnerability analysis</summary>
@@ -74,30 +99,6 @@ The list of detectable issues is:
   - SLOTH
   - SWEET32
   - TICKETBLEED
-
-</details>
-<details>
-
-<summary>Compliance analysis</summary>
-
-![compliance_report](assets/report_compliance.png)
-*Compliance analysis report*
-
-TLSAssistant is able to perform an automated compliance analysis against eight agency-issued technical guidelines:
-- **ACN** [v2.0](https://www.acn.gov.it/portale/documents/20119/85999/ACN_LG_Transport_Layer_Security_TLS.pdf)
-- **AgID** [ver.2020-01](https://cert-agid.gov.it/wp-content/uploads/2020/11/AgID-RACCSECTLS-01.pdf)
-- **ANSSI** [v1.2](https://cyber.gouv.fr/sites/default/files/2017/07/anssi-guide-recommandations_de_securite_relatives_a_tls-v1.2.pdf)
-- **BSI** [TR-02102-2](https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TG02102/BSI-TR-02102-2.html) and [TR-03116-4](https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR03116/BSI-TR-03116-4.html)
-- **CNSA** [1.0](https://media.defense.gov/2021/Sep/27/2002862527/-1/-1/0/CNSS%20WORKSHEET.PDF) and [2.0](https://media.defense.gov/2025/May/30/2003728741/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS.PDF)
-- **ENISA** [v2.0](https://certification.enisa.europa.eu/document/download/a845662b-aee0-484e-9191-890c4cfa7aaa_en?filename=ECCG%20Agreed%20Cryptographic%20Mechanisms%20version%202.pdf)
-- **Mozilla** [v6.0](https://docs.tlsref.org/server-side-tls.html)
-- **NIST** [SP 800-52 Rev. 2](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r2.pdf) (and related)
-
-It supports the following use-cases:
-- **compare-to-one** - compare an already existing configuration against a single guideline. The output consists of a report that highlights the differences between the current and the target configuration and guides the system administrator towards closing the gap;
-- **compare-to-many** - similar to the *compare-to-one* but considering multiple guidelines;
-- **generate-after-one** - generate a working configuration compliant with a single guideline, taking into account any additional narrowing set by the user;
-- **generate-after-many** - similar to the *generate-after-one* but considering multiple guidelines.
 
 </details>
 
@@ -476,11 +477,11 @@ Please refer to the related [Wiki](https://github.com/stfbk/tlsassistant/wiki) p
 
 ## External projects
 
-- Employed in the context of the industrial collaboration with [IPZS](https://www.ipzs.it)/F&C
+- Employed in the context of the industrial collaboration with [IPZS](https://www.ipzs.it)/F&C.
 
-- Integrated in the Horizon 2020 [FINSEC project](https://www.finsec-project.eu/)
+- Integrated in the Horizon 2020 [FINSEC project](https://www.finsec-project.eu/).
 
-- Listed as software of interest for the [Italian Public Administrations](https://developers.italia.it/it/software/stfbk-tlsassistant-e1ccc0) and [European Public Services](https://interoperable-europe.ec.europa.eu/eu-oss-catalogue/solutions/tlsassistant)
+- Listed as software of interest for the [Italian Public Administrations](https://catalogo-software.developers.italia.it/software/e39901be-aa38-4fa9-a98c-25ff819f3101) and [European Public Services](https://interoperable-europe.ec.europa.eu/eu-oss-catalogue/solutions/tlsassistant).
 
 
 ## License
