@@ -1,4 +1,4 @@
-publiccodeYmlVersion: 0.5.0
+publiccodeYmlVersion: 0.7.0
 name: TLSAssistant
 url: https://github.com/stfbk/tlsassistant
 landingURL: https://st.fbk.eu/tools/TLSAssistant/
@@ -7,6 +7,8 @@ releaseDate: 2026-09-25
 logo: https://raw.githubusercontent.com/stfbk/tlsassistant/refs/heads/master/assets/logo.png
 platforms:
   - linux
+  - windows
+  - mac
 categories:
   - it-asset-management
   - it-security
@@ -19,6 +21,18 @@ usedBy:
   - Istituto Poligrafico e Zecca dello Stato (IPZS)
 developmentStatus: stable
 softwareType: standalone/desktop
+supports:
+  - id: alias:nis2
+  - id: https://www.acn.gov.it/portale/documents/20119/85999/ACN_LG_Transport_Layer_Security_TLS.pdf
+  - id: https://cert-agid.gov.it/wp-content/uploads/2020/11/AgID-RACCSECTLS-01.pdf
+  - id: https://cyber.gouv.fr/sites/default/files/2017/07/anssi-guide-recommandations_de_securite_relatives_a_tls-v1.2.pdf
+  - id: https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TG02102/BSI-TR-02102-2.html
+  - id: https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR03116/BSI-TR-03116-4.html
+  - id: https://media.defense.gov/2021/Sep/27/2002862527/-1/-1/0/CNSS%20WORKSHEET.PDF
+  - id: https://media.defense.gov/2025/May/30/2003728741/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS.PDF
+  - id: https://certification.enisa.europa.eu/document/download/a845662b-aee0-484e-9191-890c4cfa7aaa_en?filename=ECCG%20Agreed%20Cryptographic%20Mechanisms%20version%202.pdf
+  - id: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r2.pdf
+  - id: https://docs.tlsref.org/server-side-tls.html
 description:
   it:
     shortDescription: Analizza implementazioni TLS per scoprirne le vulnerabilità,
@@ -112,6 +126,9 @@ maintenance:
       affiliation: Fondazione Bruno Kessler
     - name: Riccardo Germenia
       email: rgermenia@fbk.eu
+      affiliation: Fondazione Bruno Kessler
+    - name: Emiliano Rizzonelli
+      email: erizzonelli@fbk.eu
       affiliation: Fondazione Bruno Kessler
 localisation:
   localisationReady: false
