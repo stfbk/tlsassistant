@@ -796,19 +796,37 @@ class CustomFunctions:
         self.check_value(**kwargs)
 
     def check_year_in_days(self, **kwargs):
+        data = kwargs.get("data", None)
+        if not data:
+            raise ValueError("No amount of years provided")
+        if not data.isnumeric():
+            raise ValueError("Amount of years must be a number")
+        years = int(data)
+        days = years * 365
+        kwargs["data"] = str(days)
+        return self.check_days(**kwargs)
+
+    def check_days(self, **kwargs):
         for cert in self._user_configuration.get("Certificate", {}):
             if cert.startswith("int"):
                 continue
             cert_data = self._user_configuration["Certificate"][cert]
             validity = cert_data["validity"]
             data = kwargs.get("data", None)
+            tokens = kwargs.get("tokens", [])
+            if len(tokens) != 2:
+                raise ValueError(
+                    "Invalid number of tokens provided for check_days, expected 2")
             if not data:
-                raise ValueError("No amount of years provided")
+                raise ValueError("No amount of days provided")
             if not data.isnumeric():
-                raise ValueError("Amount of years must be a number")
-            years = int(data)
-            days = years * 365
-            return validity.days < days
+                raise ValueError("Amount of days must be a number")
+            operator = self._operators.get(tokens[0], None)
+            if not operator:
+                raise ValueError(
+                    f"Invalid operator provided for check_days: {tokens[0]}")
+            days = int(data)
+            return operator(validity.days, days)
         self._logger.debug("No certificate information found, returning True")
         return True
 

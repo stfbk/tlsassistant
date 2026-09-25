@@ -973,7 +973,7 @@ class Compliance:
             action = "should be enabled"
         elif (entry_level in ["must", "recommended"] and not valid_condition and
               sheet in self.report_config.get("has_specific_textual", [])):
-            information_level = entry_level.lower()
+            information_level = entry_level.upper()
             # The action does not matter in this case
             action = "should be enabled" if information_level == "recommended" else "has to be enabled"
         elif entry_level == "not recommended" and valid_condition and enabled:
