@@ -18,7 +18,7 @@
     "separator": "",
     "enable_one_time": true,
     "post_actions": {
-      "comment": "To set the DHParams run {} >> /path/to/dhparam`",
+      "comment": " To set the DHParams run {} >> /path/to/dhparam`",
       "comment_format": {
         "0": "dhparam",
         "sheet": "KeyLengths",

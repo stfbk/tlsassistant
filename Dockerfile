@@ -44,16 +44,6 @@ ENV DOCKER_MULTI_STAGE_BUILD=Yes
 
 RUN poetry run python3 install.py -v --depth 1
 
-WORKDIR "/tlsassistant/dependencies/tls-compliance-dataset"
-
-RUN poetry run python3 -m pip install -r requirements.txt
-
-RUN poetry run python3 schema_creator.py
-
-RUN poetry run python3 database_filler.py
-
-RUN cp requirements.db /tlsassistant/dependencies/
-
 FROM ubuntu:22.04
 
 ENV PATH="/root/.local/bin:$PATH"
