@@ -79,7 +79,7 @@
     "separator": "",
     "enable_one_time": true,
     "post_actions": {
-      "comment": "Remember to set a valid certificate path in the configuration file.",
+      "comment": " Remember to set a valid certificate path in the configuration file.",
       "comment_format": {
         "sheet": "Certificate",
         "user_action": true

@@ -49,7 +49,9 @@ class ApacheConfiguration(ConfigurationMaker):
             tmp_string = tmp_string[:-1]
         # this check prevents adding a field without any value
         if len(tmp_string) != len(config_field) + 1:
-            tmp_string, comment = self.perform_post_actions(field_rules, tmp_string, guideline)
+            tmp_string_args = tmp_string[len(config_field) + 1:]
+            tmp_string_args, comment = self.perform_post_actions(field_rules, tmp_string_args, guideline)
+            tmp_string = config_field + " " + tmp_string_args
             if comment:
                 comment = "#" + comment
             self._string_to_add += "\n" + comment + tmp_string
