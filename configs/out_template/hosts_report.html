@@ -105,11 +105,13 @@ customElements.define('custom_font_code-2', CodeTwo);
                                                 style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(255,175,175,0.59);">
                                                 Error</td>
                                         {% else %}
+                                            {% if module.startswith("compare_") %}
+                                            <td
+                                                style="font-family: Roboto, sans-serif;font-style: italic;color: rgb(33, 37, 41);background: rgba(175, 208, 149, 0.59);">
+                                                Fully Compliant
+                                            {% else %}
                                             <td
                                                 style="font-family: Roboto, sans-serif;font-style: italic;color: rgb(33, 37, 41);background: rgba(235,235,235,0.59);">
-                                                {% if module.startswith("compare_") %}
-                                                    Compliant
-                                                {% else %}
                                                     Not Vulnerable
                                                 {% endif %}
                                             </td>
