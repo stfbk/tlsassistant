@@ -43,6 +43,7 @@ customElements.define('custom_font_code-2', CodeTwo);
         </nav>
         <div class="container" style="background: #ffffff;border-radius: 10px;max-width: 90%;">
             {%if results%}
+            {% set compliance = namespace(compliance=False) %}
             <div class="card" style="padding: 8px;margin-top: 8;">
                 <h2
                     style="color: #0068b4;font-family: Roboto, sans-serif;margin-top: 0px;padding-top: 8px;padding-right: 8px;padding-bottom: 0px;padding-left: 7px;">
@@ -53,6 +54,9 @@ customElements.define('custom_font_code-2', CodeTwo);
                             <tr>
                                 <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;"> {% if type == "HOSTS" %} Hostname {% elif type == "APK" %} APK {% else %} IPA  {% endif %}  /<br> Modules</th>
                                 {% for module in modules %}
+                                    {% if module.startswith("compare_") %}
+                                        {% set compliance.compliance = True %}
+                                    {% endif %}
                                     <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;">{{name_mapping.get(module, module)}}</th>
                                 {% endfor %}
                             </tr>
@@ -135,7 +139,7 @@ customElements.define('custom_font_code-2', CodeTwo);
             <h6
                 style="color: #6c757d;font-family: Roboto, sans-serif;padding: 0px;padding-left: 9px;padding-top: 0px;padding-bottom: 4px;">
                 Modules: {% for module in modules%} {{module}} {%endfor%} </h6>
-            {%if results%}
+            {% if pruner(results) %}
             {% for host in results %}
             <div class="card" style="background: rgba(235,235,235,0.59);">
                 <h5 class="text-center" style="font-family: 'Roboto Condensed', sans-serif;color: #a5a5a5;background: rgba(235,235,235,0);">
@@ -235,8 +239,13 @@ customElements.define('custom_font_code-2', CodeTwo);
                             style="color: #000000;font-family: Roboto, sans-serif;font-weight: bold;">Hooray!</h3>
                         <div class="alert alert-success text-center" role="alert"
                             style="font-family: Roboto, sans-serif;font-size: 20px;background: #e3eece;"><span
-                                class="text-center" style="color: #4c6617;"><strong>No vulnerability was
-                                    found.</strong></span></div>
+                                class="text-center" style="color: #4c6617;"><strong>
+                                {% if compliance.compliance: %}
+                                    The host is compliant with the selected guidelines.
+                                {% else %}
+                                    No vulnerability was found.
+                                {% endif %}
+                                </strong></span></div>
                     </div>
                 </div>
             {%endif%}
