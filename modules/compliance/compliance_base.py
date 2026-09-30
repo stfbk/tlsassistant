@@ -330,16 +330,16 @@ class Compliance:
         return self.output()
 
     def output(self):
-        if logging.getLogger().level == logging.debug:
-            file_hostname = self.hostname.replace(":", "_").replace("/", "_")
-            with open(f"{self.dump_folder}/report_{file_hostname}_{self._guidelines_string}.json", "w") as f:
-                for category in self._output_dict:
-                    if category == "error":
-                        continue
-                    if self._output_dict[category].get("guidelines"):
-                        self._output_dict[category]["guidelines"] = list(
-                            self._output_dict[category]["guidelines"])
-                json.dump(self._output_dict, f, indent=4)
+        file_hostname = self.hostname.replace(":", "_").replace("/", "_")
+        output_file = Path(f"results{os.path.sep}report_{file_hostname}_{self._guidelines_string}.json")
+        with open(output_file, "w") as f:
+            for category in self._output_dict:
+                if category == "error":
+                    continue
+                if self._output_dict[category].get("guidelines"):
+                    self._output_dict[category]["guidelines"] = list(
+                        self._output_dict[category]["guidelines"])
+            json.dump(self._output_dict, f, indent=4)
         if not self._output_dict.get("error"):
             self.prune_output()
             self._prepare_output()

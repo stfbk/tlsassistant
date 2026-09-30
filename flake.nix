@@ -4,7 +4,7 @@
     flake-utils.url = "github:numtide/flake-utils";
 
     tls-compliance-dataset = {
-      url = "github:stfbk/tls-compliance-dataset?ref=ACN"; # TODO: change post-release
+      url = "github:stfbk/tls-compliance-dataset?ref=NCSC";
       flake = false;
     };
     testssl = {
@@ -94,7 +94,6 @@
           z3c-rml
         ]);
 
-        # TODO: this has to be changed post-release
         requirementsDb = pkgs.stdenvNoCC.mkDerivation {
           name = "tls-compliance-dataset-db";
           src = tls-compliance-dataset;
@@ -142,7 +141,6 @@
             mkdir -p $out/lib/tlsassistant
             cp -r . $out/lib/tlsassistant/
 
-            # TODO: this can be kept if for some reason someone has built the deps before using nix
             rm -rf $out/lib/tlsassistant/dependencies
             mkdir -p $out/lib/tlsassistant/dependencies
 
@@ -181,6 +179,9 @@
       in {
         packages.default = tlsassistant;
         apps.default = flake-utils.lib.mkApp { drv = tlsassistant; };
+
+        packages.tlsassistant = tlsassistant;
+        apps.tlsassistant = flake-utils.lib.mkApp { drv = tlsassistant; };
 
         devShells.default = pkgs.mkShell {
           packages = [ pythonEnv pkgs.prisma_6 pkgs.prisma-engines_6 ];

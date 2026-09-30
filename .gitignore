@@ -163,4 +163,5 @@ poetry.lock
 
 .history/
 
-flake.lock
+# nix lock
+# flake.lock
