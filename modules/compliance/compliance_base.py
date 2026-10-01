@@ -330,9 +330,11 @@ class Compliance:
         return self.output()
 
     def output(self):
+        file_path = None
         if logging.getLogger().level == logging.DEBUG:
             file_hostname = self.hostname.replace(":", "_").replace("/", "_")
-            with open(f"{self.dump_folder}/report_{file_hostname}_{self._guidelines_string}.json", "w") as f:
+            file_path = f"{self.dump_folder}/report_{file_hostname}_{self._guidelines_string}.json"
+            with open(file_path, "w") as f:
                 for category in self._output_dict:
                     if category == "error":
                         continue
@@ -342,24 +344,21 @@ class Compliance:
                 json.dump(self._output_dict, f, indent=4)
         if not self._output_dict.get("error"):
             self.prune_output()
+            self._set_sheets_level()
+            if logging.getLogger().level == logging.DEBUG:
+                file_hostname = self.hostname.replace(":", "_").replace("/", "_")
+                with open(file_path, "r") as f:
+                    actual_report = json.load(f)
+                for sheet in actual_report:
+                    sheet_level = self._output_dict[sheet].get("sheet_level", "")
+                    actual_report[sheet]["sheet_level"] = sheet_level
+                with open(file_path, "w") as f:
+                    json.dump(actual_report, f, indent=4)
             self._prepare_output()
         return self._output_dict.copy()
 
-    def _prepare_output(self):
+    def _set_sheets_level(self):
         for sheet in self._output_dict:
-            if self._output_dict[sheet].get("placeholder"):
-                continue
-            to_append = {
-                "Apache": "",
-                "nginx": ""
-            }
-            mitigation = MitigationLoader().load_mitigation("Compliance_" + sheet)
-            guidelines = ", ".join(self._output_dict[sheet]["guidelines"])
-            mitigation["Entry"]["Description"] = mitigation["Entry"]["Description"].format(sheet=sheet,
-                                                                                           guidelines=guidelines)
-            textual = mitigation["Entry"]["Mitigation"]["Textual"]
-            total_string_apache = total_string_nginx = "<code>"
-            conf_instructions = mitigation["#ConfigurationInstructions"]
 
             # check if the sheet is compliant
             requirements_tuples = [(entry, self._output_dict[sheet][entry]["level"], self._output_dict[sheet][entry]["compliant"])
@@ -387,7 +386,7 @@ class Compliance:
 
             if not must_violations:
                 if all_info:
-                    sheet_level = "Fully Compliant"
+                    sheet_level = "Fully compliant"
                 elif all_recommended:
                     if all_not_recommended:
                         sheet_level = "Fully compliant"
@@ -415,6 +414,22 @@ class Compliance:
                                "Partially compliant", "Compliant", "Fully compliant", ""]
             if levels_priority.index(sheet_level) < levels_priority.index(current_sheet_level):
                 self._output_dict[sheet]["sheet_level"] = sheet_level
+
+    def _prepare_output(self):
+        for sheet in self._output_dict:
+            if self._output_dict[sheet].get("placeholder"):
+                continue
+            to_append = {
+                "Apache": "",
+                "nginx": ""
+            }
+            mitigation = MitigationLoader().load_mitigation("Compliance_" + sheet)
+            guidelines = ", ".join(self._output_dict[sheet]["guidelines"])
+            mitigation["Entry"]["Description"] = mitigation["Entry"]["Description"].format(sheet=sheet,
+                                                                                           guidelines=guidelines)
+            textual = mitigation["Entry"]["Mitigation"]["Textual"]
+            total_string_apache = total_string_nginx = "<code>"
+            conf_instructions = mitigation["#ConfigurationInstructions"]
 
             remove_add = True
             if self._output_dict[sheet]["entries_add"]:
