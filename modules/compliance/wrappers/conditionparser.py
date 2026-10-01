@@ -142,6 +142,8 @@ class ConditionParser:
             # Certificate case
             cert_data = field_value.get(certificate_index, {})
             enabled = name in cert_data
+            if enabled and isinstance(cert_data[name], bool):
+                enabled = cert_data[name]
 
         elif isinstance(field_value, dict):
             # Extensions and transparency case
