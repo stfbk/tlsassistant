@@ -330,7 +330,7 @@ class Compliance:
         return self.output()
 
     def output(self):
-        if logging.getLogger().level == logging.debug:
+        if logging.getLogger().level == logging.DEBUG:
             file_hostname = self.hostname.replace(":", "_").replace("/", "_")
             with open(f"{self.dump_folder}/report_{file_hostname}_{self._guidelines_string}.json", "w") as f:
                 for category in self._output_dict:
@@ -366,20 +366,24 @@ class Compliance:
                                    for entry in self._output_dict[sheet] if isinstance(self._output_dict[sheet][entry], dict)]
             sheet_level = "Not compliant"
             all_recommended = all(compliant and level == "RECOMMENDED" for _, level, compliant in requirements_tuples) or \
-                not [level for _, level, _ in requirements_tuples if level == "RECOMMENDED"]
+                not [level for _, level,
+                     _ in requirements_tuples if level == "RECOMMENDED"]
             all_not_recommended = all(compliant and level == "NOT RECOMMENDED" for _, level, compliant in requirements_tuples) or \
-                not [level for _, level, _ in requirements_tuples if level == "NOT RECOMMENDED"]
+                not [level for _, level,
+                     _ in requirements_tuples if level == "NOT RECOMMENDED"]
             any_recommended = any(compliant and level == "RECOMMENDED" for _, level, compliant in requirements_tuples) or \
-                not [level for _, level, _ in requirements_tuples if level == "RECOMMENDED"]
-            not_recommended_count = self._output_dict[sheet].get("not_recommended_count", 0)
-            any_not_recommended = len([compliant and level == "NOT RECOMMENDED" for _, level, compliant in requirements_tuples]) <= not_recommended_count
+                not [level for _, level,
+                     _ in requirements_tuples if level == "RECOMMENDED"]
+            not_recommended_count = self._output_dict[sheet].get(
+                "not_recommended_count", 0)
+            any_not_recommended = len([compliant and level == "NOT RECOMMENDED" for _,
+                                      level, compliant in requirements_tuples]) <= not_recommended_count
             must_violations = any([not compliant and level in [
                                   "MUST", "MUST NOT"] for _, level, compliant in requirements_tuples])
             all_info = all([level == "INFO" for _, level,
                            _ in requirements_tuples])
             current_sheet_level = self._output_dict[sheet].get(
                 "sheet_level", "")
-
 
             if not must_violations:
                 if all_info:
@@ -937,6 +941,25 @@ class Compliance:
                             self._user_configuration["KeyLengths"].add(
                                 ("RSA", cert_data["KeySize"]))
 
+                elif "OCSP_stapling" in field:
+                    cert_index = self.find_cert_index(field)
+                    if field.startswith("int"):
+                        cert_index = "int_" + cert_index
+                    if not self._user_configuration["Certificate"].get(cert_index):
+                        self._user_configuration["Certificate"][cert_index] = {
+                        }
+                    self._user_configuration["Certificate"][cert_index]["OCSP Stapling"] = "not" not in actual_dict["finding"]
+
+                elif "cert_ocspURL" in field:
+                    cert_index = self.find_cert_index(field)
+                    if field.startswith("int"):
+                        cert_index = "int_" + cert_index
+                    if not self._user_configuration["Certificate"].get(cert_index):
+                        self._user_configuration["Certificate"][cert_index] = {
+                        }
+                    finding = actual_dict.get("finding", "--")
+                    self._user_configuration["Certificate"][cert_index]["OCSP"] = finding != "--"
+
                 elif field in self.misc_fields:
                     self._user_configuration["Misc"][self.misc_fields[field]
                                                      ] = "not" not in actual_dict["finding"]
@@ -971,11 +994,11 @@ class Compliance:
         elif entry_level == "recommended" and valid_condition and not enabled:
             information_level = "RECOMMENDED"
             action = "should be enabled"
-        elif (entry_level in ["must", "recommended"] and not valid_condition and
+        elif (entry_level in ["must", "recommended"] and enabled and not valid_condition and
               sheet in self.report_config.get("has_specific_textual", [])):
             information_level = entry_level.upper()
             # The action does not matter in this case
-            action = "should be enabled" if information_level == "recommended" else "has to be enabled"
+            action = "should be enabled" if information_level == "RECOMMENDED" else "has to be enabled"
         elif entry_level == "not recommended" and valid_condition and enabled:
             information_level = "NOT RECOMMENDED"
             action = "should be disabled"
@@ -1007,6 +1030,13 @@ class Compliance:
                 self._output_dict[sheet]["entries_remove"] = []
         compliant = (information_level in ["MUST", "RECOMMENDED", "OPTIONAL"] and enabled and valid_condition) \
             or (information_level in ["MUST NOT", "NOT RECOMMENDED"] and not enabled)
+        if not compliant and information_level is None:
+            compliant = (entry_level in ["must", "recommended", "optional"] and enabled and valid_condition) or (
+                entry_level in ["must not", "not recommended"] and not enabled and valid_condition) or \
+                entry_level == "<Not mentioned>" or entry_level is None
+        elif not compliant and information_level == "INFO":
+            compliant = True
+
         if information_level:
             if entry_level in ["must", "recommended", "optional"]:
                 self._output_dict[sheet]["entries_add"].append(name)
@@ -1155,7 +1185,8 @@ class Compliance:
         if sheet == "KeyLengths" and enabled and valid_condition and level in ["recommended", "must"]:
             self.valid_keysize = True
         if level == "not recommended":
-            self._output_dict[sheet]["not_recommended_count"] = self._output_dict[sheet].get("not_recommended_count", 0) + 1
+            self._output_dict[sheet]["not_recommended_count"] = self._output_dict[sheet].get(
+                "not_recommended_count", 0) + 1
 
     def handle_conditions_results(self, notes, enabled, valid_condition, level, condition, name):
         if self._condition_parser.entry_updates.get("disable_if"):
@@ -1344,7 +1375,8 @@ class Compliance:
                     "priority": priority
                 }
                 if level == "not recommended":
-                    self._output_dict[sheet]["not_recommended_count"] = self._output_dict[sheet].get("not_recommended_count", 0) + 1
+                    self._output_dict[sheet]["not_recommended_count"] = self._output_dict[sheet].get(
+                        "not_recommended_count", 0) + 1
                 total += 1
             for guideline in self._custom_guidelines:
                 custom_entry = self._custom_guidelines[guideline].get(

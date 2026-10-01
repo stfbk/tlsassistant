@@ -9,6 +9,7 @@
   "SIGNATURE": "Signature",
   "TLS": "Protocol",
   "CERTSIG": "CertificateSignature",
+  "CERTIFICATE": "Certificate",
   "CERTIFICATESIGNATURE": "CertificateSignature",
   "CERTIFICATEEXTENSIONS": "CertificateExtensions",
   "YEAR": "FUNCTION check_year",

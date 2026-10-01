@@ -15,6 +15,7 @@
     "Issuer Distinguished Name": "<br/>- Issuer Distinguished Name {action}",
     "validity": "<br/>- Validity {action}",
     "Subject Distinguished Name": "<br/>- Subject Distinguished Name {action}",
+    "OCSP Stapling": "<br/>- OCSP Stapling {action}",
     "post_actions": {
       "replace": {
         "be enabled": "be fixed",
