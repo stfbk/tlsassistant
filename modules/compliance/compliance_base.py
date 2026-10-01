@@ -111,7 +111,7 @@ class Compliance:
         self.tls1_3_ciphers = get_1_3_ciphers()
         self._no_psk = None
         self._guidelines_string = ""
-        self.dump_folder = "./testssl_dumps"
+        self.dump_folder = "./results/testssl_dumps"
         self._ml_keysizes = {
             "44": 1312,
             "65": 1952,
@@ -258,7 +258,7 @@ class Compliance:
         elif self.hostname and self._validator.string(self.hostname) and self.hostname != "placeholder":
             test_ssl_output = {}
             if not os.path.isdir(self.dump_folder):
-                os.mkdir(self.dump_folder)
+                Path(self.dump_folder).mkdir(parents=True, exist_ok=True)
             file_hostname = self.hostname.replace(":", "_").replace("/", "_")
             file_path = f"{self.dump_folder}/testssl_output-{file_hostname}.json"
             if clean and os.path.isfile(file_path):
