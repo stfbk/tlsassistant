@@ -3,21 +3,22 @@
 
 #NOTE: any output file (html and png) will be created within the tlsassistant/Report folder
 
-FROM ubuntu:22.04
+FROM ubuntu:22.04 AS builder
 
 ENV PATH="/root/.local/bin:$PATH"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-ENV LANG en_US.UTF-8  
+ENV LANG=en_US.UTF-8
 
-ENV LANGUAGE en_US:en  
+ENV LANGUAGE=en_US:en
 
-ENV LC_ALL en_US.UTF-8    
+ENV LC_ALL=en_US.UTF-8
 
-ENV TZ Europe/Rome
+ENV TZ=Europe/Rome
 
-RUN apt-get update && apt-get install -y git python3-dev python3-pip sudo bsdmainutils locales dnsutils tzdata keyboard-configuration pipx
+RUN apt-get update && apt-get install -y git python3-dev python3-pip sudo bsdmainutils locales dnsutils tzdata keyboard-configuration pipx \
+    libcairo2-dev openjdk-11-jre openjdk-11-jdk
 
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
     locale-gen
@@ -25,16 +26,51 @@ RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
 RUN pipx install poetry
 
 RUN pipx ensurepath
-    
+
+WORKDIR "/tlsassistant"
+COPY ./dependencies.json /tlsassistant/dependencies.json
+COPY ./pyproject.toml /tlsassistant/pyproject.toml
+RUN poetry install
+
+COPY ./install.py /tlsassistant/install.py
+COPY ./utils/logger.py /tlsassistant/utils/logger.py
+COPY ./utils/colors.py /tlsassistant/utils/colors.py
+COPY ./ciphersuites_converter.py /tlsassistant/ciphersuites_converter.py
+COPY ./configs/compliance/ciphersuites.json /tlsassistant/configs/compliance/ciphersuites.json
+
+ENV TLSA_IN_A_DOCKER_CONTAINER=Yes
+
+ENV DOCKER_MULTI_STAGE_BUILD=Yes
+
+RUN poetry run python3 install.py -v --depth 1
+
+FROM ubuntu:22.04
+
+ENV PATH="/root/.local/bin:$PATH"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+ENV LANG=en_US.UTF-8
+
+ENV LANGUAGE=en_US:en
+
+ENV LC_ALL=en_US.UTF-8
+
+ENV TZ=Europe/Rome
+
+RUN apt-get update && apt-get install -y pipx bsdmainutils locales dnsutils libcairo2-dev openjdk-11-jre
+
+RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
+    locale-gen
+
+RUN pipx install poetry
+
+COPY --from=builder /root/.cache/pypoetry/virtualenvs/ /root/.cache/pypoetry/virtualenvs/
+
+COPY --from=builder /tlsassistant/dependencies/ /tlsassistant/dependencies/
+
 COPY . /tlsassistant
 
 WORKDIR "/tlsassistant"
-
-RUN poetry install
-
-ENV TLSA_IN_A_DOCKER_CONTAINER Yes
-
-RUN poetry run python3 install.py -v
-
 
 ENTRYPOINT ["poetry", "run", "python3", "run.py"]

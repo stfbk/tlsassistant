@@ -16,7 +16,7 @@
     "added_negatives": false,
     "enable_optional": true,
     "post_actions": {
-      "convert_ciphers": "",
+      "convert_ciphers": "CipherSuite",
       "prepend": "-ALL:"
     }
   },
@@ -25,8 +25,9 @@
     "disable": "!name",
     "separator": ":",
     "added_negatives": true,
+    "enable_optional": true,
     "post_actions": {
-      "convert_ciphers": ""
+      "convert_ciphers": "CipherSuitesTLS1.3"
     }
   },
   "SessionTickets": {
@@ -58,6 +59,31 @@
     "added_negatives": false,
     "post_actions": {
       "convert_groups": ""
+    }
+  },
+  "SignatureAlgorithms": {
+    "enable": "name",
+    "disable": "",
+    "separator": ":",
+    "added_negatives": false,
+    "replacements": {
+      "tls13": ""
+    },
+    "post_actions": {
+      "convert_sigalgs": "Signature"
+    }
+  },
+  "Certificate": {
+    "enable": "",
+    "disable": "",
+    "separator": "",
+    "enable_one_time": true,
+    "post_actions": {
+      "comment": " Remember to set a valid certificate path in the configuration file.",
+      "comment_format": {
+        "sheet": "Certificate",
+        "user_action": true
+      }
     }
   }
 }

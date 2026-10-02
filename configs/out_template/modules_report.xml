@@ -1,10 +1,10 @@
 <!DOCTYPE document SYSTEM "rml.dtd">
 <document>
     <docinit>
-        <registerTTFont faceName="Roboto" fileName="dependencies/roboto-unhinted/Roboto-Regular.ttf" />
-        <registerTTFont faceName="Roboto Bold" fileName="dependencies/roboto-unhinted/Roboto-Bold.ttf" />
-        <registerTTFont faceName="Roboto Italic" fileName="dependencies/roboto-unhinted/Roboto-Italic.ttf" />
-        <registerTTFont faceName="Roboto Bold Italic" fileName="dependencies/roboto-unhinted/Roboto-BoldItalic.ttf" />
+        <registerTTFont faceName="Roboto" fileName="{{ font_dir }}/Roboto-Regular.ttf" />
+        <registerTTFont faceName="Roboto Bold" fileName="{{ font_dir }}/Roboto-Bold.ttf" />
+        <registerTTFont faceName="Roboto Italic" fileName="{{ font_dir }}/Roboto-Italic.ttf" />
+        <registerTTFont faceName="Roboto Bold Italic" fileName="{{ font_dir }}/Roboto-BoldItalic.ttf" />
     </docinit>
     <!--To edit the font of a string edit the corresponding style here-->
     <stylesheet>
@@ -45,13 +45,12 @@
     {% set year = date.split("-")[0] %}
     {% set page_w = 595 %}
     {% set page_h = 842 %}
-    {% set image_path = "configs/out_template/assets/pdf/" %}
 
     <template pagesize="({{page_w}}, {{page_h}})" showBoundary="0">
         <pageTemplate id="main">
             <pageGraphics>
                 <!-- Header -->
-                <image x="30" y="750" file="{{image_path}}FBK_Cybersecurity_colour.png" width = "150" height = "70"/>
+                <image x="0" y="714" file="{{image_path}}/FBK_Cybersecurity_colour.png" width = "254" height = "130"/>
                 {% set frame_w = 455 %}
                 {% set frame_h = 600 %}
                 {% set frame_x = (page_w - frame_w) / 2%}
@@ -82,8 +81,8 @@
                 {% set footer_frame_h = 12 %}
                 {% set footer_frame_y = footer_line_y / 2%}
                 <!--Logo block-->
-                <image x="{{logo_x}}" y = "{{logo_y}}" file="{{image_path}}logo_only2.png" width = "{{logo_w}}" height = "{{logo_h}}"/>
-                <image x="{{name_x}}" y = "{{name_y}}" file="{{image_path}}name2.png" width = "{{name_w}}" height = "{{name_h}}"/>
+                <image x="{{logo_x}}" y = "{{logo_y}}" file="{{image_path}}/logo_only2.png" width = "{{logo_w}}" height = "{{logo_h}}"/>
+                <image x="{{name_x}}" y = "{{name_y}}" file="{{image_path}}/name2.png" width = "{{name_w}}" height = "{{name_h}}"/>
                 <setFont name="Roboto Bold Italic" size="12"/>
                 <drawRightString x="{{version_x}}" y="{{version_y}}">Version {{version}}</drawRightString>
                 <stroke color="#4160b0"/>
@@ -157,7 +156,7 @@
                     <td>{{name_mapping.get(module, module)}}</td>
                     {% if i_ns.i == results.keys().__len__() %}
                         <td><para style="potentially_vulnerable"> All the hosts encountered an error</para></td>
-                    {% elif module in results %}
+                    {% elif module in results and results[module].get("Name") %}
                         {%set hosts_count = results[module]["hosts"].__len__()%}
                         {% if hosts_count > 0 %}
                             {% if hosts_count == 1 %}
@@ -168,7 +167,8 @@
                             {% if module.startswith("compare_") %}
                                 <td><para style="potentially_vulnerable">{{hosts_count}} {{hosts_connector}} not compliant</para></td>
                             {% else %}
-                                <td><para style="potentially_vulnerable">{{hosts_count}} {{hosts_connector}} potentially vulnerable</para></td>
+                                {% set result_text = (result_label_mapping|default({})).get(module, "potentially vulnerable") %}
+                                <td><para style="potentially_vulnerable">{{hosts_count}} {{hosts_connector}} {{result_text}}</para></td>
                             {% endif %}
                         {% endif %}
                     {% else %}
@@ -205,7 +205,7 @@
                 {% endfor %}
             {% endif %}
             {% for module in modules %}
-                {% if module in results and results[module]%}
+                {% if module in results and results[module].get("Name")%}
                     <h3 style = "module">{{results[module]['Name']}}</h3>
                     {% set ns = namespace(cvss_string = "", i=0)%}
                     {%for cvss in ['CVE', 'CVSS2','CVSS3']%}
@@ -239,19 +239,44 @@
                     {% endif %}
                     {# {% if 'raw' in results[module] %}
                         <h4>Raw Output</h4>
-                        <para fontName="Roboto">{{results[module]['raw']|e}}</para>
+                        <para fontName="Roboto">{{results[module]['raw_dict']|e}}</para>
                     {% endif %} #}
                     {% if 'hosts' in results[module] and results[module]['hosts']%}
+                        {% set partial = namespace(partial_compliant=list(), non_compliant=list(), compliant=list()) %}
+                        {% for host in results[module]['hosts'] %}
+                            {% if results[module]['raw_dict'][host]["sheet_level"] == "Partially compliant" %}
+                                {% set partial.partial_compliant = partial.partial_compliant + [host] %}
+                            {% elif results[module]['raw_dict'][host]["sheet_level"] == "Compliant" %}
+                                {% set partial.compliant = partial.compliant + [host] %}
+                            {% else %}
+                                {% set partial.non_compliant = partial.non_compliant + [host] %}
+                            {% endif %}
+                        {% endfor %}
                         {% if module.startswith("compare_") %}
-                            <h4 style = "vulnerable_websites">Non compliant websites</h4>
+                            {% if partial.partial_compliant %}
+                                <h4 style = "vulnerable_websites">Partially compliant websites</h4>
+                                <para style = "vulnerable_websites_list">
+                                {%for host in partial.partial_compliant%}
+                                    {{host}}
+                                {%endfor%}
+                                </para>
+                            {% endif %}
+                            {% if partial.non_compliant %}
+                                <h4 style = "vulnerable_websites">Non compliant websites</h4>
+                                <para style = "vulnerable_websites_list">
+                                {%for host in partial.non_compliant%}
+                                    {{host}}
+                                {%endfor%}
+                                </para>
+                            {% endif %}
                         {% else %}
-                            <h4 style = "vulnerable_websites">Vulnerable websites</h4>
+                            <h4 style = "vulnerable_websites">{{(result_label_mapping|default({})).get(module, "Vulnerable")}} websites</h4>
+                            <para style = "vulnerable_websites_list">
+                            {%for host in results[module]['hosts']%}
+                                {{host}}
+                            {%endfor%}
+                            </para>
                         {% endif %}
-                        <para style = "vulnerable_websites_list">
-                        {%for host in results[module]['hosts']%}
-                            {{host}}
-                        {%endfor%}
-                        </para>
                     {%endif%}
                     {# {% if 'references' in results[module] %}
                         <h4>References</h4>

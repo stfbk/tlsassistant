@@ -1,4 +1,15 @@
 {
-  "has_total_string": ["CipherSuite", "CipherSuitesTLS1.3","Protocol", "Groups", "Signature"],
-  "has_specific_textual": ["Certificate", "CertificateExtensions", "KeyLengths"]
+  "has_total_string": [
+    "CipherSuite",
+    "CipherSuitesTLS1.3",
+    "Protocol",
+    "Groups",
+    "Signature",
+    "SignatureAlgsCertificate"
+  ],
+  "has_specific_textual": [
+    "Certificate",
+    "CertificateExtensions",
+    "KeyLengths"
+  ]
 }

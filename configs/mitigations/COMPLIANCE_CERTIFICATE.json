@@ -6,7 +6,7 @@
     "Mitigation": {
       "Textual": "Your certificate has issues with the following fields:<br/>{add}<br/>{remove}<br/>You should re-issue it following the constraints in the notes.<br/>Additional notes: {notes}.",
       "Apache": "No snippet available",
-      "Nginx": "No snippet available"
+      "nginx": "No snippet available"
     }
   },
   "#ConfigurationInstructions": {
@@ -15,6 +15,7 @@
     "Issuer Distinguished Name": "<br/>- Issuer Distinguished Name {action}",
     "validity": "<br/>- Validity {action}",
     "Subject Distinguished Name": "<br/>- Subject Distinguished Name {action}",
+    "OCSP Stapling": "<br/>- OCSP Stapling {action}",
     "post_actions": {
       "replace": {
         "be enabled": "be fixed",

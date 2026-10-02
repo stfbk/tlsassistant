@@ -14,7 +14,7 @@ customElements.define('custom_font_code-2', CodeTwo);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>TLSAv2</title>
+    <title>TLSAv3</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Condensed&amp;display=swap">
@@ -36,13 +36,14 @@ customElements.define('custom_font_code-2', CodeTwo);
             <div class="container-fluid">
                 <div class="card" style="background: rgba(255,255,255,0);border-style: none;"><a class="navbar-brand"
                         href="#" style="font-family: roboto;text-align: left;"><img class="img-fluid"
-                            src="assets/img/FBK_Cybersecurity_white.png" style="width: 150px;">&nbsp;
+                            src="assets/img/FBK_Cybersecurity_white.png" style="width: 254px;">&nbsp;
                         &nbsp;TLSAssistant</a></div><label class="form-label"
                     style="color: #a5a5a5;font-family: Roboto, sans-serif;">Version {{version}}</label>
             </div>
         </nav>
         <div class="container" style="background: #ffffff;border-radius: 10px;max-width: 90%;">
             {%if results%}
+            {% set compliance = namespace(compliance=False) %}
             <div class="card" style="padding: 8px;margin-top: 8;">
                 <h2
                     style="color: #0068b4;font-family: Roboto, sans-serif;margin-top: 0px;padding-top: 8px;padding-right: 8px;padding-bottom: 0px;padding-left: 7px;">
@@ -53,6 +54,9 @@ customElements.define('custom_font_code-2', CodeTwo);
                             <tr>
                                 <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;"> {% if type == "HOSTS" %} Hostname {% elif type == "APK" %} APK {% else %} IPA  {% endif %}  /<br> Modules</th>
                                 {% for module in modules %}
+                                    {% if module.startswith("compare_") %}
+                                        {% set compliance.compliance = True %}
+                                    {% endif %}
                                     <th style="font-family: Roboto, sans-serif;border-bottom-color: #8db53d;">{{name_mapping.get(module, module)}}</th>
                                 {% endfor %}
                             </tr>
@@ -64,25 +68,54 @@ customElements.define('custom_font_code-2', CodeTwo);
                                         style="font-family: Roboto, sans-serif;background: rgba(255,175,175,0);font-style: italic;">
                                         {{host}}</td>
                                     {% for module in modules %}
-                                        {% if results[host][module] %}
+                                        {% set optional = namespace(i=0, total=0) %}
+                                        {% if results[host].get("module_errors", {}).get(module) %}
                                             <td
                                                 style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(255,175,175,0.59);">
-                                                {% if module.startswith("compare_") %}
-                                                    Not Compliant
+                                                Error</td>
+                                        {% elif results[host][module] %}
+                                            {% if module.startswith("compare_") %}
+                                                {% if results[host][module]["raw_dict"]["sheet_level"] == "Compliant" %}
+                                                    {% set optional.result = "Compliant" %}
+                                                {% elif results[host][module]["raw_dict"]["sheet_level"] == "Partially compliant" %}
+                                                    {% set optional.result = "Partially Compliant" %}
+                                                {% elif results[host][module]["raw_dict"]["sheet_level"] == "Fully compliant" %}
+                                                    {% set optional.result = "Fully Compliant" %}
                                                 {% else %}
-                                                    Potentially Vulnerable
+                                                    {% set optional.result = "Not Compliant" %}
                                                 {% endif %}
+                                            {% else %}
+                                                {% set optional.result = (result_label_mapping|default({})).get(module, "Potentially Vulnerable") %}
+                                            {% endif %}
+                                            {% if optional.result == "Partially Compliant" %}
+                                                <td style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(244, 172, 96, 0.59);">
+                                                    {{optional.result}}
+                                                </td>
+                                            {% elif optional.result == "Compliant" %}
+                                            <td                                                
+                                                style="font-family: Roboto, sans-serif;font-style: italic;color: rgb(33, 37, 41);background: rgba(235,235,235,0.59);"> {{optional.result}} 
                                             </td>
-                                        {% elif results[host].get("errors", None) %}
+                                            {% elif optional.result == "Fully Compliant" %}
+                                            <td
+                                                style="font-family: Roboto, sans-serif;font-style: italic;color: rgb(33, 37, 41);background: rgba(175, 208, 149, 0.59);"> {{optional.result}}
+                                            </td>
+                                            {% else %}
+                                                <td style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(255,175,175,0.59);">
+                                                    {{optional.result}}
+                                                </td>
+                                            {% endif %}
+                                        {% elif results[host].get("errors", None) and not results[host].get("module_errors", {}) %}
                                             <td
                                                 style="font-family: Roboto, sans-serif;font-weight: bold;background: rgba(255,175,175,0.59);">
                                                 Error</td>
                                         {% else %}
+                                            {% if module.startswith("compare_") %}
+                                            <td
+                                                style="font-family: Roboto, sans-serif;font-style: italic;color: rgb(33, 37, 41);background: rgba(175, 208, 149, 0.59);">
+                                                Fully Compliant
+                                            {% else %}
                                             <td
                                                 style="font-family: Roboto, sans-serif;font-style: italic;color: rgb(33, 37, 41);background: rgba(235,235,235,0.59);">
-                                                {% if module.startswith("compare_") %}
-                                                    Compliant
-                                                {% else %}
                                                     Not Vulnerable
                                                 {% endif %}
                                             </td>
@@ -106,7 +139,7 @@ customElements.define('custom_font_code-2', CodeTwo);
             <h6
                 style="color: #6c757d;font-family: Roboto, sans-serif;padding: 0px;padding-left: 9px;padding-top: 0px;padding-bottom: 4px;">
                 Modules: {% for module in modules%} {{module}} {%endfor%} </h6>
-            {%if results%}
+            {% if pruner(results) %}
             {% for host in results %}
             <div class="card" style="background: rgba(235,235,235,0.59);">
                 <h5 class="text-center" style="font-family: 'Roboto Condensed', sans-serif;color: #a5a5a5;background: rgba(235,235,235,0);">
@@ -128,74 +161,74 @@ customElements.define('custom_font_code-2', CodeTwo);
                     </div>
                 {% endif %}
                 {% for module in modules %}
-                {% if results[host][module] %}
-                <div class="card">
-                    <div class="card-body">
-                        <h3 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">{{results[host][module]['name']}}</h3>
+                    {% if results[host][module] %}
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">{{results[host][module]['name']}}</h3>
 
-                        <h6 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">
-                            {%set i = 0%}
-                            {%for cvss in ['CVE', 'CVSS2','CVSS3']%}
-                                {% if cvss in results[host][module] %}{%if i != 0%}-{%endif%}{{cvss}}:&nbsp;{{results[host][module][cvss]}} {% endif %}
-                                {% set i = i+1 %}
-                            {% endfor %}
-                            </h6>
-                        {% if results[host][module]["extendedname"] != results[host][module]["name"] %}
-                            <h6 class="text-muted card-subtitle mb-2"
-                                style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[host][module]['extendedname']}}
-                            </h6>
-                        {% endif %}
-                        <p class="card-text"
-                            style="font-family: 'Roboto Condensed', sans-serif;color: #6c757d;font-style: italic;">
-                            {{results[host][module]['description']}}
-                        </p>
-                        {% if 'mitigation' in results[host][module] %}
-                        <div class="card" style="border-style: none;padding: 2px;margin: 0px;">
-                            <h5 style="color: #000000;font-family: Roboto, sans-serif;">Mitigation</h5>
-                            <ul class="list-group list-group-flush" style="border-style: solid;border-color: #8db53d;">
-
-                                {% for key,mitigation in results[host][module]['mitigation'].items() %}
-                                <li class="list-group-item" style="border-radius: 4px;border-style: none;">
-                                    <h5 class="mb-0"
-                                        style="border-style: none;border-bottom-style: none;font-family: Roboto, sans-serif;">
-                                        <strong>{{key}}</strong>
-                                    </h5>
-                                    <p style="font-family: Roboto, sans-serif;text-align: justify;margin: 3px;">{{mitigation}}</p>
-                                    </p>
-                                </li>
+                            <h6 class="card-title" style="color: #000000;font-family: Roboto, sans-serif;">
+                                {%set i = 0%}
+                                {%for cvss in ['CVE', 'CVSS2','CVSS3']%}
+                                    {% if cvss in results[host][module] %}{%if i != 0%}-{%endif%}{{cvss}}:&nbsp;{{results[host][module][cvss]}} {% endif %}
+                                    {% set i = i+1 %}
                                 {% endfor %}
-                            </ul>
-                        </div>
-                        {% endif %}
-                        {% if 'raw' in results[host][module] %}
-                        <div class="card" style="border-style: none;padding: 2px;margin: 0px;">
-                            {%set ns.accordion_count = ns.accordion_count + 1%}
-                            <div class="accordion" role="tablist" id="accordion-{{ns.accordion_count}}"
-                                style="border-width: 3px;border-radius: 0px,0px,3px,3px;">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" role="tab"><button class="accordion-button collapsed"
-                                            data-bs-toggle="collapse" data-bs-target="#accordion-{{ns.accordion_count}} .item-1"
-                                            aria-expanded="false" aria-controls="accordion-{{ns.accordion_count}} .item-1"
-                                            style="border-style: solid;border-color: #8db53d;font-weight: bold;font-family: Roboto, sans-serif;color: #000000;">RAW
-                                            Output</button></h2>
-                                    <div class="accordion-collapse collapse item-1" role="tabpanel"
-                                        data-bs-parent="#accordion-{{ns.accordion_count}}"
-                                        style="border-style: solid;border-color: #0068b4;border-top-style: none;border-bottom-style: none;height: 200px;">
-                                        <div class="accordion-body"><textarea onclick="this.focus();this.select()"
-                                                style="max-width: 100%;min-width: 100%;width: 100%;height: 150px;min-height: 0px;max-height: none;border-radius: 3px;font-family: 'Roboto Mono', monospace;background: #f5faff;color: #0068b4;border-width: 3px;border-color: #0068b4;border-top-style: none;border-right-color: #acd5fe;border-bottom-style: none;border-left-color: #acd5fe;padding: 12px;margin: 0px;font-size: 13px;margin-top: 10px;"
-                                                readonly="" name="raw_code">{{results[host][module]['raw']}}</textarea></div>
+                                </h6>
+                            {% if results[host][module]["extendedname"] != results[host][module]["name"] %}
+                                <h6 class="text-muted card-subtitle mb-2"
+                                    style="font-family: Roboto, sans-serif;color: #a5a5a5;">{{results[host][module]['extendedname']}}
+                                </h6>
+                            {% endif %}
+                            <p class="card-text"
+                                style="font-family: 'Roboto Condensed', sans-serif;color: #6c757d;font-style: italic;">
+                                {{results[host][module]['description']}}
+                            </p>
+                            {% if 'mitigation' in results[host][module] %}
+                                <div class="card" style="border-style: none;padding: 2px;margin: 0px;">
+                                    <h5 style="color: #000000;font-family: Roboto, sans-serif;">Mitigation</h5>
+                                    <ul class="list-group list-group-flush" style="border-style: solid;border-color: #8db53d;">
+
+                                        {% for key,mitigation in results[host][module]['mitigation'].items() %}
+                                            <li class="list-group-item" style="border-radius: 4px;border-style: none;">
+                                                <h5 class="mb-0"
+                                                    style="border-style: none;border-bottom-style: none;font-family: Roboto, sans-serif;">
+                                                    <strong>{{key}}</strong>
+                                                </h5>
+                                                <p style="font-family: Roboto, sans-serif;text-align: justify;margin: 3px;">{{mitigation}}</p>
+                                                </p>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                            {% if 'raw' in results[host][module] %}
+                            <div class="card" style="border-style: none;padding: 2px;margin: 0px;">
+                                {%set ns.accordion_count = ns.accordion_count + 1%}
+                                <div class="accordion" role="tablist" id="accordion-{{ns.accordion_count}}"
+                                    style="border-width: 3px;border-radius: 0px,0px,3px,3px;">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" role="tab"><button class="accordion-button collapsed"
+                                                data-bs-toggle="collapse" data-bs-target="#accordion-{{ns.accordion_count}} .item-1"
+                                                aria-expanded="false" aria-controls="accordion-{{ns.accordion_count}} .item-1"
+                                                style="border-style: solid;border-color: #8db53d;font-weight: bold;font-family: Roboto, sans-serif;color: #000000;">RAW
+                                                Output</button></h2>
+                                        <div class="accordion-collapse collapse item-1" role="tabpanel"
+                                            data-bs-parent="#accordion-{{ns.accordion_count}}"
+                                            style="border-style: solid;border-color: #0068b4;border-top-style: none;border-bottom-style: none;height: 200px;">
+                                            <div class="accordion-body"><textarea onclick="this.focus();this.select()"
+                                                    style="max-width: 100%;min-width: 100%;width: 100%;height: 150px;min-height: 0px;max-height: none;border-radius: 3px;font-family: 'Roboto Mono', monospace;background: #f5faff;color: #0068b4;border-width: 3px;border-color: #0068b4;border-top-style: none;border-right-color: #acd5fe;border-bottom-style: none;border-left-color: #acd5fe;padding: 12px;margin: 0px;font-size: 13px;margin-top: 10px;"
+                                                    readonly="" name="raw_code">{{results[host][module]['raw']}}</textarea></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            {% endif %}
+                            {% if 'references' in results[host][module] %}
+                            <a class="card-link" href="{{results[host][module]['references']}}">Link to the
+                                webpage</a>
+                            {% endif %}
                         </div>
-                        {% endif %}
-                        {% if 'references' in results[host][module] %}
-                        <a class="card-link" href="{{results[host][module]['references']}}">Link to the
-                            webpage</a>
-                        {% endif %}
                     </div>
-                </div>
-                {% endif %}
+                    {% endif %}
                 {% endfor %}
             </div>
             {% endfor %}
@@ -206,8 +239,13 @@ customElements.define('custom_font_code-2', CodeTwo);
                             style="color: #000000;font-family: Roboto, sans-serif;font-weight: bold;">Hooray!</h3>
                         <div class="alert alert-success text-center" role="alert"
                             style="font-family: Roboto, sans-serif;font-size: 20px;background: #e3eece;"><span
-                                class="text-center" style="color: #4c6617;"><strong>No vulnerability was
-                                    found.</strong></span></div>
+                                class="text-center" style="color: #4c6617;"><strong>
+                                {% if compliance.compliance: %}
+                                    The host is compliant with the selected guidelines.
+                                {% else %}
+                                    No vulnerability was found.
+                                {% endif %}
+                                </strong></span></div>
                     </div>
                 </div>
             {%endif%}
@@ -215,8 +253,10 @@ customElements.define('custom_font_code-2', CodeTwo);
         <footer class="text-center footer-basic"
             style="background: rgba(255,255,255,0);padding-bottom: 5px;padding-top: 72px;"><img class="img-fluid"
                 src="assets/img/FBK_Cybersecurity_white.png" style="width: 150px;">
+            {% set date = date.strftime("%Y-%m-%d %H:%M")%}
+            {% set year = date.split("-")[0] %}
             <p class="copyright" style="color: #a5a5a5;font-family: Roboto, sans-serif;font-size: 14px;">FBK - Security
-                And Trust Unit © 2024</p>
+                And Trust Unit © {{year}}</p>
         </footer><label class="form-label"></label>
     </header>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>

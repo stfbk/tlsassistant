@@ -3,9 +3,9 @@ import logging
 from utils.logger import Logger
 from utils.validation import Validator
 from utils.urls import url_domain, port_parse
+from utils.paths import resource_path
 import requests
 import os.path
-from os import sep
 from base64 import b64decode
 from json import loads
 
@@ -15,8 +15,8 @@ class Parse:
     Parse the results of the HSTS file
     """
 
-    __path_moz = f"dependencies{sep}nsSTSPreloadList.inc"
-    __path_gog = f"dependencies{sep}transport_security_state_static.json"
+    __path_moz = str(resource_path("dependencies", "nsSTSPreloadList.inc"))
+    __path_gog = str(resource_path("dependencies", "transport_security_state_static.json"))
 
     def __init__(self, moz=True):
         """
@@ -222,10 +222,10 @@ class Https:
             return "strict-transport-security" in response.headers
         else:
             if not self.__preloaded_moz:
-                self.__logging.debug("Preloading mozilla hsts..")
+                self.__logging.debug("Preloading mozilla hsts...")
                 self.__preloaded_moz = Parse().output()
             if not self.__preloaded_gog:
-                self.__logging.debug("Preloading google hsts..")
+                self.__logging.debug("Preloading google hsts...")
                 self.__preloaded_gog = Parse(moz=False).output()
             if response.request:
                 parsed_url = url_domain(response.request.url)
@@ -269,6 +269,7 @@ class Https:
                 requests.exceptions.ConnectTimeout,
                 requests.exceptions.ConnectTimeout,
                 requests.exceptions.ConnectionError,
+                requests.exceptions.ReadTimeout
             ) as ex:
                 self.__logging.error(f"I can't connect to host:\n{ex}")
                 self.__logging.warning(

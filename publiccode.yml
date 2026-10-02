@@ -1,116 +1,136 @@
-# This repository adheres to the publiccode.yml standard by including this 
-# metadata file that makes public software easily discoverable.
-# More info at https://github.com/italia/publiccode.yml
-
-publiccodeYmlVersion: '0.2'
+publiccodeYmlVersion: 0.7.0
+name: TLSAssistant
+url: https://github.com/stfbk/tlsassistant
+landingURL: https://st.fbk.eu/tools/TLSAssistant/
+softwareVersion: "3.2"
+releaseDate: 2026-10-02
+logo: https://raw.githubusercontent.com/stfbk/tlsassistant/refs/heads/master/assets/logo.png
+platforms:
+  - linux
+  - windows
+  - mac
 categories:
+  - it-asset-management
   - it-security
+  - compliance-management
+  - it-service-management
+organisation:
+  uri: https://www.fbk.eu/en/
+  name: Fondazione Bruno Kessler
+usedBy:
+  - Istituto Poligrafico e Zecca dello Stato (IPZS)
+developmentStatus: stable
+softwareType: standalone/desktop
+supports:
+  - id: alias:nis2
+  - id: https://www.acn.gov.it/portale/documents/20119/85999/ACN_LG_Transport_Layer_Security_TLS.pdf
+  - id: https://cert-agid.gov.it/wp-content/uploads/2020/11/AgID-RACCSECTLS-01.pdf
+  - id: https://cyber.gouv.fr/sites/default/files/2017/07/anssi-guide-recommandations_de_securite_relatives_a_tls-v1.2.pdf
+  - id: https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TG02102/BSI-TR-02102-2.html
+  - id: https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR03116/BSI-TR-03116-4.html
+  - id: https://media.defense.gov/2021/Sep/27/2002862527/-1/-1/0/CNSS%20WORKSHEET.PDF
+  - id: https://media.defense.gov/2025/May/30/2003728741/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS.PDF
+  - id: https://certification.enisa.europa.eu/document/download/a845662b-aee0-484e-9191-890c4cfa7aaa_en?filename=ECCG%20Agreed%20Cryptographic%20Mechanisms%20version%202.pdf
+  - id: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r2.pdf
+  - id: https://docs.tlsref.org/server-side-tls.html
 description:
   it:
-    documentation: 'https://github.com/stfbk/tlsassistant/wiki'
-    features:
-      - analisi di vulnerabilità per webserver Apache e nginx
-      - analisi di conformità per webserver Apache e nginx
-      - |-
-        report contenenti frammenti di codice da copia-incollare per mitigare i
-
-        problemi rilevati
-    genericName: tool d'analisi TLS
-    longDescription: |
-      TLSAssistant è un tool di ricerca sviluppato per facilitare il lavoro
-
-      degli amministratori di sistema e sviluppatori iOS/Android alle prese con
-
-      implementazioni TLS.
-
-
-
-      Il suo utilizzo permette di analizzare i webserver (in locale o da remoto)
-
-      e le app iOS/Android per valutarne lo stato di sicurezza e la totalità delle
-
-      vulnerabilità TLS che potrebbero essere sfruttate per mettere in pericolo
-
-      la sicurezza delle trasmissioni.
-
-
+    shortDescription: Analizza implementazioni TLS per scoprirne le vulnerabilità,
+      il grado di conformità e suggerire le mitigazioni necessarie per
+      correggerne i problemi
+    longDescription: >-
+      TLSAssistant è un tool di ricerca sviluppato per facilitare il lavoro di
+      amministratori di sistema e sviluppatori iOS/Android alle prese con
+      implementazioni TLS. Il suo utilizzo permette di analizzare i webserver
+      (in locale o da remoto) e le app iOS/Android per valutarne lo stato di
+      sicurezza e la totalità delle vulnerabilità TLS che potrebbero essere
+      sfruttate per mettere in pericolo la sicurezza delle trasmissioni.
 
       TLSAssistant è anche in grado di verificare il grado di conformità di un
-
-      implementazione rispetto a una serie di cinque linee guida nazionali e
-
+      implementazione rispetto a una serie di linee guida nazionali e
       sovranazionali
 
 
+      ​Il punto di forza di TLSAssistant è la generazione di un report in grado
+      di elencare gli errori di configurazione presenti, spiegare il loro
+      impatto e guidare passo passo verso la loro risoluzione.
 
-      ​
-
-
-
-      Il punto di forza di TLSAssistant è la generazione di un report in grado
-
-      di elencare le vulnerabilità presenti, spiegare il loro impatto e guidare
-
-      passo passo verso la loro risoluzione.
-
-
-
-      ​
-
-
-
-      Le mitigazioni sono state collezionate estraendo informazioni dalla
-
+      ​Le mitigazioni sono state collezionate estraendo informazioni dalla
       letteratura scientifica e dai manuali tecnici forniti da ogni produttore.
+    features:
+      - Analisi di vulnerabilità per webserver Apache e nginx, app iOS e Android
+      - Analisi di conformità per webserver Apache e nginx
+      - Report contenenti frammenti di codice da copia-incollare per mitigare i
+        problemi rilevati
     screenshots:
-      - |-
-        https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_vuln.png
-      - |-
-        https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_compliance.png
-    shortDescription: |-
-      Analizza implementazioni TLS per scoprirne le vulnerabilità, il grado di
+      - https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_vuln.png
+      - https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_compliance.png
+    videos:
+      - https://www.youtube.com/watch?v=hi72cvoV__4&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=1
+      - https://www.youtube.com/watch?v=IzChZjDLJgA&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=2
+      - https://www.youtube.com/watch?v=_8CNoUVmjDc&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=3
+      - https://www.youtube.com/watch?v=rsX-5QA_1xM&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=4
+      - https://www.youtube.com/watch?v=2q3buNevlE4&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=5
+      - https://www.youtube.com/watch?v=uapgzsJ6SB8&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=6
+      - https://www.youtube.com/watch?v=AVos9--xwKg&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=7
+  en:
+    shortDescription: Analyze TLS implementations to identify vulnerabilities and
+      assess compliance levels, and recommend the necessary mitigations to
+      resolve the issues
+    longDescription: >-
+      TLSAssistant is a research tool developed to assist system administrators
+      and iOS/Android developers working on TLS implementations. It allows users
+      to analyze web servers (locally or remotely) and iOS/Android apps to
+      assess their security status and identify all TLS vulnerabilities that
+      could be exploited to compromise the security of data transmissions.
 
-      conformità e suggerire le mitigazioni necessarie per correggerne i
+      TLSAssistant can also verify the degree of compliance of an implementation
+      with a set of national and supranational guidelines.
 
-      problemi
-developmentStatus: stable
-it:
-  conforme:
-    gdpr: false
-    lineeGuidaDesign: false
-    misureMinimeSicurezza: false
-    modelloInteroperabilita: false
-  countryExtensionVersion: '0.2'
-  piattaforme:
-    anpr: false
-    cie: false
-    pagopa: false
-    spid: false
-  riuso:
-    codiceIPA: fbk
+
+      The strength of TLSAssistant lies in its ability to generate an actionable
+      report that lists existing misconfigurations, explains their impact, and
+      provides step-by-step guidance on how to resolve them.
+
+      ​The mitigation strategies were compiled by extracting information from
+      scientific literature and technical manuals provided by each vendor.
+    documentation: https://github.com/stfbk/tlsassistant/wiki
+    features:
+      - TLS vulnerability analysis for Apache and Nginx webservers, iOS and
+        Android Apps
+      - TLS compliance analysis for Apache and Nginx webservers
+      - Actionable reports containing copy-and-paste code snippets to address
+        the detected issues
+    screenshots:
+      - https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_vuln.png
+      - https://raw.githubusercontent.com/stfbk/tlsassistant/master/assets/report_compliance.png
+    videos:
+      - https://www.youtube.com/watch?v=hi72cvoV__4&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=1
+      - https://www.youtube.com/watch?v=IzChZjDLJgA&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=2
+      - https://www.youtube.com/watch?v=_8CNoUVmjDc&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=3
+      - https://www.youtube.com/watch?v=rsX-5QA_1xM&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=4
+      - https://www.youtube.com/watch?v=2q3buNevlE4&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=5
+      - https://www.youtube.com/watch?v=uapgzsJ6SB8&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=6
+      - https://www.youtube.com/watch?v=AVos9--xwKg&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX&index=7
 legal:
   license: Apache-2.0
+maintenance:
+  type: internal
+  contacts:
+    - name: TLSA customer support
+      email: tlsa-cs@fbk.eu
+      affiliation: Fondazione Bruno Kessler
+    - name: Salvatore Manfredi
+      email: smanfredi@fbk.eu
+      phone: "+390461314193"
+      affiliation: Fondazione Bruno Kessler
+    - name: Riccardo Germenia
+      email: rgermenia@fbk.eu
+      affiliation: Fondazione Bruno Kessler
+    - name: Emiliano Rizzonelli
+      email: erizzonelli@fbk.eu
+      affiliation: Fondazione Bruno Kessler
 localisation:
+  localisationReady: false
   availableLanguages:
     - en
-  localisationReady: false
-maintenance:
-  contacts:
-    - affiliation: Fondazione Bruno Kessler
-      email: tlsa-cs@fbk.eu
-      name: Salvatore Manfredi
-      phone: '+390461314193'
-    - affiliation: Fondazione Bruno Kessler
-      name: Matteo Rizzi
-    - affiliation: Fondazione Bruno Kessler
-      name: Riccardo Germenia
-  type: internal
-name: TLSAssistant
-platforms:
-  - linux
-releaseDate: '2024-12-18'
-softwareType: standalone/desktop
-softwareVersion: 3.1.0
-url: 'https://github.com/stfbk/tlsassistant'
-usedBy:
-  - Poligrafico e Zecca dello Stato

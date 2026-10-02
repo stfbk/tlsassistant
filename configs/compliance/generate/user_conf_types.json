@@ -9,6 +9,9 @@
   "KeyLengths": "set",
   "Misc": "dict",
   "Protocol": "dict",
+  "SignatureAlgsCertificate": "set",
+  "Signature_12": "set",
+  "Signature_13": "set",
   "Signature": "set",
   "TrustedCerts": "dict",
   "Transparency": "dict"

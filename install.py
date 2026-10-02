@@ -21,6 +21,16 @@ parser.add_argument(
     "-v", "--verbose", help="Verbose mode.", action="store_true"
 )  # verbose flag
 
+parser.add_argument(
+    "-n", "--no_clean", help="Delete the dependencies/ folder", default=False, action="store_true"
+)
+
+parser.add_argument(
+    "-d", "--depth", help="Depth of the git clone.", default=20, type=int
+)
+
+multi_stage_build = environ.get("DOCKER_MULTI_STAGE_BUILD", False)
+
 args = parser.parse_args()  # parse arguments
 logger = Logger("INSTALLER")
 if args.verbose:  # if verbose is set
@@ -39,6 +49,7 @@ class Install:
         pips = []
         files = []
         git_submodules = {}
+        git_checkout = {}
         maven_paths = []
         python3_scripts = []
         logger.info("Loading dependencies...")
@@ -75,6 +86,10 @@ class Install:
                 git_submodules[dependency["path"]] = dependency["cmd"]
                 logger.debug(
                     f"Added git submodule of {dependency['path']} with command git submodule {dependency['cmd']}")
+            elif dependency["type"] == "git-checkout":
+                git_checkout[dependency["path"]] = dependency["cmd"]
+                logger.debug(
+                    f"Added git checkout of {dependency['path']} with command git checkout {dependency['cmd']}")
             elif dependency["type"] == "python3":
                 python3_scripts.append(dependency["path"])
                 logger.debug(f"Added dependency python3 {dependency['path']}")
@@ -113,6 +128,10 @@ class Install:
             # initialize submodules
             self.git_submodules_init(path, git_submodules[path])
             logger.info(f"Submodules of {path} done.")
+
+        for path in git_checkout:
+            self.git_checkout_init(path, git_checkout[path])
+            logger.info(f"Checkout of {path} done.")
 
         logger.debug(files)
         logger.debug("Getting all files...")
@@ -244,7 +263,9 @@ class Install:
                 logger.debug(f"Installing dependencies{sep}{file}")
                 with open(devnull, "w") as null:
                     params = [
-                        "pip3",
+                        sys.executable,  # use the current python executable
+                        "-m",
+                        "pip",
                         "install",
                         file
                     ]
@@ -285,6 +306,7 @@ class Install:
                         "clean",
                         "install",
                         "-DskipTests=true",
+                        "-Dmaven.javadoc.skip=true"
                     ],
                     stderr=sys.stderr,
                     stdout=(
@@ -294,11 +316,29 @@ class Install:
                         )  # if the user asked for debug mode, let him see the output.
                         else null  # else /dev/null
                     ),
-                    cwd=f_path
+                    cwd=f_path,
+                    env=dict(
+                        environ, JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"),
                 )
 
     def git_submodules_init(self, path, cmd):
         cmd = ["git", "submodule"] + cmd.split(" ")
+        with open(devnull, "w") as null:
+            subprocess.check_call(
+                cmd,
+                stderr=sys.stderr,
+                stdout=(
+                    sys.stdout
+                    if logging.getLogger().isEnabledFor(
+                        logging.DEBUG
+                    )  # if the user asked for debug mode, let him see the output.
+                    else null  # else /dev/null
+                ),
+                cwd="dependencies/"+path
+            )
+
+    def git_checkout_init(self, path, cmd):
+        cmd = ["git", "checkout"] + cmd.split(" ")
         with open(devnull, "w") as null:
             subprocess.check_call(
                 cmd,
@@ -321,6 +361,8 @@ class Install:
                     "git",
                     "clone",
                     str(url),
+                    "--no-single-branch",
+                    f"--depth={args.depth}",
                     f"{path if path else 'dependencies' + sep + file_name}",
                 ],
                 stderr=sys.stderr
@@ -337,7 +379,7 @@ class Install:
 
         file_name = self.get_filename(url)
 
-        async with async_timeout.timeout(60):
+        async with async_timeout.timeout(120):
             async with session.get(url) as response:
                 with open(f"dependencies{sep}{file_name}", "wb") as fd:
                     async for data in response.content.iter_chunked(1024):
@@ -364,11 +406,12 @@ class Install:
 def main():  # exec main
     if not path.exists("dependencies"):  # if can't find dependency folder
         logger.debug("Folder dependencies does not exist. Creating a new one.")
-    else:
+    elif not args.no_clean:
         logger.debug(
             "Folder dependencies exist. Removing and creating a new one.")
         rm_rf("dependencies")  # delete the folder
-    mkdir("dependencies")  # create the folder
+    if not args.no_clean:
+        mkdir("dependencies")  # create the folder
     if path.exists("dependencies.json"):  # if  find the dependency file
         with open("dependencies.json", "r") as dep:  # load dependencies
             data = dep.read()

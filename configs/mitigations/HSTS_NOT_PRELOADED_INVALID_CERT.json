@@ -6,7 +6,7 @@
     "Mitigation": {
       "Textual": "Check if your certificate has expired or it is not valid. If it is not valid, get a new certificate and deploy it on your server. If it has expired, renew it and deploy it on your server.",
       "Apache": "No snippet available",
-      "Nginx": "No snippet available"
+      "nginx": "No snippet available"
 
     }
   },

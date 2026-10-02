@@ -1,31 +1,42 @@
+"""
+This script is used to download OpenSSL releases, extract the sigalgs and groups from the source 
+code, and generate configuration files for the compliance module.
+It is not used in the actual analysis, but it is useful for generating the configuration files.
+It downloads the releases from the OpenSSL website, extracts the necessary files,
+and parses the source code to extract the sigalgs and groups.
+It also generates a mapping of ciphersuites and tags for each release.
+It is intended to be run manually to update the configuration files.    
+"""
 import json
 import os
+import sys
 import shutil
 import tarfile
 import time
 
 import requests
 
-# dentro ssl/ssl.h c'è # define SSL_DEFAULT_CIPHER_LIST "ALL:!EXPORT:!aNULL:!eNULL:!SSLv2"
-releases = ["0.9.x", "1.0.0", "1.0.1", "1.0.2", "1.1.0", "1.1.1", "3.0", "3.1", "3.2"]
+RELEASES = ["0.9.x", "1.0.0", "1.0.1", "1.0.2", "1.1.0",
+            "1.1.1", "3.0", "3.1", "3.2", "3.3", "3.4", "3.5",
+            "3.6", "4.0"]
 
 
-# THIS SCRIPT IS USED TO DOWNLOAD THE OPENSSL RELEASES AND EXTRACT THE SIGALGS
-# FROM THE SOURCE CODE. THE SIGALGS ARE THEN USED IN THE CONFIGURATION FILES
-# FOR THE COMPLIANCE MODULE.
-# THE SCRIPT IS NOT USED IN THE ACTUAL ANALYSIS.
 def download_releases():
+    """
+    Downloads the latest OpenSSL releases and old releases from the OpenSSL website.
+    """
     # get the latest release
-    r = requests.get("https://www.openssl.org/source/")
+    r = requests.get("https://www.openssl.org/source/", timeout=5)
     lines = r.text.split("\n")
     latest_releases = []
     for line in lines:
         if "openssl-" in line and ".tar.gz" in line:
             latest_releases.append(line.split(">")[1].split("<")[0])
     old_releases = {}
-    for release in releases:
+    for release in RELEASES:
         old_releases[release] = []
-        r = requests.get(f"https://www.openssl.org/source/old/{release}/")
+        r = requests.get(
+            f"https://www.openssl.org/source/old/{release}/", timeout=5)
         lines = r.text.split("\n")
         for line in lines:
             if "openssl-" in line and ".tar.gz" in line:
@@ -33,10 +44,12 @@ def download_releases():
         time.sleep(0.2)
     urls = {}
     for release in latest_releases:
-        urls[release.strip(".tar.gz")] = f"https://www.openssl.org/source/{release}"
-    for release in old_releases:
-        for old_release in old_releases[release]:
-            urls[old_release.strip(".tar.gz")] = f"https://www.openssl.org/source/old/{release}/{old_release}"
+        urls[release.strip(".tar.gz")
+             ] = f"https://www.openssl.org/source/{release}"
+    for release, old_releases_list in old_releases.items():
+        for old_release in old_releases_list:
+            urls[old_release.strip(
+                ".tar.gz")] = f"https://www.openssl.org/source/old/{release}/{old_release}"
     del urls[""]
     to_remove = []
     for release in urls:
@@ -44,7 +57,7 @@ def download_releases():
             to_remove.append(release)
     for release in to_remove:
         del urls[release]
-    with open("urls.json", "w") as f:
+    with open("urls.json", "w", encoding="utf-8") as f:
         json.dump(urls, f, indent=4, sort_keys=True)
     return urls
 
@@ -53,20 +66,20 @@ def extract_files():
     if not os.path.exists("urls.json"):
         urls = download_releases()
     else:
-        with open("urls.json", "r") as f:
+        with open("urls.json", "r", encoding="utf-8") as f:
             urls = json.load(f)
     for release in urls:
         print("Release: ", release)
         if not os.path.exists(f"tmp/{release}.tar.gz"):
             time.sleep(0.5)
             # download the file
-            r = requests.get(urls[release])
+            r = requests.get(urls[release], timeout=5)
             # write the file
             with open(f"tmp/{release}.tar.gz", "wb") as f:
                 f.write(r.content)
         # unzip only the necessary files
-        files = ["t1_lib.c", "ssl_local.h", "s3_lib.c", "s2_lib.c", "ssl.h", "ssl_ciph.c", "ssl_locl.h", "ssl3.h",
-                 "tls1.h", "ssl.h.in"]
+        files = ["t1_lib.c", "ssl_local.h", "s3_lib.c", "s2_lib.c", "ssl.h", "ssl_ciph.c",
+                 "ssl_locl.h", "ssl3.h", "tls1.h", "ssl.h.in", "tlsgroups.h", "capabilities.c"]
         for file in files:
             if not os.path.exists(f"tmp/{release}/{file}"):
                 extract_file(release, file)
@@ -85,9 +98,13 @@ def extract_file(release, file):
     member_string = f"{first_name}/ssl/{file}"
     if member_string not in names:
         member_string = f"{first_name}/include/openssl/{file}"
+    if member_string not in names:
+        member_string = f"{first_name}/include/internal/{file}"
+    if member_string not in names:
+        member_string = f"{first_name}/providers/common/{file}"
     if member_string in names and not os.path.exists(f"tmp/{release}/{file}"):
         obj = tar.getmember(member_string)
-        tar.extract(obj, path=f"tmp/")
+        tar.extract(obj, path="tmp/")
         tar.close()
         if not os.path.isdir(f"tmp/{release}"):
             os.mkdir(f"tmp/{release}")
@@ -112,11 +129,20 @@ def extract_tables():
             "end": "};",
             "key": "groups_default"
         },
+        "eccurves_auto[]": {
+            "end": "};",
+            "key": "groups_default"
+        },
+        "nid_list[]": {
+            "end": "};",
+            "key": "curve_nid_list"
+        }
+
     }
     tables = {}
     for release in [r for r in os.listdir("tmp") if r[-2:] != "gz" and r[-3:] != "csv"]:
         print("Release: ", release)
-        with open(f"tmp/{release}/t1_lib.c", "r") as f:
+        with open(f"tmp/{release}/t1_lib.c", "r", encoding="utf-8") as f:
             tables[release] = {}
             line = "a"
             start_reading = False
@@ -140,7 +166,9 @@ def extract_tables():
 
 def extract_groups(releases_data):
     groups_dict = {}
+    enabled_groups_dict = {}
     for release in releases_data:
+        print("Extracting groups for:", release)
         lines = releases_data[release].get("groups_default", [])
         groups = []
         for l in lines:
@@ -154,56 +182,177 @@ def extract_groups(releases_data):
                     groups.append(l)
         if not lines:
             groups = ["prime256v1"]
-        release = release.lower().replace("openssl", "")[1:]
         groups_dict[release] = groups
-    with open("../configs/compliance/groups_defaults.json", "w") as f:
-        json.dump(groups_dict, f, indent=4, sort_keys=True)
+        used_groups = extract_capabilities(release, "GROUP")
+        if not used_groups:
+            for line in releases_data[release].get("curve_nid_list", []):
+                if "NID_" in line and "/*" in line:
+                    line = line.split("/*")[1].strip()
+                    name, decimal_id, _ = line.split(" ")
+                    decimal_id = decimal_id.strip().strip("()")
+                    decimal_id = int(decimal_id, 16) if "0x" in decimal_id else int(decimal_id)
+                    used_groups[name] = "0x"+format(decimal_id, "04x").upper()
+            
+        release = release.lower().replace("openssl", "")[1:]
+        enabled_groups_dict[release] = used_groups
 
+    with open("../configs/compliance/groups_defaults.json", "w", encoding="utf-8") as f:
+        json.dump(groups_dict, f, indent=4, sort_keys=True)
+    with open("../configs/compliance/groups_enabled.json", "w", encoding="utf-8") as f:
+        json.dump(enabled_groups_dict, f, indent=4, sort_keys=True)
+
+
+def is_newer_then(version, target):
+    """
+    Check if the version is newer than the target version.
+    :param version: The version to check.
+    :param target: The target version to compare against.
+    :return: True if the version is newer than the target, False otherwise.
+    """
+    version = version.lower().replace("openssl-", "").strip()
+
+    version_parts = [int(x) if x.isdigit() else x for x in version.split(".")]
+    target_parts = [int(x) if x.isdigit() else x for x in target.split(".")]
+    return version_parts > target_parts
+
+def extract_capabilities(release, category):
+    """
+    Extract the capabilities from the capabilities.c file.
+    :param release: The release to extract the capabilities from.
+    :param category: The category of the capabilities to extract. Either "SIGALG" or "GROUP".
+    :return: A dictionary with the element and its id.
+    """
+    if not os.path.exists(f"tmp/{release}/capabilities.c"):
+        return {}
+    ENTRY_STRING = f"TLS_{category}_ENTRY"
+    CONSTANTS_STRING = f"TLS_{category}_CONSTANTS"
+    constants = []
+    capabilities = {}
+    with open(f"tmp/{release}/capabilities.c", "r", encoding="utf-8") as f:
+        lines = f.readlines()
+    group_lines = []
+    groups_file = f"tmp/{release}/tlsgroups.h"
+    if category == "GROUP" and os.path.exists(groups_file):
+        with open(groups_file, "r", encoding="utf-8") as gf:
+            groups_lines = gf.readlines()
+    
+    reading_constants = False
+    for line in lines:
+        if CONSTANTS_STRING in line:
+            reading_constants = True
+            continue
+        if reading_constants:
+            if "};" in line:
+                reading_constants = False
+                constants_final = []
+                for i, constant in enumerate(constants):
+                    if "{" in constant and "}" in constant:
+                        constants_final.append(constant)
+                    elif "{" in constant and "}" in constants[i + 1]:
+                        constants_final.append(constant + constants[i + 1])
+                constants = constants_final
+                continue
+            line = line.strip().strip(",")
+            if line:
+                constants.append(line)
+            continue
+        
+        if ENTRY_STRING in line and "define" not in line:
+            name = line.split("(")[1].split(",")[0].strip().strip("\"")
+            constant_id = line.strip().split("(")[1].split(",")[-2].strip().strip(")")
+            hex_id = constants[int(constant_id)].split("{")[1].split(",")[0].strip()
+            if category == "GROUP":
+                # fix the X* groups names
+                if name.startswith("x"):
+                    name = "X" + name[1:]
+                for line in groups_lines:
+                    if hex_id in line:
+                        hex_id = line.split(" ")[-1].strip()
+                        break
+            capabilities[name] = hex_id
+    return capabilities
+        
 
 def extract_sigalgs(releases_data):
     sigalgs_dict = {}
     sigalgs_table = {}
+    skip = False
+    names_cache = {}
     for release in releases_data:
-        print(release)
+        print("Extracting sigalgs for:", release)
+        new_table = False
         lines = releases_data[release].get("sigalgs", [])
         sigalgs = []
-        for l in lines:
+        new_table = is_newer_then(release, "3.5")
+
+        file_name = "ssl_local.h" if os.path.isfile(
+            f"tmp/{release}/ssl_local.h") else "ssl_locl.h"
+        with open(f"tmp/{release}/{file_name}", "r", encoding="utf-8") as f:
+            local_file = f.readlines()
+        for num, l in enumerate(lines):
+            if skip:
+                skip -= 1
+                continue
             if "TLSEXT_SIGALG" in l and "gost" not in l:
                 l = l.strip().strip("{").strip(",")
-                name, tlsext = l.split(",")
+                if new_table:
+                    while l.count(",") < 2:
+                        l += "," + lines[num + 1].strip().strip("{").strip(",")
+                        skip += 1
+                if new_table:
+                    name, _, tlsext = l.split(",")
+                else:
+                    name, tlsext = l.split(",")
                 name = name.strip().strip("\"")
+                if is_newer_then(release, "3.4"):
+                    if names_cache.get(name):
+                        new_name = names_cache[name]
+                    else:
+                        new_name = find_name(name, local_file)
+                        if new_name != name:
+                            names_cache[name] = new_name
+                    name = new_name
                 if name != "NULL":
                     sigalgs.append(name)
                 if name not in sigalgs_table and name != "NULL":
-                    with open(f"tmp/{release}/ssl_local.h", "r") as f:
-                        line = "a"
-                        i = 0
-                        while line:
-                            i += 1
-                            line = f.readline()
-                            if tlsext in line:
-                                line = line.strip()
-                                if "0x" in line:
-                                    try:
-                                        sigalgs_table[name] = "0x" + line.split("0x")[1]
-                                    except IndexError:
-                                        print("Error: ", line, release, name, tlsext, i)
-                                        input()
-                                elif "_name" in line:
-                                    sigalgs_table[name] = line.split(" ")[-1].strip("\"")
+                    line = "a"
+                    i = 0
+                    while line and i < len(local_file)-1:
+                        i += 1
+                        line = local_file[i]
 
+                        if tlsext in line:
+                            line = line.strip()
+                            if "0x" in line:
+                                try:
+                                    sigalgs_table[name] = "0x" + \
+                                        line.split("0x")[1]
+                                except IndexError:
+                                    print("Error: ", line,
+                                          release, name, tlsext, i)
+                                    input()
+                            elif "_name" in line and name not in sigalgs_table:
+                                sigalgs_table[name] = line.split(
+                                    " ")[-1].strip("\"")
+        additional_sigalgs = extract_capabilities(release, "SIGALG")
         release = release.lower().replace("openssl", "")[1:]
         sigalgs_dict[release] = sigalgs
+        for sigalg in additional_sigalgs:
+            if sigalg not in sigalgs_dict[release]:
+                sigalgs_dict[release].append(sigalg)
+            if sigalg not in sigalgs_table:
+                sigalgs_table[sigalg] = additional_sigalgs[sigalg]
     # switch the keys and the values in sigalgs_table
-    sigalgs_table = {v: k for k, v in [(x,y) for x,y in sigalgs_table.items() if "0x" in y]}
-    sigalgs_name_mapping = {v: k for k, v in [(x,y) for x,y in sigalgs_table.items() if "0x" not in y]}
-    for sigalg in sigalgs_table:
-        pass
+    sigalgs_table = {v: k for k, v in [
+        (x, y) for x, y in sigalgs_table.items() if "0x" in y]}
+    # sigalgs_name_mapping = {v: k for k, v in [
+    #     (x, y) for x, y in sigalgs_table.items() if "0x" not in y]}
     if not os.path.exists("tmp/iana_sigalgs.csv"):
-        r = requests.get("https://www.iana.org/assignments/tls-parameters/tls-signaturescheme.csv")
-        with open("tmp/iana_sigalgs.csv", "w") as f:
+        r = requests.get(
+            "https://www.iana.org/assignments/tls-parameters/tls-signaturescheme.csv", timeout=5)
+        with open("tmp/iana_sigalgs.csv", "w", encoding="utf-8") as f:
             f.write(r.text)
-    with open("tmp/iana_sigalgs.csv", "r") as f:
+    with open("tmp/iana_sigalgs.csv", "r", encoding="utf-8") as f:
         lines = f.readlines()
         lines = [l.strip().split(",") for l in lines]
         lines = lines[1:]
@@ -218,14 +367,32 @@ def extract_sigalgs(releases_data):
         }
     iana_to_ietf = {}
     for sigalg in sigalgs_table:
-        iana_to_ietf[sigalgs_table[sigalg]["iana"]] = sigalgs_table[sigalg]["ietf"]
+        iana_to_ietf[sigalgs_table[sigalg]["iana"]
+                     ] = sigalgs_table[sigalg]["ietf"]
     iana_to_ietf.pop("NULL", None)
-    with open("../configs/compliance/sigalgs.json", "w") as f:
+    with open("../configs/compliance/sigalgs.json", "w", encoding="utf-8") as f:
         json.dump(sigalgs_dict, f, indent=4, sort_keys=True)
-    with open("../configs/compliance/sigalgs_table.json", "w") as f:
+    with open("../configs/compliance/sigalgs_table.json", "w", encoding="utf-8") as f:
         json.dump(sigalgs_table, f, indent=4, sort_keys=True)
-    with open("../configs/compliance/sigalgs_iana_to_ietf.json", "w") as f:
+    with open("../configs/compliance/sigalgs_iana_to_ietf.json", "w", encoding="utf-8") as f:
         json.dump(iana_to_ietf, f, indent=4, sort_keys=True)
+
+
+def find_name(name, local_file):
+    """
+    Find the name of the sigalg in the local file.
+    :param name: The name of the sigalg.
+    :param local_file: The local file to search in (as a list of lines).
+    :return: The name of the sigalg.
+    """
+    for el in local_file:
+        if "TLSEXT_SIGALG" not in el or "_name" not in el:
+            continue
+        el = el.replace("#define", "").strip()
+        els = el.split(" ")
+        if name == els[0]:
+            return els[-1].strip().strip("\"")
+    return name
 
 
 def get_ciphersuites_mapping(release):
@@ -233,7 +400,7 @@ def get_ciphersuites_mapping(release):
     lines = []
     valid_tokens = ["SSL3_TXT", "TLS1_TXT", "TLS1_3_RFC"]
     for file in ["ssl3.h", "tls1.h"]:
-        with open(f"tmp/{release}/{file}", "r") as f:
+        with open(f"tmp/{release}/{file}", "r", encoding="utf-8") as f:
             data = f.read()
             lines += data.split("\n")
     for line in lines:
@@ -253,9 +420,10 @@ def get_ciphersuites_mapping(release):
 
 
 def get_tags_aliases_mapping(release):
-    file = "ssl_local.h" if os.path.isfile(f"tmp/{release}/ssl_local.h") else "ssl_locl.h"
+    file = "ssl_local.h" if os.path.isfile(
+        f"tmp/{release}/ssl_local.h") else "ssl_locl.h"
     tags_mapping = {}
-    with open(f"tmp/{release}/{file}", "r") as f:
+    with open(f"tmp/{release}/{file}", "r", encoding="utf-8") as f:
         line = "a"
         while line:
             line = f.readline()
@@ -276,7 +444,7 @@ def get_tags_aliases_mapping(release):
 
 def get_tags_mapping(release):
     tags_mapping = {}
-    with open(f"tmp/{release}/ssl.h", "r") as f:
+    with open(f"tmp/{release}/ssl.h", "r", encoding="utf-8") as f:
         line = "a"
         while line:
             line = f.readline()
@@ -303,7 +471,8 @@ def update_ciphersuites_struct(release, dictionary, dictionary_mapping):
                     dictionary[tag][to_insert.pop(0)] = alg
     for tag in dictionary:
         if dictionary[tag].get("*name"):
-            name = dictionary_mapping.get(dictionary[tag]["*name"], dictionary[tag]["*name"])
+            name = dictionary_mapping.get(
+                dictionary[tag]["*name"], dictionary[tag]["*name"])
             name = name.strip("\"")
             tmp[name] = dictionary[tag]
             del tmp[name]["*name"]
@@ -314,7 +483,7 @@ def update_ciphersuites_struct(release, dictionary, dictionary_mapping):
 
 def get_counter_to_field(path, final_ciphers, release):
     counter_to_field = {}
-    with open(path, "r") as f:
+    with open(path, "r", encoding="utf-8") as f:
         line = "a"
         start = False
         counter = 0
@@ -377,13 +546,15 @@ def prune_tags_mapping(mapping):
     for version, tag in to_remove:
         del mapping[version, tag]
 
+
 def extract_ciphersuites_tags():
     final_tags_aliases = {}
     final_ciphers = {
         "releases_default": {},
         "ciphers_per_release": {}
     }
-    releases_list = [r for r in os.listdir("tmp") if r[-2:] != "gz" and r[-3:] != "csv"]
+    releases_list = [r for r in os.listdir(
+        "tmp") if r[-2:] != "gz" and r[-3:] != "csv"]
     releases_list.sort()
     ciphersuites_mapping = get_ciphersuites_mapping(releases_list[-1])
     for release in releases_list:
@@ -396,7 +567,7 @@ def extract_ciphersuites_tags():
         print("Release: ", release)
         counter_to_field = {}
         if not final_ciphers["releases_default"].get(release) and os.path.isfile(f"tmp/{file_release}/ssl_ciph.c"):
-            with open(f"tmp/{file_release}/ssl_ciph.c", "r") as f:
+            with open(f"tmp/{file_release}/ssl_ciph.c", "r", encoding="utf-8") as f:
                 line = "a"
                 start = 0
                 tls1_2_ciphers = ""
@@ -409,26 +580,32 @@ def extract_ciphersuites_tags():
                         start = 2
                     elif start and "\"" in line:
                         if start == 1:
-                            tls1_2_ciphers += line.split(" ")[-1].strip("\";\n")
+                            tls1_2_ciphers += line.split(
+                                " ")[-1].strip("\";\n")
                             start = 2
                         elif start == 2:
-                            tls1_3_ciphers += line.split(" ")[-1].strip("\";\n")
+                            tls1_3_ciphers += line.split(
+                                " ")[-1].strip("\";\n")
                     elif start and "}" in line:
                         start = 0
                 if tls1_2_ciphers and tls1_3_ciphers:
-                    final_ciphers["releases_default"][release] = (tls1_2_ciphers, tls1_3_ciphers)
+                    final_ciphers["releases_default"][release] = (
+                        tls1_2_ciphers, tls1_3_ciphers)
 
         file = "ssl.h"
         if os.path.exists(f"tmp/{file_release}/{file}"):
             path = f"tmp/{file_release}/{file}"
-            counter_to_field = get_counter_to_field(path, final_ciphers, release)
-        file = "ssl_local.h" if os.path.isfile(f"tmp/{file_release}/ssl_local.h") else "ssl_locl.h"
+            counter_to_field = get_counter_to_field(
+                path, final_ciphers, release)
+        file = "ssl_local.h" if os.path.isfile(
+            f"tmp/{file_release}/ssl_local.h") else "ssl_locl.h"
         if not counter_to_field and os.path.exists(f"tmp/{file_release}/{file}"):
             path = f"tmp/{file_release}/{file}"
-            counter_to_field = get_counter_to_field(path, final_ciphers, release)
+            counter_to_field = get_counter_to_field(
+                path, final_ciphers, release)
         if os.path.isfile(f"tmp/{file_release}/ssl_ciph.c"):
             alias_mapping = {}
-            with open(f"tmp/{file_release}/ssl_ciph.c", "r") as f:
+            with open(f"tmp/{file_release}/ssl_ciph.c", "r", encoding="utf-8") as f:
                 line = "a"
                 start = 0
                 counter = 0
@@ -446,17 +623,21 @@ def extract_ciphersuites_tags():
                             alias_mapping[tags_count] = {}
                             counter = 0
                         if counter_to_field.get(counter):
-                            counter = get_actual_text(line, counter, counter_to_field, tags_count, alias_mapping)
+                            counter = get_actual_text(
+                                line, counter, counter_to_field, tags_count, alias_mapping)
                         else:
-                            print("Error: ", line, file, release, counter_to_field, counter)
+                            print("Error: ", line, file, release,
+                                  counter_to_field, counter)
                             input()
                         if "}" in line:
                             tags_count += 1
-            alias_mapping = update_ciphersuites_struct(release, alias_mapping, tags_mapping)
+            alias_mapping = update_ciphersuites_struct(
+                release, alias_mapping, tags_mapping)
             for tag in alias_mapping:
                 differences = {}
                 category = release[:2]
-                tags_to_remove = ["*stdname", "max_tls", "min_dtls", "max_dtls", "mask", "mask_strength", "id", "valid"]
+                tags_to_remove = ["*stdname", "max_tls", "min_dtls",
+                                  "max_dtls", "mask", "mask_strength", "id", "valid"]
                 for tmp in tags_to_remove:
                     alias_mapping[tag].pop(tmp, None)
                 if not final_tags_aliases.get(category):
@@ -482,7 +663,7 @@ def extract_ciphersuites_tags():
             total_blocks = 1
             if os.path.isfile(f"tmp/{file_release}/{file}"):
                 counter = 0
-                with open(f"tmp/{file_release}/{file}", "r") as f:
+                with open(f"tmp/{file_release}/{file}", "r", encoding="utf-8") as f:
                     line = "a"
                     while line:
                         line_counter += 1
@@ -509,16 +690,19 @@ def extract_ciphersuites_tags():
                                     line = None
                         elif read > 0 and skipping == 0:
                             if counter_to_field.get(counter):
-                                counter = get_actual_text(line, counter, counter_to_field, ciphers_counter, ciphers)
+                                counter = get_actual_text(
+                                    line, counter, counter_to_field, ciphers_counter, ciphers)
                             else:
-                                print("Error: ", line_counter, line, file, release, counter_to_field, counter)
+                                print("Error: ", line_counter, line, file,
+                                      release, counter_to_field, counter)
                                 input()
                         elif "{" in line:
                             read += 1
                             ciphers_counter += 1
                             ciphers[ciphers_counter] = {}
                 # make the name field the new key for each element that has a number as its key
-                ciphers = update_ciphersuites_struct(release, ciphers, ciphersuites_mapping)
+                ciphers = update_ciphersuites_struct(
+                    release, ciphers, ciphersuites_mapping)
         for cipher in ciphers:
             differences = {}
             if not final_ciphers.get(cipher):
@@ -534,15 +718,49 @@ def extract_ciphersuites_tags():
             final_ciphers[cipher]["releases"][release] = differences if differences else True
             final_ciphers["ciphers_per_release"][release].append(cipher)
     prune_tags_mapping(final_tags_aliases)
-    with open("../configs/compliance/tags_mapping.json", "w") as f:
+    with open("../configs/compliance/tags_mapping.json", "w", encoding="utf-8") as f:
         json.dump(final_tags_aliases, f, indent=4)
-    with open("../configs/compliance/ciphersuites_tags.json", "w") as f:
+    with open("../configs/compliance/ciphersuites_tags.json", "w", encoding="utf-8") as f:
         json.dump(final_ciphers, f, indent=4)
 
 
 if __name__ == "__main__":
     if not os.path.exists("tmp"):
         os.mkdir("tmp")
-    # extract_files()
+    # check for --extract flag
+    if sys.argv[1:] and sys.argv[1] == "--extract":
+        extract_files()
     extract_tables()
     extract_ciphersuites_tags()
+    with open("urls.json", "r", encoding="utf-8") as f:
+        urls = json.load(f)
+    latest_release = sorted(urls.keys())[-1]
+    with open(f"tmp/{latest_release}/capabilities.c", "r", encoding="utf-8") as f:
+        lines = f.readlines()
+    start = "group_list[]"
+    end = "};"
+    useful_lines = []
+    reading = False
+    for line in lines:
+        if start in line:
+            reading = True
+            continue
+        if end in line and reading:
+            reading = False
+            break
+        if reading:
+            useful_lines.append(line.strip())
+    groups_versions = {}
+    for line in useful_lines:
+        l = line.split(",")
+        name = l[0].split("{")[1].strip().replace("_tls13", "tls13").split("_")[-1]
+        min_version = l[2].replace("_VERSION", "").strip()
+        max_version = l[3].replace("_VERSION", "").strip()
+        groups_versions[name] = {
+            "min_version": min_version,
+            "max_version": max_version
+        }
+    with open("../configs/compliance/groups_versions.json", "w", encoding="utf-8") as f:
+        json.dump(groups_versions, f, indent=4, sort_keys=True)
+
+    

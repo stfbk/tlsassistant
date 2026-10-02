@@ -3,13 +3,33 @@
         "iana": "rsa_pkcs1_sha1",
         "ietf": "rsa_pkcs1_sha1"
     },
+    "0x0202": {
+        "iana": "Reserved for backward compatibility",
+        "ietf": "dsa_sha1"
+    },
+    "0x0203": {
+        "iana": "ecdsa_sha1",
+        "ietf": "ecdsa_sha1"
+    },
     "0x0301": {
         "iana": "NULL",
         "ietf": "rsa_pkcs1_sha224"
     },
+    "0x0302": {
+        "iana": "NULL",
+        "ietf": "dsa_sha224"
+    },
+    "0x0303": {
+        "iana": "NULL",
+        "ietf": "ecdsa_sha224"
+    },
     "0x0401": {
         "iana": "rsa_pkcs1_sha256",
         "ietf": "rsa_pkcs1_sha256"
+    },
+    "0x0402": {
+        "iana": "Reserved for backward compatibility",
+        "ietf": "dsa_sha256"
     },
     "0x0403": {
         "iana": "ecdsa_secp256r1_sha256",
@@ -19,6 +39,10 @@
         "iana": "rsa_pkcs1_sha384",
         "ietf": "rsa_pkcs1_sha384"
     },
+    "0x0502": {
+        "iana": "Reserved for backward compatibility",
+        "ietf": "dsa_sha384"
+    },
     "0x0503": {
         "iana": "ecdsa_secp384r1_sha384",
         "ietf": "ecdsa_secp384r1_sha384"
@@ -26,6 +50,10 @@
     "0x0601": {
         "iana": "rsa_pkcs1_sha512",
         "ietf": "rsa_pkcs1_sha512"
+    },
+    "0x0602": {
+        "iana": "Reserved for backward compatibility",
+        "ietf": "dsa_sha512"
     },
     "0x0603": {
         "iana": "ecdsa_secp521r1_sha512",
@@ -74,5 +102,17 @@
     "0x081c": {
         "iana": "ecdsa_brainpoolP512r1tls13_sha512",
         "ietf": "ecdsa_brainpoolP512r1_sha512"
+    },
+    "0x0904": {
+        "iana": "mldsa44",
+        "ietf": "mldsa44"
+    },
+    "0x0905": {
+        "iana": "mldsa65",
+        "ietf": "mldsa65"
+    },
+    "0x0906": {
+        "iana": "mldsa87",
+        "ietf": "mldsa87"
     }
 }

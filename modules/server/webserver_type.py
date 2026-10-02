@@ -17,6 +17,8 @@ class WebserverType:
 
     def _worker(self):
         for host in self.__input.get("hosts", []):
+            if host == "placeholder":
+                continue
             webserver = "http://"+host if not host.startswith("http") else host
             try:
                 res = requests.get(webserver, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)

@@ -6,7 +6,7 @@
     "Mitigation": {
       "Textual": "Enable the HSTS header transmission within the webserver's settings.",
       "Apache": "1. open your Apache configuration file (default: <i>/etc/apache2/sites-available/default-ssl.conf</i>);<br/>2. add the line <code>Header always set Strict-Transport-Security \"max-age=31536000\"</code>.<br/><br/>N.B. restart the server by typing: <code>sudo service apache2 restart</code> and be sure that <code>mod_headers</code> is enabled.",
-      "Nginx": "1. In a default situation, you can edit your website configuration <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>);<br/>2. Add inside <code>server{...}</code> brackets: <code>add_header Strict-Transport-Security \"max-age=31536000; includeSubdomains; preload\";</code><br/><br/>N.B. restart the server by typing: <code>sudo service nginx restart</code>."
+      "nginx": "1. In a default situation, you can edit your website configuration <i>/etc/nginx/sites-enabled/default</i><br/> (if you changed your site conf name <i>/etc/nginx/sites-enabled/YOURSITECONFIGURATION</i>);<br/>2. Add inside <code>server{...}</code> brackets: <code>add_header Strict-Transport-Security \"max-age=31536000; includeSubdomains; preload\";</code><br/><br/>N.B. restart the server by typing: <code>sudo service nginx restart</code>."
 
     }
   },

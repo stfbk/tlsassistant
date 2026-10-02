@@ -49,7 +49,9 @@ class ApacheConfiguration(ConfigurationMaker):
             tmp_string = tmp_string[:-1]
         # this check prevents adding a field without any value
         if len(tmp_string) != len(config_field) + 1:
-            tmp_string, comment = self.perform_post_actions(field_rules, tmp_string, guideline)
+            tmp_string_args = tmp_string[len(config_field) + 1:]
+            tmp_string_args, comment = self.perform_post_actions(field_rules, tmp_string_args, guideline)
+            tmp_string = config_field + " " + tmp_string_args
             if comment:
                 comment = "#" + comment
             self._string_to_add += "\n" + comment + tmp_string
@@ -67,6 +69,8 @@ class ApacheConfiguration(ConfigurationMaker):
         for line in to_remove:
             lines.remove(line)
         self._string_to_add = "\n".join(lines)
+        output_field = self.reverse_mapping.get(field, None)
+        self._output_dict[output_field].pop(name, None)
 
     def _write_to_file(self):
         if not os.path.isfile(self._config_template_path):
@@ -123,4 +127,3 @@ class ApacheConfiguration(ConfigurationMaker):
                 dictionary[directive] = user_configuration[directive].split(":") if ":" in user_configuration[directive] \
                     else user_configuration[directive]
         dictionary["CipherSuite"] = set(dictionary["CipherSuite"])
-        print(user_configuration)

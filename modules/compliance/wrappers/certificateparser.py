@@ -1,4 +1,5 @@
-import OpenSSL.crypto as crypto
+from cryptography import x509
+from cryptography.hazmat.primitives import hashes
 from dateutil import parser
 from pyasn1.codec.der.decoder import decode as der_decoder
 
@@ -7,40 +8,58 @@ class CertificateParser:
     def __init__(self):
         self.certificate = None
         self._output_dict = {}
+        self._keysize_dict = {
+            "Ed25519PublicKey": 256,
+            "Ed448PublicKey": 456
+        }
 
     def input(self, certificate):
-        self.certificate = crypto.load_certificate(crypto.FILETYPE_PEM, certificate)
+        self.certificate = x509.load_pem_x509_certificate(certificate.encode())
 
     def run(self, certificate):
         self.input(certificate)
-        cert_sha = self.certificate.digest("SHA256").decode("utf-8")
+        cert_sha = self.certificate.fingerprint(hashes.SHA256()).hex()
         self._output_dict[cert_sha] = {
             "Extensions": {}
         }
-        if not isinstance(self.certificate, crypto.X509):
+        if not isinstance(self.certificate, x509.Certificate):
             return {}
-        for index in range(self.certificate.get_extension_count()):
-            ext = self.certificate.get_extension(index)
-            ext_name = ext.get_short_name().decode("utf-8")
-            content = ext.__str__() if ext_name != "UNDEF" else ""
+        for ext in self.certificate.extensions:
+            ext_name = ext.oid._name.replace("cRLDistributionPoints", "crlDistributionPoints")
+            content = ext.value
             self._output_dict[cert_sha]["Extensions"][ext_name] = content
-        self._output_dict[cert_sha]["X.509 version"] = self.certificate.get_version()
-        self._output_dict[cert_sha]["SigAlgComplete"] = self.certificate.get_signature_algorithm().decode("utf-8")
+        self._output_dict[cert_sha]["X.509 version"] = self.certificate.version.value
+        self._output_dict[cert_sha]["SigAlgName"] = self.certificate.signature_algorithm_oid._name
+        self._output_dict[cert_sha]["SigAlgOID"] = self.certificate.signature_algorithm_oid.dotted_string
+        if self.certificate.public_key_algorithm_oid._name == "Unknown OID":
+            self._output_dict[cert_sha]["KeySize"] = "Unknown"
+        else:
+            class_name = self.certificate.public_key().__class__.__name__
+            value = self._keysize_dict.get(class_name)
+            self._output_dict[cert_sha]["KeySize"] = value if value else self.certificate.public_key().key_size
         # this list comprehension takes every tuple, decodes its elements and puts the decoded pair in a new list
-        entries = [[el.decode("utf-8") for el in entry] for entry in self.certificate.get_issuer().get_components()]
-        issuer_der = der_decoder(self.certificate.get_issuer().der())[0] if self.certificate.get_issuer() else None
+        if self.certificate.issuer:
+            issuer_der = der_decoder(self.certificate.issuer.public_bytes())[0]
+            issuer_string = self.certificate.issuer.rfc4514_string()
+            issuer_string = issuer_string.replace("\\,", "COMMA")
+            components = issuer_string.split(",") if "," in issuer_string else [issuer_string]
+            entries = [entry.split("=") for entry in components]
+            entries = [(entry[0], entry[1].replace("COMMA", ",")) for entry in entries]
         self._output_dict[cert_sha]["Issuer Distinguished Name - der"] = issuer_der
         self._output_dict[cert_sha]["Issuer Distinguished Name"] = dict(entries)
-        entries = [[el.decode("utf-8") for el in entry] for entry in self.certificate.get_subject().get_components()]
-        self._output_dict[cert_sha]["Subject Distinguished Name"] = dict(entries)
-        subject_der = der_decoder(self.certificate.get_subject().der())[0] if self.certificate.get_subject() else None
+        if self.certificate.subject:
+            subject_der = der_decoder(self.certificate.subject.public_bytes())[0]
+            subject_der = der_decoder(self.certificate.subject.public_bytes())[0]
+            subject_string = self.certificate.subject.rfc4514_string()
+            components = subject_string.split(",") if "," in subject_string else [subject_string]
+            entries = [entry.split("=") for entry in components]
         self._output_dict[cert_sha]["Subject Distinguished Name - der"] = subject_der
         # validity should be the difference between these two fields
-        not_after = self.certificate.get_notAfter().decode("utf-8")
-        not_before = self.certificate.get_notBefore().decode("utf-8")
+        not_after = self.certificate.not_valid_after_utc
+        not_before = self.certificate.not_valid_before_utc
         self._output_dict[cert_sha]["not_after"] = not_after
         self._output_dict[cert_sha]["not_before"] = not_before
-        self._output_dict[cert_sha]["validity"] = parser.parse(not_after) - parser.parse(not_before)
+        self._output_dict[cert_sha]["validity"] = not_after - not_before
         return self.output(cert_sha)
 
     def output(self, cert_sha):

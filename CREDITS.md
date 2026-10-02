@@ -1,11 +1,11 @@
 
 This file lists the main contributions. For the full list of contributions, please refer to the commit log.
 
-* Salvatore Manfredi (creator, maintainer and main contributor)
+* Salvatore Manfredi (creator, project manager and contributor)
   - initial design
   - sole maintainer up to v1.2
 
-* Matteo Rizzi (main contributor)
+* Matteo Rizzi (former contributor)
   - extension of the Android analysis modules
   - modular system redesign
   - HTML report design
@@ -15,6 +15,9 @@ This file lists the main contributions. For the full list of contributions, plea
   - compliance module design and integration
   - PDF report redesign
   - primary contributor for v3.x
+
+* Emiliano Rizzonelli (contributor)
+  - [tlsassistant-testbed](https://github.com/stfbk/tlsassistant-testbed) integration
 
 ##### Further credits (in chronological order)
 
@@ -33,3 +36,7 @@ This file lists the main contributions. For the full list of contributions, plea
   - [SEBASTiAn](https://github.com/talos-security/SEBASTiAn) integration
   - revamp of Android analysis modules
   - iOS analysis modules
+
+##### Special mention
+* [Martina Vincoli](https://www.linkedin.com/in/martina-vincoli/)
+  - TLSAssistant logo

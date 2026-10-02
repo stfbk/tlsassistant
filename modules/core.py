@@ -5,8 +5,8 @@ from enum import Enum
 from os.path import sep
 from pathlib import Path
 import tldextract
+import sys
 
-from modules.android.wrappers.sebastian import CustomAndroidVulnerabilityManager
 from modules.configuration.configuration import Configuration
 from modules.parse_input_conf import Parser
 from modules.server.testssl_base import Testssl_base
@@ -68,7 +68,8 @@ class Core:
         webhook="",
         prometheus="",
         config_type=WebserverType.AUTO,
-        compliance_args=None
+        compliance_args=None,
+        resolve_ip=False
     ):
         """
         :param hostname_or_path: hostname or path to scan
@@ -105,6 +106,11 @@ class Core:
         self.__logging = Logger("Core")
         self.__input_dict = {}
         self.__cache = {}
+        if isinstance(compliance_args, dict):
+            first_key = list(compliance_args.keys())[0]
+            self.__skip_webservertype = compliance_args.get(first_key, {}).get("use_cache", False)
+        else:
+            self.__skip_webservertype = False
         modules = None
         if isinstance(configuration, list):  # if modules as argument
             modules = configuration
@@ -124,7 +130,8 @@ class Core:
             webhook=webhook,
             prometheus=prometheus,
             config_type=config_type,
-            compliance_args=compliance_args
+            compliance_args=compliance_args,
+            resolve_ip=resolve_ip
         )
         self.__cache[configuration] = self.__load_configuration(modules)
         self.__exec(
@@ -249,6 +256,8 @@ class Core:
             f"Loading configuration {self.__input_dict['configuration']}"
         )
         if modules and self.__input_dict["type_of_analysis"] == self.Analysis.APK:
+            from modules.android.wrappers.sebastian import CustomAndroidVulnerabilityManager
+
             tmp_modules = ["".join(tmp.split("_"))
                            if "_" in tmp else tmp for tmp in modules]
             remaining_plugins = [
@@ -391,7 +400,7 @@ class Core:
             or type_of_analysis == self.Analysis.DOMAINS
         ):
             if full_analysis:
-                testssl_args = []
+                testssl_args = ["-e", "-E", "-s", "-f", "-p", "-g", "-S", "-p", "-h", "-U"]
             self.__logging.debug(
                 f"Starting preanalysis testssl with args {testssl_args}..."
             )
@@ -477,7 +486,7 @@ class Core:
                     loaded_modules[name], tls_scanner_args
                 )
             else:
-                self.__logging.debug(f"Module {name} excluded, skipping..")
+                self.__logging.debug(f"Module {name} excluded, skipping...")
         return loaded_modules, loaded_arguments, testssl_args, tls_scanner_args
 
     def __run_analysis(
@@ -570,7 +579,7 @@ class Core:
         ):  # checks if it's a host or a domain list analysis
             # perform enumeration if needed
             self.__logging.info(
-                f"Performing subdomain enumeration on {hostname_or_path}.."
+                f"Performing subdomain enumeration on {hostname_or_path}..."
             )
             for host in enumerate(remove_wildcard(hostname_or_path)):
                 if has_wildcard(host):  # escape wildcard
@@ -644,7 +653,7 @@ class Core:
             self.__wrap_execution(
                 res, hostname_or_path, type_of_analysis, configuration, port
             )
-        self.__logging.info("Generating output..")
+        self.__logging.info("Generating output...")
         self.__call_output_modules(res, type_of_analysis)
 
     def __exec_anaylsis(
@@ -672,16 +681,40 @@ class Core:
         if type_of_analysis not in [self.Analysis.APK, self.Analysis.IPA, self.Analysis.CONFIGURATION]:
             hostname_or_path, port = link_sep(hostname_or_path)
         configuration_name = configuration
-        self.__logging.info(f"Loading configuration {configuration_name} ..")
+        self.__logging.info(f"Loading configuration {configuration_name}...")
         parsed_configuration = self.__cache[configuration_name]
 
-        self.__logging.info("Loading modules..")
+        self.__logging.info("Loading modules...")
         # loading modules
         loaded_modules, loaded_arguments, testssl_args, tls_scanner_args = self.__load_modules(
             parsed_configuration
         )
+
+        generate_modules = [m for m in loaded_modules if m.startswith("generate")]
+        # self.__logging.info(f"Loaded modules: {list(loaded_modules.keys())}")
+        # self.__logging.info(f"Scanned hosts: {list(self.__enumerate_hosts(hostname_or_path, type_of_analysis))}")
+
+        if generate_modules and self.__input_dict["type_of_analysis"] == self.Analysis.DOMAINS:
+            self.__logging.error(
+                "Generate modules are not supported in multi-host scans"
+            )
+            # TODO: generate a report showing the error
+            # result_dict = {
+            #        "errors": {
+            #            hostname_or_path: {"generate-multihost-error": "Generate"}
+            #        }
+            # }
+            # for module in generate_modules:
+            #            result_dict[module] = {
+            #                "errors": [
+            #                    "generate-multihost-error: Critical"
+            #                ]
+            #            }
+            sys.exit(1)
+            # return loaded_modules, result_dict
+
         # preanalysis if needed
-        self.__logging.info("Running analysis..")
+        self.__logging.info("Running analysis...")
         if type_of_analysis == self.Analysis.CONFIGURATION:
             results = self.__conf_analysis(
                 hostname_or_path,
@@ -693,29 +726,66 @@ class Core:
         else:
             if type_of_analysis in [self.Analysis.HOST, self.Analysis.DOMAINS] \
                     and hostname_or_path != "placeholder":
+                if self.__input_dict.get("resolve_ip", False) and not validate_ip(hostname_or_path):
+                    host_part = hostname_or_path.split(":")[0]
+                    try:
+                        resolved_ip = socket.gethostbyname(host_part)
+                        port_suffix = hostname_or_path[len(host_part):]  # keeps ":port" if present
+                        hostname_or_path = resolved_ip + port_suffix
+                        self.__logging.debug(
+                            f"resolve ip: resolved {host_part} -> {resolved_ip}, "
+                            f"using {hostname_or_path}"
+                        )
+                    except socket.error as e:
+                        self.__logging.debug(e)
+                        self.__logging.warning(
+                            f"resolve ip: could not resolve {host_part} to an IP address, trying to resolve www.{host_part}..."
+                        )
                 extraction = tldextract.extract(hostname_or_path)
                 if not extraction.subdomain and hostname_or_path != "localhost" and \
                         not validate_ip(hostname_or_path):
                     hostname_or_path = f"www.{hostname_or_path}"
                 if extraction.suffix:
-                    hostname_index = hostname_or_path.index(f".{extraction.suffix}")
-                    actual_hostname = hostname_or_path[:hostname_index+len(extraction.suffix)+1]
+                    hostname_index = hostname_or_path.index(
+                        f".{extraction.suffix}")
+                    if  extraction.domain.startswith(extraction.suffix):
+                        hostname_index += len(extraction.domain) + 1
+                    actual_hostname = hostname_or_path[:hostname_index+len(
+                        extraction.suffix)+1]
                 else:
                     actual_hostname = hostname_or_path
                 try:
-                    _ = socket.gethostbyname(actual_hostname)
+                    if not self.__skip_webservertype:
+                        _ = socket.gethostbyname(actual_hostname)
                 except socket.error as e:
                     self.__logging.debug(e)
                     self.__logging.error(
-                        f"Hostname {hostname_or_path} not found, skipping.."
+                        f"Hostname {hostname_or_path} not found, skipping..."
                     )
-                    return loaded_modules, {
-                        "errors":
-                        {
-                            hostname_or_path:
-                            {"Invalid hostname": "Critical"}
+                    result_dict = {
+                        "errors": {
+                            hostname_or_path: {"Invalid hostname": "Critical"}
                         }
                     }
+                    for module in loaded_modules:
+                        result_dict[module] = {
+                            "errors": [
+                                "Invalid hostname: Critical"
+                            ]
+                        }
+                    return loaded_modules, result_dict
+            result_dict = {
+                        "errors": {
+                            hostname_or_path: {"Invalid hostname": "Critical"}
+                        }
+                    }
+            for module in loaded_modules:
+                result_dict[module] = {
+                    "errors": [
+                        "Invalid hostname: Critical"
+                    ]
+                }
+
             full_analysis = False
             for module in loaded_modules:
                 if module.startswith("compare"):
@@ -725,9 +795,10 @@ class Core:
                 self.__preanalysis_testssl(
                     testssl_args, type_of_analysis, hostname_or_path, port, full_analysis
                 )
-                self.__preanalysis_webserver_type(
-                    hostname_or_path
-                )
+                if not self.__skip_webservertype:
+                    self.__preanalysis_webserver_type(
+                        hostname_or_path
+                    )
                 self.__preanalysis_tls_scanner(
                     tls_scanner_args, type_of_analysis, hostname_or_path, port
                 )

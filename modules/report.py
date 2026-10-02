@@ -1,3 +1,4 @@
+from copy import deepcopy
 import json
 import os.path
 import re
@@ -8,6 +9,7 @@ from os import mkdir
 from os.path import sep
 from pathlib import Path
 from pprint import pformat
+import sys
 
 import requests
 from jinja2 import Environment, FileSystemLoader
@@ -15,10 +17,12 @@ from requests.structures import CaseInsensitiveDict
 from z3c.rml import rml2pdf
 
 import utils.loader
+from configs import levels_mapping
 from modules.server.webserver_type import WebserverType
 from modules.stix.stix import Stix
 from utils.globals import version
 from utils.logger import Logger
+from utils.paths import resource_path
 from utils.prune import pruner
 from utils.validation import Validator, rec_search_key
 
@@ -36,43 +40,67 @@ class Report:
 
         HOSTS = 0
         MODULES = 1
-        APK = 2 
+        APK = 2
         IPA = 3
         DOMAINS = 4
+        GENERATE = 5
 
     def __init__(self):
         self.__input_dict = {}
         self.__path = ""
-        self.__template_dir = Path(f"configs{sep}out_template")
+        self.__template_dir = resource_path("configs", "out_template")
         self.__logging = Logger("Report")
-        files = utils.loader.load_configuration("module_to_mitigation", "configs/")
-        custom_fonts = utils.loader.load_configuration("custom_fonts", "configs/out_template/assets/pdf/")
-        self._replacements = {"name_mapping": {},
-                              'sub': re.sub,
-                              # These replacements are applied only to the content of Textual, Apache and Nginx strings
-                              "Replacements": {
-                                  # Since the hyperlinks are not blue in RML we do it manually
-                                  "(<a href=.*?</a>)": "<font color=\"blue\">\\1</font>",
-                                  # Since the code tag is not directly supported in RML, we crete it with the font tag
-                                  "<code>(.*?)</code>": "<font color=\"#d63384\" fontName=\"Roboto\">\\1</font>",
-                                  "&nbsp;": "&#160;",
-                                  # The paragraph tags are removed because they are not needed in the RML format
-                                  "<p>": "",
-                                  "</p>": "",
-                                  "(<b>.*?</b>)": "<font fontName=\"Roboto Bold\">\\1</font>",
-                                  "(<i>.*?</i>)": "<font fontName=\"Roboto Italic\">\\1</font>",
-                                }
-                              }
+        files = utils.loader.load_configuration(
+            "module_to_mitigation", "configs/")
+        custom_fonts = utils.loader.load_configuration(
+            "custom_fonts", "configs/out_template/assets/pdf/")
+        self._replacements = {
+            "name_mapping": {},
+            'sub': re.sub,
+            "split": str.split,
+            "list": list,
+            "str": str,
+            "load_dict": json.loads,
+            "isinstance": isinstance,
+            "levels": [levels_mapping[str(i)].upper() for i in range(1, 6)],
+            # These replacements are applied only to the content of Textual, Apache and nginx strings
+            "Replacements": {
+                # Since the hyperlinks are not blue in RML we do it manually
+                "(<a href=.*?</a>)": "<font color=\"blue\">\\1</font>",
+                # Since the code tag is not directly supported in RML, we crete it with the font tag
+                "<code>(.*?)</code>": "<font color=\"#d63384\" fontName=\"Roboto\">\\1</font>",
+                "`(.*?)`": "<font color=\"#d63384\" fontName=\"Roboto\">\\1</font>",
+                "&nbsp;": "&#160;",
+                # The paragraph tags are removed because they are not needed in the RML format
+                "<p>": "",
+                "</p>": "",
+                "(<b>.*?</b>)": "<font fontName=\"Roboto Bold\">\\1</font>",
+                "(<i>.*?</i>)": "<font fontName=\"Roboto Italic\">\\1</font>"
+            },
+            "key_replacements": {
+                "Textual": "Conforming",
+                "nginx": "Advanced syntax for nginx",
+                "Apache": "Advanced syntax for Apache",
+            },
+            # this allows to map results to a more specific label
+            "result_label_mapping": {
+                "hsts_set": "Not Set",
+                "hsts_preloading": "Not Preloaded",
+                "https_enforced": "Not Enforced",
+            }
+        }
         for custom_font in custom_fonts:
             # Custom fonts must be defined in both html and custom_fonts.json
             self._replacements["Replacements"][f"<{custom_font}>(.*?)</{custom_font}>"] =\
                 f"<font {custom_fonts[custom_font]}>\\1</font>"
         for module in files:
             # TODO fix poodle alias system
-            if os.path.isfile(Path("configs/mitigations/" + files[module])):
-                with open(Path("configs/mitigations/" + files[module]), "r") as f:
+            mitigation_path = resource_path("configs", "mitigations", files[module])
+            if os.path.isfile(mitigation_path):
+                with open(mitigation_path, "r") as f:
                     data = json.load(f)
-                self._replacements["name_mapping"][module] = data.get("Entry", {}).get("Name", "Unknown")
+                self._replacements["name_mapping"][module] = data.get(
+                    "Entry", {}).get("Name", "Unknown")
 
     def input(self, **kwargs):
         """
@@ -90,7 +118,7 @@ class Report:
         """
         self.__input_dict = kwargs
 
-    def __modules_report_formatter(self, results: dict, modules: list) -> dict:
+    def __modules_report_formatter(self, results: dict, modules: list, rml: bool = False) -> dict:
         """
         Formats the results of the modules.
 
@@ -98,6 +126,8 @@ class Report:
         :type results: dict
         :param modules: List of modules to include in the report.
         :type modules: list
+        :param rml: flag to indicate we are generating an rml file
+        :type rml: bool
         :return: Dictionary containing the results of the scan.
         :rtype: dict
         """
@@ -122,6 +152,7 @@ class Report:
                         vuln_hosts.append(hostname)
             if raw_results:
                 out[module]["raw"] = pformat(raw_results.copy(), indent=2)
+                out[module]["raw_dict"] = deepcopy(raw_results)
             if vuln_hosts:
                 out[module]["hosts"] = vuln_hosts.copy()
             if not out[module]:
@@ -142,13 +173,16 @@ class Report:
             # the results are good, we need to remove the "Entry" key but preserve the rest with the CaseInsensitiveDict
             if hostname not in out:
                 out[hostname] = {}
-            if "errors" in results[hostname]:
+            if "errors" in results[hostname] and hostname in results[hostname]["errors"]:
                 out[hostname]["errors"] = results[hostname]["errors"][hostname]
             for module in results[hostname]:
                 raw_results = {}
                 if "errors" in results[hostname][module]:
                     if out[hostname].get("errors") is None:
                         out[hostname]["errors"] = {}
+                    if out[hostname].get("module_errors") is None:
+                        out[hostname]["module_errors"] = {}
+                    out[hostname]["module_errors"][module] = results[hostname][module]["errors"]
                     for i, error in enumerate(results[hostname][module]["errors"]):
                         out[hostname]["errors"][f"{module} error_{i}"] = error
                 if "raw" in results[hostname][module]:
@@ -161,6 +195,7 @@ class Report:
                         out[hostname][module]["raw"] = pformat(
                             raw_results.copy(), indent=2
                         )
+                        out[hostname][module]["raw_dict"] = deepcopy(raw_results)
         return out
 
     def __jinja2__report(
@@ -180,32 +215,45 @@ class Report:
         :param rml: Whether to apply jinja2 to rml files or not.
         :type rml: bool
         """
-        self.__logging.debug("Generating report in jinja2..")
+        self.__logging.debug("Generating report in jinja2...")
         fsl = FileSystemLoader(searchpath=self.__template_dir)
         env = Environment(loader=fsl)
         file_extension = "xml" if rml else "html"
-        to_process = {"version": version, "date": date, "modules": modules, "hosts": list(results.keys())}
+        to_process = {
+            "version": version,
+            "date": date,
+            "modules": modules,
+            "hosts": list(results.keys()),
+            "font_dir": str(resource_path("dependencies", "roboto-unhinted")),
+            "image_path": str(resource_path("configs", "out_template", "assets", "pdf")),
+        }
 
         if mode == self.Mode.MODULES:
-            self.__logging.info("Generating modules report..")
+            self.__logging.info("Generating modules report...")
             template = env.get_template(f"modules_report.{file_extension}")
-            to_process["results"] = self.__modules_report_formatter(results, modules)
+            to_process["results"] = self.__modules_report_formatter(
+                results, modules)
         elif mode == self.Mode.HOSTS or mode == self.Mode.DOMAINS:
-            self.__logging.info("Generating hosts report..")
+            self.__logging.info("Generating hosts report...")
             template = env.get_template(f"hosts_report.{file_extension}")
             to_process["type"] = "HOSTS"
             to_process["results"] = self.__hosts_report_formatter(results)
         # TODO group by module for APK and IPA
         elif mode == self.Mode.APK:
-            self.__logging.info("Generating APK report..")
+            self.__logging.info("Generating APK report...")
             template = env.get_template(f"hosts_report.{file_extension}")
             to_process["type"] = "APK"
             to_process["results"] = self.__hosts_report_formatter(results)
         elif mode == self.Mode.IPA:
-            self.__logging.info("Generating IPA report..")
+            self.__logging.info("Generating IPA report...")
             template = env.get_template(f"hosts_report.{file_extension}")
             to_process["type"] = "IPA"
             to_process["results"] = self.__hosts_report_formatter(results)
+        elif mode == self.Mode.GENERATE:
+            self.__logging.info("Generating generator report...")
+            template = env.get_template(f"generator_report.{file_extension}")
+            to_process["results"] = self.__modules_report_formatter(
+                results, modules, rml)
         else:
             raise ValueError(f"Unknown mode: {mode}")
         to_process = {**to_process, **self._replacements, **{"pruner": pruner}}
@@ -253,7 +301,7 @@ class Report:
         """
         if other_params is None:
             other_params = {}
-        self.__logging.debug("Sending results to webhook..")
+        self.__logging.debug("Sending results to webhook...")
         try:
             json_data = {
                 result_param: pformat(results, indent=2),
@@ -274,6 +322,7 @@ class Report:
                     webhook_url,
                     headers=headers,
                     json=json_data,
+                    timeout=10
                 )
             else:
 
@@ -281,6 +330,7 @@ class Report:
                     webhook_url,
                     headers=headers,
                     params=json_data,
+                    timeout=10
                 )
         except Exception as e:
             self.__logging.error(f"Error sending results to webhook: {e}")
@@ -334,7 +384,7 @@ class Report:
         if not Path(f"results{sep}assets").exists():
             self.__logging.debug("Copying assets folder...")
             cp(
-                str(Path(f"configs{sep}out_template{sep}assets").absolute()),
+                str(resource_path("configs", "out_template", "assets")),
                 str(Path(f"results{sep}assets").absolute()),
             )
 
@@ -347,18 +397,34 @@ class Report:
         # get webserver types
         webserver_types = WebserverType().output()
         # this block is needed to prepare the output of the compliance modules
-        if any([module in modules for module in ["compare_one", "compare_many"]]):
-            module = "compare_one" if "compare_one" in modules else "compare_many"
+        compliance_modules = [module for module in modules if module.startswith(
+            "compare") or module.startswith("generate")]
+        if compliance_modules:
+            module = compliance_modules[0]
+            if module.startswith("generate"):
+                self.__path = Path(
+                    self.__path.__str__().replace("html", "pdf"))
+                self.__logging.info("HTML report is not available for generate modules, switching to PDF")
             for hostname in results:
                 if results[hostname].get(module):
                     for sheet in results[hostname][module]:
                         if "mitigation" in results[hostname][module][sheet]:
                             modules[module + "_" + sheet] = ""
-                            results[hostname][module + "_" + sheet] = results[hostname][module][sheet]
+                            results[hostname][module + "_" +
+                                              sheet] = results[hostname][module][sheet]
                         elif "placeholder" in results[hostname][module][sheet]:
                             modules[module + "_" + sheet] = ""
+                            results[hostname][module + "_" +
+                                              sheet] = results[hostname][module][sheet]
+                        elif sheet == "error":
+                            if not "errors" in results[hostname]:
+                                results[hostname]["errors"] = {
+                                    hostname: []
+                                }
+                            results[hostname]["errors"][hostname].append(results[hostname][module][sheet]) 
                         else:
-                            self.__logging.debug(f"Removing {sheet} from {hostname} because no mitigation was found")
+                            self.__logging.debug(
+                                f"Removing {sheet} from {hostname} because no mitigation was found")
                 results[hostname].pop(module, None)
             del modules[module]
         # now, we want to divide raw from mitigations
@@ -385,13 +451,39 @@ class Report:
                             mitigation.copy()
                         )  # i'm expecting only one mitigation per module, is it ok?
                 results[hostname][module]["raw"] = raw
+        # preserve all originally scanned hosts in host-based reports.
+        if self.__input_dict["mode"] in (
+            self.Mode.HOSTS,
+            self.Mode.DOMAINS,
+            self.Mode.APK,
+            self.Mode.IPA,
+        ):
+            original_hosts = list(self.__input_dict["results"].keys())
+            results = {
+                host: results[host] if host in results else ""
+                for host in original_hosts
+            }
         use_rml = False
+        
+        if self.__input_dict["mode"] == self.Mode.DOMAINS :
+            self.__path = Path(
+                    self.__path.__str__().replace("pdf", "html"))
+            self.__logging.info("PDF report is not available for multi-host scans, switching to HTML")
+        
         if self.__path.suffix.lower() == ".pdf":
             self.__logging.debug("Using jinja2 to generate RML...")
             use_rml = True
             output_path = f"{output_file.absolute().parent}{sep}{output_file.stem}.rml"
         if len(results) == 0:
-            results = {list(self.__input_dict['results'].keys())[i]: '' for i in range(len(self.__input_dict['results']))} # I use that to have the name of the hosts/apk/ipa in the pdf output in case of no vunlerabilities detected
+            # I use that to have the name of the hosts/apk/ipa in the pdf output in case of no vunlerabilities detected
+            results = {list(self.__input_dict['results'].keys())[
+                i]: '' for i in range(len(self.__input_dict['results']))}
+        if any("generate" in module for module in modules):
+            # i'm expecting this to never be true, extra guard for safety
+            if self.__path.suffix.lower() != ".pdf":
+                self.__logging.debug("Generate report is not supported with non-pdf output, skipping")
+            else:
+                self.__input_dict["mode"] = self.Mode.GENERATE
         with open(output_path, "w") as f:
             f.write(
                 self.__jinja2__report(
@@ -410,6 +502,7 @@ class Report:
                 xml_path = output_path
                 output_path = output_path[:-4] + ".pdf"
                 rml2pdf.go(xml_path, output_path)
+                os.remove(xml_path)
             except Exception as e:
                 self.__logging.error(f"Error converting to PDF: {e}")
                 self.__logging.debug("Dumping results used by jinja to file")
@@ -444,10 +537,14 @@ class Report:
         if 'prometheus' in self.__input_dict and self.__input_dict['prometheus'] != '':
             self.__logging.info("Starting prometheus...")
 
-            output_path_prometheus = f"{output_file.absolute().parent}{sep}{output_file.stem}_prometheus.log" if not \
+            output_path_prometheus = f"{output_file.absolute().parent}{sep}{output_file.stem}_prometheus.prom" if not \
                 self.__input_dict['prometheus'] else self.__input_dict['prometheus']
-            Prometheus(results=results, modules=modules).run(output_path_prometheus)
+            Prometheus(results=results, modules=modules).run(
+                output_path_prometheus)
 
+        if len(results) == 0 or all("errors" in results[hostname] for hostname in results):
+            self.__logging.debug("All scans errored, system will exit with code 1")
+            sys.exit(1)
 
 class Prometheus:
     """
@@ -475,9 +572,11 @@ class Prometheus:
         for module in self.modules:
             for host in self.results:
                 if module in self.results[host]:
-                    self.output.append(f"tls_check{{vhost=\"{host}\",vulnerability=\"{module}\"}} 1")
+                    self.output.append(
+                        f"tls_check{{vhost=\"{host}\",vulnerability=\"{module}\"}} 1")
                 else:
-                    self.output.append(f"tls_check{{vhost=\"{host}\",vulnerability=\"{module}\"}} 0")
+                    self.output.append(
+                        f"tls_check{{vhost=\"{host}\",vulnerability=\"{module}\"}} 0")
 
     def run(self, file_name: str):
         self.generate_output()

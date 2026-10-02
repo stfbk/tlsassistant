@@ -1,10 +1,10 @@
 <!DOCTYPE document SYSTEM "rml.dtd">
 <document>
     <docinit>
-        <registerTTFont faceName="Roboto" fileName="dependencies/roboto-unhinted/Roboto-Regular.ttf" />
-        <registerTTFont faceName="Roboto Bold" fileName="dependencies/roboto-unhinted/Roboto-Bold.ttf" />
-        <registerTTFont faceName="Roboto Italic" fileName="dependencies/roboto-unhinted/Roboto-Italic.ttf" />
-        <registerTTFont faceName="Roboto Bold Italic" fileName="dependencies/roboto-unhinted/Roboto-BoldItalic.ttf" />
+        <registerTTFont faceName="Roboto" fileName="{{ font_dir }}/Roboto-Regular.ttf" />
+        <registerTTFont faceName="Roboto Bold" fileName="{{ font_dir }}/Roboto-Bold.ttf" />
+        <registerTTFont faceName="Roboto Italic" fileName="{{ font_dir }}/Roboto-Italic.ttf" />
+        <registerTTFont faceName="Roboto Bold Italic" fileName="{{ font_dir }}/Roboto-BoldItalic.ttf" />
     </docinit>
 <!--To edit the font of a string edit the corresponding style here-->
     <stylesheet>
@@ -13,7 +13,7 @@
         <paraStyle name = "recap" fontName = "Roboto Bold" fontSize = "25" alignment="centre" spaceAfter="25"/>
         <paraStyle name = "detected_vulnerabilities" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30"/>
         <paraStyle name = "detected_errors" fontName = "Roboto Bold" fontSize = "28" alignment="left" spaceAfter="30" textColor="red"/>
-        <paraStyle name = "no_vulnerabilities_detected" fontName = "Roboto Bold" fontSize = "30" alignment="centre" spaceAfter="30" textColor="green" spaceBefore="20"/>
+        <paraStyle name = "no_vulnerabilities_detected" fontName = "Roboto Bold" fontSize = "30" leading="30" alignment="centre" spaceAfter="30" textColor="green" spaceBefore="20"/>
         <paraStyle name = "module_list" fontName = "Roboto" fontSize="10" alignment="left" textColor="grey" spaceAfter="5"/>
         <paraStyle name = "module" fontName = "Roboto Bold" fontSize="20" alignment="left" spaceAfter="15" spaceBefore="10"/>
         <paraStyle name = "host" fontName = "Roboto Bold" fontSize = "25" leading = "25" alignment="centre" spaceAfter="25" spaceBefore="20" textColor="#4d4d4d"/>
@@ -29,7 +29,9 @@
         <paraStyle name = "vulnerable_websites" fontName = "Roboto" fontSize = "18" alignment="left" spaceAfter="10"/>
         <paraStyle name = "vulnerable_websites_list" fontName = "Roboto Italic" fontSize = "12" alignment="left" spaceAfter="5"/>
         <paraStyle name = "not_vulnerable" fontName="Roboto"/>
+        <paraStyle name = "fully_compliant" fontName="Roboto" textColor="green"/>
         <paraStyle name = "potentially_vulnerable" fontName="Roboto Bold" textColor="red"/>
+        <paraStyle name = "partially_compliant" fontName="Roboto Bold" textColor="#ff8a0c"/>
         <paraStyle name = "custom_font_code-2" fontName="Roboto" fontSize="12" backColor="yellow"/>
         <blockTableStyle id="report">
             <lineStyle start="0,0" stop="-1,-1" kind="grid" thickness="0.25" colorName="black" cap="default"/>
@@ -47,12 +49,11 @@
     {% set year = date.split("-")[0] %}
     {% set page_w = 595 %}
     {% set page_h = 842 %}
-    {% set image_path = "configs/out_template/assets/pdf/" %}
     <template pagesize="({{page_w}}, {{page_h}})" showBoundary="0">
         <pageTemplate id="main">
             <pageGraphics>
                 <!-- Header -->
-                <image x="30" y="750" file="{{image_path}}FBK_Cybersecurity_colour.png" width = "150" height = "70"/>
+                <image x="0" y="714" file="{{image_path}}/FBK_Cybersecurity_colour.png" width = "254" height = "130"/>
                 {% set frame_w = 455 %}
                 {% set frame_h = 600 %}
                 {% set frame_x = (page_w - frame_w) / 2%}
@@ -83,8 +84,8 @@
                 {% set footer_frame_h = 12 %}
                 {% set footer_frame_y = footer_line_y / 2%}
                 <!--Logo block-->
-                <image x="{{logo_x}}" y = "{{logo_y}}" file="{{image_path}}logo_only2.png" width = "{{logo_w}}" height = "{{logo_h}}"/>
-                <image x="{{name_x}}" y = "{{name_y}}" file="{{image_path}}name2.png" width = "{{name_w}}" height = "{{name_h}}"/>
+                <image x="{{logo_x}}" y = "{{logo_y}}" file="{{image_path}}/logo_only2.png" width = "{{logo_w}}" height = "{{logo_h}}"/>
+                <image x="{{name_x}}" y = "{{name_y}}" file="{{image_path}}/name2.png" width = "{{name_w}}" height = "{{name_h}}"/>
                 <setFont name="Roboto Bold Italic" size="12"/>
                 <drawRightString x="{{version_x}}" y="{{version_y}}">Version {{version}}</drawRightString>
                 <stroke color="#4160b0"/>
@@ -164,17 +165,27 @@
                     <td>{{name_mapping.get(module, module)}}</td>
                     {% for host in results %}
                         <td>
-                        {% if results[host][module] %}
+                        {% if results[host].get("module_errors", {}).get(module) %}
+                            <para style="potentially_vulnerable">Error</para>
+                        {% elif results[host][module] %}
                             {% if module.startswith("compare_") %}
-                                <para style="potentially_vulnerable">Not Compliant</para>
+                                {% if results[host][module]["raw_dict"]["sheet_level"] == "Compliant" %}
+                                    <para style="not_vulnerable">Compliant</para>
+                                {% elif results[host][module]["raw_dict"]["sheet_level"] == "Fully compliant" %}
+                                    <para style="fully_compliant">Fully Compliant</para>
+                                {% elif results[host][module]["raw_dict"]["sheet_level"] == "Partially compliant" %}
+                                    <para style="partially_compliant">Partially Compliant</para>
+                                {% else %}
+                                    <para style="potentially_vulnerable">Not Compliant</para>
+                                {% endif %}
                             {% else %}
-                                <para style="potentially_vulnerable">Potentially Vulnerable</para>
+                                <para style="potentially_vulnerable">{{(result_label_mapping|default({})).get(module, "Potentially Vulnerable")}}</para>
                             {% endif %}
-                        {% elif results[host].get("errors", None) %}
+                        {% elif results[host].get("errors", None) and not results[host].get("module_errors", {}) %}
                             <para style="potentially_vulnerable">Error</para>
                         {% else %}
                             {% if module.startswith("compare_") %}
-                                <para style="not_vulnerable">Compliant</para>
+                                <para style="fully_compliant">Fully Compliant</para>
                             {% else %}
                                 <para style="not_vulnerable">Not Vulnerable</para>
                             {% endif %}
@@ -184,9 +195,15 @@
                 </tr>
             {% endfor %}
         </blockTable>
+        {%set i_ns = namespace(i=0)%}
+        {% set i_ns.compliance=False%}
+        {% for module in modules %}
+            {% if module.startswith("compare_")%}
+                {% set i_ns.compliance=True %}
+            {% endif %}
+        {% endfor %}
         {% if pruner(results) %}
             <nextFrame/>
-            {%set i_ns = namespace(i=0)%}
             {% for host in results%}
                 {% if results[host].get("errors", None) %}
                     {% set i_ns.i = i_ns.i + 1%}
@@ -195,12 +212,6 @@
             {% if i_ns.i != results.keys().__len__() %}
                 <!--Insert here text to show if all the hosts had an error-->
             {% endif %}
-            {% set i_ns.compliance=False%}
-            {% for module in modules %}
-                {% if module.startswith("compare_")%}
-                    {% set i_ns.compliance=True %}
-                {% endif %}
-            {% endfor %}
             {% if i_ns.compliance %}
                 <h1 style="detected_vulnerabilities">Non Compliant Elements</h1>
             {% else %}
@@ -251,7 +262,11 @@
                 {%endfor%}
             {%endfor%}
         {% else %}
-            <para style="no_vulnerabilities_detected">No vulnerabilities detected</para>
+            {% if i_ns.compliance %} 
+                <para style="no_vulnerabilities_detected">The webserver is fully compliant with the requested guidelines</para>
+            {% else %}
+                <para style="no_vulnerabilities_detected">No vulnerabilities detected</para>
+            {% endif %}
         {% endif %}
         <namedString id="lastPage"><pageNumber/></namedString>
     </story>

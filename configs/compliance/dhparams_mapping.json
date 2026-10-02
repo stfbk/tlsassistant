@@ -1,6 +1,6 @@
 {
   "1024": "`openssl dhparam 1024",
-  "2048": "`cat configs/compliance/ffdhe/ffdhe2048.txt",
-  "3072": "`cat configs/compliance/ffdhe/ffdhe3072.txt",
-  "4096": "`cat configs/compliance/ffdhe/ffdhe4096.txt"
+  "2048": "`cat dependencies/dhe_groups/ffdhe2048.pem",
+  "3072": "`cat dependencies/dhe_groups/ffdhe3072.pem",
+  "4096": "`cat dependencies/dhe_groups/ffdhe4096.pem"
 }
