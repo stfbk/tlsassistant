@@ -13,7 +13,7 @@ Moreover, thanks to the recent updates to our [compliance dataset](https://githu
 - **ENISA**, the European Union Agency for Cybersecurity, and
 - **TLSRef**, formerly known as [Mozilla Server Side TLS](https://wiki.mozilla.org/Security/Server_Side_TLS).
 
-These and more features are now showcased in our latest [blogpost](https://st.fbk.eu/tools/TLSAssistant/blog/2026-09-25_new_tlsassistant_release) and in the new playlist of demo recordings available on [Youtube](https://www.youtube.com/watch?v=hi72cvoV__4&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX).
+These and more features are now showcased in our latest [blogpost](https://st.fbk.eu/tools/TLSAssistant/blog/2026-10-02_new_tlsassistant_release) and in the new playlist of demo recordings available on [Youtube](https://www.youtube.com/watch?v=hi72cvoV__4&list=PLLCelDM1fnkKnKr3qle1FukK90gIwoZHX).
 
 
 ## Features
