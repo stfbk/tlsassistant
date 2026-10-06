@@ -176,7 +176,7 @@ class Tlsfuzzer_base:
 
         # testssl.sh does not have a port argument, the port is part of the hostname
         testssl_args = {"hostname": self._input_dict["hostname"]+":"+self._input_dict["port"],
-                        "args": ["-e", "-p", "-S"],
+                        "args": ["-e", "-p", "-S", "--socket-timeout", "300", "--openssl-timeout", "300"],
                         }
         self._testssl.run(**testssl_args, force=True)
 

@@ -275,7 +275,7 @@ class Compliance:
                 else:
                     actual_hostname = self.hostname
                 test_ssl_output = self.test_ssl.run(
-                    **{"hostname": actual_hostname + port, "one": True, "args": ["-e", "-E", "-s", "-f", "-p", "-g", "-S", "-p", "-h", "-U"]})
+                    **{"hostname": actual_hostname + port, "one": True, "args": ["-e", "-E", "-s", "-f", "-p", "-g", "-S", "-p", "-h", "-U", "--socket-timeout", "300", "--openssl-timeout", "300"]})
                 if use_cache:
                     with open(file_path, "w") as f:
                         json.dump(test_ssl_output, f, indent=4)
