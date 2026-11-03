@@ -10,6 +10,18 @@ class Three_shake(Testssl_base):
 
     stix = Bundled(mitigation_object=load_mitigation("3SHAKE"))
 
+    def __init__(self):
+        super().__init__()
+        self._versions = {}
+
+    def _tls_versions(self, results: dict) -> dict:
+        for ip in results:
+            if self._versions.get(ip) is None:
+                self._versions[ip] = {}
+            for key in ["SSLv2", "SSLv3", "TLS1", "TLS1_1", "TLS1_2", "TLS1_3"]:
+                self._versions[ip][key] = results[ip].get(key, {"finding": "not offered"})[
+                    "finding"].startswith("offered")
+
     def _set_mitigations(self, result: dict, key: str, condition: bool) -> dict:
         """
         Sets the mitigations for the 3shake testssl results
@@ -28,7 +40,7 @@ class Three_shake(Testssl_base):
             if "finding" in result
             else False
         )
-        if condition:
+        if condition and any(self._versions.get(self.currently_analysed_ip, {}).get(key) for key in ["SSLv2", "SSLv3", "TLS1", "TLS1_1", "TLS1_2"]):
             result["mitigation"] = load_mitigation("3SHAKE")
         return result if condition else {}
 
@@ -37,7 +49,7 @@ class Three_shake(Testssl_base):
         """
         Sets the arguments for the testssl command
         """
-        self._arguments = ["-S"]
+        self._arguments = ["-S", "-p"]
 
     # to override
     def _worker(self, results):
@@ -48,4 +60,5 @@ class Three_shake(Testssl_base):
         :return: dict
         :rtype: dict
         """
+        self._tls_versions(results)
         return self._obtain_results(results, ["TLS_extensions"])
